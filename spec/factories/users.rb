@@ -2,10 +2,7 @@
 #
 # Table name: users
 #
-#  id                     :bigint           not null, primary key
-#  confirmation_sent_at   :datetime
-#  confirmation_token     :string
-#  confirmed_at           :datetime
+#  id                     :uuid             not null, primary key
 #  current_sign_in_at     :datetime
 #  current_sign_in_ip     :string
 #  email                  :string           default(""), not null, indexed
@@ -29,6 +26,6 @@
 #
 FactoryBot.define do
   factory :user do
-    
+
   end
 end
