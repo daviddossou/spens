@@ -26,5 +26,8 @@ module Spens
 
     # Don't generate system test files.
     config.generators.system_tests = nil
+
+    # Configure Sidekiq as the default job queue
+    config.active_job.queue_adapter = :sidekiq
   end
 end

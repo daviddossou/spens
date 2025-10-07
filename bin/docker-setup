@@ -1,0 +1,48 @@
+#!/bin/bash
+
+# Docker setup script for Spens Rails application
+
+set -e
+
+echo "🐳 Setting up Docker environment for Spens..."
+
+# Copy environment file if it doesn't exist
+if [ ! -f .env ]; then
+    echo "📝 Creating .env file from template..."
+    cp .env.example .env
+    echo "⚠️  Please edit .env file and add your NGROK_AUTHTOKEN"
+    echo "   Get it from: https://dashboard.ngrok.com/get-started/your-authtoken"
+    read -p "Press Enter to continue after setting up your .env file..."
+fi
+
+# Build the containers
+echo "🔨 Building Docker containers..."
+docker-compose build
+
+# Start the services
+echo "🚀 Starting services..."
+docker-compose up -d db redis
+
+# Wait for database to be ready
+echo "⏳ Waiting for database to be ready..."
+docker-compose exec db sh -c 'while ! pg_isready -U postgres; do sleep 1; done'
+
+# Setup the database
+echo "🗄️  Setting up database..."
+docker-compose run --rm web bash -c "bundle install && bin/rails db:create db:migrate db:seed"
+
+echo "✅ Setup complete!"
+echo ""
+echo "Available commands:"
+echo "  docker-compose up          # Start all services"
+echo "  docker-compose up -d       # Start all services in background"
+echo "  docker-compose logs -f web # Follow web server logs"
+echo "  docker-compose exec web bin/rails console # Rails console"
+echo "  docker-compose down        # Stop all services"
+echo ""
+echo "Access points:"
+echo "  🌐 Rails app: http://localhost:3000"
+echo "  🔍 Sidekiq UI: http://localhost:3000/sidekiq"
+echo "  🌍 ngrok UI: http://localhost:4040"
+echo "  🐘 PostgreSQL: localhost:5432"
+echo "  🔴 Redis: localhost:6379"

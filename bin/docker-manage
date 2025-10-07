@@ -1,0 +1,123 @@
+#!/bin/bash
+
+# Docker management script for Spens
+
+case $1 in
+  "up")
+    echo "🚀 Starting all services..."
+    docker-compose up
+    ;;
+  "down")
+    echo "🛑 Stopping all services..."
+    docker-compose down
+    ;;
+  "restart")
+    echo "🔄 Restarting all services..."
+    docker-compose down
+    docker-compose up -d
+    ;;
+  "logs")
+    service=${2:-web}
+    echo "📄 Following logs for $service..."
+    docker-compose logs -f $service
+    ;;
+  "console")
+    echo "🎯 Opening Rails console..."
+    docker-compose exec web bin/rails console
+    ;;
+  "shell")
+    echo "🐚 Opening shell in web container..."
+    docker-compose exec web bash
+    ;;
+  "test")
+    if [ -z "$2" ]; then
+      echo "🧪 Running all tests..."
+      docker-compose exec web bundle exec rspec
+    else
+      echo "🧪 Running specific test: $2"
+      docker-compose exec web bundle exec rspec "$2"
+    fi
+    ;;
+  "bundle")
+    if [ -z "$2" ]; then
+      echo "💎 Running bundle install..."
+      docker-compose exec web bundle install
+    else
+      echo "💎 Running bundle $2..."
+      docker-compose exec web bundle "$2"
+    fi
+    ;;
+  "migrate")
+    echo "🗄️  Running migrations..."
+    docker-compose exec web bin/rails db:migrate
+    ;;
+  "rollback")
+    if [ -z "$2" ]; then
+      echo "🔁 Rolling back the latest migration file..."
+      docker-compose exec web bin/rails db:rollback
+    else
+      echo "🔁 Rolling back to a specific migration: $2"
+      docker-compose exec web bin/rails db:rollback STEP=$2
+    fi
+    ;;
+  "seed")
+    echo "🌱 Seeding database..."
+    docker-compose exec web bin/rails db:seed
+    ;;
+  "reset")
+    echo "💥 Resetting database..."
+    docker-compose exec web bin/rails db:reset
+    ;;
+  "build")
+    echo "🔨 Building containers..."
+    docker-compose build
+    ;;
+  "test-watch")
+    echo "👀 Running tests in watch mode..."
+    docker-compose exec web bundle exec rspec --format documentation --color --fail-fast
+    ;;
+  "test-debug")
+    echo "🐛 Running tests with debugging enabled..."
+    docker-compose exec web bundle exec rspec --format documentation --color --backtrace
+    ;;
+  "clean")
+    echo "🧹 Cleaning up containers and volumes..."
+    docker-compose down -v
+    docker system prune -f
+    ;;
+  *)
+    echo "🐳 Spens Docker Management"
+    echo ""
+    echo "Usage: ./bin/docker-manage [command]"
+    echo ""
+    echo "Commands:"
+    echo "  up        Start all services"
+    echo "  down      Stop all services"
+    echo "  restart   Restart all services"
+    echo "  logs      Follow logs (specify service: web, sidekiq, db, redis)"
+    echo "  console   Open Rails console"
+    echo "  shell     Open bash shell in web container"
+    echo "  bundle    Run bundle commands (install by default, or specify: update, etc.)"
+    echo "  test      Run RSpec tests (optionally specify file/pattern)"
+    echo "  test-watch Run tests with detailed output and fail-fast"
+    echo "  test-debug Run tests with debugging and full backtrace"
+    echo "  migrate   Run database migrations"
+    echo "  seed      Seed the database"
+    echo "  reset     Reset database (drop, create, migrate, seed)"
+    echo "  build     Build Docker containers"
+    echo "  clean     Clean up containers and volumes"
+    echo ""
+    echo "Examples:"
+    echo "  ./bin/docker-manage up"
+    echo "  ./bin/docker-manage logs sidekiq"
+    echo "  ./bin/docker-manage console"
+    echo "  ./bin/docker-manage bundle                         # Run bundle install"
+    echo "  ./bin/docker-manage bundle update                  # Run bundle update"
+    echo "  ./bin/docker-manage test                           # Run all tests"
+    echo "  ./bin/docker-manage test spec/models/user_spec.rb  # Run specific file"
+    echo "  ./bin/docker-manage test spec/models               # Run all model tests"
+    echo "  ./bin/docker-manage test spec/models/user_spec.rb:25 # Run specific line"
+    echo "  ./bin/docker-manage test-watch                     # Run with detailed output"
+    echo "  ./bin/docker-manage test-debug                     # Run with full debugging"
+    ;;
+esac

@@ -1,0 +1,100 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: spens_development
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/rails
+      - bundle_cache:/usr/local/bundle
+    environment:
+      - DATABASE_URL=postgresql://postgres:password@db:5432/spens_development
+      - REDIS_URL=redis://redis:6379/0
+      - RAILS_ENV=development
+      - RAILS_MAX_THREADS=5
+      - BUNDLE_PATH=/usr/local/bundle
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    command: >
+      bash -c "
+        rm -f tmp/pids/server.pid &&
+        bundle install &&
+        bin/rails db:prepare &&
+        bin/rails server -b 0.0.0.0 -p 3000
+      "
+    stdin_open: true
+    tty: true
+
+  sidekiq:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    volumes:
+      - .:/rails
+      - bundle_cache:/usr/local/bundle
+    environment:
+      - DATABASE_URL=postgresql://postgres:password@db:5432/spens_development
+      - REDIS_URL=redis://redis:6379/0
+      - RAILS_ENV=development
+      - BUNDLE_PATH=/usr/local/bundle
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    command: >
+      bash -c "
+        bundle install &&
+        bundle exec sidekiq
+      "
+
+  ngrok:
+    image: ngrok/ngrok:latest
+    ports:
+      - "4040:4040"  # ngrok web interface
+    environment:
+      - NGROK_AUTHTOKEN=${NGROK_AUTHTOKEN}
+    command: ["http", "web:3000", "--log", "stdout"]
+    depends_on:
+      - web
+    volumes:
+      - ./ngrok.yml:/etc/ngrok.yml
+
+volumes:
+  postgres_data:
+  redis_data:
+  bundle_cache:

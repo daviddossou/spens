@@ -1,0 +1,13 @@
+version: "2"
+authtoken: ${NGROK_AUTHTOKEN}
+log_level: info
+log_format: term
+region: us
+
+tunnels:
+  spens:
+    proto: http
+    addr: web:3000
+    bind_tls: true
+    inspect: true
+    host_header: rewrite

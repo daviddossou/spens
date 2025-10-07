@@ -1,0 +1,19 @@
+---
+:concurrency: 3
+:timeout: 25
+:verbose: false
+:queues:
+  - default
+  - mailers
+  - active_storage_analysis
+  - active_storage_purge
+
+:scheduler:
+  :enabled: true
+  :dynamic: false
+
+development:
+  :concurrency: 2
+
+production:
+  :concurrency: 10
