@@ -1,0 +1,53 @@
+/* Spens Application Color Palette - CSS Custom Properties */
+:root {
+  /* Primary Colors */
+  --color-primary: #3F51B5;
+  --color-secondary: #424660;
+
+  /* Additional Colors */
+  --color-dark-gray: #2E2F36;
+  --color-steel-blue: #3F76B5;
+  --color-emerald-green: #3FB559;
+  --color-royal-purple: #7A3FB5;
+  --color-charcoal-black: #282A33;
+  --color-deep-indigo: #48528B;
+  --color-olive-gold: #B5B13F;
+  --color-crimson-red: #B53F4D;
+  --color-golden-brown: #B58B3F;
+
+  /* Tint Colors */
+  --color-soft-blue: #8B96D2;
+  --color-sky-blue: #8BACD2;
+  --color-mint-green: #8BD29B;
+  --color-slate-gray: #8D909F;
+  --color-lavender-gray: #9197B9;
+  --color-light-purple: #AF8BD2;
+  --color-warm-beige: #D2B98B;
+  --color-pale-gold: #D2D08B;
+  --color-rose-pink: #D28B94;
+  --color-off-white: #EBEDF7;
+
+  /* Semantic Color Mappings */
+  --text-primary: var(--color-primary);
+  --text-secondary: var(--color-secondary);
+  --text-dark: var(--color-charcoal-black);
+  --text-muted: var(--color-slate-gray);
+
+  --bg-primary: var(--color-primary);
+  --bg-secondary: var(--color-off-white);
+  --bg-surface: white;
+  --bg-card-1: var(--color-soft-blue);
+  --bg-card-2: var(--color-mint-green);
+  --bg-card-3: var(--color-light-purple);
+
+  --border-default: var(--color-slate-gray);
+  --border-focus: var(--color-primary);
+
+  /* Interactive States */
+  --hover-primary: var(--color-deep-indigo);
+  --hover-secondary: var(--color-lavender-gray);
+  --hover-success: var(--color-mint-green);
+  --hover-danger: var(--color-rose-pink);
+
+  --focus-ring: var(--color-primary);
+}

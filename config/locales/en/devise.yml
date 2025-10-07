@@ -1,7 +1,58 @@
-# Additional translations at https://github.com/heartcombo/devise/wiki/I18n
-
 en:
   devise:
+    shared:
+      links:
+        forgot_password: "Forgot your password?"
+
+    sessions:
+      new:
+        sign_in: "Sign In"
+        sign_up_link: "create a new account"
+        email: "Email"
+        password: "Password"
+        remember_me: "Remember me"
+        forgot_password: "Forgot your password?"
+        or: "Or"
+
+    registrations:
+      new:
+        sign_up: "Sign Up"
+        sign_in_link: "sign in to your existing account"
+        first_name: "First name"
+        last_name: "Last name"
+        email: "Email"
+        password: "Password"
+        password_confirmation: "Password confirmation"
+        characters_minimum: "characters minimum"
+        or: "Or"
+      edit:
+        edit_profile: "Edit Profile"
+        first_name: "First name"
+        last_name: "Last name"
+        email: "Email"
+        password: "Password"
+        password_confirmation: "Password confirmation"
+        current_password: "Current password"
+        current_password_help: "(we need your current password to confirm your changes)"
+        leave_blank_if_no_change: "(leave blank if you don't want to change it)"
+        characters_minimum: "characters minimum"
+        cancel_account: "Cancel my account"
+        cancel_account_confirm: "Are you sure?"
+        save: "Save"
+
+    passwords:
+      new:
+        forgot_password_title: "Forgot your password?"
+        forgot_password_subtitle: "Enter your email address and we'll send you password reset instructions."
+        email: "Email"
+        send_reset_instructions: "Send reset instructions"
+      edit:
+        change_password: "Change your password"
+        new_password: "New password"
+        password_confirmation: "Password confirmation"
+        characters_minimum: "characters minimum"
+
+    # Devise system messages
     confirmations:
       confirmed: "Your email address has been successfully confirmed."
       send_instructions: "You will receive an email with instructions for how to confirm your email address in a few minutes."
@@ -53,6 +104,7 @@ en:
       send_instructions: "You will receive an email with instructions for how to unlock your account in a few minutes."
       send_paranoid_instructions: "If your account exists, you will receive an email with instructions for how to unlock it in a few minutes."
       unlocked: "Your account has been unlocked successfully. Please sign in to continue."
+
   errors:
     messages:
       already_confirmed: "was already confirmed, please try signing in"

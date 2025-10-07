@@ -1,0 +1,286 @@
+@import "variables.css";
+
+/* Background colors */
+.bg-primary {
+  background-color: var(--bg-primary);
+}
+
+.bg-secondary {
+  background-color: var(--bg-secondary);
+}
+
+.bg-surface {
+  background-color: var(--bg-surface);
+}
+
+.bg-card-1 {
+  background-color: var(--bg-card-1);
+}
+
+.bg-card-2 {
+  background-color: var(--bg-card-2);
+}
+
+.bg-card-3 {
+  background-color: var(--bg-card-3);
+}
+
+.bg-dark-gray {
+  background-color: var(--color-dark-gray);
+}
+
+.bg-steel-blue {
+  background-color: var(--color-steel-blue);
+}
+
+.bg-emerald-green {
+  background-color: var(--color-emerald-green);
+}
+
+.bg-royal-purple {
+  background-color: var(--color-royal-purple);
+}
+
+.bg-charcoal-black {
+  background-color: var(--color-charcoal-black);
+}
+
+.bg-deep-indigo {
+  background-color: var(--color-deep-indigo);
+}
+
+.bg-olive-gold {
+  background-color: var(--color-olive-gold);
+}
+
+.bg-crimson-red {
+  background-color: var(--color-crimson-red);
+}
+
+.bg-golden-brown {
+  background-color: var(--color-golden-brown);
+}
+
+.bg-soft-blue {
+  background-color: var(--color-soft-blue);
+}
+
+.bg-sky-blue {
+  background-color: var(--color-sky-blue);
+}
+
+.bg-mint-green {
+  background-color: var(--color-mint-green);
+}
+
+.bg-slate-gray {
+  background-color: var(--color-slate-gray);
+}
+
+.bg-lavender-gray {
+  background-color: var(--color-lavender-gray);
+}
+
+.bg-light-purple {
+  background-color: var(--color-light-purple);
+}
+
+.bg-warm-beige {
+  background-color: var(--color-warm-beige);
+}
+
+.bg-pale-gold {
+  background-color: var(--color-pale-gold);
+}
+
+.bg-rose-pink {
+  background-color: var(--color-rose-pink);
+}
+
+.bg-off-white {
+  background-color: var(--color-off-white);
+}
+
+/* Text colors */
+.text-primary {
+  color: var(--text-primary);
+}
+
+.text-secondary {
+  color: var(--text-secondary);
+}
+
+.text-dark {
+  color: var(--text-dark);
+}
+
+.text-muted {
+  color: var(--text-muted);
+}
+
+.text-steel-blue {
+  color: var(--color-steel-blue);
+}
+
+.text-emerald-green {
+  color: var(--color-emerald-green);
+}
+
+.text-royal-purple {
+  color: var(--color-royal-purple);
+}
+
+.text-charcoal-black {
+  color: var(--color-charcoal-black);
+}
+
+.text-deep-indigo {
+  color: var(--color-deep-indigo);
+}
+
+.text-olive-gold {
+  color: var(--color-olive-gold);
+}
+
+.text-crimson-red {
+  color: var(--color-crimson-red);
+}
+
+.text-golden-brown {
+  color: var(--color-golden-brown);
+}
+
+.text-soft-blue {
+  color: var(--color-soft-blue);
+}
+
+.text-sky-blue {
+  color: var(--color-sky-blue);
+}
+
+.text-mint-green {
+  color: var(--color-mint-green);
+}
+
+.text-slate-gray {
+  color: var(--color-slate-gray);
+}
+
+.text-lavender-gray {
+  color: var(--color-lavender-gray);
+}
+
+.text-light-purple {
+  color: var(--color-light-purple);
+}
+
+.text-warm-beige {
+  color: var(--color-warm-beige);
+}
+
+.text-pale-gold {
+  color: var(--color-pale-gold);
+}
+
+.text-rose-pink {
+  color: var(--color-rose-pink);
+}
+
+.text-off-white {
+  color: var(--color-off-white);
+}
+
+/* Border colors */
+.border-default {
+  border-color: var(--border-default);
+}
+
+.border-focus {
+  border-color: var(--border-focus);
+}
+
+.border-primary {
+  border-color: var(--color-primary);
+}
+
+.border-secondary {
+  border-color: var(--color-secondary);
+}
+
+.border-slate-gray {
+  border-color: var(--color-slate-gray);
+}
+
+.border-crimson-red {
+  border-color: var(--color-crimson-red);
+}
+
+/* Hover states */
+.hover\:bg-primary:hover {
+  background-color: var(--hover-primary);
+}
+
+.hover\:bg-secondary:hover {
+  background-color: var(--hover-secondary);
+}
+
+.hover\:bg-success:hover {
+  background-color: var(--hover-success);
+}
+
+.hover\:bg-danger:hover {
+  background-color: var(--hover-danger);
+}
+
+.hover\:bg-lavender-gray:hover {
+  background-color: var(--color-lavender-gray);
+}
+
+.hover\:bg-off-white:hover {
+  background-color: var(--color-off-white);
+}
+
+.hover\:bg-warm-beige:hover {
+  background-color: var(--color-warm-beige);
+}
+
+.hover\:text-primary:hover {
+  color: var(--hover-primary);
+}
+
+.hover\:text-secondary:hover {
+  color: var(--hover-secondary);
+}
+
+/* Focus states */
+.focus\:ring-primary:focus {
+  --tw-ring-color: var(--focus-ring);
+}
+
+.focus\:ring-secondary:focus {
+  --tw-ring-color: var(--color-secondary);
+}
+
+.focus\:ring-steel-blue:focus {
+  --tw-ring-color: var(--color-steel-blue);
+}
+
+.focus\:ring-emerald-green:focus {
+  --tw-ring-color: var(--color-emerald-green);
+}
+
+.focus\:border-primary:focus {
+  border-color: var(--border-focus);
+}
+
+.focus\:border-secondary:focus {
+  border-color: var(--color-secondary);
+}
+
+.focus\:border-steel-blue:focus {
+  border-color: var(--color-steel-blue);
+}
+
+.focus\:border-emerald-green:focus {
+  border-color: var(--color-emerald-green);
+}

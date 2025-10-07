@@ -1,0 +1,27 @@
+fr:
+  home:
+    index:
+      welcome_title: "Bienvenue sur Spens"
+      welcome_description: "Une application Rails moderne avec authentification"
+      features: "Fonctionnalités"
+      feature_auth: "Authentification utilisateur avec Devise"
+      feature_jobs: "Jobs en arrière-plan avec Sidekiq"
+      feature_docker: "Environnement de développement Docker"
+      feature_rails: "Rails 8.0 + Tailwind CSS"
+      sign_in_cta: "Se connecter"
+      sign_up_cta: "S'inscrire"
+    dashboard:
+      dashboard_title: "Tableau de bord Spens"
+      your_account: "Votre compte"
+      edit_profile: "Modifier le profil"
+      services: "Services"
+      quick_actions: "Actions rapides"
+      test_background_job: "Tester un job en arrière-plan"
+      change_password: "Changer le mot de passe"
+      recent_activity: "Activité récente"
+      account_created: "Compte créé"
+      last_sign_in: "Dernière connexion"
+      nav_transactions: "Transactions"
+      nav_profile: "Profil"
+      welcome_user: "Bienvenue"
+      sign_out: "Se déconnecter"
