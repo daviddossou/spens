@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class ButtonComponent < ViewComponent::Base
+class Ui::ButtonComponent < ViewComponent::Base
   def initialize(
     text: nil,
     type: :button,
@@ -60,9 +60,9 @@ class ButtonComponent < ViewComponent::Base
     when :danger
       "border-transparent text-white bg-red-600 hover:bg-red-700 focus:ring-red-500"
     when :success
-      "border-transparent text-white bg-green-600 hover:bg-green-700 focus:ring-green-500"
+      "border-transparent text-white bg-success hover:bg-success-700 focus:ring-success-500"
     when :warning
-      "border-transparent text-white bg-yellow-600 hover:bg-yellow-700 focus:ring-yellow-500"
+      "border-transparent text-white bg-warning hover:bg-warning-700 focus:ring-warning-500"
     when :outline
       "border-primary text-primary bg-transparent hover:bg-primary hover:text-white focus:ring-primary"
     else

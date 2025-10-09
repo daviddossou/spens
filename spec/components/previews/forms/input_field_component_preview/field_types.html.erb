@@ -1,0 +1,42 @@
+<% content_for :preview_title, "Input Field Types" %>
+
+<div class="space-y-6">
+  <p class="text-gray-600">
+    Showcase of different input field types supported by the InputFieldComponent.
+  </p>
+
+  <div class="preview-grid">
+    <% field_types.each do |field_type| %>
+      <div class="border border-gray-200 rounded-lg p-6 bg-gray-50">
+        <div class="mb-4">
+          <h4 class="text-sm font-semibold text-gray-900 mb-1">
+            <%= field_type.to_s.humanize %>
+          </h4>
+          <p class="text-xs text-gray-500">
+            type: :<%= field_type %>
+          </p>
+        </div>
+
+        <%= render Forms::InputFieldComponent.new(
+          form: form,
+          field: field_type,
+          type: field_type,
+          label: "Sample #{field_type.to_s.humanize}",
+          help_text: "Example #{field_type.to_s.humanize.downcase} input"
+        ) %>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="mt-8 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+    <h4 class="text-sm font-medium text-blue-900 mb-2">Usage Example</h4>
+    <pre class="text-xs text-blue-800 overflow-x-auto"><code>&lt;%= render Forms::InputFieldComponent.new(
+  form: f,
+  field: :email,
+  type: :email_field,
+  label: "Email Address",
+  required: true,
+  help_text: "We'll never share your email"
+) %&gt;</code></pre>
+  </div>
+</div>

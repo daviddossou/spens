@@ -1,7 +1,9 @@
 Rails.application.routes.draw do
   # Locale support - wrap routes in scope for i18n
   scope "(:locale)", locale: /en|fr/ do
-    devise_for :users
+    devise_for :users, controllers: {
+      registrations: 'users/registrations'
+    }
 
     # Main application routes
     root "home#index"

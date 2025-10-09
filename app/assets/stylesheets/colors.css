@@ -9,6 +9,18 @@
   background-color: var(--bg-secondary);
 }
 
+.bg-success {
+  background-color: var(--color-success);
+}
+
+.bg-danger {
+  background-color: var(--color-danger);
+}
+
+.bg-warning {
+  background-color: var(--color-warning);
+}
+
 .bg-surface {
   background-color: var(--bg-surface);
 }
@@ -110,6 +122,18 @@
   color: var(--text-secondary);
 }
 
+.text-success {
+  color: var(--color-success);
+}
+
+.text-danger {
+  color: var(--color-danger);
+}
+
+.text-warning {
+  color: var(--color-warning);
+}
+
 .text-dark {
   color: var(--text-dark);
 }
@@ -207,6 +231,18 @@
   border-color: var(--color-secondary);
 }
 
+.border-success {
+  border-color: var(--color-success);
+}
+
+.border-warning {
+  border-color: var(--color-warning);
+}
+
+.border-danger {
+  border-color: var(--color-danger);
+}
+
 .border-slate-gray {
   border-color: var(--color-slate-gray);
 }
@@ -226,6 +262,10 @@
 
 .hover\:bg-success:hover {
   background-color: var(--hover-success);
+}
+
+.hover\:bg-warning:hover {
+  background-color: var(--hover-warning);
 }
 
 .hover\:bg-danger:hover {
@@ -252,6 +292,18 @@
   color: var(--hover-secondary);
 }
 
+.hover\:text-warning:hover {
+  color: var(--hover-warning);
+}
+
+.hover\:text-danger:hover {
+  color: var(--hover-danger);
+}
+
+.hover\:text-white:hover {
+  color: white;
+}
+
 /* Focus states */
 .focus\:ring-primary:focus {
   --tw-ring-color: var(--focus-ring);
@@ -259,6 +311,18 @@
 
 .focus\:ring-secondary:focus {
   --tw-ring-color: var(--color-secondary);
+}
+
+.focus\:ring-success:focus {
+  --tw-ring-color: var(--color-success);
+}
+
+.focus\:ring-warning:focus {
+  --tw-ring-color: var(--color-warning);
+}
+
+.focus\:ring-danger:focus {
+  --tw-ring-color: var(--color-danger);
 }
 
 .focus\:ring-steel-blue:focus {
@@ -275,6 +339,18 @@
 
 .focus\:border-secondary:focus {
   border-color: var(--color-secondary);
+}
+
+.focus\:border-success:focus {
+  border-color: var(--color-success);
+}
+
+.focus\:border-warning:focus {
+  border-color: var(--color-warning);
+}
+
+.focus\:border-danger:focus {
+  border-color: var(--color-danger);
 }
 
 .focus\:border-steel-blue:focus {

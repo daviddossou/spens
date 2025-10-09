@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class LanguageSwitcherComponent < ViewComponent::Base
+class Navigation::LanguageSwitcherComponent < ViewComponent::Base
   def initialize(current_locale: I18n.locale, available_locales: I18n.available_locales, params: {})
     @current_locale = current_locale
     @available_locales = available_locales

@@ -3,6 +3,9 @@
   /* Primary Colors */
   --color-primary: #3F51B5;
   --color-secondary: #424660;
+  --color-success: #4CAF50;
+  --color-danger: #F44336;
+  --color-warning: #FF9800;
 
   /* Additional Colors */
   --color-dark-gray: #2E2F36;
@@ -46,8 +49,9 @@
   /* Interactive States */
   --hover-primary: var(--color-deep-indigo);
   --hover-secondary: var(--color-lavender-gray);
-  --hover-success: var(--color-mint-green);
-  --hover-danger: var(--color-rose-pink);
+  --hover-success: var(--color-success);
+  --hover-danger: var(--color-danger);
+  --hover-warning: var(--color-warning);
 
   --focus-ring: var(--color-primary);
 }

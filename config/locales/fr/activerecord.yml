@@ -1,0 +1,22 @@
+fr:
+  activerecord:
+    errors:
+      messages:
+        record_invalid: "La validation a échoué : %{errors}"
+        restrict_dependent_destroy:
+          has_one: "Impossible de supprimer l'enregistrement car un(e) %{record} dépendant(e) existe"
+          has_many: "Impossible de supprimer l'enregistrement car des %{record} dépendant(e)s existent"
+        # General messages that apply to all models/attributes
+        blank: "ne peut pas être vide"
+        invalid: "n'est pas valide"
+        taken: "est déjà utilisé"
+        too_short: "est trop court (minimum %{count} caractères)"
+        confirmation: "ne correspond pas"
+    attributes:
+      user:
+        email: "Email"
+        password: "Mot de passe"
+        password_confirmation: "Confirmation du mot de passe"
+        first_name: "Prénom"
+        last_name: "Nom"
+        current_password: "Mot de passe actuel"

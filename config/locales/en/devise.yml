@@ -38,7 +38,7 @@ en:
         current_password: "Current password"
         current_password_help: "(we need your current password to confirm your changes)"
         leave_blank_if_no_change: "(leave blank if you don't want to change it)"
-        characters_minimum: "characters minimum"
+        characters_minimum: "%{count} characters minimum"
         cancel_account: "Cancel my account"
         cancel_account_confirm: "Are you sure?"
         save: "Save"

@@ -28,7 +28,11 @@ class User < ApplicationRecord
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable, :trackable
 
+  # Password validation (explicit definition)
+  validates :password, length: { minimum: 6, maximum: 128 }, allow_blank: true
+  validates :password, confirmation: true
+
   # Validation for additional fields
-  validates :first_name, :last_name, presence: true, allow_blank: true
+  validates :first_name, :last_name, presence: true
   validates :phone_number, format: { with: /\A[\+]?[1-9]?[0-9]{7,15}\z/, message: "must be a valid phone number" }, allow_blank: true
 end

@@ -1,6 +1,6 @@
 <div class="min-h-screen bg-off-white flex flex-col justify-center py-12 sm:px-6 lg:px-8">
   <div class="sm:mx-auto">
-    <%= render LanguageSwitcherComponent.new(params: params) %>
+    <%= render Navigation::LanguageSwitcherComponent.new(params: params) %>
   </div>
 
   <div class="sm:mx-auto sm:w-full sm:max-w-md">
@@ -15,14 +15,14 @@
   <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
     <div class="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
       <div class="space-y-4">
-        <%= render ButtonComponent.new(
+        <%= render Ui::ButtonComponent.new(
           text: t('.sign_in_cta'),
           url: new_user_session_path,
           variant: :primary,
           full_width: true
         ) %>
 
-        <%= render ButtonComponent.new(
+        <%= render Ui::ButtonComponent.new(
           text: t('.sign_up_cta'),
           url: new_user_registration_path,
           variant: :secondary,

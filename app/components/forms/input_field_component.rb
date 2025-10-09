@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class FormFieldComponent < ViewComponent::Base
+class Forms::InputFieldComponent < ViewComponent::Base
   def initialize(
     form:,
     field:,
@@ -71,6 +71,6 @@ class FormFieldComponent < ViewComponent::Base
   end
 
   def error_classes
-    "text-sm text-red-600 mt-1"
+    "text-sm text-danger mt-1"
   end
 end

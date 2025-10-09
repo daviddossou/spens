@@ -3,7 +3,7 @@
 <%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { method: :put, class: "space-y-6" }) do |f| %>
   <%= render "devise/shared/error_messages", resource: resource %>
 
-  <%= render FormFieldComponent.new(
+  <%= render Forms::InputFieldComponent.new(
     form: f,
     field: :first_name,
     type: :text_field,
@@ -11,7 +11,7 @@
     autocomplete: "given-name"
   ) %>
 
-  <%= render FormFieldComponent.new(
+  <%= render Forms::InputFieldComponent.new(
     form: f,
     field: :last_name,
     type: :text_field,
@@ -19,7 +19,7 @@
     autocomplete: "family-name"
   ) %>
 
-  <%= render FormFieldComponent.new(
+  <%= render Forms::InputFieldComponent.new(
     form: f,
     field: :email,
     type: :email_field,
@@ -29,7 +29,7 @@
   ) %>
 
   <% password_help = [t('.leave_blank_if_no_change'), @minimum_password_length ? t('.characters_minimum', count: @minimum_password_length) : nil].compact.join(' ') %>
-  <%= render FormFieldComponent.new(
+  <%= render Forms::InputFieldComponent.new(
     form: f,
     field: :password,
     type: :password_field,
@@ -38,7 +38,7 @@
     help_text: password_help
   ) %>
 
-  <%= render FormFieldComponent.new(
+  <%= render Forms::InputFieldComponent.new(
     form: f,
     field: :password_confirmation,
     type: :password_field,
@@ -46,7 +46,7 @@
     autocomplete: "new-password"
   ) %>
 
-  <%= render FormFieldComponent.new(
+  <%= render Forms::InputFieldComponent.new(
     form: f,
     field: :current_password,
     type: :password_field,
@@ -57,14 +57,14 @@
   ) %>
 
   <div class="space-y-3">
-    <%= render ButtonComponent.new(
+    <%= render Ui::ButtonComponent.new(
       form: f,
       text: t('.save'),
       variant: :primary,
       full_width: true
     ) %>
 
-    <%= render ButtonComponent.new(
+    <%= render Ui::ButtonComponent.new(
       text: t('.cancel_account'),
       url: registration_path(resource_name),
       method: :delete,

@@ -5,7 +5,7 @@
 <% end %>
 
 <%= form_for(resource, as: resource_name, url: session_path(resource_name), html: { class: "space-y-6" }) do |f| %>
-  <%= render FormFieldComponent.new(
+  <%= render Forms::InputFieldComponent.new(
     form: f,
     field: :email,
     type: :email_field,
@@ -14,7 +14,7 @@
     autocomplete: "email"
   ) %>
 
-  <%= render FormFieldComponent.new(
+  <%= render Forms::InputFieldComponent.new(
     form: f,
     field: :password,
     type: :password_field,
@@ -24,7 +24,7 @@
 
   <div class="flex items-center justify-between">
     <% if devise_mapping.rememberable? %>
-      <%= render CheckboxFieldComponent.new(
+      <%= render Forms::CheckboxFieldComponent.new(
         form: f,
         field: :remember_me,
         label: t('.remember_me')
@@ -32,7 +32,7 @@
     <% end %>
   </div>
 
-  <%= render ButtonComponent.new(
+  <%= render Ui::ButtonComponent.new(
     form: f,
     text: t('.sign_in'),
     variant: :primary,

@@ -18,10 +18,10 @@
         </div>
 
         <div class="flex items-center space-x-4">
-          <%= render LanguageSwitcherComponent.new(params: params) %>
+          <%= render Navigation::LanguageSwitcherComponent.new(params: params) %>
 
           <span class="text-sm text-gray-700"><%= t('.welcome_user') %>, <%= user_display_name(current_user) %></span>
-          <%= render ButtonComponent.new(
+          <%= render Ui::ButtonComponent.new(
             text: t('.sign_out'),
             url: destroy_user_session_path,
             variant: :danger,

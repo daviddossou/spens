@@ -4,7 +4,7 @@
   <%= render "devise/shared/error_messages", resource: resource %>
   <%= f.hidden_field :reset_password_token %>
 
-  <%= render FormFieldComponent.new(
+  <%= render Forms::InputFieldComponent.new(
     form: f,
     field: :password,
     type: :password_field,
@@ -15,7 +15,7 @@
     help_text: @minimum_password_length ? t('.characters_minimum', count: @minimum_password_length) : nil
   ) %>
 
-  <%= render FormFieldComponent.new(
+  <%= render Forms::InputFieldComponent.new(
     form: f,
     field: :password_confirmation,
     type: :password_field,
@@ -24,7 +24,7 @@
     required: true
   ) %>
 
-  <%= render ButtonComponent.new(
+  <%= render Ui::ButtonComponent.new(
     form: f,
     text: t('.change_password'),
     variant: :primary,

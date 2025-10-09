@@ -1,0 +1,14 @@
+<!-- All Variants Preview Template -->
+<div class="space-y-4 p-4">
+  <h3 class="text-lg font-semibold">Button Variants</h3>
+  <div class="grid grid-cols-2 gap-4">
+    <% variants.each do |variant| %>
+      <div>
+        <%= render Ui::ButtonComponent.new(
+          text: variant.to_s.humanize,
+          variant: variant
+        ) %>
+      </div>
+    <% end %>
+  </div>
+</div>

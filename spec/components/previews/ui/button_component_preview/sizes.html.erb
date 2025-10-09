@@ -1,0 +1,12 @@
+<!-- Sizes Preview Template -->
+<div class="space-y-4 p-4">
+  <h3 class="text-lg font-semibold">Button Sizes</h3>
+  <div class="flex items-center space-x-4">
+    <% sizes.each do |size| %>
+      <%= render Ui::ButtonComponent.new(
+        text: size.to_s.upcase,
+        size: size
+      ) %>
+    <% end %>
+  </div>
+</div>

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class CheckboxFieldComponent < ViewComponent::Base
+class Forms::CheckboxFieldComponent < ViewComponent::Base
   def initialize(
     form:,
     field:,

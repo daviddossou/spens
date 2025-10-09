@@ -1,0 +1,21 @@
+en:
+  activerecord:
+    errors:
+      messages:
+        record_invalid: "Validation failed: %{errors}"
+        restrict_dependent_destroy:
+          has_one: "Cannot delete record because a dependent %{record} exists"
+          has_many: "Cannot delete record because dependent %{record} exist"
+        blank: "can't be blank"
+        invalid: "is invalid"
+        taken: "has already been taken"
+        too_short: "is too short (minimum %{count} characters)"
+        confirmation: "doesn't match"
+    attributes:
+      user:
+        email: "Email"
+        password: "Password"
+        password_confirmation: "Password confirmation"
+        first_name: "First name"
+        last_name: "Last name"
+        current_password: "Current password"

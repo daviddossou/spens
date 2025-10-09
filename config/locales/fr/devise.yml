@@ -38,7 +38,7 @@ fr:
         current_password: "Mot de passe actuel"
         current_password_help: "(nous avons besoin de votre mot de passe actuel pour confirmer les changements)"
         leave_blank_if_no_change: "(laisser vide si vous ne voulez pas le changer)"
-        characters_minimum: "caractères minimum"
+        characters_minimum: "%{count} caractères minimum"
         cancel_account: "Supprimer mon compte"
         cancel_account_confirm: "Êtes-vous sûr ?"
         save: "Enregistrer"

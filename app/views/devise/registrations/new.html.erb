@@ -7,7 +7,7 @@
 <%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { class: "space-y-6" }) do |f| %>
   <%= render "devise/shared/error_messages", resource: resource %>
 
-  <%= render FormFieldComponent.new(
+  <%= render Forms::InputFieldComponent.new(
     form: f,
     field: :first_name,
     type: :text_field,
@@ -16,7 +16,7 @@
     required: true
   ) %>
 
-  <%= render FormFieldComponent.new(
+  <%= render Forms::InputFieldComponent.new(
     form: f,
     field: :last_name,
     type: :text_field,
@@ -25,7 +25,7 @@
     required: true
   ) %>
 
-  <%= render FormFieldComponent.new(
+  <%= render Forms::InputFieldComponent.new(
     form: f,
     field: :email,
     type: :email_field,
@@ -34,7 +34,7 @@
     required: true
   ) %>
 
-  <%= render FormFieldComponent.new(
+  <%= render Forms::InputFieldComponent.new(
     form: f,
     field: :password,
     type: :password_field,
@@ -44,7 +44,7 @@
     help_text: @minimum_password_length ? t('.characters_minimum', count: @minimum_password_length) : nil
   ) %>
 
-  <%= render FormFieldComponent.new(
+  <%= render Forms::InputFieldComponent.new(
     form: f,
     field: :password_confirmation,
     type: :password_field,
@@ -53,7 +53,7 @@
     required: true
   ) %>
 
-  <%= render ButtonComponent.new(
+  <%= render Ui::ButtonComponent.new(
     form: f,
     text: t('.sign_up'),
     variant: :primary,
