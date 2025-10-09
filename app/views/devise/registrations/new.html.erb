@@ -1,74 +1,66 @@
-<div class="min-h-screen bg-off-white flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-  <!-- Language switcher at top -->
-  <div class="absolute top-4 right-4">
-    <%= language_links %>
-  </div>  <div class="sm:mx-auto sm:w-full sm:max-w-md">
-    <h2 class="mt-6 text-center text-3xl font-extrabold">
-      <%= t('.sign_up') %>
-    </h2>
-    <p class="mt-2 text-center text-sm text-secondary">
-      <%= t('.or') %>
-      <%= link_to t('.sign_in_link'), new_session_path(resource_name), class: "font-medium text-primary hover:text-secondary" %>
-    </p>
-  </div>
+<% content_for :title, t('.sign_up') %>
+<% content_for :subtitle do %>
+  <%= t('.or') %>
+  <%= link_to t('.sign_in_link'), new_session_path(resource_name), class: "font-medium text-primary hover:text-secondary" %>
+<% end %>
 
-  <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-    <div class="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
-      <%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { class: "space-y-6" }) do |f| %>
-        <%= render "devise/shared/error_messages", resource: resource %>
+<%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { class: "space-y-6" }) do |f| %>
+  <%= render "devise/shared/error_messages", resource: resource %>
 
-        <div>
-          <%= f.label :first_name, t('.first_name'), class: "block text-sm font-medium" %>
-          <div class="mt-1">
-            <%= f.text_field :first_name, autocomplete: "given-name",
-                class: "appearance-none block w-full px-3 py-2 border border-default rounded-md placeholder-gray-400 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm" %>
-          </div>
-        </div>
+  <%= render FormFieldComponent.new(
+    form: f,
+    field: :first_name,
+    type: :text_field,
+    label: t('.first_name'),
+    autocomplete: "given-name",
+    required: true
+  ) %>
 
-        <div>
-          <%= f.label :last_name, t('.last_name'), class: "block text-sm font-medium" %>
-          <div class="mt-1">
-            <%= f.text_field :last_name, autocomplete: "family-name",
-                class: "appearance-none block w-full px-3 py-2 border border-default rounded-md placeholder-gray-400 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm" %>
-          </div>
-        </div>
+  <%= render FormFieldComponent.new(
+    form: f,
+    field: :last_name,
+    type: :text_field,
+    label: t('.last_name'),
+    autocomplete: "family-name",
+    required: true
+  ) %>
 
-        <div>
-          <%= f.label :email, t('.email'), class: "block text-sm font-medium" %>
-          <div class="mt-1">
-            <%= f.email_field :email, autofocus: true, autocomplete: "email",
-                class: "appearance-none block w-full px-3 py-2 border border-default rounded-md placeholder-gray-400 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm" %>
-          </div>
-        </div>
+  <%= render FormFieldComponent.new(
+    form: f,
+    field: :email,
+    type: :email_field,
+    label: t('.email'),
+    autocomplete: "email",
+    required: true
+  ) %>
 
-        <div>
-          <%= f.label :password, t('.password'), class: "block text-sm font-medium" %>
-          <% if @minimum_password_length %>
-            <span class="text-xs text-muted">(<%= @minimum_password_length %> <%= t('.characters_minimum') %>)</span>
-          <% end %>
-          <div class="mt-1">
-            <%= f.password_field :password, autocomplete: "new-password",
-                class: "appearance-none block w-full px-3 py-2 border border-default rounded-md placeholder-gray-400 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm" %>
-          </div>
-        </div>
+  <%= render FormFieldComponent.new(
+    form: f,
+    field: :password,
+    type: :password_field,
+    label: t('.password'),
+    autocomplete: "new-password",
+    required: true,
+    help_text: @minimum_password_length ? t('.characters_minimum', count: @minimum_password_length) : nil
+  ) %>
 
-        <div>
-          <%= f.label :password_confirmation, t('.password_confirmation'), class: "block text-sm font-medium" %>
-          <div class="mt-1">
-            <%= f.password_field :password_confirmation, autocomplete: "new-password",
-                class: "appearance-none block w-full px-3 py-2 border border-default rounded-md placeholder-gray-400 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm" %>
-          </div>
-        </div>
+  <%= render FormFieldComponent.new(
+    form: f,
+    field: :password_confirmation,
+    type: :password_field,
+    label: t('.password_confirmation'),
+    autocomplete: "new-password",
+    required: true
+  ) %>
 
-        <div>
-          <%= f.submit t('.sign_up'),
-              class: "w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary" %>
-        </div>
-      <% end %>
+  <%= render ButtonComponent.new(
+    form: f,
+    text: t('.sign_up'),
+    variant: :primary,
+    full_width: true
+  ) %>
+<% end %>
 
-      <div class="mt-6">
-        <%= render "devise/shared/links" %>
-      </div>
-    </div>
-  </div>
+<div class="mt-6">
+  <%= render "devise/shared/links" %>
 </div>

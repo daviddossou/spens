@@ -12,9 +12,14 @@ case $1 in
     docker-compose down
     ;;
   "restart")
-    echo "🔄 Restarting all services..."
-    docker-compose down
-    docker-compose up -d
+    if [ -z "$2" ]; then
+      echo "🔄 Restarting all services..."
+      docker-compose down
+      docker-compose up -d
+    else
+      echo "🔄 Restarting $2 service..."
+      docker-compose restart "$2"
+    fi
     ;;
   "logs")
     service=${2:-web}
@@ -45,6 +50,15 @@ case $1 in
     else
       echo "💎 Running bundle $2..."
       docker-compose exec web bundle "$2"
+    fi
+    ;;
+  "rails")
+    if [ -z "$2" ]; then
+      echo "🚂 Opening Rails console..."
+      docker-compose exec web bin/rails console
+    else
+      echo "🚂 Running Rails command: $2 $3 $4 $5 $6 $7 $8 $9"
+      docker-compose exec web bin/rails "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9"
     fi
     ;;
   "migrate")
@@ -93,11 +107,12 @@ case $1 in
     echo "Commands:"
     echo "  up        Start all services"
     echo "  down      Stop all services"
-    echo "  restart   Restart all services"
+    echo "  restart   Restart all services (or specify service: web, sidekiq, db, redis)"
     echo "  logs      Follow logs (specify service: web, sidekiq, db, redis)"
     echo "  console   Open Rails console"
     echo "  shell     Open bash shell in web container"
     echo "  bundle    Run bundle commands (install by default, or specify: update, etc.)"
+    echo "  rails     Run Rails commands (console by default, or generators, etc.)"
     echo "  test      Run RSpec tests (optionally specify file/pattern)"
     echo "  test-watch Run tests with detailed output and fail-fast"
     echo "  test-debug Run tests with debugging and full backtrace"
@@ -109,10 +124,15 @@ case $1 in
     echo ""
     echo "Examples:"
     echo "  ./bin/docker-manage up"
+    echo "  ./bin/docker-manage restart web                    # Restart only web service"
     echo "  ./bin/docker-manage logs sidekiq"
     echo "  ./bin/docker-manage console"
     echo "  ./bin/docker-manage bundle                         # Run bundle install"
     echo "  ./bin/docker-manage bundle update                  # Run bundle update"
+    echo "  ./bin/docker-manage rails                          # Open Rails console"
+    echo "  ./bin/docker-manage rails generate model User      # Generate a model"
+    echo "  ./bin/docker-manage rails generate view_component:install # Install ViewComponent"
+    echo "  ./bin/docker-manage rails db:migrate               # Run migrations"
     echo "  ./bin/docker-manage test                           # Run all tests"
     echo "  ./bin/docker-manage test spec/models/user_spec.rb  # Run specific file"
     echo "  ./bin/docker-manage test spec/models               # Run all model tests"

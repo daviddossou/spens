@@ -4,7 +4,7 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex justify-between h-16">
         <div class="flex items-center space-x-8">
-                    <h1 class="text-xl font-semibold text-dark"><%= t('.dashboard_title') %></h1>
+          <h1 class="text-xl font-semibold text-dark"><%= t('.dashboard_title') %></h1>
 
           <!-- Future navigation items for transactions -->
           <div class="hidden md:flex space-x-8">
@@ -18,12 +18,17 @@
         </div>
 
         <div class="flex items-center space-x-4">
-          <%= language_links %>
+          <%= render LanguageSwitcherComponent.new(params: params) %>
 
           <span class="text-sm text-gray-700"><%= t('.welcome_user') %>, <%= user_display_name(current_user) %></span>
-          <%= link_to t('.sign_out'), destroy_user_session_path,
-              data: { "turbo-method": "delete" },
-              class: "bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-md text-sm font-medium" %>
+          <%= render ButtonComponent.new(
+            text: t('.sign_out'),
+            url: destroy_user_session_path,
+            variant: :danger,
+            size: :sm,
+            method: :delete,
+            data: { "turbo-method": "delete" }
+          ) %>
         </div>
       </div>
     </div>

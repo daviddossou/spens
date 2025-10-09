@@ -1,0 +1,24 @@
+<div class="<%= final_wrapper_classes %>">
+  <div class="flex">
+    <%= form.label field, field_label, class: final_label_classes %>
+    <% if required %>
+      <span class="text-red-500 ml-1">*</span>
+    <% end %>
+  </div>
+
+  <% if help_text %>
+    <p class="text-xs text-gray-500 mt-1"><%= help_text %></p>
+  <% end %>
+
+  <div class="mt-1">
+    <%= form.public_send(type, field, final_field_options) %>
+  </div>
+
+  <% if has_errors? %>
+    <div class="mt-1">
+      <% field_errors.each do |error| %>
+        <p class="<%= error_classes %>"><%= error %></p>
+      <% end %>
+    </div>
+  <% end %>
+</div>

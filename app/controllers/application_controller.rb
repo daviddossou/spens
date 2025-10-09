@@ -5,4 +5,5 @@ class ApplicationController < ActionController::Base
   # Include concerns for better organization
   include DeviseConfiguration
   include InternationalizationSupport
+  include DeviseLayoutConcern
 end

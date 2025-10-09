@@ -1,0 +1,13 @@
+<% if is_link? %>
+  <%= link_to url, final_options do %>
+    <%= loading_spinner if loading %>
+    <%= content.presence || text %>
+  <% end %>
+<% elsif form.present? %>
+  <%= form.submit (content.presence || text), final_options %>
+<% else %>
+  <button <%= final_options.map { |k, v| "#{k}=\"#{v}\"" if v.present? }.compact.join(" ").html_safe %>>
+    <%= loading_spinner if loading %>
+    <%= content.presence || text %>
+  </button>
+<% end %>

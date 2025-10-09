@@ -1,8 +1,9 @@
 <div class="min-h-screen bg-off-white flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-  <!-- Language switcher at top -->
-  <div class="absolute top-4 right-4">
-    <%= language_links %>
-  </div>  <div class="sm:mx-auto sm:w-full sm:max-w-md">
+  <div class="sm:mx-auto">
+    <%= render LanguageSwitcherComponent.new(params: params) %>
+  </div>
+
+  <div class="sm:mx-auto sm:w-full sm:max-w-md">
     <h1 class="mt-6 text-center text-3xl font-extrabold">
       <%= t('.welcome_title') %>
     </h1>
@@ -14,11 +15,19 @@
   <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
     <div class="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
       <div class="space-y-4">
-        <%= link_to t('.sign_in_cta'), new_user_session_path,
-            class: "w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary" %>
+        <%= render ButtonComponent.new(
+          text: t('.sign_in_cta'),
+          url: new_user_session_path,
+          variant: :primary,
+          full_width: true
+        ) %>
 
-        <%= link_to t('.sign_up_cta'), new_user_registration_path,
-            class: "w-full flex justify-center py-2 px-4 border border-slate-gray rounded-md shadow-sm text-sm font-medium text-primary bg-white hover:bg-off-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-secondary" %>
+        <%= render ButtonComponent.new(
+          text: t('.sign_up_cta'),
+          url: new_user_registration_path,
+          variant: :secondary,
+          full_width: true
+        ) %>
       </div>
 
       <div class="mt-6">
