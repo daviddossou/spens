@@ -2,7 +2,7 @@ class HomeController < ApplicationController
   # This will be renamed in the future to handle transaction data
   # For now, it manages the main authentication flow
 
-  before_action :authenticate_user!, only: [:dashboard]
+  before_action :authenticate_user!, only: [ :dashboard ]
 
   def index
     # Landing page - redirect based on authentication status

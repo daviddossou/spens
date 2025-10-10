@@ -32,9 +32,9 @@ module ApplicationHelper
 
   def current_locale_class(locale)
     if I18n.locale == locale
-      'bg-primary text-white'
+      "bg-primary text-white"
     else
-      'bg-secondary text-gray-700 hover:bg-primary hover:text-white'
+      "bg-secondary text-gray-700 hover:bg-primary hover:text-white"
     end
   end
 end

@@ -79,6 +79,6 @@ RSpec.configure do |config|
 
   # Configure ViewComponent preview paths for testing
   config.before(:each, type: :component) do
-    ViewComponent::Base.config.preview_paths = [Rails.root.join("spec/components/previews")]
+    ViewComponent::Base.config.preview_paths = [ Rails.root.join("spec/components/previews") ]
   end
 end

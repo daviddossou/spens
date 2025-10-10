@@ -5,7 +5,7 @@ class Navigation::LanguageSwitcherComponentPreview < ViewComponent::Preview
   def default
     render Navigation::LanguageSwitcherComponent.new(
       current_locale: :en,
-      available_locales: [:en, :fr],
+      available_locales: [ :en, :fr ],
       params: {}
     )
   end
@@ -14,7 +14,7 @@ class Navigation::LanguageSwitcherComponentPreview < ViewComponent::Preview
   def french_selected
     render Navigation::LanguageSwitcherComponent.new(
       current_locale: :fr,
-      available_locales: [:en, :fr],
+      available_locales: [ :en, :fr ],
       params: {}
     )
   end
@@ -23,7 +23,7 @@ class Navigation::LanguageSwitcherComponentPreview < ViewComponent::Preview
   def multiple_languages
     render Navigation::LanguageSwitcherComponent.new(
       current_locale: :en,
-      available_locales: [:en, :fr, :es, :de, :it],
+      available_locales: [ :en, :fr, :es, :de, :it ],
       params: {}
     )
   end
@@ -32,7 +32,7 @@ class Navigation::LanguageSwitcherComponentPreview < ViewComponent::Preview
   def with_parameters
     render Navigation::LanguageSwitcherComponent.new(
       current_locale: :en,
-      available_locales: [:en, :fr],
+      available_locales: [ :en, :fr ],
       params: { page: 2, search: "test query", filter: "active" }
     )
   end
@@ -41,7 +41,7 @@ class Navigation::LanguageSwitcherComponentPreview < ViewComponent::Preview
   def single_language
     render Navigation::LanguageSwitcherComponent.new(
       current_locale: :en,
-      available_locales: [:en],
+      available_locales: [ :en ],
       params: {}
     )
   end
@@ -50,7 +50,7 @@ class Navigation::LanguageSwitcherComponentPreview < ViewComponent::Preview
   def many_languages
     render Navigation::LanguageSwitcherComponent.new(
       current_locale: :en,
-      available_locales: [:en, :fr, :es, :de, :it, :pt, :nl, :pl, :ru, :ja, :zh, :ar],
+      available_locales: [ :en, :fr, :es, :de, :it, :pt, :nl, :pl, :ru, :ja, :zh, :ar ],
       params: {}
     )
   end
@@ -59,7 +59,7 @@ class Navigation::LanguageSwitcherComponentPreview < ViewComponent::Preview
   def no_current_locale
     render Navigation::LanguageSwitcherComponent.new(
       current_locale: nil,
-      available_locales: [:en, :fr],
+      available_locales: [ :en, :fr ],
       params: {}
     )
   end
@@ -81,7 +81,7 @@ class Navigation::LanguageSwitcherComponentPreview < ViewComponent::Preview
           title: "Default (EN selected)",
           component: Navigation::LanguageSwitcherComponent.new(
             current_locale: :en,
-            available_locales: [:en, :fr],
+            available_locales: [ :en, :fr ],
             params: {}
           )
         },
@@ -89,7 +89,7 @@ class Navigation::LanguageSwitcherComponentPreview < ViewComponent::Preview
           title: "French selected",
           component: Navigation::LanguageSwitcherComponent.new(
             current_locale: :fr,
-            available_locales: [:en, :fr],
+            available_locales: [ :en, :fr ],
             params: {}
           )
         },
@@ -97,7 +97,7 @@ class Navigation::LanguageSwitcherComponentPreview < ViewComponent::Preview
           title: "Multiple languages",
           component: Navigation::LanguageSwitcherComponent.new(
             current_locale: :es,
-            available_locales: [:en, :fr, :es, :de],
+            available_locales: [ :en, :fr, :es, :de ],
             params: {}
           )
         }

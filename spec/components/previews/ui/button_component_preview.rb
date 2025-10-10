@@ -15,14 +15,14 @@ class Ui::ButtonComponentPreview < ViewComponent::Preview
 
   # All variants
   def all_variants
-    variants = [:primary, :secondary, :danger, :success, :warning, :outline]
+    variants = [ :primary, :secondary, :danger, :success, :warning, :outline ]
 
     render_with_template locals: { variants: variants }
   end
 
   # Different sizes
   def sizes
-    sizes = [:xs, :sm, :md, :lg, :xl]
+    sizes = [ :xs, :sm, :md, :lg, :xl ]
 
     render_with_template locals: { sizes: sizes }
   end

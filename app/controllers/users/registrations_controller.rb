@@ -2,7 +2,7 @@
 
 class Users::RegistrationsController < Devise::RegistrationsController
   # Set minimum password length for all actions that need it
-  before_action :set_minimum_password_length, only: [:new, :create, :edit, :update]
+  before_action :set_minimum_password_length, only: [ :new, :create, :edit, :update ]
 
   private
 

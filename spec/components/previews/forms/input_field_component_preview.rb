@@ -45,7 +45,7 @@ class Forms::InputFieldComponentPreview < ViewComponent::Preview
   # Different field types
   def field_types
     form = MockForm.new
-    field_types = [:text_field, :email_field, :password_field, :number_field, :url_field, :tel_field]
+    field_types = [ :text_field, :email_field, :password_field, :number_field, :url_field, :tel_field ]
 
     render_with_template locals: { form: form, field_types: field_types }
   end
@@ -112,7 +112,7 @@ class Forms::InputFieldComponentPreview < ViewComponent::Preview
         end
 
         def full_messages_for(field)
-          return ["Email can't be blank", "Email is invalid"] if field == :email
+          return [ "Email can't be blank", "Email is invalid" ] if field == :email
           []
         end
       end

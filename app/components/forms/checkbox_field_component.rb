@@ -43,15 +43,15 @@ class Forms::CheckboxFieldComponent < ViewComponent::Base
   end
 
   def final_wrapper_classes
-    [default_wrapper_classes, wrapper_classes].compact.join(" ")
+    [ default_wrapper_classes, wrapper_classes ].compact.join(" ")
   end
 
   def final_label_classes
-    [default_label_classes, label_classes].compact.join(" ")
+    [ default_label_classes, label_classes ].compact.join(" ")
   end
 
   def final_checkbox_classes
-    [default_checkbox_classes, checkbox_classes].compact.join(" ")
+    [ default_checkbox_classes, checkbox_classes ].compact.join(" ")
   end
 
   def final_field_options

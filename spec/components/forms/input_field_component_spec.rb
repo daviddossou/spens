@@ -161,7 +161,7 @@ RSpec.describe Forms::InputFieldComponent, type: :component do
   end
 
   describe "input type handling" do
-    let(:supported_types) { [:text_field, :email_field, :password_field, :number_field, :url_field, :tel_field] }
+    let(:supported_types) { [ :text_field, :email_field, :password_field, :number_field, :url_field, :tel_field ] }
 
     it "handles all supported input types without errors" do
       supported_types.each do |input_type|

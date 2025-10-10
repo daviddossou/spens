@@ -43,7 +43,7 @@ RSpec.describe Ui::ButtonComponent, type: :component do
   end
 
   describe "variant handling" do
-    let(:variants) { [:primary, :secondary, :danger, :success, :warning, :outline] }
+    let(:variants) { [ :primary, :secondary, :danger, :success, :warning, :outline ] }
 
     it "handles all supported variants" do
       variants.each do |variant|
@@ -76,7 +76,7 @@ RSpec.describe Ui::ButtonComponent, type: :component do
   end
 
   describe "size handling" do
-    let(:sizes) { [:xs, :sm, :md, :lg, :xl] }
+    let(:sizes) { [ :xs, :sm, :md, :lg, :xl ] }
 
     it "handles all supported sizes" do
       sizes.each do |size|

@@ -12,7 +12,7 @@ class Navigation::LanguageSwitcherComponent < ViewComponent::Base
   attr_reader :current_locale, :available_locales, :params
 
   def link_classes(locale)
-    base_classes = 'px-2 py-1 text-xs rounded transition-colors'
+    base_classes = "px-2 py-1 text-xs rounded transition-colors"
 
     if current_locale == locale
       "#{base_classes} #{active_classes}"
@@ -22,11 +22,11 @@ class Navigation::LanguageSwitcherComponent < ViewComponent::Base
   end
 
   def active_classes
-    'bg-primary text-white'
+    "bg-primary text-white"
   end
 
   def inactive_classes
-    'bg-off-white text-gray-700 hover:bg-primary hover:text-white'
+    "bg-off-white text-gray-700 hover:bg-primary hover:text-white"
   end
 
   def locale_url(locale)

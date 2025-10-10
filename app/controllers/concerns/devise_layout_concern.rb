@@ -9,9 +9,9 @@ module DeviseLayoutConcern
 
   def layout_by_resource
     if devise_controller?
-      'auth'
+      "auth"
     else
-      'application'
+      "application"
     end
   end
 end

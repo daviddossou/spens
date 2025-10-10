@@ -90,8 +90,8 @@ module ComponentTestHelpers
   class MockObjectWithErrors < MockObject
     def errors
       @errors ||= MockErrors.new(
-        email: ["Email can't be blank", "Email is invalid"],
-        password: ["Password is too short"]
+        email: [ "Email can't be blank", "Email is invalid" ],
+        password: [ "Password is too short" ]
       )
     end
   end

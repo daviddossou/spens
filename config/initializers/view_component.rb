@@ -8,7 +8,7 @@ ViewComponent::Base.config.default_preview_layout = "component_preview"
 ViewComponent::Base.config.show_previews = Rails.env.development?
 
 # Configure preview paths for organized structure
-ViewComponent::Base.config.preview_paths = [Rails.root.join("spec/components/previews")]
+ViewComponent::Base.config.preview_paths = [ Rails.root.join("spec/components/previews") ]
 
 # Generate preview on component creation
 ViewComponent::Base.config.generate.preview = true

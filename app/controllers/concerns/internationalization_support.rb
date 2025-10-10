@@ -26,8 +26,8 @@ module InternationalizationSupport
   private
 
   def extract_locale_from_accept_language_header
-    return nil unless request.env['HTTP_ACCEPT_LANGUAGE']
+    return nil unless request.env["HTTP_ACCEPT_LANGUAGE"]
 
-    request.env['HTTP_ACCEPT_LANGUAGE'].scan(/^[a-z]{2}/).first
+    request.env["HTTP_ACCEPT_LANGUAGE"].scan(/^[a-z]{2}/).first
   end
 end

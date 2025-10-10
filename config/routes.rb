@@ -2,7 +2,7 @@ Rails.application.routes.draw do
   # Locale support - wrap routes in scope for i18n
   scope "(:locale)", locale: /en|fr/ do
     devise_for :users, controllers: {
-      registrations: 'users/registrations'
+      registrations: "users/registrations"
     }
 
     # Main application routes
@@ -12,8 +12,8 @@ Rails.application.routes.draw do
 
   # Sidekiq web interface (only in development)
   if Rails.env.development?
-    require 'sidekiq/web'
-    mount Sidekiq::Web => '/sidekiq'
+    require "sidekiq/web"
+    mount Sidekiq::Web => "/sidekiq"
   end
 
   # Health check and PWA routes (outside locale scope)

@@ -26,21 +26,21 @@ RSpec.describe Navigation::LanguageSwitcherComponent, type: :component do
       let(:component) do
         described_class.new(
           current_locale: :fr,
-          available_locales: [:en, :fr, :es],
+          available_locales: [ :en, :fr, :es ],
           params: { page: 1 }
         )
       end
 
       it "uses custom configuration" do
         expect(component.send(:current_locale)).to eq(:fr)
-        expect(component.send(:available_locales)).to eq([:en, :fr, :es])
+        expect(component.send(:available_locales)).to eq([ :en, :fr, :es ])
         expect(component.send(:params)).to eq({ page: 1 })
       end
     end
   end
 
   describe "link CSS class handling" do
-    let(:component) { described_class.new(current_locale: :en, available_locales: [:en, :fr]) }
+    let(:component) { described_class.new(current_locale: :en, available_locales: [ :en, :fr ]) }
 
     context "for active locale" do
       it "applies active classes" do
@@ -61,7 +61,7 @@ RSpec.describe Navigation::LanguageSwitcherComponent, type: :component do
       active_classes = component.send(:link_classes, :en)
       inactive_classes = component.send(:link_classes, :fr)
 
-      [active_classes, inactive_classes].each do |classes|
+      [ active_classes, inactive_classes ].each do |classes|
         expect(classes).to include('px-2 py-1 text-xs rounded transition-colors')
       end
     end
@@ -105,7 +105,7 @@ RSpec.describe Navigation::LanguageSwitcherComponent, type: :component do
   end
 
   describe "rendering behavior" do
-    let(:available_locales) { [:en, :fr] }
+    let(:available_locales) { [ :en, :fr ] }
     let(:component) do
       described_class.new(
         current_locale: :en,
@@ -144,7 +144,7 @@ RSpec.describe Navigation::LanguageSwitcherComponent, type: :component do
       let(:component) do
         described_class.new(
           current_locale: :en,
-          available_locales: [:en],
+          available_locales: [ :en ],
           params: {}
         )
       end
@@ -156,7 +156,7 @@ RSpec.describe Navigation::LanguageSwitcherComponent, type: :component do
     end
 
     context "with many locales" do
-      let(:available_locales) { [:en, :fr, :es, :de, :it] }
+      let(:available_locales) { [ :en, :fr, :es, :de, :it ] }
 
       it "renders all locales" do
         expect(rendered.css('a').count).to eq(5)
@@ -180,7 +180,7 @@ RSpec.describe Navigation::LanguageSwitcherComponent, type: :component do
 
   describe "edge cases" do
     context "with nil current_locale" do
-      let(:component) { described_class.new(current_locale: nil, available_locales: [:en, :fr]) }
+      let(:component) { described_class.new(current_locale: nil, available_locales: [ :en, :fr ]) }
 
       it "handles nil current locale gracefully" do
         expect {
@@ -201,7 +201,7 @@ RSpec.describe Navigation::LanguageSwitcherComponent, type: :component do
       let(:component) do
         described_class.new(
           current_locale: 'en',
-          available_locales: [:en, 'fr']
+          available_locales: [ :en, 'fr' ]
         )
       end
 
