@@ -1,0 +1,49 @@
+<% content_for :preview_title, "Flash Messages - Long Content" %>
+
+<div class="space-y-6">
+  <p class="text-gray-600">
+    Testing how flash messages handle longer content and multiple paragraphs of information.
+  </p>
+
+  <div class="space-y-4">
+    <div class="border border-gray-200 rounded-lg p-6 bg-gray-50">
+      <h4 class="text-sm font-semibold text-gray-900 mb-4">Long Success Message</h4>
+      <%= render Ui::FlashMessageComponent.new({
+        notice: "Your account setup has been completed successfully! We've created your profile, verified your email address, and set up your initial preferences. You can now access all features of the platform including the dashboard, settings, and help documentation. Welcome aboard!"
+      }) %>
+    </div>
+
+    <div class="border border-gray-200 rounded-lg p-6 bg-gray-50">
+      <h4 class="text-sm font-semibold text-gray-900 mb-4">Long Error Message</h4>
+      <%= render Ui::FlashMessageComponent.new({
+        alert: "We encountered several issues while processing your request. The email address provided appears to be invalid or already in use by another account. Additionally, the password you entered doesn't meet our security requirements (minimum 6 characters with at least one number). Please review your information and try again."
+      }) %>
+    </div>
+
+    <div class="border border-gray-200 rounded-lg p-6 bg-gray-50">
+      <h4 class="text-sm font-semibold text-gray-900 mb-4">Long Warning Message</h4>
+      <%= render Ui::FlashMessageComponent.new({
+        warning: "Your subscription is scheduled to expire in 3 days. To avoid any interruption in service, please update your payment information or renew your subscription. You can manage your billing settings from the account page. If you need assistance, our support team is available 24/7."
+      }) %>
+    </div>
+
+    <div class="border border-gray-200 rounded-lg p-6 bg-gray-50">
+      <h4 class="text-sm font-semibold text-gray-900 mb-4">Multiple Long Messages</h4>
+      <%= render Ui::FlashMessageComponent.new({
+        info: "System maintenance is scheduled for tonight from 11 PM to 3 AM EST. During this time, some features may be temporarily unavailable. We recommend saving your work frequently and avoiding large uploads during the maintenance window.",
+        warning: "We've detected unusual activity on your account. As a precautionary measure, we've temporarily limited some features. Please verify your identity by checking your email and following the instructions provided. This is for your account security."
+      }) %>
+    </div>
+  </div>
+
+  <div class="mt-8 p-4 bg-amber-50 border border-amber-200 rounded-lg">
+    <h4 class="text-sm font-medium text-amber-900 mb-2">Content Guidelines</h4>
+    <ul class="text-xs text-amber-800 space-y-1">
+      <li>• Keep messages concise but informative</li>
+      <li>• Use clear, actionable language</li>
+      <li>• Include next steps when appropriate</li>
+      <li>• Break up very long content into multiple messages</li>
+      <li>• Consider using info messages for detailed explanations</li>
+    </ul>
+  </div>
+</div>

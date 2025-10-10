@@ -24,13 +24,13 @@ class Ui::FlashMessageComponent < ViewComponent::Base
 
     case type
     when :notice, :success
-      "#{base_classes} bg-green-50 border-green-200 text-green-800"
+      "#{base_classes} bg-success-50 border-success text-success"
     when :alert, :error
-      "#{base_classes} bg-red-50 border-red-200 text-red-800"
+      "#{base_classes} bg-danger-50 border-danger text-danger"
     when :warning
-      "#{base_classes} bg-yellow-50 border-yellow-200 text-yellow-800"
+      "#{base_classes} bg-warning-50 border-warning text-warning"
     when :info
-      "#{base_classes} bg-blue-50 border-blue-200 text-blue-800"
+      "#{base_classes} bg-info-50 border-info text-info"
     else
       "#{base_classes} bg-gray-50 border-gray-200 text-gray-800"
     end

@@ -49,6 +49,9 @@ group :development, :test do
 
   # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
   gem "rubocop-rails-omakase", require: false
+
+  # Controller testing helpers for assigns and render_template
+  gem "rails-controller-testing"
 end
 
 group :development do

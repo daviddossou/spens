@@ -54,17 +54,17 @@ class Ui::ButtonComponent < ViewComponent::Base
   def variant_classes
     case variant
     when :primary
-      "border-transparent text-white bg-primary hover:bg-secondary focus:ring-primary"
+      "bg-primary border-transparent text-white hover:bg-secondary focus:ring-primary"
     when :secondary
-      "border-gray-300 text-gray-700 bg-white hover:bg-gray-50 focus:ring-secondary"
+      "bg-secondary border-transparent text-white hover:bg-primary focus:ring-secondary"
     when :danger
-      "border-transparent text-white bg-red-600 hover:bg-red-700 focus:ring-red-500"
+      "bg-danger border-transparent text-white hover:bg-danger-700 focus:ring-danger-500"
     when :success
-      "border-transparent text-white bg-success hover:bg-success-700 focus:ring-success-500"
+      "bg-success border-transparent text-white hover:bg-success-700 focus:ring-success-500"
     when :warning
-      "border-transparent text-white bg-warning hover:bg-warning-700 focus:ring-warning-500"
+      "bg-warning border-transparent text-white hover:bg-warning-700 focus:ring-warning-500"
     when :outline
-      "border-primary text-primary bg-transparent hover:bg-primary hover:text-white focus:ring-primary"
+      "bg-transparent border-primary text-primary hover:bg-primary hover:text-white focus:ring-primary"
     else
       variant_classes_for(:primary)
     end

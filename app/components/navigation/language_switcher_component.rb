@@ -26,7 +26,7 @@ class Navigation::LanguageSwitcherComponent < ViewComponent::Base
   end
 
   def inactive_classes
-    'bg-secondary text-gray-700 hover:bg-primary hover:text-white'
+    'bg-off-white text-gray-700 hover:bg-primary hover:text-white'
   end
 
   def locale_url(locale)

@@ -2,10 +2,17 @@
 :root {
   /* Primary Colors */
   --color-primary: #3F51B5;
+  --color-primary-50: #A5C6E5;
   --color-secondary: #424660;
+  --color-secondary-50: #A5B2C6;
   --color-success: #4CAF50;
+  --color-success-50: #A5D6A7;
   --color-danger: #F44336;
+  --color-danger-50: #EF9A9A;
   --color-warning: #FF9800;
+  --color-warning-50: #FFE0B2;
+  --color-info: #2196F3;
+  --color-info-50: #90CAF9;
 
   /* Additional Colors */
   --color-dark-gray: #2E2F36;
@@ -37,7 +44,11 @@
   --text-muted: var(--color-slate-gray);
 
   --bg-primary: var(--color-primary);
-  --bg-secondary: var(--color-off-white);
+  --bg-secondary: var(--color-secondary);
+  --bg-success: var(--color-success);
+  --bg-danger: var(--color-danger);
+  --bg-warning: var(--color-warning);
+  --bg-off-white: var(--color-off-white);
   --bg-surface: white;
   --bg-card-1: var(--color-soft-blue);
   --bg-card-2: var(--color-mint-green);
