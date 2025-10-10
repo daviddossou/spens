@@ -10,10 +10,47 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_10_06_233929) do
+ActiveRecord::Schema[8.0].define(version: 2025_10_10_133613) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
+
+  create_table "accounts", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "name", null: false
+    t.float "saving_goal", default: 0.0
+    t.float "balance", default: 0.0, null: false
+    t.uuid "user_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_accounts_on_user_id"
+  end
+
+  create_table "transaction_types", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "name", null: false
+    t.string "kind", null: false
+    t.float "budget_goal", default: 0.0
+    t.uuid "user_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["kind"], name: "index_transaction_types_on_kind"
+    t.index ["user_id"], name: "index_transaction_types_on_user_id"
+  end
+
+  create_table "transactions", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "description", null: false
+    t.text "note"
+    t.float "amount", null: false
+    t.date "transaction_date", null: false
+    t.uuid "user_id", null: false
+    t.uuid "transaction_type_id", null: false
+    t.uuid "account_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["account_id"], name: "index_transactions_on_account_id"
+    t.index ["transaction_date"], name: "index_transactions_on_transaction_date"
+    t.index ["transaction_type_id"], name: "index_transactions_on_transaction_type_id"
+    t.index ["user_id"], name: "index_transactions_on_user_id"
+  end
 
   create_table "users", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "email", default: "", null: false
@@ -31,7 +68,22 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_06_233929) do
     t.string "phone_number"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "currency", default: "XOF"
+    t.string "country"
+    t.string "income_frequency"
+    t.string "main_income_source"
+    t.jsonb "financial_goals", default: []
+    t.string "onboarding_current_step"
+    t.index ["country"], name: "index_users_on_country"
+    t.index ["currency"], name: "index_users_on_currency"
     t.index ["email"], name: "index_users_on_email", unique: true
+    t.index ["onboarding_current_step"], name: "index_users_on_onboarding_current_step"
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
+
+  add_foreign_key "accounts", "users"
+  add_foreign_key "transaction_types", "users"
+  add_foreign_key "transactions", "accounts"
+  add_foreign_key "transactions", "transaction_types"
+  add_foreign_key "transactions", "users"
 end

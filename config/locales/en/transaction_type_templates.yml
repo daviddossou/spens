@@ -1,0 +1,218 @@
+en:
+  transaction_type_templates:
+    cash_out_transfer:
+      name: "Cash out (account transfer)"
+      kind: "transfer_out"
+    cash_in_transfer:
+      name: "Cash in (account transfer)"
+      kind: "transfer_in"
+    rent:
+      name: "Rent"
+      kind: "expense"
+    telecommunication_internet:
+      name: "Telecommunication & Internet"
+      kind: "expense"
+    electricity_water:
+      name: "Electricity & Water"
+      kind: "expense"
+    insurance:
+      name: "Insurance"
+      kind: "expense"
+    groceries:
+      name: "Groceries"
+      kind: "expense"
+    fuel_transport:
+      name: "Fuel & Transport"
+      kind: "expense"
+    shopping_errands:
+      name: "Shopping"
+      kind: "expense"
+    leisure:
+      name: "Fun & Leisure"
+      kind: "expense"
+    gifts_expense:
+      name: "Gifts (Expense)"
+      kind: "expense"
+    clothing_shopping:
+      name: "Clothing & Shopping"
+      kind: "expense"
+    maintenance_repairs:
+      name: "Maintenance & Repairs"
+      kind: "expense"
+    holidays:
+      name: "Holidays"
+      kind: "expense"
+    tontine:
+      name: "Tontine"
+      kind: "expense"
+    salary:
+      name: "Salary"
+      kind: "income"
+    debts_borrowings:
+      name: "Debts / Borrowings (I borrow)"
+      kind: "debt"
+    loans_lent_out:
+      name: "Loans (I lend)"
+      kind: "loan"
+    performance_bonuses:
+      name: "Performance Bonuses"
+      kind: "income"
+    donations_tips_expense:
+      name: "Donations & Tips (Expense)"
+      kind: "expense"
+    money_loss:
+      name: "Money Loss"
+      kind: "expense"
+    expense_other:
+      name: "Expense (Other)"
+      kind: "expense"
+    income_other:
+      name: "Income (Other)"
+      kind: "income"
+    investment:
+      name: "Investment (Expense)"
+      kind: "expense"
+    unexpected:
+      name: "Unexpected"
+      kind: "expense"
+    gifts_income:
+      name: "Gifts (Income)"
+      kind: "income"
+    donations_tips_income:
+      name: "Donations & Tips (Income)"
+      kind: "income"
+    taxes:
+      name: "Taxes"
+      kind: "expense"
+    food_restaurant:
+      name: "Food / Restaurant"
+      kind: "expense"
+    training_event:
+      name: "Training / Event"
+      kind: "expense"
+    bank_account_loss:
+      name: "Bank Account Loss"
+      kind: "expense"
+    mobile_money_loss:
+      name: "Mobile Money Loss"
+      kind: "expense"
+    wallet_loss:
+      name: "Wallet Loss"
+      kind: "expense"
+    medical_care_pharmacy:
+      name: "Medical Care & Pharmacy"
+      kind: "expense"
+    technology_electronics:
+      name: "Technology / Electronics"
+      kind: "expense"
+    financial_support_income:
+      name: "Financial Support (Income)"
+      kind: "income"
+    financial_support_expense:
+      name: "Financial Support (Expense)"
+      kind: "expense"
+    family_support_income:
+      name: "Family Support (Income)"
+      kind: "income"
+    family_support_expense:
+      name: "Family Support (Expense)"
+      kind: "expense"
+    subscriptions_memberships:
+      name: "Subscriptions & Memberships"
+      kind: "expense"
+    streaming_services:
+      name: "Streaming Services"
+      kind: "expense"
+    bank_account_fees:
+      name: "Bank Account Fees"
+      kind: "expense"
+    mobile_money_fees:
+      name: "Mobile Money Fees"
+      kind: "expense"
+    collection_offering:
+      name: "Collection / Offering"
+      kind: "expense"
+    online_purchase_fees:
+      name: "Online Purchase Fees"
+      kind: "expense"
+    delivery_fees:
+      name: "Delivery Fees"
+      kind: "expense"
+    money_in:
+      name: "Money In"
+      kind: "income"
+    cleaning:
+      name: "Cleaning"
+      kind: "expense"
+    groceries_enjoyment:
+      name: "Groceries (enjoyment)"
+      kind: "expense"
+    interest_credit_bank:
+      name: "Interest Credit (Bank)"
+      kind: "income"
+    sports_betting_expense:
+      name: "Sports Betting (Expense)"
+      kind: "expense"
+    sports_betting_winnings:
+      name: "Sports Betting (Winnings)"
+      kind: "income"
+    money_out:
+      name: "Money Out"
+      kind: "expense"
+    housing:
+      name: "Housing"
+      kind: "expense"
+    conversion_fees:
+      name: "Conversion Fees"
+      kind: "expense"
+    tourist_activities:
+      name: "Tourist Activities"
+      kind: "expense"
+    education_tuition:
+      name: "Education / Tuition"
+      kind: "expense"
+    children_childcare:
+      name: "Children / Childcare"
+      kind: "expense"
+    household_items_furniture:
+      name: "Household Items / Furniture"
+      kind: "expense"
+    business_expenses:
+      name: "Business Expenses"
+      kind: "expense"
+    pets_animals:
+      name: "Pets / Animals"
+      kind: "expense"
+    school_supplies:
+      name: "School Supplies"
+      kind: "expense"
+    wedding_celebration:
+      name: "Wedding / Celebration"
+      kind: "expense"
+    religious_contribution:
+      name: "Religious Contribution"
+      kind: "expense"
+    side_hustle:
+      name: "Side Hustle / Freelance"
+      kind: "income"
+    investment_return:
+      name: "Investment Return (Income)"
+      kind: "income"
+    refund_reimbursement:
+      name: "Refund / Reimbursement (Income)"
+      kind: "income"
+    grant_scholarship:
+      name: "Grant / Scholarship"
+      kind: "income"
+    debt_repayment:
+      name: "Debt Repayment (Expense)"
+      kind: "expense"
+    loan_repayment:
+      name: "Loan Repayment (Income)"
+      kind: "income"
+    borrowed_from_friend:
+      name: "Borrowed from Friend (Debt)"
+      kind: "debt"
+    lent_to_friend:
+      name: "Lent to Friend (Loan)"
+      kind: "loan"
