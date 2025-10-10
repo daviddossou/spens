@@ -99,28 +99,60 @@ case $1 in
     docker-compose down -v
     docker system prune -f
     ;;
+  "rubocop")
+    if [ -z "$2" ]; then
+      echo "🔍 Running RuboCop on all files..."
+      docker-compose exec web bundle exec rubocop
+    else
+      echo "� Running RuboCop on: $2"
+      docker-compose exec web bundle exec rubocop "$2"
+    fi
+    ;;
+  "rubocop-fix")
+    if [ -z "$2" ]; then
+      echo "🔧 Auto-correcting safe RuboCop offenses on all files..."
+      docker-compose exec web bundle exec rubocop -a
+    else
+      echo "🔧 Auto-correcting safe RuboCop offenses on: $2"
+      docker-compose exec web bundle exec rubocop -a "$2"
+    fi
+    ;;
+  "rubocop-fix-all")
+    if [ -z "$2" ]; then
+      echo "⚠️  Auto-correcting ALL RuboCop offenses on all files (including unsafe)..."
+      docker-compose exec web bundle exec rubocop -A
+    else
+      echo "⚠️  Auto-correcting ALL RuboCop offenses on: $2 (including unsafe)..."
+      docker-compose exec web bundle exec rubocop -A "$2"
+    fi
+    ;;
   *)
     echo "🐳 Spens Docker Management"
     echo ""
     echo "Usage: ./bin/docker-manage [command]"
     echo ""
     echo "Commands:"
-    echo "  up        Start all services"
-    echo "  down      Stop all services"
-    echo "  restart   Restart all services (or specify service: web, sidekiq, db, redis)"
-    echo "  logs      Follow logs (specify service: web, sidekiq, db, redis)"
-    echo "  console   Open Rails console"
-    echo "  shell     Open bash shell in web container"
-    echo "  bundle    Run bundle commands (install by default, or specify: update, etc.)"
-    echo "  rails     Run Rails commands (console by default, or generators, etc.)"
-    echo "  test      Run RSpec tests (optionally specify file/pattern)"
-    echo "  test-watch Run tests with detailed output and fail-fast"
-    echo "  test-debug Run tests with debugging and full backtrace"
-    echo "  migrate   Run database migrations"
-    echo "  seed      Seed the database"
-    echo "  reset     Reset database (drop, create, migrate, seed)"
-    echo "  build     Build Docker containers"
-    echo "  clean     Clean up containers and volumes"
+    echo "  up           Start all services"
+    echo "  down         Stop all services"
+    echo "  restart      Restart all services (or specify service: web, sidekiq, db, redis)"
+    echo "  logs         Follow logs (specify service: web, sidekiq, db, redis)"
+    echo "  console      Open Rails console"
+    echo "  shell        Open bash shell in web container"
+    echo "  bundle       Run bundle commands (install by default, or specify: update, etc.)"
+    echo "  rails        Run Rails commands (console by default, or generators, etc.)"
+    echo "  test         Run RSpec tests (optionally specify file/pattern)"
+    echo "  test-watch   Run tests with detailed output and fail-fast"
+    echo "  test-debug   Run tests with debugging and full backtrace"
+    echo "  migrate      Run database migrations"
+    echo "  seed         Seed the database"
+    echo "  reset        Reset database (drop, create, migrate, seed)"
+    echo "  build        Build Docker containers"
+    echo "  clean        Clean up containers and volumes"
+    echo ""
+    echo "Code Quality Commands:"
+    echo "  rubocop      Run RuboCop linter (optionally specify file/directory)"
+    echo "  rubocop-fix  Auto-fix safe RuboCop issues (optionally specify file/directory)"
+    echo "  rubocop-fix-all Auto-fix ALL issues including unsafe (optionally specify file/directory)"
     echo ""
     echo "Examples:"
     echo "  ./bin/docker-manage up"
@@ -139,5 +171,14 @@ case $1 in
     echo "  ./bin/docker-manage test spec/models/user_spec.rb:25 # Run specific line"
     echo "  ./bin/docker-manage test-watch                     # Run with detailed output"
     echo "  ./bin/docker-manage test-debug                     # Run with full debugging"
+    echo ""
+    echo "Code Quality Examples:"
+    echo "  ./bin/docker-manage rubocop                        # Check all files"
+    echo "  ./bin/docker-manage rubocop app/models/user.rb     # Check specific file"
+    echo "  ./bin/docker-manage rubocop app/models/            # Check directory"
+    echo "  ./bin/docker-manage rubocop-fix                    # Auto-fix safe issues (all files)"
+    echo "  ./bin/docker-manage rubocop-fix app/models/user.rb # Auto-fix safe issues (specific file)"
+    echo "  ./bin/docker-manage rubocop-fix-all                # Auto-fix ALL issues (all files)"
+    echo "  ./bin/docker-manage rubocop-fix-all app/models/    # Auto-fix ALL issues (directory)"
     ;;
 esac

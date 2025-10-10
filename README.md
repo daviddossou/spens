@@ -121,6 +121,28 @@ We provide a convenient `./bin/docker-manage` script for all Docker operations:
 ./bin/docker-manage test-debug
 ```
 
+### ✨ **Code Quality & Linting**
+```bash
+# Check code style with RuboCop
+./bin/docker-manage rubocop
+
+# Check specific file or directory
+./bin/docker-manage rubocop app/models/user.rb
+./bin/docker-manage rubocop app/controllers/
+
+# Auto-fix safe style issues
+./bin/docker-manage rubocop-fix
+
+# Auto-fix specific file (safe corrections only)
+./bin/docker-manage rubocop-fix app/models/user.rb
+
+# Auto-fix ALL issues including unsafe ones (use with caution!)
+./bin/docker-manage rubocop-fix-all
+
+# Auto-fix ALL issues in specific directory
+./bin/docker-manage rubocop-fix-all spec/controllers/
+```
+
 ### 🛠️ **Container Management**
 ```bash
 # Rebuild Docker containers
@@ -186,7 +208,7 @@ We provide a convenient `./bin/docker-manage` script for all Docker operations:
    ./bin/docker-manage down
    ```
 
-### **Testing Strategies**
+### **Testing & Code Quality Workflow**
 
 ```bash
 # 🧪 Test-Driven Development (TDD)
@@ -194,11 +216,39 @@ We provide a convenient `./bin/docker-manage` script for all Docker operations:
 # Write code to make it pass
 ./bin/docker-manage test spec/models/user_spec.rb     # Verify it passes
 
-# 🔍 Debugging failing tests
-./bin/docker-manage test-debug spec/models/user_spec.rb
+# ✨ Code Quality Check
+./bin/docker-manage rubocop app/models/user.rb       # Check style
+./bin/docker-manage rubocop-fix app/models/user.rb   # Fix style issues
 
-# 🚀 Quick feedback loop
-./bin/docker-manage test-watch  # Detailed output with fail-fast
+# 🔍 Comprehensive Testing
+./bin/docker-manage test spec/models/                # Test all models
+./bin/docker-manage test spec/controllers/           # Test all controllers
+./bin/docker-manage test spec/components/            # Test all ViewComponents
+
+# 🚀 Quick Development Loop
+./bin/docker-manage test-watch                       # Continuous testing
+./bin/docker-manage rubocop-fix                      # Keep code clean
+
+# 🐛 Debugging failing tests
+./bin/docker-manage test-debug spec/models/user_spec.rb
+```
+
+### **Pre-commit Quality Checks**
+
+Before committing code, run these commands to ensure quality:
+
+```bash
+# 1. Run all tests
+./bin/docker-manage test
+
+# 2. Check code style
+./bin/docker-manage rubocop
+
+# 3. Auto-fix safe issues
+./bin/docker-manage rubocop-fix
+
+# 4. Run tests again to ensure fixes didn't break anything
+./bin/docker-manage test
 ```
 
 ### **Troubleshooting**
@@ -226,8 +276,8 @@ We provide a convenient `./bin/docker-manage` script for all Docker operations:
 - **Background Jobs**: Sidekiq with Redis
 - **Authentication**: Devise with comprehensive user management
 - **Frontend**: Tailwind CSS + Hotwire (Turbo + Stimulus)
-- **Testing**: RSpec, FactoryBot, SimpleCov
-- **Code Quality**: Rubocop, Brakeman
+- **Testing**: RSpec (models, controllers, components), FactoryBot, SimpleCov coverage
+- **Code Quality**: RuboCop (with Rails & RSpec cops), Brakeman security scanner
 - **Deployment**: Docker + Kamal ready
 - **External Access**: ngrok tunneling
 
@@ -242,6 +292,8 @@ We provide a convenient `./bin/docker-manage` script for all Docker operations:
 | `./bin/docker-manage console` | Rails console |
 | `./bin/docker-manage test` | Run all tests |
 | `./bin/docker-manage test spec/models/user_spec.rb` | Run specific test |
+| `./bin/docker-manage rubocop` | Check code style |
+| `./bin/docker-manage rubocop-fix` | Auto-fix style issues |
 | `./bin/docker-manage logs` | View web logs |
 | `./bin/docker-manage shell` | Container bash shell |
 
