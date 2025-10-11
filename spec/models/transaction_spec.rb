@@ -29,5 +29,48 @@
 require 'rails_helper'
 
 RSpec.describe Transaction, type: :model do
-  pending "add some examples to (or delete) #{__FILE__}"
+  subject(:transaction) { build(:transaction) }
+
+  describe 'factory' do
+    it 'is valid' do
+      expect(transaction).to be_valid
+    end
+  end
+
+  describe 'associations' do
+    it { is_expected.to belong_to(:user) }
+    it { is_expected.to belong_to(:account) }
+    it { is_expected.to belong_to(:transaction_type) }
+  end
+
+  describe 'validations' do
+    it { is_expected.to validate_presence_of(:description) }
+    it { is_expected.to validate_length_of(:description).is_at_most(255) }
+    it { is_expected.to validate_presence_of(:transaction_date) }
+
+    it 'validates amount presence and non-zero numeric' do
+      transaction.amount = nil
+      expect(transaction).not_to be_valid
+      expect(transaction.errors[:amount]).to include("can't be blank")
+
+      transaction.amount = 0
+      transaction.validate
+      expect(transaction.errors[:amount]).to include("must be other than 0")
+
+      transaction.amount = 'abc'
+      transaction.validate
+      # For non-numeric, Rails adds not a number error before other_than
+      expect(transaction.errors[:amount]).to include("is not a number")
+
+      transaction.amount = -12.34
+      expect(transaction).to be_valid
+    end
+  end
+
+  describe 'defaults' do
+    it 'uses today for transaction_date if set explicitly in factory' do
+      expect(transaction.transaction_date).to eq(Date.today)
+    end
+  end
 end
+

@@ -52,6 +52,8 @@ group :development, :test do
 
   # Controller testing helpers for assigns and render_template
   gem "rails-controller-testing"
+  # RSpec one-liner matchers for validations and associations
+  gem "shoulda-matchers", "~> 6.4"
 end
 
 group :development do

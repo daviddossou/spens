@@ -66,14 +66,14 @@ class User < ApplicationRecord
   validates :password, confirmation: true
   validates :first_name, :last_name, presence: true
   validates :phone_number, format: { with: /\A[\+]?[1-9]?[0-9]{7,15}\z/, message: "must be a valid phone number" }, allow_blank: true
-  validates :currency, inclusion: { in: CURRENCIES }, presence: true
-  validates :country, presence: true
+  validates :currency, inclusion: { in: CURRENCIES }, allow_nil: true
+  validates :country, presence: true, if: :requires_country?
   validates :income_frequency, inclusion: { in: INCOME_FREQUENCIES }, allow_blank: true
 
   enum :onboarding_current_step, {
-    financial_goal: "financial_goal",
-    personal_info: "personal_info",
-    account_setup: "account_setup",
-    completed: "completed"
+    onboarding_financial_goal: "onboarding_financial_goal",
+    onboarding_personal_info: "onboarding_personal_info",
+    onboarding_account_setup: "onboarding_account_setup",
+    onboarding_completed: "onboarding_completed"
   }
 end

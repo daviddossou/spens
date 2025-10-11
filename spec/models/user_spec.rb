@@ -118,6 +118,69 @@ RSpec.describe User, type: :model do
         expect(user).to be_valid
       end
     end
+
+    describe "currency validation" do
+      it "allows a permitted currency" do
+        user.currency = User::CURRENCIES.first
+        expect(user).to be_valid
+      end
+
+      it "rejects an unsupported currency" do
+        user.currency = "ZZZ"
+        expect(user).not_to be_valid
+        expect(user.errors[:currency]).to include("is not included in the list")
+      end
+    end
+
+    describe "income_frequency validation" do
+      it "allows blank" do
+        user.income_frequency = nil
+        expect(user).to be_valid
+      end
+
+      it "allows a permitted value" do
+        user.income_frequency = User::INCOME_FREQUENCIES.sample
+        expect(user).to be_valid
+      end
+
+      it "rejects an unsupported value" do
+        user.income_frequency = "bi-monthly"
+        expect(user).not_to be_valid
+        expect(user.errors[:income_frequency]).to include("is not included in the list")
+      end
+    end
+
+    describe "country conditional validation" do
+      context "when onboarding step does not require country" do
+        it "does not require country at financial goals step" do
+          user.onboarding_current_step = "onboarding_financial_goal"
+          user.country = nil
+          expect(user).to be_valid
+        end
+
+        it "does not require country at personal info step" do
+          user.onboarding_current_step = "onboarding_personal_info"
+          user.country = nil
+          expect(user).to be_valid
+        end
+      end
+
+      context "when onboarding step requires country" do
+        it "requires country at account setup step" do
+          user.onboarding_current_step = "onboarding_account_setup"
+          user.country = nil
+            expect(user).not_to be_valid
+          expect(user.errors[:country]).to include("can't be blank")
+        end
+
+        it "requires country once onboarding is completed" do
+          user.onboarding_current_step = "onboarding_completed"
+          user.country = nil
+          expect(user).not_to be_valid
+          expect(user.errors[:country]).to include("can't be blank")
+        end
+      end
+    end
   end
 
   describe "password length configuration" do
@@ -155,6 +218,41 @@ RSpec.describe User, type: :model do
 
     it "includes trackable" do
       expect(User.devise_modules).to include(:trackable)
+    end
+  end
+
+  describe "onboarding_current_step enum" do
+    it "defines expected enum values" do
+      expect(User.onboarding_current_steps.keys).to contain_exactly(
+        "onboarding_financial_goal",
+        "onboarding_personal_info",
+        "onboarding_account_setup",
+        "onboarding_completed"
+      )
+    end
+  end
+
+  describe "requires_country? predicate" do
+    let(:user) { build(:user) }
+
+    it "returns false for financial goal step" do
+      user.onboarding_current_step = "onboarding_financial_goal"
+      expect(user.send(:requires_country?)).to be false
+    end
+
+    it "returns false for personal info step" do
+      user.onboarding_current_step = "onboarding_personal_info"
+      expect(user.send(:requires_country?)).to be false
+    end
+
+    it "returns true for account setup step" do
+      user.onboarding_current_step = "onboarding_account_setup"
+      expect(user.send(:requires_country?)).to be true
+    end
+
+    it "returns true for completed step" do
+      user.onboarding_current_step = "onboarding_completed"
+      expect(user.send(:requires_country?)).to be true
     end
   end
 end
