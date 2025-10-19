@@ -1,0 +1,94 @@
+/* Checkbox Component */
+
+.checkbox-field .checkbox-input-wrapper {
+  display: flex;
+  align-items: center;
+}
+
+.checkbox-field input[type="checkbox"] {
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid var(--border-default);
+  border-radius: 4px;
+  background-color: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.checkbox-field input[type="checkbox"]:hover {
+  border-color: var(--color-primary);
+}
+
+.checkbox-field input[type="checkbox"]:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.1);
+}
+
+.checkbox-field input[type="checkbox"]:checked {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+.checkbox-field input[type="checkbox"]:checked::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 6px;
+  height: 10px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  border-radius: 1px;
+  transform: translate(-50%, -60%) rotate(45deg);
+}
+
+.checkbox-field input[type="checkbox"]:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.checkbox-field label {
+  margin-left: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--text-default);
+  cursor: pointer;
+  user-select: none;
+}
+
+.checkbox-field .help-text {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-top: 0.25rem;
+  margin-left: 1.5rem;
+  display: block;
+}
+
+.checkbox-field .error-text {
+  font-size: 0.75rem;
+  color: var(--color-danger);
+  margin-top: 0.25rem;
+  margin-left: 1.5rem;
+  display: block;
+}
+
+.checkbox-field .error-messages {
+  margin-top: 0.25rem;
+}
+
+.checkbox-field .error-messages ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.checkbox-field .error-messages li {
+  color: var(--color-danger);
+  font-size: 0.875rem;
+}

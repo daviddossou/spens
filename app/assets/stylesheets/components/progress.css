@@ -1,0 +1,33 @@
+/* Progress Component */
+
+.progress-bar {
+  height: 4px;
+  background-color: var(--color-light-gray);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-bottom: 1rem;
+}
+
+.progress-fill {
+  height: 100%;
+  background-color: var(--color-primary);
+  transition: width 0.3s ease;
+}
+
+.step-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.875rem;
+  color: var(--text-muted);
+}
+
+.step.active {
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+@media (max-width: 640px) {
+  .step-labels {
+    font-size: 0.75rem;
+  }
+}

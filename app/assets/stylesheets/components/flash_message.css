@@ -1,0 +1,79 @@
+/* Flash Message Component */
+
+.flash-message {
+  margin-bottom: 1rem;
+  padding: 1rem;
+  border: 1px solid;
+  border-radius: 0.375rem;
+  position: relative;
+}
+
+.flash-message-content {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.flash-message-body {
+  display: flex;
+  align-items: flex-start;
+}
+
+.flash-message-text {
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.flash-message-icon {
+  flex-shrink: 0;
+  margin-right: 0.75rem;
+  font-size: 1.125rem;
+}
+
+.flash-message-dismiss {
+  flex-shrink: 0;
+  margin-left: 0.75rem;
+  font-size: 1.125rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  color: inherit;
+  opacity: 0.7;
+  transition: opacity 0.2s ease;
+}
+
+.flash-message-dismiss:hover {
+  opacity: 1;
+}
+
+/* Flash Message Types */
+.flash-message-success {
+  background-color: var(--bg-success-20);
+  border-color: var(--border-success);
+  color: var(--color-success-dark);
+}
+
+.flash-message-error {
+  background-color: var(--bg-danger-20);
+  border-color: var(--border-danger);
+  color: var(--color-danger-dark);
+}
+
+.flash-message-warning {
+  background-color: var(--bg-warning-20);
+  border-color: var(--border-warning);
+  color: var(--color-warning-dark);
+}
+
+.flash-message-info {
+  background-color: var(--bg-info-20);
+  border-color: var(--border-info);
+  color: var(--color-info);
+}
+
+.flash-message-default {
+  background-color: var(--color-light-gray);
+  border-color: var(--color-slate-gray);
+  color: var(--color-dark-gray);
+}
