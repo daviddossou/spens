@@ -20,19 +20,19 @@ class Ui::FlashMessageComponent < ViewComponent::Base
   end
 
   def classes_for_type(type)
-    base_classes = "mb-4 p-4 border rounded-md"
+    base_classes = "flash-message"
 
     case type
     when :notice, :success
-      "#{base_classes} bg-success-50 border-success text-success"
+      "#{base_classes} flash-message-success"
     when :alert, :error
-      "#{base_classes} bg-danger-50 border-danger text-danger"
+      "#{base_classes} flash-message-error"
     when :warning
-      "#{base_classes} bg-warning-50 border-warning text-warning"
+      "#{base_classes} flash-message-warning"
     when :info
-      "#{base_classes} bg-info-50 border-info text-info"
+      "#{base_classes} flash-message-info"
     else
-      "#{base_classes} bg-gray-50 border-gray-200 text-gray-800"
+      "#{base_classes} flash-message-default"
     end
   end
 

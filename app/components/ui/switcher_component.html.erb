@@ -1,0 +1,8 @@
+<%= content_tag :div, **final_html_options do %>
+  <% options.each do |option| %>
+    <%= link_to option_text(option),
+                option_url(option),
+                class: option_classes(option),
+                data: option_data(option) %>
+  <% end %>
+<% end %>

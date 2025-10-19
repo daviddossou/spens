@@ -4,6 +4,13 @@ class Users::RegistrationsController < Devise::RegistrationsController
   # Set minimum password length for all actions that need it
   before_action :set_minimum_password_length, only: [ :new, :create, :edit, :update ]
 
+  protected
+
+  def after_sign_up_path_for(resource)
+    resource.update!(onboarding_current_step: "onboarding_financial_goal")
+    onboarding_path
+  end
+
   private
 
   # Set the minimum password length for form validation hints

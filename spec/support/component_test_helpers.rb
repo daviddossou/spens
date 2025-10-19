@@ -35,9 +35,22 @@ module ComponentTestHelpers
       create_input_tag("tel", field, options)
     end
 
-    def check_box(field, options = {})
+    def check_box(field, options = {}, checked_value = "1", _unchecked_value = "0")
+      options ||= {}
       css_classes = options[:class] || ""
-      %(<input type="checkbox" name="#{field}" class="#{css_classes}" />).html_safe
+      attributes = []
+      attributes << %(type="checkbox")
+      attributes << %(name="#{field}")
+      attributes << %(value="#{ERB::Util.html_escape(checked_value)}") if checked_value
+      attributes << %(class="#{css_classes}") unless css_classes.empty?
+      attributes << %(checked="checked") if options[:checked]
+      attributes << %(multiple="multiple") if options[:multiple]
+
+      options.except(:class, :checked, :multiple).each do |k, v|
+        next if v.nil?
+        attributes << %(#{k}="#{ERB::Util.html_escape(v)}")
+      end
+      %(<input #{attributes.join(' ')} />).html_safe
     end
 
     def label(field, text = nil, options = {})

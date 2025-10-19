@@ -48,29 +48,28 @@ RSpec.describe Ui::ButtonComponent, type: :component do
     it "handles all supported variants" do
       variants.each do |variant|
         variant_component = described_class.new(text: "Test", variant: variant)
-        classes = variant_component.send(:variant_classes)
-        expect(classes).to be_present
+        classes = variant_component.send(:button_classes)
+        expect(classes).to include("btn-#{variant}")
       end
     end
 
     context "with primary variant" do
       let(:component) { described_class.new(text: "Test", variant: :primary) }
 
-      it "applies primary classes" do
-        classes = component.send(:variant_classes)
-        expect(classes).to include('bg-primary')
-        expect(classes).to include('text-white')
+      it "applies primary CSS classes" do
+        classes = component.send(:button_classes)
+        expect(classes).to include('btn')
+        expect(classes).to include('btn-primary')
       end
     end
 
     context "with secondary variant" do
       let(:component) { described_class.new(text: "Test", variant: :secondary) }
 
-      it "applies secondary classes" do
-        classes = component.send(:variant_classes)
-        expect(classes).to include('bg-secondary')
-        expect(classes).to include('border-transparent')
-        expect(classes).to include('text-white')
+      it "applies secondary CSS classes" do
+        classes = component.send(:button_classes)
+        expect(classes).to include('btn')
+        expect(classes).to include('btn-secondary')
       end
     end
   end
@@ -81,17 +80,18 @@ RSpec.describe Ui::ButtonComponent, type: :component do
     it "handles all supported sizes" do
       sizes.each do |size|
         size_component = described_class.new(text: "Test", size: size)
-        classes = size_component.send(:size_classes)
-        expect(classes).to be_present
+        classes = size_component.send(:button_classes)
+        expect(classes).to include("btn-#{size}")
       end
     end
 
     context "with medium size" do
       let(:component) { described_class.new(text: "Test", size: :md) }
 
-      it "applies medium size classes" do
-        classes = component.send(:size_classes)
-        expect(classes).to include('px-4 py-2')
+      it "applies medium size CSS classes" do
+        classes = component.send(:button_classes)
+        expect(classes).to include('btn')
+        expect(classes).to include('btn-md')
       end
     end
   end
@@ -100,24 +100,23 @@ RSpec.describe Ui::ButtonComponent, type: :component do
     context "when disabled" do
       let(:component) { described_class.new(text: "Test", disabled: true) }
 
-      it "applies disabled styles" do
-        classes = component.send(:state_classes)
-        expect(classes).to include('opacity-75')
-        expect(classes).to include('cursor-not-allowed')
+      it "applies disabled CSS class" do
+        classes = component.send(:button_classes)
+        expect(classes).to include('disabled')
       end
     end
 
     context "when loading" do
       let(:component) { described_class.new(text: "Test", loading: true) }
 
-      it "applies loading styles" do
-        classes = component.send(:state_classes)
-        expect(classes).to include('opacity-75')
+      it "applies loading CSS class" do
+        classes = component.send(:button_classes)
+        expect(classes).to include('loading')
       end
 
-      it "renders loading spinner" do
+      it "renders loading spinner with CSS class" do
         spinner = component.send(:loading_spinner)
-        expect(spinner).to be_present
+        expect(spinner).to include('btn-spinner')
       end
     end
   end
@@ -176,8 +175,8 @@ RSpec.describe Ui::ButtonComponent, type: :component do
     context "when loading" do
       let(:component) { described_class.new(text: "Test", loading: true) }
 
-      it "shows loading spinner" do
-        expect(rendered.to_html).to include('animate-spin')
+      it "shows loading spinner with CSS class" do
+        expect(rendered.to_html).to include('btn-spinner')
       end
     end
 
@@ -193,8 +192,9 @@ RSpec.describe Ui::ButtonComponent, type: :component do
     context "with full width" do
       let(:component) { described_class.new(text: "Test", full_width: true) }
 
-      it "applies full width classes" do
-        expect(rendered.to_html).to include('w-full')
+      it "applies full width CSS class" do
+        classes = component.send(:button_classes)
+        expect(classes).to include('btn-full-width')
       end
     end
   end
@@ -211,9 +211,9 @@ RSpec.describe Ui::ButtonComponent, type: :component do
 
     it "combines all CSS classes correctly" do
       classes = component.send(:button_classes)
-      expect(classes).to include('inline-flex') # base
-      expect(classes).to include('bg-primary')  # variant
-      expect(classes).to include('px-4 py-2')   # size
+      expect(classes).to include('btn')          # base
+      expect(classes).to include('btn-primary')  # variant
+      expect(classes).to include('btn-md')       # size
       expect(classes).to include('custom-class') # custom
     end
   end

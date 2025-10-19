@@ -1,0 +1,7 @@
+<%= content_tag :div, **final_html_options do %>
+  <% if items.any? && item_component %>
+    <%= safe_join(rendered_items) %>
+  <% else %>
+    <%= content %>
+  <% end %>
+<% end %>

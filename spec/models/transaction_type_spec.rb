@@ -91,4 +91,3 @@ RSpec.describe TransactionType, type: :model do
     end
   end
 end
-

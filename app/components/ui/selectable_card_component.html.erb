@@ -1,0 +1,20 @@
+<%= content_tag :div, **final_html_options do %>
+  <% if render_checkbox? %>
+    <%= render Forms::CheckboxFieldComponent.new(**checkbox_options) %>
+  <% end %>
+
+  <div class="<%= content_section_classes %>">
+    <h4><%= item_name %></h4>
+    <% if item_description %>
+      <p class="<%= description_classes %>"><%= item_description %></p>
+    <% end %>
+
+    <% if render_visual_checkbox? %>
+      <div class="<%= checkbox_section_classes %>">
+        <svg class="checkmark" viewBox="0 0 24 24">
+          <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+        </svg>
+      </div>
+    <% end %>
+  </div>
+<% end %>

@@ -1,0 +1,27 @@
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; max-width: 800px;">
+  <div>
+    <h4 style="margin-bottom: 0.5rem; font-size: 0.875rem; color: #666;">With Visual Checkbox (selected: true, show_visual_checkbox: true)</h4>
+    <%= render Ui::SelectableCardComponent.new(
+      item: {
+        name: "With Visual Checkbox",
+        description: "Shows visual checkbox when selected",
+        key: "with"
+      },
+      selected: true,
+      show_visual_checkbox: true
+    ) %>
+  </div>
+
+  <div>
+    <h4 style="margin-bottom: 0.5rem; font-size: 0.875rem; color: #666;">Without Visual Checkbox (selected: true, show_visual_checkbox: false)</h4>
+    <%= render Ui::SelectableCardComponent.new(
+      item: {
+        name: "Without Visual Checkbox",
+        description: "Hides visual checkbox even when selected",
+        key: "without"
+      },
+      selected: true,
+      show_visual_checkbox: false
+    ) %>
+  </div>
+</div>

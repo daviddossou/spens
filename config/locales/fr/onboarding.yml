@@ -1,0 +1,43 @@
+fr:
+  financial_goals:
+    save_for_emergency:
+      name: "Constituer un Fonds d'Urgence"
+      description: "Économiser pour les dépenses imprévues et les urgences"
+    pay_off_debt:
+      name: "Rembourser les Dettes"
+      description: "Éliminer les dettes existantes et devenir libre de dettes"
+    save_for_house:
+      name: "Économiser pour une Maison"
+      description: "Constituer des fonds pour un acompte ou achat immobilier"
+    save_for_retirement:
+      name: "Épargner pour la Retraite"
+      description: "Planifier et épargner pour vos années dorées"
+    save_for_vacation:
+      name: "Économiser pour les Vacances"
+      description: "Mettre de l'argent de côté pour les voyages et loisirs"
+    build_wealth:
+      name: "Construire sa Richesse"
+      description: "Augmenter votre patrimoine via investissements et épargne"
+    track_spending:
+      name: "Suivre les Dépenses"
+      description: "Surveiller et comprendre vos habitudes de dépense"
+    budget_better:
+      name: "Mieux Budgéter"
+      description: "Créer et respecter un budget mensuel"
+
+  validations:
+    invalid_goal: "n'est pas un objectif financier valide"
+
+  onboarding:
+    validations:
+      invalid_goal: "%{goals} n'est pas un objectif financier valide"
+    financial_goals:
+      show:
+        title: "Quels sont tes principaux objectifs financiers ?"
+        subtitle: "Sélectionne les objectifs qui comptent le plus pour toi. Tu pourras toujours les modifier plus tard."
+        continue: "Continuer"
+
+  onboarding_progress_component:
+    financial_goal: "Objectifs Financiers"
+    personal_info: "Informations Personnelles"
+    account_setup: "Configuration des Comptes"

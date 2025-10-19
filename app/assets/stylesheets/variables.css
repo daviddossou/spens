@@ -2,17 +2,39 @@
 :root {
   /* Primary Colors */
   --color-primary: #3F51B5;
-  --color-primary-50: #A5C6E5;
+  --color-primary-50: #7885cb;
+  --color-primary-20: #c5cae8;
+  --color-primary-dark: #303f9f;
+  --color-primary-rgb: 63, 81, 181;
   --color-secondary: #424660;
-  --color-secondary-50: #A5B2C6;
+  --color-secondary-50: #8d909f;
+  --color-secondary-20: #d9dadf;
+  --color-secondary-dark: #2c3044;
+  --color-secondary-rgb: 66, 70, 96;
   --color-success: #4CAF50;
-  --color-success-50: #A5D6A7;
+  --color-success-50: #93cf96;
+  --color-success-20: #dbefdc;
+  --color-success-dark: #388e3c;
+  --color-success-rgb: 76, 175, 80;
   --color-danger: #F44336;
-  --color-danger-50: #EF9A9A;
+  --color-danger-50: #f88e86;
+  --color-danger-20: #fcd9d6;
+  --color-danger-dark: #d32f2f;
+  --color-danger-rgb: 244, 67, 54;
   --color-warning: #FF9800;
-  --color-warning-50: #FFE0B2;
+  --color-warning-50: #ffc166;
+  --color-warning-20: #ffeacc;
+  --color-warning-dark: #f57c00;
+  --color-warning-rgb: 255, 152, 0;
   --color-info: #2196F3;
-  --color-info-50: #90CAF9;
+  --color-info-50: #79c0f7;
+  --color-info-20: #d2eafc;
+
+  /* Base Colors */
+  --color-white: #ffffff;
+  --color-white-light: #fafafa;
+  --color-black: #000000;
+  --color-gray: #6b7280;
 
   /* Additional Colors */
   --color-dark-gray: #2E2F36;
@@ -30,6 +52,7 @@
   --color-sky-blue: #8BACD2;
   --color-mint-green: #8BD29B;
   --color-slate-gray: #8D909F;
+  --color-light-gray: #D1D5DB;
   --color-lavender-gray: #9197B9;
   --color-light-purple: #AF8BD2;
   --color-warm-beige: #D2B98B;
@@ -43,23 +66,43 @@
   --text-dark: var(--color-charcoal-black);
   --text-muted: var(--color-slate-gray);
 
+  /* Background Colors */
   --bg-primary: var(--color-primary);
+  --bg-primary-50: var(--color-primary-50);
+  --bg-primary-20: var(--color-primary-20);
   --bg-secondary: var(--color-secondary);
+  --bg-secondary-50: var(--color-secondary-50);
+  --bg-secondary-20: var(--color-secondary-20);
   --bg-success: var(--color-success);
+  --bg-success-50: var(--color-success-50);
+  --bg-success-20: var(--color-success-20);
   --bg-danger: var(--color-danger);
+  --bg-danger-50: var(--color-danger-50);
+  --bg-danger-20: var(--color-danger-20);
   --bg-warning: var(--color-warning);
+  --bg-warning-50: var(--color-warning-50);
+  --bg-warning-20: var(--color-warning-20);
+  --bg-info: var(--color-info);
+  --bg-info-50: var(--color-info-50);
+  --bg-info-20: var(--color-info-20);
   --bg-off-white: var(--color-off-white);
   --bg-surface: white;
   --bg-card-1: var(--color-soft-blue);
   --bg-card-2: var(--color-mint-green);
   --bg-card-3: var(--color-light-purple);
 
+  /* Border Colors */
+  --border-primary: var(--color-primary);
+  --border-secondary: var(--color-secondary);
+  --border-success: var(--color-success);
+  --border-danger: var(--color-danger);
+  --border-warning: var(--color-warning);
   --border-default: var(--color-slate-gray);
   --border-focus: var(--color-primary);
 
   /* Interactive States */
-  --hover-primary: var(--color-deep-indigo);
-  --hover-secondary: var(--color-lavender-gray);
+  --hover-primary: var(--color-primary);
+  --hover-secondary: var(--color-secondary);
   --hover-success: var(--color-success);
   --hover-danger: var(--color-danger);
   --hover-warning: var(--color-warning);

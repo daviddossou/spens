@@ -1,0 +1,60 @@
+/* ViewComponent Previews Styles */
+
+/* Preview Layout Containers */
+.preview-container {
+  padding: 1.5rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.interactive-preview {
+  padding: 1rem;
+  border: 2px dashed var(--color-primary);
+  border-radius: 8px;
+  background-color: var(--bg-off-white);
+  margin-bottom: 1rem;
+}
+
+.checkbox-demo {
+  margin-bottom: 1rem;
+}
+
+/* Preview Information Callouts */
+.preview-info {
+  margin: 1rem 0;
+  padding: 1rem;
+  background-color: var(--color-primary-20);
+  border-radius: 6px;
+  border-left: 4px solid var(--color-primary);
+}
+
+.preview-info p {
+  margin: 0.5rem 0;
+  font-size: 0.875rem;
+  color: var(--color-primary-dark);
+  line-height: 1.4;
+}
+
+.preview-info p:first-child {
+  margin-top: 0;
+}
+
+.preview-info p:last-child {
+  margin-bottom: 0;
+}
+
+/* Preview Responsive Behavior */
+@media (max-width: 640px) {
+  .preview-container {
+    padding: 1rem;
+  }
+
+  .interactive-preview {
+    padding: 0.75rem;
+  }
+
+  .preview-info {
+    padding: 0.75rem;
+    font-size: 0.8125rem;
+  }
+}

@@ -8,6 +8,13 @@ Rails.application.routes.draw do
     # Main application routes
     root "home#index"
     get "dashboard", to: "home#dashboard"
+
+    # Onboarding routes
+    get "onboarding", to: "onboarding#show"
+
+    namespace :onboarding do
+      resource :financial_goals, only: [ :show, :update ]
+    end
   end
 
   # Sidekiq web interface (only in development)

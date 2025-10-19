@@ -76,4 +76,16 @@ class User < ApplicationRecord
     onboarding_account_setup: "onboarding_account_setup",
     onboarding_completed: "onboarding_completed"
   }
+
+  ##
+  # Instances Methods
+  def onboarding_completed?
+    onboarding_current_step == "onboarding_completed"
+  end
+
+  private
+
+    def requires_country?
+      %w[onboarding_account_setup onboarding_completed].include?(onboarding_current_step)
+    end
 end

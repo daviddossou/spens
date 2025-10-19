@@ -1,0 +1,9 @@
+<div class="grid grid-2">
+  <% goals.each do |goal| %>
+    <%= render Onboarding::Goals::GoalCardComponent.new(
+      item: goal,
+      form: mock_form,
+      model: mock_model
+    ) %>
+  <% end %>
+</div>

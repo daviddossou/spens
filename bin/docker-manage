@@ -126,6 +126,10 @@ case $1 in
       docker-compose exec web bundle exec rubocop -A "$2"
     fi
     ;;
+  "tailwind-build")
+    echo "🎨 Building Tailwind CSS (rails tailwindcss:build)..."
+    docker-compose exec web bin/rails tailwindcss:build
+    ;;
   *)
     echo "🐳 Spens Docker Management"
     echo ""
@@ -153,6 +157,7 @@ case $1 in
     echo "  rubocop      Run RuboCop linter (optionally specify file/directory)"
     echo "  rubocop-fix  Auto-fix safe RuboCop issues (optionally specify file/directory)"
     echo "  rubocop-fix-all Auto-fix ALL issues including unsafe (optionally specify file/directory)"
+    echo "  tailwind-build  Run Tailwind CSS build (bin/rails tailwindcss:build)"
     echo ""
     echo "Examples:"
     echo "  ./bin/docker-manage up"

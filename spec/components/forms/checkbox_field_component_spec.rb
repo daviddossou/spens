@@ -84,7 +84,7 @@ RSpec.describe Forms::CheckboxFieldComponent, type: :component do
       )
 
       classes = component_with_classes.send(:final_wrapper_classes)
-      expect(classes).to include('flex items-center')
+      expect(classes).to include('checkbox-field')
       expect(classes).to include('custom-wrapper')
     end
 
@@ -95,8 +95,7 @@ RSpec.describe Forms::CheckboxFieldComponent, type: :component do
         checkbox_classes: 'custom-checkbox'
       )
 
-      classes = component_with_classes.send(:final_checkbox_classes)
-      expect(classes).to include('h-4 w-4 text-primary focus:ring-secondary border-gray-300 rounded')
+      classes = component_with_classes.send(:checkbox_classes)
       expect(classes).to include('custom-checkbox')
     end
 
@@ -107,17 +106,34 @@ RSpec.describe Forms::CheckboxFieldComponent, type: :component do
         label_classes: 'custom-label'
       )
 
-      classes = component_with_classes.send(:final_label_classes)
-      expect(classes).to include('ml-2 block text-sm text-gray-900')
+      classes = component_with_classes.send(:label_classes)
       expect(classes).to include('custom-label')
+    end
+
+    it "adds has-errors class when form has errors" do
+      component_with_errors = described_class.new(
+        form: mock_form_with_errors,
+        field: :email
+      )
+
+      classes = component_with_errors.send(:final_wrapper_classes)
+      expect(classes).to include('checkbox-field')
+      expect(classes).to include('has-errors')
     end
   end
 
   describe "rendering behavior" do
     subject(:rendered) { render_inline(component) }
 
-    it "renders the component structure" do
-      expect(rendered.css('div')).to be_present
+    it "renders the component structure with correct CSS classes" do
+      expect(rendered.css('.checkbox-field')).to be_present
+      expect(rendered.css('.checkbox-input-wrapper')).to be_present
+    end
+
+    it "renders checkbox and label in the input wrapper" do
+      checkbox_wrapper = rendered.css('.checkbox-input-wrapper').first
+      expect(checkbox_wrapper.css('input[type="checkbox"]')).to be_present
+      expect(checkbox_wrapper.css('label')).to be_present
     end
 
     context "with help text" do
@@ -129,8 +145,14 @@ RSpec.describe Forms::CheckboxFieldComponent, type: :component do
         )
       end
 
-      it "displays help text" do
+      it "displays help text with correct class" do
         expect(rendered.to_html).to include('This will keep you logged in')
+        expect(rendered.css('.help-text')).to be_present
+      end
+
+      it "renders help text outside the input wrapper" do
+        expect(rendered.css('.checkbox-field .help-text')).to be_present
+        expect(rendered.css('.checkbox-input-wrapper .help-text')).to be_empty
       end
     end
 
@@ -138,9 +160,95 @@ RSpec.describe Forms::CheckboxFieldComponent, type: :component do
       let(:form) { mock_form_with_errors }
       let(:field) { :email }
 
-      it "displays error messages" do
+      it "displays error messages with correct class" do
         expect(rendered.to_html).to include("Email can't be blank")
+        expect(rendered.css('.error-text')).to be_present
       end
+
+      it "adds has-errors class to wrapper" do
+        expect(rendered.css('.checkbox-field.has-errors')).to be_present
+      end
+
+      it "renders error messages outside the input wrapper" do
+        expect(rendered.css('.checkbox-field .error-messages')).to be_present
+        expect(rendered.css('.checkbox-input-wrapper .error-messages')).to be_empty
+      end
+    end
+  end
+
+  describe "multiple checkbox behavior" do
+    context "when multiple: true" do
+      let(:component) do
+        described_class.new(
+          form: form,
+            field: :financial_goals,
+            multiple: true,
+            value: 'save_for_emergency',
+            checked: true,
+            label: 'Emergency Fund'
+        )
+      end
+
+      it "renders a checkbox with the provided value" do
+        html = render_inline(component).to_html
+        expect(html).to include('value="save_for_emergency"')
+      end
+
+      it "marks the checkbox as checked when checked: true" do
+        node = render_inline(component).css('input[type="checkbox"]').first
+        expect(node[:checked]).to be_present
+      end
+
+      it "adds the multiple attribute" do
+        node = render_inline(component).css('input[type="checkbox"]').first
+        expect(node[:multiple]).to be_present
+      end
+    end
+
+    context "when multiple: false (default)" do
+      it "does not add multiple attribute" do
+        node = render_inline(component).css('input[type="checkbox"]').first
+        expect(node[:multiple]).to be_nil
+      end
+    end
+  end
+
+  describe "hide_label option" do
+    it "suppresses label when hide_label: true" do
+      hidden_label_component = described_class.new(form: form, field: field, label: 'Should Not Show', hide_label: true)
+      html = render_inline(hidden_label_component).to_html
+      expect(html).not_to include('Should Not Show')
+    end
+
+    it "suppresses error messages when hide_label: true" do
+      error_form = mock_form_with_errors
+      hidden_error_component = described_class.new(form: error_form, field: :email, hide_label: true)
+      html = render_inline(hidden_error_component).to_html
+      expect(html).not_to include("Email can't be blank")
+    end
+  end
+
+  describe "wrapper data attributes" do
+    it "renders provided wrapper data attributes" do
+      data_component = described_class.new(form: form, field: field, wrapper_data: { controller: 'tracking', action: 'click->tracking#record' })
+      node = render_inline(data_component).css('div').first
+      expect(node["data-controller"]).to eq('tracking')
+      expect(node["data-action"]).to eq('click->tracking#record')
+    end
+  end
+
+  describe "final_field_options merging" do
+    it "merges custom class into checkbox classes" do
+      custom = described_class.new(form: form, field: field, checkbox_classes: 'extra-class')
+      node = render_inline(custom).css('input[type="checkbox"]').first
+      expect(node[:class]).to include('extra-class')
+    end
+
+    it "handles empty default checkbox classes" do
+      custom = described_class.new(form: form, field: field)
+      classes = custom.send(:checkbox_classes)
+
+      expect(classes.to_s.strip).to be_empty
     end
   end
 end

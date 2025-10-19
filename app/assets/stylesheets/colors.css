@@ -9,12 +9,20 @@
   background-color: var(--bg-primary-50);
 }
 
+.bg-primary-20 {
+  background-color: var(--bg-primary-20);
+}
+
 .bg-secondary {
   background-color: var(--bg-secondary);
 }
 
 .bg-secondary-50 {
   background-color: var(--bg-secondary-50);
+}
+
+.bg-secondary-20 {
+  background-color: var(--bg-secondary-20);
 }
 
 .bg-off-white {
@@ -29,12 +37,20 @@
   background-color: var(--color-success-50);
 }
 
+.bg-success-20 {
+  background-color: var(--color-success-20);
+}
+
 .bg-danger {
   background-color: var(--color-danger);
 }
 
 .bg-danger-50 {
   background-color: var(--color-danger-50);
+}
+
+.bg-danger-20 {
+  background-color: var(--color-danger-20);
 }
 
 .bg-warning {
@@ -45,12 +61,20 @@
   background-color: var(--color-warning-50);
 }
 
+.bg-warning-20 {
+  background-color: var(--color-warning-20);
+}
+
 .bg-info {
   background-color: var(--color-info);
 }
 
 .bg-info-50 {
   background-color: var(--color-info-50);
+}
+
+.bg-info-20 {
+  background-color: var(--color-info-20);
 }
 
 .bg-surface {
@@ -292,20 +316,72 @@
   background-color: var(--hover-primary);
 }
 
+.hover\:bg-primary-50:hover {
+  background-color: var(--bg-primary-50);
+}
+
+.hover\:bg-primary-20:hover {
+  background-color: var(--bg-primary-20);
+}
+
 .hover\:bg-secondary:hover {
   background-color: var(--hover-secondary);
+}
+
+.hover\:bg-secondary-50:hover {
+  background-color: var(--bg-secondary-50);
+}
+
+.hover\:bg-secondary-20:hover {
+  background-color: var(--bg-secondary-20);
 }
 
 .hover\:bg-success:hover {
   background-color: var(--hover-success);
 }
 
+.hover\:bg-success-50:hover {
+  background-color: var(--bg-success-50);
+}
+
+.hover\:bg-success-20:hover {
+  background-color: var(--bg-success-20);
+}
+
 .hover\:bg-warning:hover {
   background-color: var(--hover-warning);
 }
 
+.hover\:bg-warning-50:hover {
+  background-color: var(--bg-warning-50);
+}
+
+.hover\:bg-warning-20:hover {
+  background-color: var(--bg-warning-20);
+}
+
 .hover\:bg-danger:hover {
   background-color: var(--hover-danger);
+}
+
+.hover\:bg-danger-50:hover {
+  background-color: var(--bg-danger-50);
+}
+
+.hover\:bg-danger-20:hover {
+  background-color: var(--bg-danger-20);
+}
+
+.hover\:bg-info:hover {
+  background-color: var(--hover-info);
+}
+
+.hover\:bg-info-50:hover {
+  background-color: var(--bg-info-50);
+}
+
+.hover\:bg-info-20:hover {
+  background-color: var(--bg-info-20);
 }
 
 .hover\:bg-lavender-gray:hover {

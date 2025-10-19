@@ -1,0 +1,43 @@
+en:
+  financial_goals:
+    save_for_emergency:
+      name: "Build Emergency Fund"
+      description: "Save money for unexpected expenses and emergencies"
+    pay_off_debt:
+      name: "Pay Off Debt"
+      description: "Eliminate existing debts and become debt-free"
+    save_for_house:
+      name: "Save for House"
+      description: "Build funds for a home down payment or purchase"
+    save_for_retirement:
+      name: "Save for Retirement"
+      description: "Plan and save for your golden years"
+    save_for_vacation:
+      name: "Save for Vacation"
+      description: "Set aside money for travel and leisure"
+    build_wealth:
+      name: "Build Wealth"
+      description: "Grow your net worth through investments and savings"
+    track_spending:
+      name: "Track Spending"
+      description: "Monitor and understand your spending habits"
+    budget_better:
+      name: "Budget Better"
+      description: "Create and stick to a monthly budget"
+
+  validations:
+    invalid_goal: "is not a valid financial goal"
+
+  onboarding:
+    validations:
+      invalid_goal: "%{goals} is not a valid financial goal"
+    financial_goals:
+      show:
+        title: "What are your main financial goals?"
+        subtitle: "Select the goals that matter most to you. You can always change these later."
+        continue: "Continue"
+
+  onboarding_progress_component:
+    financial_goal: "Financial Goals"
+    personal_info: "Personal Info"
+    account_setup: "Account Setup"

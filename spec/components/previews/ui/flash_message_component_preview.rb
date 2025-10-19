@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 class Ui::FlashMessageComponentPreview < ViewComponent::Preview
-  # Default flash messages
   def default
     flash_hash = {
       notice: "Operation completed successfully!",
@@ -11,7 +10,6 @@ class Ui::FlashMessageComponentPreview < ViewComponent::Preview
     render Ui::FlashMessageComponent.new(flash_hash)
   end
 
-  # All message types
   def all_types
     flash_hash = {
       notice: "This is a success notice message",
@@ -26,35 +24,30 @@ class Ui::FlashMessageComponentPreview < ViewComponent::Preview
     render Ui::FlashMessageComponent.new(flash_hash)
   end
 
-  # Single success message
   def success_only
     flash_hash = { notice: "Your profile has been updated successfully!" }
 
     render Ui::FlashMessageComponent.new(flash_hash)
   end
 
-  # Single error message
   def error_only
     flash_hash = { alert: "Invalid email or password. Please check your credentials and try again." }
 
     render Ui::FlashMessageComponent.new(flash_hash)
   end
 
-  # Warning message
   def warning_only
     flash_hash = { warning: "Your session will expire in 5 minutes. Please save your work." }
 
     render Ui::FlashMessageComponent.new(flash_hash)
   end
 
-  # Info message
   def info_only
     flash_hash = { info: "A verification email has been sent to your address. Please check your inbox." }
 
     render Ui::FlashMessageComponent.new(flash_hash)
   end
 
-  # Long messages
   def long_messages
     flash_hash = {
       notice: "This is a very long success message that demonstrates how the flash message component handles longer text content. It should wrap properly and maintain good readability while providing enough space for detailed information.",
@@ -64,16 +57,13 @@ class Ui::FlashMessageComponentPreview < ViewComponent::Preview
     render Ui::FlashMessageComponent.new(flash_hash)
   end
 
-  # Empty flash (edge case)
   def empty_flash
     flash_hash = {}
 
     render Ui::FlashMessageComponent.new(flash_hash)
   end
 
-  # Multiple messages of same type
   def multiple_same_type
-    # This simulates what happens when multiple notices are added to flash
     flash_hash = {
       notice: "First success message",
       alert: "First error message"
@@ -82,7 +72,6 @@ class Ui::FlashMessageComponentPreview < ViewComponent::Preview
     render Ui::FlashMessageComponent.new(flash_hash)
   end
 
-  # Custom message types (should fall back to default styling)
   def custom_types
     flash_hash = {
       debug: "This is a debug message (custom type)",

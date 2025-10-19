@@ -47,54 +47,54 @@ RSpec.describe Ui::FlashMessageComponent, type: :component do
       messages = component.send(:flash_messages)
       messages.each do |message|
         expect(message[:classes]).to be_present
-        expect(message[:classes]).to include('mb-4 p-4 border rounded-md')
+        expect(message[:classes]).to include('flash-message')
       end
     end
   end
 
   describe "CSS class assignment" do
     context "for notice/success messages" do
-      it "applies green styling" do
+      it "applies success styling" do
         classes = component.send(:classes_for_type, :notice)
-        expect(classes).to include('bg-success-50', 'border-success', 'text-success')
+        expect(classes).to include('flash-message', 'flash-message-success')
       end
 
-      it "applies green styling for success type" do
+      it "applies success styling for success type" do
         classes = component.send(:classes_for_type, :success)
-        expect(classes).to include('bg-success-50', 'border-success', 'text-success')
+        expect(classes).to include('flash-message', 'flash-message-success')
       end
     end
 
     context "for alert/error messages" do
-      it "applies red styling" do
+      it "applies error styling" do
         classes = component.send(:classes_for_type, :alert)
-        expect(classes).to include('bg-danger-50', 'border-danger', 'text-danger')
+        expect(classes).to include('flash-message', 'flash-message-error')
       end
 
-      it "applies red styling for error type" do
+      it "applies error styling for error type" do
         classes = component.send(:classes_for_type, :error)
-        expect(classes).to include('bg-danger-50', 'border-danger', 'text-danger')
+        expect(classes).to include('flash-message', 'flash-message-error')
       end
     end
 
     context "for warning messages" do
-      it "applies yellow styling" do
+      it "applies warning styling" do
         classes = component.send(:classes_for_type, :warning)
-        expect(classes).to include('bg-warning-50', 'border-warning', 'text-warning')
+        expect(classes).to include('flash-message', 'flash-message-warning')
       end
     end
 
     context "for info messages" do
-      it "applies blue styling" do
+      it "applies info styling" do
         classes = component.send(:classes_for_type, :info)
-        expect(classes).to include('bg-info-50', 'border-info', 'text-info')
+        expect(classes).to include('flash-message', 'flash-message-info')
       end
     end
 
     context "for unknown message types" do
-      it "applies default gray styling" do
+      it "applies default styling" do
         classes = component.send(:classes_for_type, :unknown)
-        expect(classes).to include('bg-gray-50', 'border-gray-200', 'text-gray-800')
+        expect(classes).to include('flash-message', 'flash-message-default')
       end
     end
   end
@@ -120,7 +120,6 @@ RSpec.describe Ui::FlashMessageComponent, type: :component do
       subject(:rendered) { render_inline(component) }
 
       it "renders without content" do
-        # The component should not render any actual flash message content
         html = rendered.to_html
         expect(html).not_to include('data-flash-type')
         expect(html).not_to include('bg-success-50')
@@ -145,7 +144,7 @@ RSpec.describe Ui::FlashMessageComponent, type: :component do
       end
 
       it "has correct CSS classes" do
-        expect(rendered.to_html).to include('bg-success-50')
+        expect(rendered.to_html).to include('flash-message-success')
       end
 
       it "has data attributes" do
@@ -170,8 +169,8 @@ RSpec.describe Ui::FlashMessageComponent, type: :component do
 
       it "renders different styling for different types" do
         html = rendered.to_html
-        expect(html).to include('bg-success-50')
-        expect(html).to include('bg-danger-50')
+        expect(html).to include('flash-message-success')
+        expect(html).to include('flash-message-error')
       end
 
       it "includes dismiss buttons for each message" do

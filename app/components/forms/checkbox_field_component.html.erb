@@ -1,16 +1,25 @@
-<div class="<%= final_wrapper_classes %>">
-  <%= form.check_box field, final_field_options %>
-  <%= form.label field, field_label, class: final_label_classes %>
+<%= content_tag :div, **wrapper_html_options do %>
+  <div class="checkbox-input-wrapper">
+    <%= render_checkbox %>
 
-  <% if help_text %>
-    <p class="text-xs text-gray-500 mt-1 ml-6"><%= help_text %></p>
+    <% unless hide_label %>
+      <% if content.present? %>
+        <label class="<%= label_classes %>"><%= content %></label>
+      <% else %>
+        <%= form.label field, field_label, class: label_classes %>
+      <% end %>
+    <% end %>
+  </div>
+
+  <% if help_text && !hide_label %>
+    <p class="help-text"><%= help_text %></p>
   <% end %>
 
-  <% if has_errors? %>
-    <div class="mt-1 ml-6">
+  <% if has_errors? && !hide_label %>
+    <div class="error-messages">
       <% field_errors.each do |error| %>
-        <p class="<%= error_classes %>"><%= error %></p>
+        <p class="error-text"><%= error %></p>
       <% end %>
     </div>
   <% end %>
-</div>
+<% end %>

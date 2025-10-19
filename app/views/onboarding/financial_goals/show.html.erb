@@ -1,0 +1,34 @@
+<% content_for :title, t('.title') %>
+
+<div class="onboarding-container">
+  <%= render Onboarding::ProgressComponent.new(current_step: 'financial_goal') %>
+
+  <div class="onboarding-language-switcher">
+    <%= render Navigation::LanguageSwitcherComponent.new(params: params) %>
+  </div>
+
+  <div class="onboarding-content">
+    <header class="onboarding-header">
+      <h1><%= t('.title') %></h1>
+      <p><%= t('.subtitle') %></p>
+    </header>
+
+    <%= form_with model: @form, url: onboarding_financial_goals_path, method: :patch, local: true,
+        class: "onboarding-form", data: { controller: "onboarding--financial-goals" } do |form| %>
+      <%= render 'shared/form_errors', object: @form %>
+
+      <%= render Onboarding::Goals::GridComponent.new(form_builder: form, model: @form) %>
+
+      <div class="form-actions">
+        <%= render Ui::ButtonComponent.new(
+              text: t('.continue'),
+              type: :submit,
+              variant: :primary,
+              size: :lg,
+              disabled: @form.financial_goals.empty?,
+              form: form
+            ) %>
+      </div>
+    <% end %>
+  </div>
+</div>

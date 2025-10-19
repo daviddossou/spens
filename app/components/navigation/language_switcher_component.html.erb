@@ -1,8 +1,0 @@
-<div class="flex space-x-2">
-  <% available_locales.each do |locale| %>
-    <%= link_to locale.to_s.upcase,
-                locale_url(locale),
-                class: link_classes(locale),
-                "data-turbo-method": "get" %>
-  <% end %>
-</div>

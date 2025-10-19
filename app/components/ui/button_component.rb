@@ -38,64 +38,24 @@ class Ui::ButtonComponent < ViewComponent::Base
 
   def button_classes
     [
-      base_classes,
-      variant_classes,
-      size_classes,
-      width_classes,
+      "btn",
+      "btn-#{variant}",
+      "btn-#{size}",
+      full_width_class,
       state_classes,
       classes
     ].compact.join(" ")
   end
 
-  def base_classes
-    "inline-flex items-center justify-center border rounded-md shadow-sm font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors"
-  end
-
-  def variant_classes
-    case variant
-    when :primary
-      "bg-primary border-transparent text-white hover:bg-secondary focus:ring-primary"
-    when :secondary
-      "bg-secondary border-transparent text-white hover:bg-primary focus:ring-secondary"
-    when :danger
-      "bg-danger border-transparent text-white hover:bg-danger-700 focus:ring-danger-500"
-    when :success
-      "bg-success border-transparent text-white hover:bg-success-700 focus:ring-success-500"
-    when :warning
-      "bg-warning border-transparent text-white hover:bg-warning-700 focus:ring-warning-500"
-    when :outline
-      "bg-transparent border-primary text-primary hover:bg-primary hover:text-white focus:ring-primary"
-    else
-      variant_classes_for(:primary)
-    end
-  end
-
-  def size_classes
-    case size
-    when :xs
-      "px-2.5 py-1.5 text-xs"
-    when :sm
-      "px-3 py-2 text-sm"
-    when :md
-      "px-4 py-2 text-sm"
-    when :lg
-      "px-4 py-2 text-base"
-    when :xl
-      "px-6 py-3 text-base"
-    else
-      "px-4 py-2 text-sm"
-    end
-  end
-
-  def width_classes
-    full_width ? "w-full flex" : ""
+  def full_width_class
+    full_width ? "btn-full-width" : nil
   end
 
   def state_classes
-    classes = []
-    classes << "opacity-75 cursor-not-allowed" if disabled
-    classes << "opacity-75" if loading
-    classes.join(" ")
+    state_list = []
+    state_list << "disabled" if disabled
+    state_list << "loading" if loading
+    state_list.empty? ? nil : state_list.join(" ")
   end
 
   def is_submit?
@@ -130,7 +90,7 @@ class Ui::ButtonComponent < ViewComponent::Base
   def loading_spinner
     return unless loading
 
-    content_tag :svg, class: "animate-spin -ml-1 mr-3 h-5 w-5 text-white", fill: "none", viewBox: "0 0 24 24" do
+    content_tag :svg, class: "btn-spinner", fill: "none", viewBox: "0 0 24 24", stroke: "currentColor" do
       concat tag(:circle, class: "opacity-25", cx: "12", cy: "12", r: "10", stroke: "currentColor", "stroke-width": "4")
       concat tag(:path, class: "opacity-75", fill: "currentColor", d: "M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z")
     end

@@ -1,17 +1,17 @@
 <% flash_messages.each do |flash| %>
   <div class="<%= flash[:classes] %>" data-flash-type="<%= flash[:type] %>">
-    <div class="flex items-start justify-between">
-      <div class="flex items-start">
-        <p class="text-sm">
-          <% if icon_for_type(flash[:type]).present? %>
-            <span class="flex-shrink-0 mr-3 text-lg">
-              <%= icon_for_type(flash[:type]) %>
-            </span>
-          <% end %>
+    <div class="flash-message-content">
+      <div class="flash-message-body">
+        <% if icon_for_type(flash[:type]).present? %>
+          <span class="flash-message-icon">
+            <%= icon_for_type(flash[:type]) %>
+          </span>
+        <% end %>
+        <p class="flash-message-text">
           <%= flash[:message] %>
         </p>
       </div>
-      <button type="button" class="flex-shrink-0 ml-3 text-lg hover:opacity-75" onclick="this.parentElement.parentElement.remove()">
+      <button type="button" class="flash-message-dismiss" onclick="this.parentElement.parentElement.remove()">
         ×
       </button>
     </div>

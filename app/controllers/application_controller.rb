@@ -6,4 +6,5 @@ class ApplicationController < ActionController::Base
   include DeviseConfiguration
   include InternationalizationSupport
   include DeviseLayoutConcern
+  include OnboardingRedirection
 end

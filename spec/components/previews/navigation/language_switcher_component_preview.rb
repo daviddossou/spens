@@ -1,107 +1,35 @@
 # frozen_string_literal: true
 
 class Navigation::LanguageSwitcherComponentPreview < ViewComponent::Preview
-  # Default language switcher (EN/FR)
   def default
     render Navigation::LanguageSwitcherComponent.new(
       current_locale: :en,
-      available_locales: [ :en, :fr ],
+      available_locales: [:en, :fr],
       params: {}
     )
   end
 
-  # With current locale as French
-  def french_selected
+  def multilingual_app
     render Navigation::LanguageSwitcherComponent.new(
-      current_locale: :fr,
-      available_locales: [ :en, :fr ],
+      current_locale: :es,
+      available_locales: [:en, :fr, :es, :de, :it],
       params: {}
     )
   end
 
-  # Multiple languages
-  def multiple_languages
+  def with_page_state
     render Navigation::LanguageSwitcherComponent.new(
       current_locale: :en,
-      available_locales: [ :en, :fr, :es, :de, :it ],
-      params: {}
+      available_locales: [:en, :fr],
+      params: { page: 2, search: "financial goals", category: "savings" }
     )
   end
 
-  # With existing parameters (simulating page state)
-  def with_parameters
+  def single_language_edge_case
     render Navigation::LanguageSwitcherComponent.new(
       current_locale: :en,
-      available_locales: [ :en, :fr ],
-      params: { page: 2, search: "test query", filter: "active" }
-    )
-  end
-
-  # Single language (edge case)
-  def single_language
-    render Navigation::LanguageSwitcherComponent.new(
-      current_locale: :en,
-      available_locales: [ :en ],
+      available_locales: [:en],
       params: {}
     )
-  end
-
-  # Many languages (stress test)
-  def many_languages
-    render Navigation::LanguageSwitcherComponent.new(
-      current_locale: :en,
-      available_locales: [ :en, :fr, :es, :de, :it, :pt, :nl, :pl, :ru, :ja, :zh, :ar ],
-      params: {}
-    )
-  end
-
-  # No current locale (nil case)
-  def no_current_locale
-    render Navigation::LanguageSwitcherComponent.new(
-      current_locale: nil,
-      available_locales: [ :en, :fr ],
-      params: {}
-    )
-  end
-
-  # Empty locales (edge case)
-  def empty_locales
-    render Navigation::LanguageSwitcherComponent.new(
-      current_locale: :en,
-      available_locales: [],
-      params: {}
-    )
-  end
-
-  # Different styling showcase
-  def styling_showcase
-    render_with_template locals: {
-      components: [
-        {
-          title: "Default (EN selected)",
-          component: Navigation::LanguageSwitcherComponent.new(
-            current_locale: :en,
-            available_locales: [ :en, :fr ],
-            params: {}
-          )
-        },
-        {
-          title: "French selected",
-          component: Navigation::LanguageSwitcherComponent.new(
-            current_locale: :fr,
-            available_locales: [ :en, :fr ],
-            params: {}
-          )
-        },
-        {
-          title: "Multiple languages",
-          component: Navigation::LanguageSwitcherComponent.new(
-            current_locale: :es,
-            available_locales: [ :en, :fr, :es, :de ],
-            params: {}
-          )
-        }
-      ]
-    }
   end
 end

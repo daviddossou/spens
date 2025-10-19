@@ -1,0 +1,14 @@
+<%= content_tag :div, **final_html_options do %>
+  <% if show_bar %>
+    <div class="progress-bar">
+      <div class="progress-fill" style="width: <%= calculated_percentage %>%"></div>
+    </div>
+  <% end %>
+  <% if labels && steps.any? %>
+    <div class="step-labels">
+      <% steps.each do |step| %>
+        <span class="<%= step_classes(step) %>"><%= step_label(step) %></span>
+      <% end %>
+    </div>
+  <% end %>
+<% end %>
