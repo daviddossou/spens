@@ -1,0 +1,16 @@
+<%= form_with model: user, url: "#", data: { controller: "onboarding--financial-goals" } do |f| %>
+  <div class="grid grid-2">
+    <% goals.each do |goal| %>
+      <%= render Onboarding::FinancialGoals::SelectableCardComponent.new(
+        item: ActiveSupport::HashWithIndifferentAccess.new(goal),
+        form: f,
+        model: user
+      ) %>
+    <% end %>
+  </div>
+
+  <div class="preview-info mt-4">
+    <p>💡 This preview shows mixed selection states - some goals are pre-selected to demonstrate the visual difference.</p>
+    <p>Selected: Emergency Fund, Build Wealth</p>
+  </div>
+<% end %>

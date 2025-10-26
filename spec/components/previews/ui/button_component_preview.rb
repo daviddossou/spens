@@ -10,7 +10,11 @@ class Ui::ButtonComponentPreview < ViewComponent::Preview
   end
 
   def all_variants
-    variants = [ :primary, :secondary, :danger, :success, :warning, :outline ]
+    variants = [
+      :primary, :secondary, :danger, :success, :warning,
+      :"outline-primary", :"outline-secondary", :"outline-danger",
+      :"outline-success", :"outline-warning"
+    ]
 
     render_with_template locals: { variants: variants }
   end

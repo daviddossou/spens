@@ -31,13 +31,47 @@ en:
   onboarding:
     validations:
       invalid_goal: "%{goals} is not a valid financial goal"
+    errors:
+      generic: "Something went wrong. Please try again."
     financial_goals:
       show:
         title: "What are your main financial goals?"
         subtitle: "Select the goals that matter most to you. You can always change these later."
+      form:
         continue: "Continue"
+    profile_setups:
+      show:
+        title: "Set up your profile"
+        subtitle: "Tell us a bit about yourself to personalize your experience"
+      form:
+        back: "Back"
+        continue: "Continue"
+      select_field_component:
+        country_label: "Where do you live?"
+        country_help: "This helps us provide region-specific features"
+        currency_label: "What currency do you use?"
+        currency_help: "All amounts will be displayed in this currency"
+        income_frequency_label: "How often do you receive income?"
+        income_frequency_help: "This helps us plan your budget cycles"
+        main_income_source_label: "What is your main source of income?"
+        main_income_source_help: "Understanding your income helps us provide better financial advice"
+    progress_component:
+      financial_goal: "Financial Goals"
+      profile_setup: "Profile Setup"
+      account_setup: "Account Setup"
 
-  onboarding_progress_component:
-    financial_goal: "Financial Goals"
-    personal_info: "Personal Info"
-    account_setup: "Account Setup"
+    income_frequencies:
+      weekly: "Weekly"
+      biweekly: "Every two weeks"
+      monthly: "Monthly"
+      quarterly: "Every three months"
+      yearly: "Yearly"
+
+    income_sources:
+      salary: "Salary / Wages"
+      freelance: "Freelance / Contract work"
+      business: "Business income"
+      investments: "Investments / Dividends"
+      pension: "Pension / Retirement income"
+      rental: "Rental income"
+      other: "Other sources"

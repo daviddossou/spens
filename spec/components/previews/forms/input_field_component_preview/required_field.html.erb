@@ -1,0 +1,10 @@
+<%= form_with model: User.new, url: "#" do |f| %>
+  <%= render Forms::InputFieldComponent.new(
+    form: f,
+    field: :email,
+    type: :email_field,
+    label: "Required Email",
+    required: true,
+    help_text: "This field is required"
+  ) %>
+<% end %>

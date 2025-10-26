@@ -2,39 +2,18 @@ import { Controller } from "@hotwired/stimulus"
 
 // Connects to data-controller="onboarding--financial-goals"
 export default class extends Controller {
-  static targets = ["card"]
-  static classes = ["selected"]
-
   connect() {
-    this.updateCards()
-  }
-
-  toggle(event) {
-    const card = event.currentTarget
-    const checkbox = card.querySelector('input[type="checkbox"]')
-
-    checkbox.checked = !checkbox.checked
-    checkbox.dispatchEvent(new Event('change', { bubbles: true }))
-
-    this.updateCardState(card, checkbox.checked)
     this.updateSubmitButton()
-  }
 
-  updateCards() {
-    this.cardTargets.forEach(card => {
-      const checkbox = card.querySelector('input[type="checkbox"]')
-      if (checkbox) {
-        this.updateCardState(card, checkbox.checked)
+    // Listen for checkbox changes to update submit button
+    this.element.addEventListener('change', (event) => {
+      if (event.target.matches('input[type="checkbox"]')) {
+        this.updateSubmitButton()
       }
     })
-    this.updateSubmitButton()
   }
 
-  updateCardState(card, isSelected) {
-    card.classList.toggle('selected', isSelected)
-
-    card.dataset.selected = isSelected.toString()
-  } updateSubmitButton() {
+  updateSubmitButton() {
     const submitButton = this.element.querySelector('input[type="submit"], button[type="submit"]')
     const checkedBoxes = this.element.querySelectorAll('input[type="checkbox"]:checked')
 

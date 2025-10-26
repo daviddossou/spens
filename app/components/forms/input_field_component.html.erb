@@ -1,13 +1,13 @@
 <div class="<%= final_wrapper_classes %>">
-  <div class="flex">
+  <div class="form-label-wrapper">
     <%= form.label field, field_label, class: final_label_classes %>
     <% if required %>
-      <span class="text-danger ml-1">*</span>
+      <span class="form-label-required">*</span>
     <% end %>
   </div>
 
   <% if help_text %>
-    <p class="text-xs text-gray-500 mt-1"><%= help_text %></p>
+    <p class="form-help-text"><%= help_text %></p>
   <% end %>
 
   <div class="mt-1">
@@ -15,9 +15,9 @@
   </div>
 
   <% if has_errors? %>
-    <div class="mt-1">
+    <div class="form-errors">
       <% field_errors.each do |error| %>
-        <p class="<%= error_classes %>"><%= error %></p>
+        <p class="form-error-message"><%= error %></p>
       <% end %>
     </div>
   <% end %>

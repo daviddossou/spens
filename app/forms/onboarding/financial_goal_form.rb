@@ -1,5 +1,10 @@
 class Onboarding::FinancialGoalForm < BaseForm
   ##
+  # Constants
+  CURRENT_STEP = "onboarding_financial_goal"
+  NEXT_STEP = "onboarding_profile_setup"
+
+  ##
   # Attributes
   attr_accessor :user, :financial_goals
 
@@ -7,9 +12,6 @@ class Onboarding::FinancialGoalForm < BaseForm
   # Validations
   validates :financial_goals, presence: true
   validate :goals_are_allowed
-
-  CURRENT_STEP = "onboarding_financial_goal"
-  NEXT_STEP = "onboarding_personal_info"
 
   def initialize(user, payload = {})
     self.user = user
@@ -26,7 +28,7 @@ class Onboarding::FinancialGoalForm < BaseForm
 
     user.assign_attributes(financial_goals: financial_goals, onboarding_current_step: NEXT_STEP)
 
-    unless user.valid?
+    if user.invalid?
       promote_errors(user.errors.messages)
 
       return false

@@ -1,0 +1,50 @@
+<%= form_with model: @form,
+              url: onboarding_profile_setups_path,
+              method: :patch,
+              local: true,
+              class: "onboarding-form" do |form| %>
+  <%= render 'shared/form_errors', object: @form %>
+
+  <div class="form-grid">
+    <%= render Onboarding::ProfileSetups::SelectFieldComponent.new(
+      form: form,
+      field: :country,
+      required: true,
+      include_blank: true
+    ) %>
+
+    <%= render Onboarding::ProfileSetups::SelectFieldComponent.new(
+      form: form,
+      field: :currency,
+      required: true,
+      include_blank: true
+    ) %>
+
+    <%= render Onboarding::ProfileSetups::SelectFieldComponent.new(
+      form: form,
+      field: :income_frequency,
+      include_blank: true
+    ) %>
+
+    <%= render Onboarding::ProfileSetups::SelectFieldComponent.new(
+      form: form,
+      field: :main_income_source,
+      include_blank: true
+    ) %>
+  </div>
+
+  <div class="form-actions">
+    <%= render Ui::ButtonComponent.new(
+          text: t('.back'),
+          url: onboarding_financial_goals_path,
+          variant: :'outline-secondary',
+          size: :lg
+        ) %>
+    <%= render Ui::ButtonComponent.new(
+          text: t('.continue'),
+          type: :submit,
+          variant: :primary,
+          size: :lg
+        ) %>
+  </div>
+<% end %>

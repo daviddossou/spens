@@ -1,0 +1,9 @@
+<% user = User.new %>
+<% user.errors.add(:country, "can't be blank") %>
+
+<%= form_with model: user, url: "#" do |form| %>
+  <%= render Onboarding::ProfileSetups::SelectFieldComponent.new(
+    form: form,
+    field: :country
+  ) %>
+<% end %>

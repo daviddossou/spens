@@ -1,0 +1,49 @@
+<div style="max-width: 600px; padding: 2rem;">
+  <h2 style="margin-bottom: 2rem;">Multiple Select Fields</h2>
+
+  <%= form_with model: User.new, url: "#" do |f| %>
+    <%= render Forms::SelectFieldComponent.new(
+      form: f,
+      field: :country,
+      options: { 'BF' => 'Burkina Faso', 'CI' => "Côte d'Ivoire", 'SN' => 'Senegal', 'FR' => 'France' },
+      label: "Country",
+      required: true,
+      include_blank: "Select country...",
+      help_text: "Where do you live?"
+    ) %>
+
+    <div style="margin-top: 1.5rem;">
+      <%= render Forms::SelectFieldComponent.new(
+        form: f,
+        field: :currency,
+        options: { 'XOF' => 'West African CFA Franc', 'EUR' => 'Euro', 'USD' => 'US Dollar' },
+        label: "Currency",
+        required: true,
+        include_blank: "Select currency...",
+        help_text: "What currency do you want to use?"
+      ) %>
+    </div>
+
+    <div style="margin-top: 1.5rem;">
+      <%= render Forms::SelectFieldComponent.new(
+        form: f,
+        field: :income_frequency,
+        options: { 'weekly' => 'Weekly', 'monthly' => 'Monthly', 'annually' => 'Yearly' },
+        label: "Income Frequency",
+        include_blank: "Select frequency...",
+        help_text: "Optional: How often do you receive income?"
+      ) %>
+    </div>
+
+    <div style="margin-top: 1.5rem;">
+      <%= render Forms::SelectFieldComponent.new(
+        form: f,
+        field: :income_source,
+        options: { 'salary' => 'Salary', 'freelance' => 'Freelance', 'business' => 'Business', 'other' => 'Other' },
+        label: "Main Income Source",
+        include_blank: "Select source...",
+        help_text: "Optional: What is your primary source of income?"
+      ) %>
+    </div>
+  <% end %>
+</div>

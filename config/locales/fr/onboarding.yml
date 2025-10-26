@@ -31,13 +31,47 @@ fr:
   onboarding:
     validations:
       invalid_goal: "%{goals} n'est pas un objectif financier valide"
+    errors:
+      generic: "Une erreur est survenue. Veuillez réessayer."
     financial_goals:
       show:
         title: "Quels sont tes principaux objectifs financiers ?"
         subtitle: "Sélectionne les objectifs qui comptent le plus pour toi. Tu pourras toujours les modifier plus tard."
+      form:
         continue: "Continuer"
+    profile_setups:
+      show:
+        title: "Configure ton profil"
+        subtitle: "Parle-nous un peu de toi pour personnaliser ton expérience"
+      form:
+        back: "Retour"
+        continue: "Continuer"
+      select_field_component:
+        country_label: "Où habites-tu ?"
+        country_help: "Cela nous aide à fournir des fonctionnalités spécifiques à ta région"
+        currency_label: "Quelle devise utilises-tu ?"
+        currency_help: "Tous les montants seront affichés dans cette devise"
+        income_frequency_label: "À quelle fréquence reçois-tu des revenus ?"
+        income_frequency_help: "Cela nous aide à planifier tes cycles budgétaires"
+        main_income_source_label: "Quelle est ta principale source de revenus ?"
+        main_income_source_help: "Comprendre tes revenus nous aide à fournir de meilleurs conseils financiers"
+    progress_component:
+      financial_goal: "Objectifs Financiers"
+      profile_setup: "Configuration du Profil"
+      account_setup: "Configuration des Comptes"
 
-  onboarding_progress_component:
-    financial_goal: "Objectifs Financiers"
-    personal_info: "Informations Personnelles"
-    account_setup: "Configuration des Comptes"
+    income_frequencies:
+      weekly: "Hebdomadaire"
+      biweekly: "Toutes les deux semaines"
+      monthly: "Mensuel"
+      quarterly: "Trimestriel"
+      yearly: "Annuel"
+
+    income_sources:
+      salary: "Salaire"
+      freelance: "Freelance / Travail indépendant"
+      business: "Revenus d'entreprise"
+      investments: "Investissements / Dividendes"
+      pension: "Pension / Retraite"
+      rental: "Revenus locatifs"
+      other: "Autres sources"

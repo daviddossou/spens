@@ -1,0 +1,11 @@
+<%= form_with model: User.new, url: "#" do |f| %>
+  <%= render Forms::SelectFieldComponent.new(
+    form: f,
+    field: :currency,
+    options: currencies,
+    label: "Currency (Required)",
+    required: true,
+    include_blank: "Please select a currency...",
+    help_text: "This field is required"
+  ) %>
+<% end %>

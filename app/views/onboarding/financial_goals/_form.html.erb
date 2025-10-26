@@ -1,0 +1,21 @@
+<%= form_with model: @form,
+              url: onboarding_financial_goals_path,
+              method: :patch,
+              local: true,
+              class: "onboarding-form",
+              data: { controller: "onboarding--financial-goals" } do |form| %>
+  <%= render 'shared/form_errors', object: @form %>
+
+  <%= render Onboarding::FinancialGoals::GridComponent.new(form_builder: form, model: @form) %>
+
+  <div class="form-actions">
+    <%= render Ui::ButtonComponent.new(
+          text: t('.continue'),
+          type: :submit,
+          variant: :primary,
+          size: :lg,
+          disabled: @form.financial_goals.empty?,
+          form: form
+        ) %>
+  </div>
+<% end %>

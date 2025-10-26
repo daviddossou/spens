@@ -1,0 +1,13 @@
+<%= form_with model: User.new, url: "#" do |form| %>
+  <%= render Ui::SelectableCardComponent.new(
+    item: {
+      name: "Custom Styled Card",
+      description: "This card has custom CSS classes",
+      key: "custom"
+    },
+    form: form,
+    field: :preferences,
+    css_class: "premium-card",
+    description_classes: "text-sm text-gray-600"
+  ) %>
+<% end %>

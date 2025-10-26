@@ -47,8 +47,9 @@ class User < ApplicationRecord
 
   ##
   # Constants
-  CURRENCIES = %w[XOF XAF EUR USD GBP CAD AUD JPY CHF CNY INR BRL].freeze
-  INCOME_FREQUENCIES = %w[weekly biweekly monthly quarterly annually].freeze
+  CURRENCIES = CurrencyService.all_codes.freeze
+  INCOME_FREQUENCIES = Onboarding::IncomeService::FREQUENCIES.freeze
+  INCOME_SOURCES = Onboarding::IncomeService::SOURCES.freeze
   FINANCIAL_GOALS = %w[
     save_for_emergency
     pay_off_debt
@@ -69,10 +70,11 @@ class User < ApplicationRecord
   validates :currency, inclusion: { in: CURRENCIES }, allow_nil: true
   validates :country, presence: true, if: :requires_country?
   validates :income_frequency, inclusion: { in: INCOME_FREQUENCIES }, allow_blank: true
+  validates :main_income_source, inclusion: { in: INCOME_SOURCES }, allow_blank: true
 
   enum :onboarding_current_step, {
     onboarding_financial_goal: "onboarding_financial_goal",
-    onboarding_personal_info: "onboarding_personal_info",
+    onboarding_profile_setup: "onboarding_profile_setup",
     onboarding_account_setup: "onboarding_account_setup",
     onboarding_completed: "onboarding_completed"
   }
@@ -86,6 +88,6 @@ class User < ApplicationRecord
   private
 
     def requires_country?
-      %w[onboarding_account_setup onboarding_completed].include?(onboarding_current_step)
+      %w[onboarding_profile_setup onboarding_account_setup onboarding_completed].include?(onboarding_current_step)
     end
 end

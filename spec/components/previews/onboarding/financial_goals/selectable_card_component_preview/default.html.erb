@@ -1,0 +1,7 @@
+<%= form_with model: user, url: "#", data: { controller: "onboarding--financial-goals" } do |f| %>
+  <%= render Onboarding::FinancialGoals::SelectableCardComponent.new(
+    item: goal,
+    form: f,
+    model: user
+  ) %>
+<% end %>

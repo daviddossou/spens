@@ -1,0 +1,25 @@
+<div class="<%= final_wrapper_classes %>">
+  <div class="form-label-wrapper">
+    <%= form.label field, field_label, class: final_label_classes %>
+    <% if required %>
+      <span class="form-label-required">*</span>
+    <% end %>
+  </div>
+
+  <% if help_text.present? %>
+    <p class="form-help-text"><%= help_text %></p>
+  <% end %>
+
+  <%= form.select field,
+                  has_priority_options? ? priority_and_regular_options : options_for_select,
+                  { include_blank: include_blank },
+                  { class: final_field_classes, **final_field_options } %>
+
+  <% if has_errors? %>
+    <div class="form-errors">
+      <% error_messages.each do |message| %>
+        <p class="form-error-message"><%= message %></p>
+      <% end %>
+    </div>
+  <% end %>
+</div>

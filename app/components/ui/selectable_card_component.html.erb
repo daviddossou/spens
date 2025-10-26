@@ -1,7 +1,5 @@
 <%= content_tag :div, **final_html_options do %>
-  <% if render_checkbox? %>
-    <%= render Forms::CheckboxFieldComponent.new(**checkbox_options) %>
-  <% end %>
+  <%= render Forms::CheckboxFieldComponent.new(**checkbox_options) %>
 
   <div class="<%= content_section_classes %>">
     <h4><%= item_name %></h4>

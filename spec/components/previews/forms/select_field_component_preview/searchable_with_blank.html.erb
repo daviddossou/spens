@@ -1,0 +1,11 @@
+<%= form_with model: User.new, url: "#" do |f| %>
+  <%= render Forms::SelectFieldComponent.new(
+    form: f,
+    field: :country,
+    options: countries,
+    searchable: true,
+    label: "Country (Searchable with blank)",
+    include_blank: true,
+    help_text: "Blank option with extra padding for floating label effect"
+  ) %>
+<% end %>

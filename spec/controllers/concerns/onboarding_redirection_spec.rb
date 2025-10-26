@@ -97,16 +97,16 @@ RSpec.describe OnboardingRedirection, type: :controller do
       end
     end
 
-    context 'when controller is account_setup' do
-      before { allow(controller).to receive(:controller_name).and_return('account_setup') }
+    context 'when controller is account_setups' do
+      before { allow(controller).to receive(:controller_name).and_return('account_setups') }
 
       it 'is exempt from redirection' do
         expect(controller.send(:onboarding_redirection_exempt?)).to be true
       end
     end
 
-    context 'when controller is personal_info' do
-      before { allow(controller).to receive(:controller_name).and_return('personal_info') }
+    context 'when controller is profile_setups' do
+      before { allow(controller).to receive(:controller_name).and_return('profile_setups') }
 
       it 'is exempt from redirection' do
         expect(controller.send(:onboarding_redirection_exempt?)).to be true

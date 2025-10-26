@@ -1,0 +1,142 @@
+/* TomSelect Custom Styles for Spens */
+/* Base TomSelect styles are loaded from CDN in the layout */
+
+/* Override TomSelect styles to match our form design */
+.ts-wrapper {
+  width: 100%;
+}
+
+.ts-control {
+  background-color: white;
+  border: 1px solid var(--border-default);
+  border-radius: 6px;
+  padding: 0.5rem 2.5rem 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--text-default);
+  transition: all 0.2s ease;
+  cursor: pointer;
+  min-height: auto;
+}
+
+/* When no value is selected AND the item is truly empty (no placeholder text), add extra top padding for floating label */
+.ts-control:has(.item[data-value=""]:empty) {
+  padding-top: 1.75rem;
+}
+
+/* When there's placeholder text, use normal padding */
+.ts-control:has(.item[data-value=""]:not(:empty)) {
+  padding-top: 0.5rem;
+}
+
+.ts-control:hover {
+  border-color: var(--color-primary);
+}
+
+.ts-wrapper.focus .ts-control {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.1);
+}
+
+.ts-dropdown {
+  background: white;
+  border: 1px solid var(--border-default);
+  border-radius: 6px;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+  margin-top: 0.25rem;
+  max-height: 300px;
+}
+
+.ts-dropdown-content {
+  max-height: 280px;
+  overflow-y: auto;
+}
+
+.ts-dropdown .option {
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.ts-dropdown .option:hover,
+.ts-dropdown .option.active {
+  background-color: var(--color-gray-100);
+  color: var(--color-gray-900);
+}
+
+.ts-dropdown .option.selected {
+  background-color: var(--color-primary);
+  color: var(--color-white);
+}
+
+/* Priority options divider */
+.ts-dropdown .divider {
+  height: 1px;
+  background-color: var(--color-gray-300);
+  margin: 0.5rem 0;
+  padding: 0;
+  pointer-events: none;
+  font-size: 0.75rem;
+  color: var(--color-gray-400);
+  text-align: center;
+  line-height: 1;
+}
+
+.ts-dropdown .optgroup-header {
+  padding: 0.5rem 1rem;
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: var(--color-gray-600);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background-color: var(--color-gray-50);
+}
+
+.ts-dropdown .optgroup-divider {
+  height: 1px;
+  background-color: var(--color-gray-300);
+  margin: 0.5rem 0;
+}
+
+/* Error state */
+.form-select-error+.ts-wrapper .ts-control {
+  border-color: var(--color-danger);
+}
+
+.form-select-error+.ts-wrapper.focus .ts-control {
+  border-color: var(--color-danger);
+  box-shadow: 0 0 0 3px rgba(var(--color-danger-rgb), 0.1);
+}
+
+/* Disabled state */
+.ts-wrapper.disabled .ts-control {
+  background-color: var(--color-light-gray);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* Input field inside dropdown for searching */
+.ts-dropdown .dropdown-input {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--color-gray-200);
+}
+
+.ts-dropdown .dropdown-input input {
+  width: 100%;
+  border: 1px solid var(--color-gray-300);
+  border-radius: 0.375rem;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+}
+
+.ts-dropdown .dropdown-input input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 0.15rem rgba(55, 74, 170, 0.25);
+}
+
+/* Hide original select when TomSelect is initialized */
+.ts-wrapper+.form-select {
+  display: none !important;
+}

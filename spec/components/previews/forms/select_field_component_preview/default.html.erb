@@ -1,0 +1,9 @@
+<%= form_with model: User.new, url: "#" do |f| %>
+  <%= render Forms::SelectFieldComponent.new(
+    form: f,
+    field: field_name,
+    options: country_options,
+    label: "Select #{field_name.to_s.humanize}",
+    help_text: "Choose your #{field_name}"
+  ) %>
+<% end %>

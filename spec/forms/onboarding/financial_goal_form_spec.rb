@@ -19,7 +19,7 @@ RSpec.describe Onboarding::FinancialGoalForm, type: :model do
     end
 
     it 'defines NEXT_STEP' do
-      expect(described_class::NEXT_STEP).to eq('onboarding_personal_info')
+      expect(described_class::NEXT_STEP).to eq('onboarding_profile_setup')
     end
   end
 
@@ -50,9 +50,9 @@ RSpec.describe Onboarding::FinancialGoalForm, type: :model do
 
     context 'when user already has onboarding_current_step' do
       it 'does not change existing onboarding_current_step' do
-        user.onboarding_current_step = 'onboarding_personal_info'
+        user.onboarding_current_step = 'onboarding_profile_setup'
         described_class.new(user)
-        expect(user.onboarding_current_step).to eq('onboarding_personal_info')
+        expect(user.onboarding_current_step).to eq('onboarding_profile_setup')
       end
     end
 
@@ -127,7 +127,7 @@ RSpec.describe Onboarding::FinancialGoalForm, type: :model do
 
       it 'updates user onboarding_current_step to NEXT_STEP' do
         form.submit
-        expect(user.reload.onboarding_current_step).to eq('onboarding_personal_info')
+        expect(user.reload.onboarding_current_step).to eq('onboarding_profile_setup')
       end
 
       it 'saves the user to the database' do
@@ -261,7 +261,7 @@ RSpec.describe Onboarding::FinancialGoalForm, type: :model do
         form.submit
       }.to change { user.reload.onboarding_current_step }
         .from('onboarding_financial_goal')
-        .to('onboarding_personal_info')
+        .to('onboarding_profile_setup')
     end
 
     it 'persists multiple financial goals' do

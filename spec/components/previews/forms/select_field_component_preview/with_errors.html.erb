@@ -1,0 +1,10 @@
+<%= form_with model: user, url: "#" do |f| %>
+  <%= render Forms::SelectFieldComponent.new(
+    form: f,
+    field: :country,
+    options: ['Option 1', 'Option 2', 'Option 3'],
+    label: "Field with Error",
+    required: true,
+    help_text: "This field has validation errors"
+  ) %>
+<% end %>

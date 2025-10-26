@@ -1,0 +1,7 @@
+<%= form_with model: user, url: "#" do |f| %>
+  <%= render Forms::CheckboxFieldComponent.new(
+    form: f,
+    field: :email,
+    label: "Email notifications"
+  ) %>
+<% end %>

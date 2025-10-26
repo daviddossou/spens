@@ -1,0 +1,10 @@
+<%= form_with model: User.new, url: "#" do |f| %>
+  <%= render Forms::CheckboxFieldComponent.new(
+    form: f,
+    field: :premium_features,
+    label: "Enable premium features",
+    wrapper_classes: "bg-blue-50 p-3 rounded-lg border border-blue-200",
+    label_classes: "text-blue-900 font-medium",
+    checkbox_classes: "text-blue-600 focus:ring-blue-500"
+  ) %>
+<% end %>

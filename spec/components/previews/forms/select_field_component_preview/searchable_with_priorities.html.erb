@@ -1,0 +1,12 @@
+<%= form_with model: User.new, url: "#" do |f| %>
+  <%= render Forms::SelectFieldComponent.new(
+    form: f,
+    field: :country,
+    options: countries,
+    priority_options: priority,
+    searchable: true,
+    label: "Country (Searchable with priorities)",
+    include_blank: "Search or select a country...",
+    help_text: "Frequently used countries appear at the top, or search for any country"
+  ) %>
+<% end %>

@@ -1,0 +1,16 @@
+<%= form_with model: User.new, url: "#" do |form| %>
+  <%= render Ui::SelectableCardComponent.new(
+    item: {
+      name: "Interactive Card",
+      description: "This card has Stimulus data attributes",
+      key: "interactive"
+    },
+    form: form,
+    field: :preferences,
+    data: {
+      'controller-target': 'card',
+      action: 'click->controller#toggle',
+      value: 'interactive-option'
+    }
+  ) %>
+<% end %>

@@ -1,0 +1,12 @@
+<%= form_with model: User.new, url: "#" do |form| %>
+  <%= render Ui::SelectableCardComponent.new(
+    item: {
+      name: "Selected Option",
+      description: "This card is currently selected",
+      key: "selected"
+    },
+    form: form,
+    field: :preferences,
+    selected: true
+  ) %>
+<% end %>

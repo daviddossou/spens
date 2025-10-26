@@ -5,6 +5,11 @@
   align-items: center;
 }
 
+/* Rails wraps fields with errors in this div - make it transparent to layout */
+.checkbox-field .field_with_errors {
+  display: contents;
+}
+
 .checkbox-field input[type="checkbox"] {
   width: 1rem;
   height: 1rem;

@@ -1,0 +1,10 @@
+<%= form_with model: User.new, url: "#" do |f| %>
+  <%= render Forms::CheckboxFieldComponent.new(
+    form: f,
+    field: :financial_goals,
+    label: "Build retirement savings",
+    value: "retirement",
+    multiple: true,
+    checked: true
+  ) %>
+<% end %>

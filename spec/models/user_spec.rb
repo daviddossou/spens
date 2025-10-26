@@ -157,24 +157,11 @@ RSpec.describe User, type: :model do
           user.country = nil
           expect(user).to be_valid
         end
-
-        it "does not require country at personal info step" do
-          user.onboarding_current_step = "onboarding_personal_info"
-          user.country = nil
-          expect(user).to be_valid
-        end
       end
 
       context "when onboarding step requires country" do
-        it "requires country at account setup step" do
-          user.onboarding_current_step = "onboarding_account_setup"
-          user.country = nil
-            expect(user).not_to be_valid
-          expect(user.errors[:country]).to include("can't be blank")
-        end
-
-        it "requires country once onboarding is completed" do
-          user.onboarding_current_step = "onboarding_completed"
+        it "requires country on onboarding profile setup step" do
+          user.onboarding_current_step = "onboarding_profile_setup"
           user.country = nil
           expect(user).not_to be_valid
           expect(user.errors[:country]).to include("can't be blank")
@@ -225,7 +212,7 @@ RSpec.describe User, type: :model do
     it "defines expected enum values" do
       expect(User.onboarding_current_steps.keys).to contain_exactly(
         "onboarding_financial_goal",
-        "onboarding_personal_info",
+        "onboarding_profile_setup",
         "onboarding_account_setup",
         "onboarding_completed"
       )
@@ -240,9 +227,9 @@ RSpec.describe User, type: :model do
       expect(user.send(:requires_country?)).to be false
     end
 
-    it "returns false for personal info step" do
-      user.onboarding_current_step = "onboarding_personal_info"
-      expect(user.send(:requires_country?)).to be false
+    it "returns true for profile setup step" do
+      user.onboarding_current_step = "onboarding_profile_setup"
+      expect(user.send(:requires_country?)).to be true
     end
 
     it "returns true for account setup step" do

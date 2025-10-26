@@ -1,0 +1,38 @@
+<div style="max-width: 600px; padding: 2rem;">
+  <h2 style="margin-bottom: 2rem;">Different Option Formats</h2>
+
+  <%= form_with model: User.new, url: "#" do |f| %>
+    <div style="margin-bottom: 2rem;">
+      <h3 style="margin-bottom: 1rem;">Hash Options (value => label)</h3>
+      <%= render Forms::SelectFieldComponent.new(
+        form: f,
+        field: :country,
+        options: { 'US' => 'United States', 'CA' => 'Canada', 'MX' => 'Mexico' },
+        label: "Country",
+        help_text: "Options provided as { value => label } hash"
+      ) %>
+    </div>
+
+    <div style="margin-bottom: 2rem;">
+      <h3 style="margin-bottom: 1rem;">Array of Arrays [[label, value], ...]</h3>
+      <%= render Forms::SelectFieldComponent.new(
+        form: f,
+        field: :size,
+        options: [['Small', 'sm'], ['Medium', 'md'], ['Large', 'lg']],
+        label: "Size",
+        help_text: "Options provided as nested arrays"
+      ) %>
+    </div>
+
+    <div style="margin-bottom: 2rem;">
+      <h3 style="margin-bottom: 1rem;">Simple Array [value, value, ...]</h3>
+      <%= render Forms::SelectFieldComponent.new(
+        form: f,
+        field: :status,
+        options: ['Draft', 'Published', 'Archived'],
+        label: "Status",
+        help_text: "Options provided as simple array (label = value)"
+      ) %>
+    </div>
+  <% end %>
+</div>

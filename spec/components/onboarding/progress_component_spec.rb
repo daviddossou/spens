@@ -9,8 +9,8 @@ RSpec.describe Onboarding::ProgressComponent, type: :component do
     expect(rendered.css('.progress-fill').first['style']).to include('33')
   end
 
-  it 'renders personal info step with correct percentage' do
-    rendered = render_inline(described_class.new(current_step: :personal_info))
+  it 'renders profile setup step with correct percentage' do
+    rendered = render_inline(described_class.new(current_step: :profile_setup))
     expect(rendered.css('.progress-fill').first['style']).to include('67')
   end
 
@@ -25,8 +25,8 @@ RSpec.describe Onboarding::ProgressComponent, type: :component do
   end
 
   it 'applies active class to current step' do
-    rendered = render_inline(described_class.new(current_step: :personal_info))
+    rendered = render_inline(described_class.new(current_step: :profile_setup))
     active = rendered.css('.step.active').text
-    expect(active).to match(/Personal Info/i)
+    expect(active).to match(/Profile Setup/i)
   end
 end

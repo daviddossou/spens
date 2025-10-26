@@ -3,7 +3,8 @@
  * Uses CSS custom properties for consistent theming
  */
 
-@import "colors.css";
-@import "layout.css";
-@import "components.css";
-@import "previews.css";
+@import url("colors.css");
+@import url("layout.css");
+@import url("components.css");
+@import url("previews.css");
+@import url("tom-select.css");

@@ -11,13 +11,13 @@ class Onboarding::FinancialGoalsController < ApplicationController
     build_form(financial_goals_params)
 
     if @form.submit
-      redirect_to next_onboarding_step
+      redirect_to next_step_path
     else
       render :show, status: :unprocessable_entity
     end
   rescue => e
     Rails.logger.error "Error when updating financial goals: #{e.message}"
-    redirect_to onboarding_financial_goals_path, alert: "Something went wrong. Please try again."
+    redirect_to onboarding_financial_goals_path, alert:  t('onboarding.errors.generic')
   end
 
   private
@@ -36,8 +36,8 @@ class Onboarding::FinancialGoalsController < ApplicationController
     redirect_to dashboard_path if current_user.onboarding_completed?
   end
 
-  def next_onboarding_step
+  def next_step_path
     current_user.reload
-    Onboarding::StepNavigator.new(current_user).next_step_path
+    Onboarding::StepNavigator.new(current_user).current_step_path
   end
 end

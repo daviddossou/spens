@@ -1,0 +1,8 @@
+<%= form_with model: user, url: "#" do |f| %>
+  <%= render Forms::CheckboxFieldComponent.new(
+    form: f,
+    field: :email,
+    label: "I accept the terms and conditions (required)",
+    help_text: "You must accept our terms to proceed with registration"
+  ) %>
+<% end %>

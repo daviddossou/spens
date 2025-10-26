@@ -1,0 +1,13 @@
+<%= form_with model: User.new, url: "#" do |form| %>
+  <%= render Ui::SelectableCardComponent.new(
+    item: {
+      name: "Card with Long Content",
+      description: "This is a demonstration of how the selectable card component handles longer descriptions and content. It should wrap appropriately and maintain good readability even with extensive text content that spans multiple lines.",
+      key: "long-content"
+    },
+    form: form,
+    field: :preferences,
+    selected: false,
+    description_classes: "text-sm leading-relaxed"
+  ) %>
+<% end %>

@@ -1,6 +1,7 @@
 /* Onboarding-specific Styles */
 .onboarding-container {
   max-width: 800px;
+  min-width: 500px;
   margin: 0 auto;
   padding: 2rem 1rem;
   min-height: 100vh;
@@ -9,6 +10,7 @@
 }
 
 .onboarding-progress {
+  min-width: 700px;
   margin-bottom: 3rem;
 }
 

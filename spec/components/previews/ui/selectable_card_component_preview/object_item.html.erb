@@ -1,0 +1,11 @@
+<% item_struct = Struct.new(:name, :description, :id) %>
+<% item = item_struct.new("Object Item", "This item uses method access", 123) %>
+
+<%= form_with model: User.new, url: "#" do |form| %>
+  <%= render Ui::SelectableCardComponent.new(
+    item: item,
+    form: form,
+    field: :preferences,
+    selected: true
+  ) %>
+<% end %>

@@ -1,0 +1,9 @@
+<%= form_with model: user, url: "#" do |f| %>
+  <%= render Forms::InputFieldComponent.new(
+    form: f,
+    field: :email,
+    type: :email_field,
+    label: "Email with Error",
+    required: true
+  ) %>
+<% end %>

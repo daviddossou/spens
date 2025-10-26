@@ -130,6 +130,19 @@ case $1 in
     echo "🎨 Building Tailwind CSS (rails tailwindcss:build)..."
     docker-compose exec web bin/rails tailwindcss:build
     ;;
+  "rake")
+    if [ -z "$2" ]; then
+      echo "📋 Please specify a rake task"
+      echo "Example: ./bin/docker-manage rake db:migrate"
+    else
+      echo "📋 Running rake task: $2 $3 $4 $5 $6 $7 $8 $9"
+      docker-compose exec web bundle exec rake "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9"
+    fi
+    ;;
+  "status")
+    echo "📊 Container Status:"
+    docker-compose ps
+    ;;
   *)
     echo "🐳 Spens Docker Management"
     echo ""
@@ -159,6 +172,10 @@ case $1 in
     echo "  rubocop-fix-all Auto-fix ALL issues including unsafe (optionally specify file/directory)"
     echo "  tailwind-build  Run Tailwind CSS build (bin/rails tailwindcss:build)"
     echo ""
+    echo "Other Commands:"
+    echo "  rake         Run rake tasks (specify task: db:migrate, currencies:generate_translations, etc.)"
+    echo "  status       Show status of all containers"
+    echo ""
     echo "Examples:"
     echo "  ./bin/docker-manage up"
     echo "  ./bin/docker-manage restart web                    # Restart only web service"
@@ -185,5 +202,10 @@ case $1 in
     echo "  ./bin/docker-manage rubocop-fix app/models/user.rb # Auto-fix safe issues (specific file)"
     echo "  ./bin/docker-manage rubocop-fix-all                # Auto-fix ALL issues (all files)"
     echo "  ./bin/docker-manage rubocop-fix-all app/models/    # Auto-fix ALL issues (directory)"
+    echo ""
+    echo "Other Examples:"
+    echo "  ./bin/docker-manage rake currencies:generate_translations  # Generate currency translations"
+    echo "  ./bin/docker-manage rake -T                        # List all rake tasks"
+    echo "  ./bin/docker-manage status                         # Show container status"
     ;;
 esac

@@ -102,7 +102,7 @@ RSpec.describe Forms::InputFieldComponent, type: :component do
       )
 
       classes = component_with_classes.send(:final_wrapper_classes)
-      expect(classes).to include('space-y-1')
+      expect(classes).to include('form-field')
       expect(classes).to include('custom-wrapper')
     end
 
@@ -114,8 +114,19 @@ RSpec.describe Forms::InputFieldComponent, type: :component do
       )
 
       classes = component_with_classes.send(:final_field_classes)
-      expect(classes).to include('appearance-none block w-full px-3 py-2 border border-slate-gray rounded-md placeholder-gray-400 focus:outline-none focus:ring-secondary focus:border-steel-blue sm:text-sm')
+      expect(classes).to include('form-input')
       expect(classes).to include('custom-field')
+    end
+
+    it "adds error classes when field has errors" do
+      form_with_errors = mock_form_with_errors
+      component_with_errors = described_class.new(
+        form: form_with_errors,
+        field: :email
+      )
+
+      classes = component_with_errors.send(:final_field_classes)
+      expect(classes).to include('form-input-error')
     end
   end
 
@@ -123,15 +134,23 @@ RSpec.describe Forms::InputFieldComponent, type: :component do
     subject(:rendered) { render_inline(component) }
 
     it "renders the component structure" do
-      expect(rendered.css('div')).to be_present
+      expect(rendered.css('.form-field')).to be_present
+    end
+
+    it "renders label wrapper" do
+      expect(rendered.css('.form-label-wrapper')).to be_present
+    end
+
+    it "renders form label" do
+      expect(rendered.css('.form-label')).to be_present
     end
 
     context "with required field" do
       let(:component) { described_class.new(form: form, field: field, required: true) }
 
       it "shows required indicator" do
+        expect(rendered.css('.form-label-required')).to be_present
         expect(rendered.to_html).to include('*')
-        expect(rendered.to_html).to include('text-danger')
       end
     end
 
@@ -144,8 +163,8 @@ RSpec.describe Forms::InputFieldComponent, type: :component do
         )
       end
 
-      it "displays help text" do
-        expect(rendered.to_html).to include('We will never share your email')
+      it "displays help text in correct element" do
+        expect(rendered.css('.form-help-text').text).to include('We will never share your email')
       end
     end
 
@@ -153,20 +172,25 @@ RSpec.describe Forms::InputFieldComponent, type: :component do
       let(:form) { mock_form_with_errors }
       let(:field) { :email }
 
-      it "displays error messages" do
+      it "displays error messages in error container" do
+        expect(rendered.css('.form-errors')).to be_present
+        expect(rendered.css('.form-error-message')).to be_present
         expect(rendered.to_html).to include("Email can't be blank")
-        expect(rendered.to_html).to include('text-danger')
+      end
+
+      it "adds error class to input field" do
+        expect(rendered.css('.form-input-error')).to be_present
       end
     end
   end
 
   describe "input type handling" do
-    let(:supported_types) { [ :text_field, :email_field, :password_field, :number_field, :url_field, :tel_field ] }
+    let(:supported_types) { [ :text_field, :email_field, :password_field, :number_field, :url_field, :telephone_field ] }
 
     it "handles all supported input types without errors" do
       supported_types.each do |input_type|
         expect {
-          render_inline(described_class.new(form: form, field: :test, type: input_type))
+          render_inline(described_class.new(form: form, field: :email, type: input_type))
         }.not_to raise_error
       end
     end

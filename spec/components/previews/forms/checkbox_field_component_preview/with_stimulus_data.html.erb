@@ -1,0 +1,13 @@
+<%= form_with model: User.new, url: "#" do |f| %>
+  <%= render Forms::CheckboxFieldComponent.new(
+    form: f,
+    field: :tracking_consent,
+    label: "Allow analytics tracking",
+    help_text: "Help us improve our service by sharing anonymous usage data",
+    wrapper_data: {
+      controller: "analytics-consent",
+      action: "change->analytics-consent#toggle",
+      "analytics-consent-target": "checkbox"
+    }
+  ) %>
+<% end %>

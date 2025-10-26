@@ -1,0 +1,12 @@
+<%= form_with model: User.new, url: "#" do |f| %>
+  <%= render Forms::SelectFieldComponent.new(
+    form: f,
+    field: :size,
+    options: sizes,
+    label: "Size",
+    wrapper_classes: "custom-wrapper",
+    label_classes: "custom-label",
+    field_classes: "custom-select",
+    help_text: "Select your preferred size"
+  ) %>
+<% end %>

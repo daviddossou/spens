@@ -1,0 +1,11 @@
+<%= form_with model: User.new, url: "#" do |f| %>
+  <%= render Forms::CheckboxFieldComponent.new(
+    form: f,
+    field: :advanced_settings,
+    label: "Enable advanced mode",
+    help_text: "Unlocks additional configuration options for power users",
+    id: "advanced-mode-toggle",
+    "data-testid": "advanced-checkbox",
+    "aria-describedby": "advanced-help"
+  ) %>
+<% end %>

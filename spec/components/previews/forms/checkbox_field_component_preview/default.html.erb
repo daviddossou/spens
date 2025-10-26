@@ -1,0 +1,6 @@
+<%= form_with model: User.new, url: "#" do |f| %>
+  <%= render Forms::CheckboxFieldComponent.new(
+    form: f,
+    field: :remember_me
+  ) %>
+<% end %>

@@ -1,0 +1,8 @@
+<%= form_with model: User.new, url: "#" do |f| %>
+  <%= render Forms::CheckboxFieldComponent.new(
+    form: f,
+    field: :hidden_field,
+    label: "This label is hidden",
+    hide_label: true
+  ) %>
+<% end %>

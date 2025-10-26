@@ -1,0 +1,11 @@
+<%= form_with model: User.new, url: "#" do |f| %>
+  <%= render Forms::SelectFieldComponent.new(
+    form: f,
+    field: :country,
+    options: countries,
+    label: "Country (Searchable)",
+    searchable: true,
+    include_blank: "Search for a country...",
+    help_text: "Type to search through all countries"
+  ) %>
+<% end %>

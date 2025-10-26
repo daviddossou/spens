@@ -1,0 +1,3 @@
+<%= form_with model: form_object, url: "#", data: { controller: "onboarding--financial-goals" } do |f| %>
+  <%= render Onboarding::FinancialGoals::GridComponent.new(form_builder: f, model: form_object) %>
+<% end %>

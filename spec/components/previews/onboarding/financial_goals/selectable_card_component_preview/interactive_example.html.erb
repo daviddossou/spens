@@ -1,0 +1,18 @@
+<%= form_with model: user, url: "#" do |f| %>
+  <div class="interactive-preview" data-controller="onboarding--financial-goals">
+    <div class="grid grid-2">
+      <% goals.each do |goal| %>
+        <%= render Onboarding::FinancialGoals::SelectableCardComponent.new(
+          item: ActiveSupport::HashWithIndifferentAccess.new(goal),
+          form: f,
+          model: user
+        ) %>
+      <% end %>
+    </div>
+
+    <div class="preview-info mt-4">
+      <p>💡 Click the cards above to test interactive selection behavior! Watch the visual checkboxes appear and disappear.</p>
+      <p>This demonstrates the full Stimulus-powered interaction that users will experience.</p>
+    </div>
+  </div>
+<% end %>

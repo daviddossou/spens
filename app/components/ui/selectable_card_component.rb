@@ -3,8 +3,8 @@
 class Ui::SelectableCardComponent < ViewComponent::Base
   def initialize(
     item:,
-    form: nil,
-    field: nil,
+    form:,
+    field:,
     selected: false,
     css_class: "card",
     description_classes: nil,
@@ -37,11 +37,13 @@ class Ui::SelectableCardComponent < ViewComponent::Base
   def final_html_options
     options = html_options.dup
     options[:class] = [options[:class], root_classes].compact.join(' ')
-    options
-  end
 
-  def render_checkbox?
-    form && field
+    # Add Stimulus controller for toggle behavior
+    options[:data] ||= {}
+    options[:data][:controller] = [options[:data][:controller], 'ui--selectable-card'].compact.join(' ')
+    options[:data][:action] = [options[:data][:action], 'click->ui--selectable-card#toggle'].compact.join(' ')
+
+    options
   end
 
   def checkbox_options
@@ -52,7 +54,8 @@ class Ui::SelectableCardComponent < ViewComponent::Base
       multiple: true,
       checked: selected?,
       hide_label: true,
-      wrapper_classes: 'hidden'
+      wrapper_classes: 'hidden',
+      data: { 'ui--selectable-card-target': 'checkbox' }
     }
   end
 
@@ -80,7 +83,19 @@ class Ui::SelectableCardComponent < ViewComponent::Base
 
   def item_value
     return item_name if item.is_a?(String)
-    item[:key] || item['key'] || item[:value] || item['value'] ||
-    (item.respond_to?(:id) ? item.id : item_name)
+
+    # Try hash-style access first
+    return item[:key] if item.is_a?(Hash) && item.key?(:key)
+    return item['key'] if item.is_a?(Hash) && item.key?('key')
+    return item[:value] if item.is_a?(Hash) && item.key?(:value)
+    return item['value'] if item.is_a?(Hash) && item.key?('value')
+
+    # Try method access for objects/structs
+    return item.id if item.respond_to?(:id)
+    return item.key if item.respond_to?(:key)
+    return item.value if item.respond_to?(:value)
+
+    # Fallback to name
+    item_name
   end
 end

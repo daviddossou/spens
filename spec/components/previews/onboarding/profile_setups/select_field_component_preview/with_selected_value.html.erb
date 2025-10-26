@@ -1,0 +1,13 @@
+<%= form_with model: User.new(country: 'US', currency: 'USD'), url: "#" do |form| %>
+  <div style="display: flex; flex-direction: column; gap: 1rem;">
+    <%= render Onboarding::ProfileSetups::SelectFieldComponent.new(
+      form: form,
+      field: :country
+    ) %>
+
+    <%= render Onboarding::ProfileSetups::SelectFieldComponent.new(
+      form: form,
+      field: :currency
+    ) %>
+  </div>
+<% end %>

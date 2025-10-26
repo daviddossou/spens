@@ -1,0 +1,11 @@
+<%= form_with model: User.new, url: "#" do |f| %>
+  <%= render Forms::CheckboxFieldComponent.new(
+    form: f,
+    field: :privacy_consent,
+    label: "I consent to data processing",
+    help_text: "Required for account creation and service provision",
+    wrapper_classes: "bg-gray-50 p-3 rounded-lg border",
+    label_classes: "text-gray-800 font-medium",
+    checkbox_classes: "text-indigo-600 focus:ring-indigo-500"
+  ) %>
+<% end %>

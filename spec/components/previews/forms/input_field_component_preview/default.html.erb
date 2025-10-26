@@ -1,0 +1,9 @@
+<%= form_with model: User.new, url: "#" do |f| %>
+  <%= render Forms::InputFieldComponent.new(
+    form: f,
+    field: :sample_field,
+    type: field_type,
+    label: "Sample #{field_type.to_s.humanize}",
+    help_text: "This is a help text example"
+  ) %>
+<% end %>

@@ -199,9 +199,10 @@ RSpec.describe Forms::CheckboxFieldComponent, type: :component do
         expect(node[:checked]).to be_present
       end
 
-      it "adds the multiple attribute" do
-        node = render_inline(component).css('input[type="checkbox"]').first
-        expect(node[:multiple]).to be_present
+      it "renders array field name for multiple checkboxes" do
+        html = render_inline(component).to_html
+        # Rails handles multiple checkboxes by using array notation in the name
+        expect(html).to include('name="user[financial_goals][]"')
       end
     end
 

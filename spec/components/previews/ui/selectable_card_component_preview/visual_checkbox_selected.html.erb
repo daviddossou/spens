@@ -1,0 +1,13 @@
+<%= form_with model: User.new, url: "#" do |form| %>
+  <%= render Ui::SelectableCardComponent.new(
+    item: {
+      name: "Selected Card",
+      description: "This card shows the visual checkbox in selected state with checkmark",
+      key: "selected"
+    },
+    form: form,
+    field: :preferences,
+    selected: true,
+    show_visual_checkbox: true
+  ) %>
+<% end %>

@@ -1,0 +1,11 @@
+<%= form_with model: user, url: "#", data: { controller: "onboarding--financial-goals" } do |f| %>
+  <div class="grid grid-2">
+    <% goals.each do |goal| %>
+      <%= render Onboarding::FinancialGoals::SelectableCardComponent.new(
+        item: goal,
+        form: f,
+        model: user
+      ) %>
+    <% end %>
+  </div>
+<% end %>

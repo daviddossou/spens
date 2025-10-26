@@ -1,0 +1,22 @@
+<%= form_with model: User.new, url: "#" do |form| %>
+  <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;">
+    <%= render Ui::SelectableCardComponent.new(
+      item: { name: "Option A", description: "First option", key: "a" },
+      form: form,
+      field: :preferences,
+      selected: false
+    ) %>
+    <%= render Ui::SelectableCardComponent.new(
+      item: { name: "Option B", description: "Second option", key: "b" },
+      form: form,
+      field: :preferences,
+      selected: true
+    ) %>
+    <%= render Ui::SelectableCardComponent.new(
+      item: { name: "Option C", description: "Third option", key: "c" },
+      form: form,
+      field: :preferences,
+      selected: false
+    ) %>
+  </div>
+<% end %>

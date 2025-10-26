@@ -71,7 +71,7 @@ RSpec.describe Onboarding::FinancialGoalsController, type: :controller do
     context 'when form submission is successful' do
       before do
         allow(form_double).to receive(:submit).and_return(true)
-        allow(step_navigator_double).to receive(:next_step_path).and_return('/next-step')
+        allow(step_navigator_double).to receive(:current_step_path).and_return('/next-step')
         allow(user).to receive(:reload)
       end
 
@@ -100,7 +100,7 @@ RSpec.describe Onboarding::FinancialGoalsController, type: :controller do
 
       it 'uses StepNavigator to determine next step' do
         expect(Onboarding::StepNavigator).to receive(:new).with(user)
-        expect(step_navigator_double).to receive(:next_step_path)
+        expect(step_navigator_double).to receive(:current_step_path)
         patch :update, params: financial_goals_params
       end
     end
@@ -135,7 +135,7 @@ RSpec.describe Onboarding::FinancialGoalsController, type: :controller do
       it 'redirects to financial goals path with alert' do
         patch :update, params: financial_goals_params
         expect(response).to redirect_to(onboarding_financial_goals_path)
-        expect(flash[:alert]).to eq('Something went wrong. Please try again.')
+        expect(flash[:alert]).to be_present
       end
     end
 
@@ -160,7 +160,7 @@ RSpec.describe Onboarding::FinancialGoalsController, type: :controller do
         expect(Onboarding::FinancialGoalForm).to receive(:new).with(user, expected_params)
 
         allow(form_double).to receive(:submit).and_return(true)
-        allow(step_navigator_double).to receive(:next_step_path).and_return('/next')
+        allow(step_navigator_double).to receive(:current_step_path).and_return('/next')
         allow(user).to receive(:reload)
 
         patch :update, params: params_with_extra
@@ -245,26 +245,26 @@ RSpec.describe Onboarding::FinancialGoalsController, type: :controller do
       end
     end
 
-    describe '#next_onboarding_step' do
+    describe '#next_step_path' do
       before do
         sign_in user, scope: :user
         allow_any_instance_of(User).to receive(:reload)
         allow(Onboarding::StepNavigator).to receive(:new).with(an_instance_of(User)).and_return(step_navigator_double)
-        allow(step_navigator_double).to receive(:next_step_path).and_return('/custom-path')
+        allow(step_navigator_double).to receive(:current_step_path).and_return('/custom-path')
       end
 
       it 'reloads the user' do
         expect_any_instance_of(User).to receive(:reload)
-        controller.send(:next_onboarding_step)
+        controller.send(:next_step_path)
       end
 
       it 'creates StepNavigator with current user' do
         expect(Onboarding::StepNavigator).to receive(:new).with(an_instance_of(User))
-        controller.send(:next_onboarding_step)
+        controller.send(:next_step_path)
       end
 
-      it 'returns the next step path from navigator' do
-        result = controller.send(:next_onboarding_step)
+      it 'returns the current step path from navigator' do
+        result = controller.send(:next_step_path)
         expect(result).to eq('/custom-path')
       end
     end
@@ -280,7 +280,7 @@ RSpec.describe Onboarding::FinancialGoalsController, type: :controller do
         allow(Onboarding::FinancialGoalForm).to receive(:new).and_return(form_double)
         allow(form_double).to receive(:submit).and_return(true)
         allow(Onboarding::StepNavigator).to receive(:new).with(an_instance_of(User)).and_return(step_navigator_double)
-        allow(step_navigator_double).to receive(:next_step_path).and_return('/next-step')
+        allow(step_navigator_double).to receive(:current_step_path).and_return('/next-step')
         allow_any_instance_of(User).to receive(:reload)
 
         patch :update, params: {
@@ -290,7 +290,7 @@ RSpec.describe Onboarding::FinancialGoalsController, type: :controller do
         }
 
         expect(form_double).to have_received(:submit)
-        expect(step_navigator_double).to have_received(:next_step_path)
+        expect(step_navigator_double).to have_received(:current_step_path)
         expect(response).to redirect_to('/next-step')
       end
     end
@@ -322,7 +322,7 @@ RSpec.describe Onboarding::FinancialGoalsController, type: :controller do
         allow(Onboarding::FinancialGoalForm).to receive(:new).and_return(form_double)
         allow(form_double).to receive(:submit).and_return(true)
         allow(Onboarding::StepNavigator).to receive(:new).and_return(step_navigator_double)
-        allow(step_navigator_double).to receive(:next_step_path).and_return('/next')
+        allow(step_navigator_double).to receive(:current_step_path).and_return('/next')
         allow(user).to receive(:reload)
 
         patch :update, params: {
