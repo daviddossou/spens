@@ -1,0 +1,65 @@
+<div class="max-w-xl mx-auto p-8">
+  <h2 class="text-2xl font-bold mb-6">Buttons with Turbo Methods</h2>
+
+  <p class="text-gray-600 mb-4">
+    Link buttons with different HTTP methods using Turbo. Great for RESTful actions.
+  </p>
+
+  <div class="space-y-4">
+    <h3 class="font-semibold text-gray-700">DELETE Method</h3>
+    <%= render Ui::ButtonComponent.new(
+      url: "#delete-action",
+      method: :delete,
+      variant: :danger,
+      data: { turbo_confirm: "Are you sure?" }
+    ) do %>
+      Delete Record
+    <% end %>
+
+    <h3 class="font-semibold text-gray-700 mt-4">PUT Method</h3>
+    <%= render Ui::ButtonComponent.new(
+      url: "#update-action",
+      method: :put,
+      variant: :primary
+    ) do %>
+      Update
+    <% end %>
+
+    <h3 class="font-semibold text-gray-700 mt-4">PATCH Method</h3>
+    <%= render Ui::ButtonComponent.new(
+      url: "#patch-action",
+      method: :patch,
+      variant: :secondary
+    ) do %>
+      Apply Changes
+    <% end %>
+
+    <h3 class="font-semibold text-gray-700 mt-4">POST Method (Default for Links)</h3>
+    <%= render Ui::ButtonComponent.new(
+      url: "#post-action",
+      method: :post,
+      variant: :success
+    ) do %>
+      Create
+    <% end %>
+
+    <h3 class="font-semibold text-gray-700 mt-4">GET Method (Regular Link)</h3>
+    <%= render Ui::ButtonComponent.new(
+      url: "#view-action",
+      variant: :outline_primary
+    ) do %>
+      View Details
+    <% end %>
+  </div>
+
+  <div class="mt-6 p-4 bg-gray-50 rounded">
+    <h3 class="font-semibold mb-2">💡 Tips:</h3>
+    <ul class="list-disc list-inside text-sm text-gray-700 space-y-1">
+      <li>Turbo automatically intercepts these requests</li>
+      <li>Use <code>data: { turbo_confirm: "..." }</code> for confirmations</li>
+      <li>DELETE actions typically show confirmation dialogs</li>
+      <li>When <code>url</code> is present, component renders as a link</li>
+      <li>The <code>method</code> parameter sets <code>data-turbo-method</code></li>
+    </ul>
+  </div>
+</div>

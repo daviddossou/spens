@@ -2,32 +2,32 @@
               url: onboarding_profile_setups_path,
               method: :patch,
               local: true,
-              class: "onboarding-form" do |form| %>
+              class: "onboarding-form" do |f| %>
   <%= render 'shared/form_errors', object: @form %>
 
   <div class="form-grid">
     <%= render Onboarding::ProfileSetups::SelectFieldComponent.new(
-      form: form,
+      form: f,
       field: :country,
       required: true,
       include_blank: true
     ) %>
 
     <%= render Onboarding::ProfileSetups::SelectFieldComponent.new(
-      form: form,
+      form: f,
       field: :currency,
       required: true,
       include_blank: true
     ) %>
 
     <%= render Onboarding::ProfileSetups::SelectFieldComponent.new(
-      form: form,
+      form: f,
       field: :income_frequency,
       include_blank: true
     ) %>
 
     <%= render Onboarding::ProfileSetups::SelectFieldComponent.new(
-      form: form,
+      form: f,
       field: :main_income_source,
       include_blank: true
     ) %>
@@ -44,7 +44,8 @@
           text: t('.continue'),
           type: :submit,
           variant: :primary,
-          size: :lg
+          size: :lg,
+          form: f,
         ) %>
   </div>
 <% end %>

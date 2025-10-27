@@ -1,0 +1,71 @@
+<%= form_with model: @form,
+              url: onboarding_account_setups_path,
+              method: :patch,
+              local: true,
+              class: "onboarding-form",
+              data: {
+                controller: "onboarding--account-setup",
+                onboarding__account_setup_currency_value: current_user.currency,
+                onboarding__account_setup_account_suggestions_value: I18n.t('account_templates').values.to_json
+              } do |f| %>
+  <%= render 'shared/form_errors', object: @form %>
+
+  <div class="account-setup__container">
+    <div data-onboarding--account-setup-target="accountsContainer" class="account-setup__accounts-container">
+      <%= f.fields_for :transactions, @form.transactions do |transaction_fields| %>
+        <%= render Onboarding::AccountLineComponent.new(
+          form: transaction_fields,
+          index: transaction_fields.index,
+          transaction: transaction_fields.object,
+          currency: current_user.currency,
+          can_remove: @form.transactions.size > 1
+        ) %>
+      <% end %>
+    </div>
+
+    <%= render Ui::ButtonComponent.new(
+      variant: :secondary,
+      size: :lg,
+      classes: "account-setup__add-button",
+      data: {
+        action: "click->onboarding--account-setup#addLine",
+        onboarding__account_setup_target: "addButton"
+      }
+    ) do %>
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+      </svg>
+      <%= t('.add_account') %>
+    <% end %>
+
+    <template data-onboarding--account-setup-target="template">
+      <%= f.fields_for :transactions, Transaction.new(account: Account.new, transaction_type: TransactionType.new(name: Onboarding::AccountSetupForm::TRANSACTION_TYPE_NAME)), child_index: 'TEMPLATE_INDEX' do |transaction_fields| %>
+        <%= render Onboarding::AccountLineComponent.new(
+          form: transaction_fields,
+          index: 0,
+          transaction: transaction_fields.object,
+          currency: current_user.currency,
+          can_remove: true
+        ) %>
+      <% end %>
+    </template>
+
+    <div class="form-actions">
+      <%= render Ui::ButtonComponent.new(
+          text: t('.back'),
+          url: onboarding_profile_setups_path,
+          variant: :'outline-secondary',
+          size: :lg
+        ) %>
+
+      <%= render Ui::ButtonComponent.new(
+          text: t('.continue'),
+          type: :submit,
+          variant: :primary,
+          size: :lg,
+          form: f
+        ) %>
+    </div>
+  </div>
+<% end %>
+

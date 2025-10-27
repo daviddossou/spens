@@ -78,8 +78,8 @@ RSpec.describe Onboarding::StepNavigator do
         allow(user).to receive(:onboarding_current_step).and_return('unknown_step')
       end
 
-      it 'returns dashboard path as fallback' do
-        expect(navigator.current_step_path).to eq(Rails.application.routes.url_helpers.dashboard_path)
+      it 'returns financial goals path as fallback' do
+        expect(navigator.current_step_path).to eq(Rails.application.routes.url_helpers.onboarding_financial_goals_path)
       end
     end
 
@@ -88,8 +88,8 @@ RSpec.describe Onboarding::StepNavigator do
         allow(user).to receive(:onboarding_current_step).and_return(nil)
       end
 
-      it 'returns dashboard path as fallback' do
-        expect(navigator.current_step_path).to eq(Rails.application.routes.url_helpers.dashboard_path)
+      it 'returns onboarding_financial_goals_path path as fallback' do
+        expect(navigator.current_step_path).to eq(Rails.application.routes.url_helpers.onboarding_financial_goals_path)
       end
     end
   end

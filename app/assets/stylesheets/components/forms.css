@@ -1,5 +1,36 @@
 /* Select Field Component */
 
+/* Link-style buttons (button elements styled as links) */
+.link-button {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-primary);
+  cursor: pointer;
+  text-decoration: underline;
+  transition: color 0.2s ease;
+}
+
+.link-button:hover {
+  color: var(--color-primary-dark);
+}
+
+.link-button:focus {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+.link-button.link-danger {
+  color: var(--color-danger);
+}
+
+.link-button.link-danger:hover {
+  color: var(--color-danger-dark);
+}
+
 .form-select {
   appearance: none;
   display: block;
@@ -94,6 +125,77 @@
   border: 1px solid var(--border-default);
   border-radius: 6px;
   transition: all 0.2s ease;
+}
+
+/* Input group with prepend/append addons */
+.form-input-group {
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+}
+
+.form-input-group .form-input {
+  flex: 1;
+  border-radius: 0;
+}
+
+.form-input-group .form-input:focus {
+  position: relative;
+  z-index: 1;
+}
+
+.form-input-addon {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.5;
+  color: var(--text-muted);
+  background-color: var(--color-gray-50);
+  border: 1px solid var(--border-default);
+  white-space: nowrap;
+}
+
+.form-input-addon--prepend {
+  border-right: 0;
+  border-top-left-radius: 6px;
+  border-bottom-left-radius: 6px;
+}
+
+.form-input-addon--append {
+  border-left: 0;
+  border-top-right-radius: 6px;
+  border-bottom-right-radius: 6px;
+}
+
+.form-input-group .form-input:first-child {
+  border-top-left-radius: 6px;
+  border-bottom-left-radius: 6px;
+}
+
+.form-input-group .form-input:last-child {
+  border-top-right-radius: 6px;
+  border-bottom-right-radius: 6px;
+}
+
+/* For autocomplete inputs, remove padding and border since tom-select wrapper will handle it */
+.form-input-autocomplete {
+  padding: 0;
+  border: none;
+}
+
+/* Hide the original input when tom-select has enhanced it (autocomplete only) */
+.form-input-autocomplete.tomselected {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
 }
 
 .form-input:hover {

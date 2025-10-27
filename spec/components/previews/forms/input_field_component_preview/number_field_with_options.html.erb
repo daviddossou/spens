@@ -1,0 +1,64 @@
+<div class="max-w-xl mx-auto p-8">
+  <h2 class="text-2xl font-bold mb-6">Number Field with Options</h2>
+
+  <p class="text-gray-600 mb-4">
+    Examples of number fields with various HTML5 attributes (step, min, max).
+  </p>
+
+  <%= form_with model: User.new, url: "#" do |f| %>
+    <%= render Forms::InputFieldComponent.new(
+      form: f,
+      field: :quantity,
+      type: :number_field,
+      label: "Quantity",
+      help_text: "Whole numbers only (min: 1, max: 100)",
+      required: true,
+      field_options: { min: "1", max: "100", step: "1" }
+    ) %>
+
+    <%= render Forms::InputFieldComponent.new(
+      form: f,
+      field: :price,
+      type: :number_field,
+      label: "Price",
+      help_text: "Two decimal places (min: 0)",
+      prepend: "XOF",
+      required: true,
+      field_options: { step: "0.01", min: "0" }
+    ) %>
+
+    <%= render Forms::InputFieldComponent.new(
+      form: f,
+      field: :percentage,
+      type: :number_field,
+      label: "Discount Percentage",
+      help_text: "Between 0 and 100",
+      append: "%",
+      field_options: { step: "0.1", min: "0", max: "100" }
+    ) %>
+
+    <%= render Forms::InputFieldComponent.new(
+      form: f,
+      field: :rating,
+      type: :number_field,
+      label: "Rating",
+      help_text: "Scale of 1-5 stars",
+      field_options: { min: "1", max: "5", step: "0.5" }
+    ) %>
+
+    <div class="mt-4">
+      <%= f.submit "Submit", class: "px-4 py-2 bg-blue-500 text-white rounded" %>
+    </div>
+  <% end %>
+
+  <div class="mt-6 p-4 bg-gray-50 rounded">
+    <h3 class="font-semibold mb-2">💡 Features:</h3>
+    <ul class="list-disc list-inside text-sm text-gray-700 space-y-1">
+      <li><strong>step:</strong> Controls increment/decrement value</li>
+      <li><strong>min:</strong> Minimum allowed value</li>
+      <li><strong>max:</strong> Maximum allowed value</li>
+      <li>Browser provides native validation</li>
+      <li>Works with prepend/append addons</li>
+    </ul>
+  </div>
+</div>

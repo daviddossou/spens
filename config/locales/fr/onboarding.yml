@@ -55,10 +55,29 @@ fr:
         income_frequency_help: "Cela nous aide à planifier tes cycles budgétaires"
         main_income_source_label: "Quelle est ta principale source de revenus ?"
         main_income_source_help: "Comprendre tes revenus nous aide à fournir de meilleurs conseils financiers"
+    account_setups:
+      show:
+        title: "Configure tes comptes"
+        subtitle: "Ajoute tes comptes et leurs soldes actuels. Ne t'inquiète pas, tu pourras en ajouter d'autres plus tard."
+      form:
+        back: "Retour"
+        continue: "Terminer la Configuration"
+        add_account: "Ajouter un autre compte"
+        remove_account: "Supprimer"
+      errors:
+        at_least_one_transaction: "Tu dois ajouter au moins un compte avec un montant"
+      initial_balance_description: "Solde initial pour %{account_name}"
     progress_component:
       financial_goal: "Objectifs Financiers"
       profile_setup: "Configuration du Profil"
       account_setup: "Configuration des Comptes"
+    account_line_component:
+        account_name: "Nom du compte"
+        account_name_placeholder: "ex., Compte courant"
+        account_help: "Sélectionne parmi les suggestions ou entre ton propre nom"
+        initial_amount: "Solde initial"
+        amount_help: "Combien y a-t-il actuellement dans ce compte ?"
+        remove: "Retirer"
 
     income_frequencies:
       weekly: "Hebdomadaire"

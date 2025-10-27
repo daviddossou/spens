@@ -1,0 +1,48 @@
+<div class="max-w-xl mx-auto p-8">
+  <h2 class="text-2xl font-bold mb-6">Input Field with Placeholder</h2>
+
+  <p class="text-gray-600 mb-4">
+    Examples of fields with placeholder text to guide user input.
+  </p>
+
+  <%= form_with model: User.new, url: "#" do |f| %>
+    <%= render Forms::InputFieldComponent.new(
+      form: f,
+      field: :email,
+      type: :email_field,
+      label: "Email Address",
+      help_text: "We'll never share your email",
+      field_options: { placeholder: "you@example.com" }
+    ) %>
+
+    <%= render Forms::InputFieldComponent.new(
+      form: f,
+      field: :phone,
+      type: :telephone_field,
+      label: "Phone Number",
+      field_options: { placeholder: "+225 07 XX XX XX XX" }
+    ) %>
+
+    <%= render Forms::InputFieldComponent.new(
+      form: f,
+      field: :website,
+      type: :url_field,
+      label: "Website",
+      field_options: { placeholder: "https://example.com" }
+    ) %>
+
+    <div class="mt-4">
+      <%= f.submit "Submit", class: "px-4 py-2 bg-blue-500 text-white rounded" %>
+    </div>
+  <% end %>
+
+  <div class="mt-6 p-4 bg-gray-50 rounded">
+    <h3 class="font-semibold mb-2">💡 Features:</h3>
+    <ul class="list-disc list-inside text-sm text-gray-700 space-y-1">
+      <li>Helpful placeholder text</li>
+      <li>Disappears when user starts typing</li>
+      <li>Different field types (email, tel, url)</li>
+      <li>Proper input validation per type</li>
+    </ul>
+  </div>
+</div>

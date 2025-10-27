@@ -13,7 +13,7 @@ class Onboarding::StepNavigator
   end
 
   def current_step_path
-    path_method = STEP_PATHS[@user.onboarding_current_step]
+    path_method = STEP_PATHS[@user.onboarding_current_step] || STEP_PATHS['onboarding_financial_goal']
 
     if path_method
       Rails.application.routes.url_helpers.send(path_method)

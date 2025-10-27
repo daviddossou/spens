@@ -48,4 +48,32 @@ class Ui::ButtonComponentPreview < ViewComponent::Preview
       variant: :primary
     )
   end
+
+  def with_content_block
+    render_with_template
+  end
+
+  def full_width
+    render_with_template
+  end
+
+  def with_icons
+    render_with_template
+  end
+
+  def with_turbo_method
+    render_with_template
+  end
+
+  def submit_button_in_form
+    render_with_template
+  end
+
+  def with_data_attributes
+    render_with_template
+  end
+
+  def combined_states
+    render_with_template
+  end
 end

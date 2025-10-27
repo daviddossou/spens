@@ -1,0 +1,46 @@
+<div class="max-w-xl mx-auto p-8">
+  <h2 class="text-2xl font-bold mb-6">Autocomplete - <%= model_name %> Templates</h2>
+
+  <p class="text-gray-600 mb-4">
+    Testing with ALL transaction type templates from i18n. Each suggestion shows the name and kind (expense, income, debt, loan).
+  </p>
+
+  <div class="mb-4 p-3 bg-indigo-50 rounded text-sm">
+    <strong>Total transaction types:</strong> <%= suggestions.size %> templates loaded from <code>config/locales/en/transaction_type_templates.yml</code>
+  </div>
+
+  <%= form_with model: TransactionType.new, url: "#", method: :post do |form| %>
+    <%= render Forms::InputFieldComponent.new(
+      form: form,
+      field: :name,
+      label: "Transaction Type",
+      placeholder: "Type to search all transaction types...",
+      autocomplete: true,
+      autocomplete_options: suggestions,
+      allow_create: allow_create,
+      required: true
+    ) %>
+
+    <div class="mt-4">
+      <%= form.submit "Submit", class: "px-4 py-2 bg-indigo-500 text-white rounded" %>
+    </div>
+  <% end %>
+
+  <div class="mt-6 p-4 bg-indigo-50 rounded">
+    <h3 class="font-semibold mb-2">💡 Tips:</h3>
+    <ul class="list-disc list-inside text-sm text-gray-700 space-y-1">
+      <li>Type "salary" to see Salary (income)</li>
+      <li>Type "rent" to see Rent (expense)</li>
+      <li>Type "debt" to see debt-related types</li>
+      <li>Type "loan" to see loan-related types</li>
+      <li>Browse all <%= suggestions.size %> transaction types by clicking the field</li>
+    </ul>
+  </div>
+
+  <div class="mt-4 p-4 bg-yellow-50 rounded border border-yellow-200">
+    <h3 class="font-semibold mb-2">⚠️ Note:</h3>
+    <p class="text-sm text-gray-700">
+      With <code>allow_create: false</code>, users must select from the list. This is useful when you want to enforce predefined options only.
+    </p>
+  </div>
+</div>

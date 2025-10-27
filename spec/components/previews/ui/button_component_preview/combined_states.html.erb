@@ -1,0 +1,107 @@
+<div class="max-w-xl mx-auto p-8">
+  <h2 class="text-2xl font-bold mb-6">Combined States and Features</h2>
+
+  <p class="text-gray-600 mb-4">
+    Examples showing combinations of different button features and states.
+  </p>
+
+  <div class="space-y-6">
+    <h3 class="font-semibold text-gray-700">Full Width with Loading</h3>
+    <%= render Ui::ButtonComponent.new(
+      variant: :primary,
+      full_width: true,
+      loading: true
+    ) do %>
+      Processing Payment...
+    <% end %>
+
+    <h3 class="font-semibold text-gray-700 mt-4">Full Width with Icon</h3>
+    <%= render Ui::ButtonComponent.new(
+      variant: :success,
+      full_width: true
+    ) do %>
+      <svg class="w-5 h-5 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+      </svg>
+      Complete Setup
+    <% end %>
+
+    <h3 class="font-semibold text-gray-700 mt-4">Large Loading Button</h3>
+    <%= render Ui::ButtonComponent.new(
+      variant: :primary,
+      size: :lg,
+      loading: true
+    ) do %>
+      Saving Changes...
+    <% end %>
+
+    <h3 class="font-semibold text-gray-700 mt-4">Small Disabled Button with Tooltip</h3>
+    <%= render Ui::ButtonComponent.new(
+      variant: :secondary,
+      size: :sm,
+      disabled: true,
+      options: { title: "Feature not available in your plan" }
+    ) do %>
+      Premium Feature
+    <% end %>
+
+    <h3 class="font-semibold text-gray-700 mt-4">Danger Link with Confirmation</h3>
+    <%= render Ui::ButtonComponent.new(
+      url: "#delete-account",
+      method: :delete,
+      variant: :danger,
+      size: :lg,
+      full_width: true,
+      data: { turbo_confirm: "This will permanently delete your account. Are you sure?" }
+    ) do %>
+      <svg class="w-5 h-5 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+      </svg>
+      Delete Account Permanently
+    <% end %>
+
+    <h3 class="font-semibold text-gray-700 mt-6">Button Group with Mixed States</h3>
+    <div class="flex gap-2">
+      <%= render Ui::ButtonComponent.new(variant: :primary, size: :sm) do %>
+        Active
+      <% end %>
+      <%= render Ui::ButtonComponent.new(variant: :outline_primary, size: :sm, loading: true) do %>
+        Loading
+      <% end %>
+      <%= render Ui::ButtonComponent.new(variant: :outline_secondary, size: :sm, disabled: true) do %>
+        Disabled
+      <% end %>
+    </div>
+
+    <h3 class="font-semibold text-gray-700 mt-6">Submit Button with Multiple Features</h3>
+    <%= form_with url: "#", method: :post do %>
+      <%= render Ui::ButtonComponent.new(
+        type: :submit,
+        variant: :success,
+        size: :lg,
+        full_width: true,
+        data: {
+          controller: "form-submit",
+          action: "click->form-submit#track",
+          event: "form_submission"
+        }
+      ) do %>
+        <svg class="w-5 h-5 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
+        Submit Application
+      <% end %>
+    <% end %>
+  </div>
+
+  <div class="mt-6 p-4 bg-gray-50 rounded">
+    <h3 class="font-semibold mb-2">💡 Tips:</h3>
+    <ul class="list-disc list-inside text-sm text-gray-700 space-y-1">
+      <li>Combine features naturally - all parameters work together</li>
+      <li>Full width + large size works well for CTAs</li>
+      <li>Loading state disables interaction automatically</li>
+      <li>Use tooltips (title attribute) to explain disabled states</li>
+      <li>Icons + text + data attributes can all coexist</li>
+    </ul>
+  </div>
+</div>

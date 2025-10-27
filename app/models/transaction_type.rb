@@ -12,8 +12,9 @@
 #
 # Indexes
 #
-#  index_transaction_types_on_kind     (kind)
-#  index_transaction_types_on_user_id  (user_id)
+#  index_transaction_types_on_kind                    (kind)
+#  index_transaction_types_on_lower_name_and_user_id  (lower((name)::text), user_id) UNIQUE
+#  index_transaction_types_on_user_id                 (user_id)
 #
 # Foreign Keys
 #
@@ -21,13 +22,18 @@
 #
 class TransactionType < ApplicationRecord
   ##
+  # Constants
+  KIND_TRANSFER_IN = "transfer_in"
+  KIND_TRANSFER_OUT = "transfer_out"
+
+  ##
   # Associations
   belongs_to :user
   has_many :transactions, dependent: :destroy
 
   ##
   # Validations & Enums
-  validates :name, presence: true, length: { maximum: 100 }
+  validates :name, presence: true, length: { maximum: 100 }, uniqueness: { scope: :user_id, case_sensitive: false }
   validates :kind, presence: true
   validates :budget_goal, presence: true, numericality: { greater_than_or_equal_to: 0 }
 

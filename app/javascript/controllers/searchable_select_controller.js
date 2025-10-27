@@ -1,26 +1,10 @@
 import { Controller } from "@hotwired/stimulus"
+import TomSelect from "tom-select"
 
 // Connects to data-controller="searchable-select"
 export default class extends Controller {
   connect() {
-    if (typeof TomSelect !== 'undefined') {
-      this.initializeTomSelect()
-    } else {
-      const checkTomSelect = setInterval(() => {
-        if (typeof TomSelect !== 'undefined') {
-          clearInterval(checkTomSelect)
-          this.initializeTomSelect()
-        }
-      }, 100)
-
-      // Timeout after 5 seconds
-      setTimeout(() => {
-        clearInterval(checkTomSelect)
-        if (typeof TomSelect === 'undefined') {
-          console.error("TomSelect failed to load from CDN")
-        }
-      }, 5000)
-    }
+    this.initializeTomSelect()
   }
 
   disconnect() {

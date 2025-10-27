@@ -81,38 +81,6 @@ RSpec.describe OnboardingRedirection, type: :controller do
       end
     end
 
-    context 'when controller is onboarding' do
-      before { allow(controller).to receive(:controller_name).and_return('onboarding') }
-
-      it 'is exempt from redirection' do
-        expect(controller.send(:onboarding_redirection_exempt?)).to be true
-      end
-    end
-
-    context 'when controller is financial_goals' do
-      before { allow(controller).to receive(:controller_name).and_return('financial_goals') }
-
-      it 'is exempt from redirection' do
-        expect(controller.send(:onboarding_redirection_exempt?)).to be true
-      end
-    end
-
-    context 'when controller is account_setups' do
-      before { allow(controller).to receive(:controller_name).and_return('account_setups') }
-
-      it 'is exempt from redirection' do
-        expect(controller.send(:onboarding_redirection_exempt?)).to be true
-      end
-    end
-
-    context 'when controller is profile_setups' do
-      before { allow(controller).to receive(:controller_name).and_return('profile_setups') }
-
-      it 'is exempt from redirection' do
-        expect(controller.send(:onboarding_redirection_exempt?)).to be true
-      end
-    end
-
     context 'when controller is rails/health' do
       before { allow(controller).to receive(:controller_name).and_return('rails/health') }
 
@@ -122,8 +90,13 @@ RSpec.describe OnboardingRedirection, type: :controller do
     end
 
     context 'when action is destroy' do
-      it 'is exempt from redirection' do
+      before do
         allow(controller).to receive(:action_name).and_return('destroy')
+        allow(controller).to receive(:devise_controller?).and_return(false)
+        allow(controller).to receive(:controller_name).and_return('sessions')
+      end
+
+      it 'is exempt from redirection' do
         expect(controller.send(:onboarding_redirection_exempt?)).to be true
       end
     end
@@ -150,7 +123,31 @@ RSpec.describe OnboardingRedirection, type: :controller do
       end
     end
 
-    context 'when controller name is not onboarding' do
+    context 'when controller name is financial_goals' do
+      before { allow(controller).to receive(:controller_name).and_return('financial_goals') }
+
+      it 'returns true' do
+        expect(controller.send(:onboarding_controller?)).to be true
+      end
+    end
+
+    context 'when controller name is profile_setups' do
+      before { allow(controller).to receive(:controller_name).and_return('profile_setups') }
+
+      it 'returns true' do
+        expect(controller.send(:onboarding_controller?)).to be true
+      end
+    end
+
+    context 'when controller name is account_setups' do
+      before { allow(controller).to receive(:controller_name).and_return('account_setups') }
+
+      it 'returns true' do
+        expect(controller.send(:onboarding_controller?)).to be true
+      end
+    end
+
+    context 'when controller name is not an onboarding controller' do
       before { allow(controller).to receive(:controller_name).and_return('posts') }
 
       it 'returns false' do

@@ -15,6 +15,7 @@ Rails.application.routes.draw do
     namespace :onboarding do
       resource :financial_goals, only: [ :show, :update ]
       resource :profile_setups, only: [ :show, :update ]
+      resource :account_setups, only: [ :show, :update ]
     end
   end
 

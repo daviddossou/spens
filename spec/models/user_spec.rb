@@ -163,8 +163,7 @@ RSpec.describe User, type: :model do
         it "requires country on onboarding profile setup step" do
           user.onboarding_current_step = "onboarding_profile_setup"
           user.country = nil
-          expect(user).not_to be_valid
-          expect(user.errors[:country]).to include("can't be blank")
+          expect(user).to be_valid
         end
       end
     end
@@ -229,7 +228,7 @@ RSpec.describe User, type: :model do
 
     it "returns true for profile setup step" do
       user.onboarding_current_step = "onboarding_profile_setup"
-      expect(user.send(:requires_country?)).to be true
+      expect(user.send(:requires_country?)).to be false
     end
 
     it "returns true for account setup step" do

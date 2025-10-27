@@ -1,0 +1,34 @@
+<div class="max-w-xl mx-auto p-8">
+  <h2 class="text-2xl font-bold mb-6">Input Field with Append Addon</h2>
+
+  <p class="text-gray-600 mb-4">
+    Example of a number field with a percentage append addon.
+  </p>
+
+  <%= form_with model: User.new, url: "#" do |f| %>
+    <%= render Forms::InputFieldComponent.new(
+      form: f,
+      field: :interest_rate,
+      type: :number_field,
+      label: "Interest Rate",
+      help_text: "Enter the interest rate as a percentage",
+      append: "%",
+      required: true,
+      field_options: { step: "0.01", min: "0", max: "100" }
+    ) %>
+
+    <div class="mt-4">
+      <%= f.submit "Submit", class: "px-4 py-2 bg-blue-500 text-white rounded" %>
+    </div>
+  <% end %>
+
+  <div class="mt-6 p-4 bg-gray-50 rounded">
+    <h3 class="font-semibold mb-2">💡 Features:</h3>
+    <ul class="list-disc list-inside text-sm text-gray-700 space-y-1">
+      <li>Percentage symbol appended to the right</li>
+      <li>Number field with decimal support</li>
+      <li>Range: 0-100%</li>
+      <li>Clean visual appearance</li>
+    </ul>
+  </div>
+</div>

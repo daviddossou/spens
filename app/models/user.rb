@@ -88,6 +88,6 @@ class User < ApplicationRecord
   private
 
     def requires_country?
-      %w[onboarding_profile_setup onboarding_account_setup onboarding_completed].include?(onboarding_current_step)
+      %w[onboarding_account_setup onboarding_completed].include?(onboarding_current_step)
     end
 end

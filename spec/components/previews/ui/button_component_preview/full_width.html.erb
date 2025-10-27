@@ -1,0 +1,42 @@
+<div class="max-w-xl mx-auto p-8">
+  <h2 class="text-2xl font-bold mb-6">Full Width Buttons</h2>
+
+  <p class="text-gray-600 mb-4">
+    Buttons can span the full width of their container.
+  </p>
+
+  <div class="space-y-4">
+    <%= render Ui::ButtonComponent.new(
+      text: "Full Width Primary Button",
+      variant: :primary,
+      full_width: true
+    ) %>
+
+    <%= render Ui::ButtonComponent.new(
+      text: "Full Width Secondary Button",
+      variant: :secondary,
+      full_width: true
+    ) %>
+
+    <%= render Ui::ButtonComponent.new(
+      text: "Full Width Outline Button",
+      variant: :"outline-primary",
+      full_width: true
+    ) %>
+
+    <%= render Ui::ButtonComponent.new(
+      text: "Regular Width Button",
+      variant: :primary,
+      full_width: false
+    ) %>
+  </div>
+
+  <div class="mt-6 p-4 bg-gray-50 rounded">
+    <h3 class="font-semibold mb-2">💡 Features:</h3>
+    <ul class="list-disc list-inside text-sm text-gray-700 space-y-1">
+      <li>Use <code>full_width: true</code> to span full container width</li>
+      <li>Great for mobile layouts and form submissions</li>
+      <li>Works with all variants and sizes</li>
+    </ul>
+  </div>
+</div>

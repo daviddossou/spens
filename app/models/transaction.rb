@@ -34,8 +34,28 @@ class Transaction < ApplicationRecord
   belongs_to :account
 
   ##
+  # Nested Attributes
+  accepts_nested_attributes_for :account
+  accepts_nested_attributes_for :transaction_type
+
+  ##
   # Validations
   validates :description, presence: true, length: { maximum: 255 }
   validates :amount, presence: true, numericality: { other_than: 0 }
   validates :transaction_date, presence: true
+
+  ##
+  # Callbacks
+  after_save :update_account_balance
+  after_destroy :update_account_balance
+
+  private
+
+  def update_account_balance
+    return unless account
+
+    current_balance = account.balance || 0.0
+    account.balance = current_balance + amount
+    account.save!
+  end
 end

@@ -1,0 +1,35 @@
+/* Account Setup Form */
+
+.account-setup__container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.account-setup__accounts-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.account-setup__add-button {
+  width: 100%;
+  border: 2px dashed var(--border-default) !important;
+  background-color: transparent !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  color: var(--color-secondary);
+}
+
+.account-setup__add-button:hover {
+  border-color: var(--color-primary) !important;
+  color: var(--color-primary);
+  background-color: transparent !important;
+}
+
+.account-setup__add-button svg {
+  width: 1.25rem;
+  height: 1.25rem;
+}

@@ -11,7 +11,19 @@
   <% end %>
 
   <div class="mt-1">
-    <%= form.public_send(type, field, final_field_options) %>
+    <% if has_addon? %>
+      <div class="form-input-group">
+        <% if prepend %>
+          <span class="form-input-addon form-input-addon--prepend"><%= prepend %></span>
+        <% end %>
+        <%= form.public_send(type, field, final_field_options) %>
+        <% if append %>
+          <span class="form-input-addon form-input-addon--append"><%= append %></span>
+        <% end %>
+      </div>
+    <% else %>
+      <%= form.public_send(type, field, final_field_options) %>
+    <% end %>
   </div>
 
   <% if has_errors? %>

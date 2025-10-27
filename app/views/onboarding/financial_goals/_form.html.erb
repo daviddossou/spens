@@ -3,10 +3,10 @@
               method: :patch,
               local: true,
               class: "onboarding-form",
-              data: { controller: "onboarding--financial-goals" } do |form| %>
+              data: { controller: "onboarding--financial-goals" } do |f| %>
   <%= render 'shared/form_errors', object: @form %>
 
-  <%= render Onboarding::FinancialGoals::GridComponent.new(form_builder: form, model: @form) %>
+  <%= render Onboarding::FinancialGoals::GridComponent.new(form_builder: f, model: @form) %>
 
   <div class="form-actions">
     <%= render Ui::ButtonComponent.new(
@@ -15,7 +15,7 @@
           variant: :primary,
           size: :lg,
           disabled: @form.financial_goals.empty?,
-          form: form
+          form: f
         ) %>
   </div>
 <% end %>

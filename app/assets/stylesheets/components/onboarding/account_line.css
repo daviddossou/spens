@@ -1,0 +1,47 @@
+/* Account Line Component */
+.account-line {
+  padding: 1rem;
+  background-color: white;
+  border: 1px solid var(--border-default);
+  border-radius: 0.5rem;
+}
+
+.account-line__fields {
+  display: grid;
+  grid-template-columns: 1fr 0.75fr;
+  gap: 1rem;
+  align-items: start;
+}
+
+.account-line__amount-group {
+  display: flex;
+  gap: 1rem;
+  align-items: start;
+}
+
+.account-line__amount-field {
+  flex: 1;
+}
+
+.account-line__remove-button {
+  display: flex;
+  align-items: end;
+  padding-bottom: 0.25rem;
+  min-height: 100%;
+}
+
+.account-line__remove-button button {
+  flex-shrink: 0;
+}
+
+.account-line__remove-link {
+  display: flex;
+  justify-content: center;
+}
+
+/* Responsive: stack on smaller screens */
+@media (max-width: 768px) {
+  .account-line__fields {
+    grid-template-columns: 1fr;
+  }
+}

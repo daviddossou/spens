@@ -59,11 +59,15 @@ class Ui::ButtonComponent < ViewComponent::Base
   end
 
   def is_submit?
-    type == :submit || form.present?
+    type == :submit
   end
 
   def is_link?
     url.present?
+  end
+
+  def is_form_builder?
+    form.present? && form.respond_to?(:submit)
   end
 
   def button_type
@@ -83,7 +87,9 @@ class Ui::ButtonComponent < ViewComponent::Base
     opts[:disabled] = true if disabled
     opts[:class] = button_classes
     opts[:data] = final_data
-    opts[:type] = button_type unless is_link?
+    # Only add form attribute if it's a string (HTML form ID), not a form builder
+    opts[:form] = form if form.present? && form.is_a?(String)
+    opts[:type] = button_type unless is_link? || is_form_builder?
     opts
   end
 

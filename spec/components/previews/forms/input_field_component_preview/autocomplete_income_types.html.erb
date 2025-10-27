@@ -1,0 +1,47 @@
+<div class="max-w-xl mx-auto p-8">
+  <h2 class="text-2xl font-bold mb-6">Autocomplete - <%= model_name %> Templates</h2>
+
+  <p class="text-gray-600 mb-4">
+    Testing with real <%= model_name %> template suggestions from i18n. Only income types are shown.
+  </p>
+
+  <div class="mb-4 p-3 bg-green-50 rounded text-sm">
+    <strong>Total income types:</strong> <%= suggestions.size %> templates loaded from <code>config/locales/en/transaction_type_templates.yml</code>
+  </div>
+
+  <%= form_with model: TransactionType.new, url: "#", method: :post do |form| %>
+    <%= render Forms::InputFieldComponent.new(
+      form: form,
+      field: :name,
+      label: "Income Type",
+      placeholder: "Type or select income type...",
+      autocomplete: true,
+      autocomplete_options: suggestions,
+      allow_create: allow_create,
+      required: true
+    ) %>
+
+    <%= render Forms::InputFieldComponent.new(
+      form: form,
+      field: :amount,
+      type: :number_field,
+      placeholder: "0.00",
+      step: "0.01"
+    ) %>
+
+    <div class="mt-4">
+      <%= form.submit "Add Income", class: "px-4 py-2 bg-green-600 text-white rounded" %>
+    </div>
+  <% end %>
+
+  <div class="mt-6 p-4 bg-green-50 rounded">
+    <h3 class="font-semibold mb-2">💡 Tips:</h3>
+    <ul class="list-disc list-inside text-sm text-gray-700 space-y-1">
+      <li>Type "salary" to see Salary</li>
+      <li>Type "bonus" to see Performance Bonuses</li>
+      <li>Type "gift" to see Gifts (Income)</li>
+      <li>Type "side" to see Side Hustle / Freelance</li>
+      <li>Add your own custom income type!</li>
+    </ul>
+  </div>
+</div>

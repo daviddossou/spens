@@ -1,0 +1,39 @@
+<div class="max-w-xl mx-auto p-8">
+  <h2 class="text-2xl font-bold mb-6">Autocomplete - <%= model_name %> Templates</h2>
+
+  <p class="text-gray-600 mb-4">
+    Testing with real <%= model_name %> template suggestions from i18n. Type to filter or add your own custom value.
+  </p>
+
+  <div class="mb-4 p-3 bg-blue-50 rounded text-sm">
+    <strong>Total suggestions:</strong> <%= suggestions.size %> templates loaded from <code>config/locales/en/account_templates.yml</code>
+  </div>
+
+  <%= form_with model: Account.new, url: "#", method: :post do |form| %>
+    <%= render Forms::InputFieldComponent.new(
+      form: form,
+      field: :name,
+      label: "Account Name",
+      placeholder: "Type to search templates...",
+      autocomplete: true,
+      autocomplete_options: suggestions,
+      allow_create: allow_create,
+      required: true
+    ) %>
+
+    <div class="mt-4">
+      <%= form.submit "Submit", class: "px-4 py-2 bg-blue-500 text-white rounded" %>
+    </div>
+  <% end %>
+
+  <div class="mt-6 p-4 bg-green-50 rounded">
+    <h3 class="font-semibold mb-2">💡 Try these:</h3>
+    <ul class="list-disc list-inside text-sm text-gray-700 space-y-1">
+      <li>Type "wallet" to see Wallet</li>
+      <li>Type "bank" to see various bank options</li>
+      <li>Type "money" to filter mobile money services</li>
+      <li>Click the field to see all <%= suggestions.size %> suggestions</li>
+      <li>Type your own custom account name!</li>
+    </ul>
+  </div>
+</div>

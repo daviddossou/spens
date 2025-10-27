@@ -12,7 +12,8 @@
 #
 # Indexes
 #
-#  index_accounts_on_user_id  (user_id)
+#  index_accounts_on_lower_name_and_user_id  (lower((name)::text), user_id) UNIQUE
+#  index_accounts_on_user_id                 (user_id)
 #
 # Foreign Keys
 #
@@ -26,7 +27,7 @@ class Account < ApplicationRecord
 
   ##
   # Validations
-  validates :name, presence: true, length: { maximum: 100 }
+  validates :name, presence: true, length: { maximum: 100 }, uniqueness: { scope: :user_id, case_sensitive: false }
   validates :saving_goal, presence: true, numericality: { greater_than_or_equal_to: 0 }
   validates :balance, presence: true, numericality: true
 

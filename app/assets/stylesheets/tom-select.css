@@ -1,12 +1,80 @@
 /* TomSelect Custom Styles for Spens */
 /* Base TomSelect styles are loaded from CDN in the layout */
 
-/* Override TomSelect styles to match our form design */
-.ts-wrapper {
+/* Styles for autocomplete text inputs with tom-select */
+/* Target only wrappers created from .form-input-autocomplete */
+.form-input-autocomplete+.ts-wrapper {
   width: 100%;
 }
 
-.ts-control {
+.form-input-autocomplete+.ts-wrapper.single .ts-control {
+  background-color: white;
+  border: 1px solid var(--border-default);
+  border-radius: 6px;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--text-default);
+  transition: all 0.2s ease;
+  cursor: text;
+  min-height: auto;
+  display: flex;
+  align-items: center;
+}
+
+/* Style the input inside the autocomplete control */
+.form-input-autocomplete+.ts-wrapper.single .ts-control input {
+  border: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--text-default);
+  width: 100% !important;
+  flex: 1;
+}
+
+.form-input-autocomplete+.ts-wrapper.single .ts-control input:focus {
+  outline: none !important;
+}
+
+/* Remove any default item styling that might create inner boxes in autocomplete */
+.form-input-autocomplete+.ts-wrapper.single .ts-control .item {
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* Placeholder styling for autocomplete - only show when no value */
+.form-input-autocomplete+.ts-wrapper.single .ts-control input::placeholder {
+  color: var(--text-muted);
+  opacity: 1;
+}
+
+/* Hide placeholder when there's a selected value */
+.form-input-autocomplete+.ts-wrapper.single.has-items .ts-control input::placeholder {
+  opacity: 0;
+}
+
+.form-input-autocomplete+.ts-wrapper.single .ts-control:hover {
+  border-color: var(--color-primary);
+}
+
+.form-input-autocomplete+.ts-wrapper.single.focus .ts-control {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.1);
+}
+
+/* Styles for regular select dropdowns with tom-select (NOT autocomplete) */
+.form-select+.ts-wrapper {
+  width: 100%;
+}
+
+.form-select+.ts-wrapper.single .ts-control {
   background-color: white;
   border: 1px solid var(--border-default);
   border-radius: 6px;
@@ -16,87 +84,104 @@
   color: var(--text-default);
   transition: all 0.2s ease;
   cursor: pointer;
-  min-height: auto;
+  min-height: 2.5rem;
+  display: flex;
+  align-items: center;
 }
 
-/* When no value is selected AND the item is truly empty (no placeholder text), add extra top padding for floating label */
-.ts-control:has(.item[data-value=""]:empty) {
-  padding-top: 1.75rem;
-}
-
-/* When there's placeholder text, use normal padding */
-.ts-control:has(.item[data-value=""]:not(:empty)) {
-  padding-top: 0.5rem;
-}
-
-.ts-control:hover {
+.form-select+.ts-wrapper.single .ts-control:hover {
   border-color: var(--color-primary);
 }
 
-.ts-wrapper.focus .ts-control {
+.form-select+.ts-wrapper.single.focus .ts-control {
   outline: none;
   border-color: var(--color-primary);
   box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.1);
 }
 
+/* Dropdown styles (shared by both autocomplete and select) */
 .ts-dropdown {
-  background: white;
-  border: 1px solid var(--border-default);
-  border-radius: 6px;
-  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
-  margin-top: 0.25rem;
-  max-height: 300px;
+  background: white !important;
+  border: 1px solid var(--border-default) !important;
+  border-radius: 6px !important;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+  margin-top: 0.25rem !important;
+  max-height: 300px !important;
+  z-index: 1000 !important;
 }
 
 .ts-dropdown-content {
-  max-height: 280px;
-  overflow-y: auto;
+  max-height: 280px !important;
+  overflow-y: auto !important;
+  background: white !important;
 }
 
 .ts-dropdown .option {
-  padding: 0.5rem 1rem;
-  cursor: pointer;
-  transition: background-color 0.15s ease;
+  padding: 0.5rem 1rem !important;
+  cursor: pointer !important;
+  transition: background-color 0.15s ease !important;
+  background-color: white !important;
+  color: var(--text-default) !important;
 }
 
 .ts-dropdown .option:hover,
 .ts-dropdown .option.active {
-  background-color: var(--color-gray-100);
-  color: var(--color-gray-900);
+  background-color: var(--color-gray-100) !important;
+  color: var(--color-gray-900) !important;
 }
 
 .ts-dropdown .option.selected {
-  background-color: var(--color-primary);
-  color: var(--color-white);
+  background-color: var(--color-primary) !important;
+  color: var(--color-white) !important;
+}
+
+/* Create option (Add...) styling */
+.ts-dropdown .create {
+  padding: 0.5rem 1rem !important;
+  cursor: pointer !important;
+  transition: background-color 0.15s ease !important;
+  background-color: white !important;
+  color: var(--text-default) !important;
+}
+
+.ts-dropdown .create:hover,
+.ts-dropdown .create.active {
+  background-color: var(--color-gray-100) !important;
+  color: var(--color-gray-900) !important;
 }
 
 /* Priority options divider */
 .ts-dropdown .divider {
-  height: 1px;
-  background-color: var(--color-gray-300);
-  margin: 0.5rem 0;
-  padding: 0;
-  pointer-events: none;
-  font-size: 0.75rem;
-  color: var(--color-gray-400);
-  text-align: center;
-  line-height: 1;
+  height: 1px !important;
+  background-color: var(--color-gray-300) !important;
+  margin: 0.5rem 0 !important;
+  padding: 0 !important;
+  pointer-events: none !important;
+  font-size: 0.75rem !important;
+  color: var(--color-gray-400) !important;
+  text-align: center !important;
+  line-height: 1 !important;
+  border: none !important;
+  display: block !important;
 }
 
 .ts-dropdown .optgroup-header {
-  padding: 0.5rem 1rem;
-  font-weight: 600;
-  font-size: 0.875rem;
-  color: var(--color-gray-600);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  background-color: var(--color-gray-50);
+  padding: 0.5rem 1rem !important;
+  font-weight: 600 !important;
+  font-size: 0.875rem !important;
+  color: var(--color-gray-600) !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
+  background-color: var(--color-gray-50) !important;
 }
 
 .ts-dropdown .optgroup-divider {
-  height: 1px;
-  background-color: var(--color-gray-300);
-  margin: 0.5rem 0;
+  height: 1px !important;
+  background-color: var(--color-gray-300) !important;
+  margin: 0.5rem 0 !important;
+  padding: 0 !important;
+  border: none !important;
+  display: block !important;
 }
 
 /* Error state */

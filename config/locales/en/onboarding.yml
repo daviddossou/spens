@@ -55,10 +55,29 @@ en:
         income_frequency_help: "This helps us plan your budget cycles"
         main_income_source_label: "What is your main source of income?"
         main_income_source_help: "Understanding your income helps us provide better financial advice"
+    account_setups:
+      show:
+        title: "Set up your accounts"
+        subtitle: "Add your accounts and their current balances. Don't worry, you can add more later."
+      form:
+        back: "Back"
+        continue: "Complete Setup"
+        add_account: "Add another account"
+        remove_account: "Remove"
+      errors:
+        at_least_one_transaction: "You must add at least one account with an amount"
+      initial_balance_description: "Initial balance for %{account_name}"
     progress_component:
       financial_goal: "Financial Goals"
       profile_setup: "Profile Setup"
       account_setup: "Account Setup"
+    account_line_component:
+      account_name: "Account name"
+      account_name_placeholder: "e.g., Checking account"
+      account_help: "Select from suggestions or enter your own"
+      initial_amount: "Initial balance"
+      amount_help: "How much is currently in this account?"
+      remove: "Remove"
 
     income_frequencies:
       weekly: "Weekly"

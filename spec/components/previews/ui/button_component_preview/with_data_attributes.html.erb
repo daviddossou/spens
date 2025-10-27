@@ -1,0 +1,84 @@
+<div class="max-w-xl mx-auto p-8">
+  <h2 class="text-2xl font-bold mb-6">Buttons with Data Attributes</h2>
+
+  <p class="text-gray-600 mb-4">
+    Examples showing how to pass custom data attributes for JavaScript interactions.
+  </p>
+
+  <div class="space-y-4">
+    <h3 class="font-semibold text-gray-700">Single Data Attribute</h3>
+    <%= render Ui::ButtonComponent.new(
+      variant: :primary,
+      data: { action: "click->modal#open" }
+    ) do %>
+      Open Modal
+    <% end %>
+
+    <h3 class="font-semibold text-gray-700 mt-4">Multiple Data Attributes</h3>
+    <%= render Ui::ButtonComponent.new(
+      variant: :success,
+      data: {
+        controller: "clipboard",
+        action: "click->clipboard#copy",
+        clipboard_text_value: "Hello, World!"
+      }
+    ) do %>
+      Copy to Clipboard
+    <% end %>
+
+    <h3 class="font-semibold text-gray-700 mt-4">Turbo Confirm Dialog</h3>
+    <%= render Ui::ButtonComponent.new(
+      url: "#dangerous-action",
+      method: :delete,
+      variant: :danger,
+      data: { turbo_confirm: "Are you absolutely sure? This cannot be undone." }
+    ) do %>
+      Delete Forever
+    <% end %>
+
+    <h3 class="font-semibold text-gray-700 mt-4">Turbo Frame Target</h3>
+    <%= render Ui::ButtonComponent.new(
+      url: "#load-content",
+      variant: :secondary,
+      data: { turbo_frame: "content-frame" }
+    ) do %>
+      Load in Frame
+    <% end %>
+
+    <h3 class="font-semibold text-gray-700 mt-4">Custom Analytics Tracking</h3>
+    <%= render Ui::ButtonComponent.new(
+      variant: :primary,
+      data: {
+        event: "button_click",
+        category: "engagement",
+        label: "newsletter_signup",
+        value: 1
+      }
+    ) do %>
+      Subscribe to Newsletter
+    <% end %>
+
+    <h3 class="font-semibold text-gray-700 mt-4">ARIA Attributes</h3>
+    <%= render Ui::ButtonComponent.new(
+      variant: :secondary,
+      options: {
+        "aria-expanded": "false",
+        "aria-controls": "dropdown-menu"
+      },
+      data: { action: "click->dropdown#toggle" }
+    ) do %>
+      Toggle Dropdown
+    <% end %>
+  </div>
+
+  <div class="mt-6 p-4 bg-gray-50 rounded">
+    <h3 class="font-semibold mb-2">💡 Tips:</h3>
+    <ul class="list-disc list-inside text-sm text-gray-700 space-y-1">
+      <li>Use <code>data: { key: "value" }</code> for data attributes</li>
+      <li>Stimulus actions: <code>data: { action: "event->controller#method" }</code></li>
+      <li>Use <code>options: { ... }</code> for ARIA and other HTML attributes</li>
+      <li>Data attributes automatically convert keys to kebab-case</li>
+      <li>Combine with Turbo: confirm, frame, method, stream</li>
+    </ul>
+  </div>
+</div>

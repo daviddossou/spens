@@ -1,0 +1,50 @@
+<div class="account-line" data-onboarding--account-setup-target="accountLine">
+  <div class="account-line__fields">
+    <div class="account-line__field">
+      <%= form.fields_for :account do |account_fields| %>
+        <%= render Forms::InputFieldComponent.new(
+          form: account_fields,
+          field: :name,
+          type: :text_field,
+          label: t('.account_name'),
+          required: true,
+          help_text: t('.account_help'),
+          placeholder: t('.account_name_placeholder'),
+          autocomplete: true,
+          autocomplete_options: account_suggestions,
+          allow_create: true
+        ) %>
+      <% end %>
+    </div>
+
+    <div class="account-line__amount-field">
+      <%= render Forms::InputFieldComponent.new(
+        form: form,
+        field: :amount,
+        type: :number_field,
+        label: t('.initial_amount'),
+        required: true,
+        help_text: t('.amount_help'),
+        prepend: @currency,
+        field_options: { step: "0.01", min: "0" }
+      ) %>
+    </div>
+
+    <%= form.hidden_field :transaction_date, value: Date.current %>
+
+    <%= form.fields_for :transaction_type do |type_fields| %>
+      <%= type_fields.hidden_field :name, value: Onboarding::AccountSetupForm::TRANSACTION_TYPE_NAME %>
+      <%= type_fields.hidden_field :kind, value: TransactionType::KIND_TRANSFER_IN %>
+    <% end %>
+  </div>
+
+  <% if can_remove %>
+    <div class="account-line__remove-link">
+      <button type="button"
+              class="link-button link-danger"
+              data-action="click->onboarding--account-setup#removeLine">
+        <%= t('.remove') %>
+      </button>
+    </div>
+  <% end %>
+</div>
