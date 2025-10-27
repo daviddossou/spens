@@ -1,0 +1,83 @@
+/* Auth Layout Styles */
+.auth-layout {
+  min-height: 100vh;
+  background-color: var(--bs-off-white, #f8f9fa);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 3rem 1rem;
+}
+
+.auth-layout__language-switcher {
+  margin: 0 auto 1rem;
+  max-width: 28rem;
+}
+
+.auth-layout__header {
+  margin: 0 auto;
+  width: 100%;
+  max-width: 28rem;
+}
+
+.auth-layout__title {
+  margin-top: 1.5rem;
+  text-align: center;
+  font-size: 1.875rem;
+  font-weight: 800;
+  line-height: 1.2;
+  color: var(--bs-body-color);
+}
+
+.auth-layout__subtitle {
+  margin-top: 0.5rem;
+  text-align: center;
+  font-size: 0.875rem;
+  color: var(--bs-secondary-color, #6c757d);
+}
+
+.auth-layout__content {
+  margin-top: 2rem;
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+  max-width: 28rem;
+}
+
+.auth-layout__card {
+  background-color: #ffffff;
+  padding: 2rem 1rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+  border-radius: 0.5rem;
+}
+
+/* Responsive adjustments for tablets and up */
+@media (min-width: 640px) {
+  .auth-layout {
+    padding: 3rem 1.5rem;
+  }
+
+  .auth-layout__card {
+    padding: 2rem 2.5rem;
+  }
+}
+
+/* Responsive adjustments for desktop */
+@media (min-width: 1024px) {
+  .auth-layout {
+    padding: 3rem 2rem;
+  }
+}
+
+/* Mobile-first: ensure touch targets are adequate */
+.auth-layout form input:not([type="checkbox"]):not([type="radio"]),
+.auth-layout form button,
+.auth-layout form select {
+  min-height: 44px;
+}
+
+/* Ensure good contrast on mobile */
+@media (prefers-contrast: high) {
+  .auth-layout__card {
+    border: 1px solid var(--bs-border-color);
+  }
+}

@@ -25,10 +25,6 @@
   background-color: var(--bg-secondary-20);
 }
 
-.bg-off-white {
-  background-color: var(--bg-off-white);
-}
-
 .bg-success {
   background-color: var(--color-success);
 }

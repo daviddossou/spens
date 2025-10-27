@@ -31,6 +31,27 @@
   color: var(--color-danger-dark);
 }
 
+/* Responsive link buttons */
+@media (max-width: 640px) {
+  .link-button {
+    font-size: 0.8125rem;
+  }
+
+  .form-field {
+    margin-bottom: 0.75rem !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .link-button {
+    font-size: 0.75rem;
+  }
+
+  .form-field {
+    margin-bottom: 0.75rem !important;
+  }
+}
+
 .form-select {
   appearance: none;
   display: block;

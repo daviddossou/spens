@@ -33,3 +33,60 @@
   width: 1.25rem;
   height: 1.25rem;
 }
+
+/* Responsive: Tablet */
+@media (max-width: 768px) {
+  .account-setup__container {
+    gap: 1.25rem;
+  }
+
+  .account-setup__accounts-container {
+    gap: 0.875rem;
+  }
+
+  .account-setup__add-button svg {
+    width: 1.125rem;
+    height: 1.125rem;
+  }
+}
+
+/* Responsive: Mobile */
+@media (max-width: 640px) {
+  .account-setup__container {
+    gap: 1rem;
+  }
+
+  .account-setup__accounts-container {
+    gap: 0.75rem;
+  }
+
+  .account-setup__add-button {
+    gap: 0.375rem;
+  }
+
+  .account-setup__add-button svg {
+    width: 1rem;
+    height: 1rem;
+  }
+}
+
+/* Responsive: Small Mobile */
+@media (max-width: 480px) {
+  .account-setup__container {
+    gap: 0.875rem;
+  }
+
+  .account-setup__accounts-container {
+    gap: 0.625rem;
+  }
+
+  .account-setup__add-button {
+    padding: 0.625rem 0.75rem;
+    font-size: 0.8125rem;
+  }
+
+  .account-setup__add-button svg {
+    width: 0.875rem;
+    height: 0.875rem;
+  }
+}

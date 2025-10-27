@@ -37,11 +37,53 @@
 .account-line__remove-link {
   display: flex;
   justify-content: center;
+  margin-top: 0.75rem;
 }
 
-/* Responsive: stack on smaller screens */
+/* Responsive: Tablet */
 @media (max-width: 768px) {
+  .account-line {
+    padding: 0.875rem;
+  }
+
   .account-line__fields {
     grid-template-columns: 1fr;
+    gap: 0.875rem;
+  }
+
+  .account-line__remove-link {
+    margin-top: 0.625rem;
+  }
+}
+
+/* Responsive: Mobile */
+@media (max-width: 640px) {
+  .account-line {
+    padding-top: 1rem;
+    padding: 0.75rem;
+  }
+
+  .account-line__fields {
+    gap: 0.75rem;
+  }
+
+  .account-line__remove-link {
+    margin-top: 0.5rem;
+  }
+}
+
+/* Responsive: Small Mobile */
+@media (max-width: 480px) {
+  .account-line {
+    padding-top: 1rem !important;
+    padding: 0.625rem;
+  }
+
+  .account-line__fields {
+    gap: 0.25rem;
+  }
+
+  .account-line__remove-link {
+    margin-top: 0.375rem;
   }
 }

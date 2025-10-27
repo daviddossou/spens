@@ -1,7 +1,6 @@
 /* Onboarding-specific Styles */
 .onboarding-container {
   max-width: 800px;
-  min-width: 500px;
   margin: 0 auto;
   padding: 2rem 1rem;
   min-height: 100vh;
@@ -10,12 +9,14 @@
 }
 
 .onboarding-progress {
-  min-width: 700px;
-  margin-bottom: 3rem;
+  width: 100%;
+  margin-bottom: 2rem;
 }
 
 .onboarding-language-switcher {
   margin-bottom: 0.75rem;
+  text-align: right;
+  display: flex;
 }
 
 .onboarding-content {
@@ -31,6 +32,7 @@
   font-size: 2rem;
   font-weight: 700;
   margin-bottom: 1rem;
+  line-height: 1.2;
 }
 
 .onboarding-header p {
@@ -38,27 +40,97 @@
   color: var(--text-muted);
   max-width: 600px;
   margin: 0 auto;
+  line-height: 1.5;
 }
 
 .onboarding-form .form-actions {
   margin-top: 2rem;
   text-align: center;
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
 }
 
-/* Responsive Design */
-@media (min-width: 640px) {
-  .onboarding-language-switcher {
-    margin-left: auto;
-    margin-right: auto;
+/* Responsive Design - Tablet */
+@media (max-width: 768px) {
+  .onboarding-container {
+    padding: 1.5rem 1rem;
+  }
+
+  .onboarding-progress {
+    margin-bottom: 1.5rem;
+  }
+
+  .onboarding-header {
+    margin-bottom: 2rem;
+  }
+
+  .onboarding-header h1 {
+    font-size: 1.75rem;
+  }
+
+  .onboarding-header p {
+    font-size: 1rem;
   }
 }
 
+/* Responsive Design - Mobile */
 @media (max-width: 640px) {
   .onboarding-container {
-    padding: 1rem 0.5rem;
+    padding: 1rem 0.75rem;
+  }
+
+  .onboarding-progress {
+    margin-bottom: 1rem;
+  }
+
+  .onboarding-header {
+    margin-bottom: 1.5rem;
   }
 
   .onboarding-header h1 {
     font-size: 1.5rem;
+  }
+
+  .onboarding-header p {
+    font-size: 0.9375rem;
+    padding: 0 0.5rem;
+  }
+
+  .onboarding-form .form-actions {
+    margin-top: 1.5rem;
+    gap: 0.75rem;
+  }
+}
+
+/* Responsive Design - Small Mobile */
+@media (max-width: 480px) {
+  .onboarding-container {
+    padding: 0.75rem 0.5rem;
+  }
+
+  .onboarding-header h1 {
+    font-size: 1.375rem;
+  }
+
+  .onboarding-header p {
+    font-size: 0.875rem;
+  }
+
+  .onboarding-language-switcher {
+    margin-bottom: 0.5rem;
+    justify-content: center;
+  }
+
+  .onboarding-form .form-actions {
+    margin-top: 1rem;
+    flex-direction: column-reverse;
+    gap: 0.625rem;
+  }
+
+  .onboarding-form .form-actions .btn {
+    width: 100%;
   }
 }

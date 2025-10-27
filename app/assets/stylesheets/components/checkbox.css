@@ -11,8 +11,8 @@
 }
 
 .checkbox-field input[type="checkbox"] {
-  width: 1rem;
-  height: 1rem;
+  width: 1rem !important;
+  height: 1rem !important;
   border: 2px solid var(--border-default);
   border-radius: 4px;
   background-color: white;

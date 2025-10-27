@@ -19,6 +19,15 @@
   justify-content: space-between;
   font-size: 0.875rem;
   color: var(--text-muted);
+  gap: 0.5rem;
+}
+
+.step-labels .step {
+  flex: 1;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .step.active {
@@ -26,8 +35,36 @@
   font-weight: 600;
 }
 
-@media (max-width: 640px) {
+/* Tablet responsiveness */
+@media (max-width: 768px) {
   .step-labels {
-    font-size: 0.75rem;
+    font-size: 0.80rem;
+  }
+}
+
+/* Mobile responsiveness */
+@media (max-width: 640px) {
+  .progress-bar {
+    height: 3px;
+    margin-bottom: 0.75rem;
+  }
+
+  .step-labels {
+    gap: 0.25rem;
+  }
+
+  .step-labels .step {
+    font-size: 0.5rem;
+  }
+}
+
+/* Small mobile - hide labels or show abbreviated version */
+@media (max-width: 480px) {
+  .progress-bar {
+    margin-bottom: 0.5rem;
+  }
+
+  .step-labels .step {
+    font-size: 0.5rem;
   }
 }

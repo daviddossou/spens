@@ -33,35 +33,45 @@
   grid-template-columns: repeat(auto-fit, minmax(var(--grid-min-width, 300px), 1fr));
 }
 
+/* Tablet breakpoint */
 @media (max-width: 768px) {
+  .grid {
+    gap: var(--grid-gap, 0.875rem) !important;
+  }
 
-  .grid-3,
   .grid-4,
   .grid-5,
   .grid-6 {
     grid-template-columns: repeat(2, 1fr);
   }
-}
 
-@media (max-width: 480px) {
-
-  .grid-2,
-  .grid-3,
-  .grid-4,
-  .grid-5,
-  .grid-6 {
-    grid-template-columns: 1fr;
+  .grid-3 {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
+/* Mobile breakpoint */
 @media (max-width: 640px) {
+  .grid {
+    gap: var(--grid-gap, 0.75rem) !important;
+  }
+
   .grid-auto-fit {
     grid-template-columns: 1fr;
   }
 
   .grid-2,
   .grid-3,
-  .grid-4 {
+  .grid-4,
+  .grid-5,
+  .grid-6 {
     grid-template-columns: 1fr;
+  }
+}
+
+/* Small mobile - reduce gap further */
+@media (max-width: 480px) {
+  .grid {
+    gap: var(--grid-gap, 0.625rem) !important;
   }
 }

@@ -20,30 +20,30 @@
   </head>
 
   <body>
-    <div class="min-h-screen bg-off-white flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+    <div class="auth-layout">
       <!-- Language switcher at top -->
-      <div class="sm:mx-auto">
+      <div class="auth-layout__language-switcher">
         <%= render Navigation::LanguageSwitcherComponent.new(params: params) %>
       </div>
 
       <!-- Page title and subtitle -->
-      <div class="sm:mx-auto sm:w-full sm:max-w-md">
+      <div class="auth-layout__header">
         <% if content_for?(:title) %>
-          <h2 class="mt-6 text-center text-3xl font-extrabold">
+          <h2 class="auth-layout__title">
             <%= yield(:title) %>
           </h2>
         <% end %>
 
         <% if content_for?(:subtitle) %>
-          <div class="mt-2 text-center text-sm text-secondary">
+          <div class="auth-layout__subtitle">
             <%= yield(:subtitle) %>
           </div>
         <% end %>
       </div>
 
       <!-- Main content card -->
-      <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div class="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+      <div class="auth-layout__content">
+        <div class="auth-layout__card">
           <!-- Flash messages -->
           <%= render Ui::FlashMessageComponent.new(flash) %>
 
