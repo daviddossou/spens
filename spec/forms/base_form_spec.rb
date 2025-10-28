@@ -49,8 +49,8 @@ RSpec.describe BaseForm, type: :model do
   describe '#promote_errors' do
     it 'promotes child model errors to the form errors' do
       child_errors = {
-        email: ['is invalid'],
-        phone: ['is too short']
+        email: [ 'is invalid' ],
+        phone: [ 'is too short' ]
       }
 
       form.send(:promote_errors, child_errors)
@@ -61,7 +61,7 @@ RSpec.describe BaseForm, type: :model do
 
     it 'adds only the first error message for each attribute' do
       child_errors = {
-        email: ['is invalid', 'is too long', 'is taken']
+        email: [ 'is invalid', 'is too long', 'is taken' ]
       }
 
       form.send(:promote_errors, child_errors)
@@ -78,10 +78,10 @@ RSpec.describe BaseForm, type: :model do
 
     it 'handles multiple attributes with errors' do
       child_errors = {
-        name: ['is required'],
-        email: ['is invalid'],
-        phone: ['is too short'],
-        address: ['is blank']
+        name: [ 'is required' ],
+        email: [ 'is invalid' ],
+        phone: [ 'is too short' ],
+        address: [ 'is blank' ]
       }
 
       form.send(:promote_errors, child_errors)
@@ -127,7 +127,7 @@ RSpec.describe BaseForm, type: :model do
   describe 'integration of promote_errors and add_custom_error' do
     it 'can use both methods together' do
       child_errors = {
-        email: ['is invalid']
+        email: [ 'is invalid' ]
       }
 
       form.send(:promote_errors, child_errors)

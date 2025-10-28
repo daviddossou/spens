@@ -124,7 +124,7 @@ RSpec.describe Ui::GridComponent, type: :component do
     end
 
     it 'returns empty array when item_component is not specified' do
-      items = [{ name: 'Item 1' }]
+      items = [ { name: 'Item 1' } ]
 
       rendered = render_inline(described_class.new(items: items))
 
@@ -143,7 +143,7 @@ RSpec.describe Ui::GridComponent, type: :component do
 
     it 'processes items when both items and component are provided' do
       # Test the basic logic of rendered_items method without actual rendering
-      items = [{ name: 'Item 1' }, { name: 'Item 2' }]
+      items = [ { name: 'Item 1' }, { name: 'Item 2' } ]
 
       component = described_class.new(
         items: items,

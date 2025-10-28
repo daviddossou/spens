@@ -6,7 +6,7 @@ RSpec.describe DeviseConfiguration, type: :controller do
   include Devise::Test::ControllerHelpers
 
   it_behaves_like 'a controller concern', DeviseConfiguration
-  it_behaves_like 'a concern with before_actions', DeviseConfiguration, [:configure_permitted_parameters]
+  it_behaves_like 'a concern with before_actions', DeviseConfiguration, [ :configure_permitted_parameters ]
 
   controller(ApplicationController) do
     include DeviseConfiguration
@@ -30,15 +30,15 @@ RSpec.describe DeviseConfiguration, type: :controller do
       let(:devise_parameter_sanitizer) { instance_double(Devise::ParameterSanitizer) }
 
       it 'configures permitted parameters for sign_up' do
-        expect(devise_parameter_sanitizer).to receive(:permit).with(:sign_up, keys: [:first_name, :last_name, :phone_number])
-        expect(devise_parameter_sanitizer).to receive(:permit).with(:account_update, keys: [:first_name, :last_name, :phone_number])
+        expect(devise_parameter_sanitizer).to receive(:permit).with(:sign_up, keys: [ :first_name, :last_name, :phone_number ])
+        expect(devise_parameter_sanitizer).to receive(:permit).with(:account_update, keys: [ :first_name, :last_name, :phone_number ])
 
         controller.send(:configure_permitted_parameters)
       end
 
       it 'configures permitted parameters for account_update' do
-        expect(devise_parameter_sanitizer).to receive(:permit).with(:sign_up, keys: [:first_name, :last_name, :phone_number])
-        expect(devise_parameter_sanitizer).to receive(:permit).with(:account_update, keys: [:first_name, :last_name, :phone_number])
+        expect(devise_parameter_sanitizer).to receive(:permit).with(:sign_up, keys: [ :first_name, :last_name, :phone_number ])
+        expect(devise_parameter_sanitizer).to receive(:permit).with(:account_update, keys: [ :first_name, :last_name, :phone_number ])
 
         controller.send(:configure_permitted_parameters)
       end
@@ -215,8 +215,8 @@ RSpec.describe DeviseConfiguration, type: :controller do
     end
 
     it 'permits the correct keys for both sign_up and account_update' do
-      expect(sanitizer).to receive(:permit).with(:sign_up, keys: [:first_name, :last_name, :phone_number])
-      expect(sanitizer).to receive(:permit).with(:account_update, keys: [:first_name, :last_name, :phone_number])
+      expect(sanitizer).to receive(:permit).with(:sign_up, keys: [ :first_name, :last_name, :phone_number ])
+      expect(sanitizer).to receive(:permit).with(:account_update, keys: [ :first_name, :last_name, :phone_number ])
 
       devise_controller.send(:configure_permitted_parameters)
     end

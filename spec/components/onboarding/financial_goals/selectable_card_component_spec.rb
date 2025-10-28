@@ -7,7 +7,7 @@ RSpec.describe Onboarding::FinancialGoals::SelectableCardComponent, type: :compo
   let(:form) { mock_form_builder }
 
   it 'marks card selected when goal included' do
-    model = User.new(financial_goals: ['build_wealth'])
+    model = User.new(financial_goals: [ 'build_wealth' ])
     rendered = render_inline(described_class.new(item: goal, form: form, model: model))
     expect(rendered.css('.card.selected')).to be_present
   end

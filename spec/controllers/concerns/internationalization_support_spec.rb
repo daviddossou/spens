@@ -6,7 +6,7 @@ RSpec.describe InternationalizationSupport, type: :controller do
   include Devise::Test::ControllerHelpers
 
   it_behaves_like 'a controller concern', InternationalizationSupport
-  it_behaves_like 'a concern with before_actions', InternationalizationSupport, [:set_locale]
+  it_behaves_like 'a concern with before_actions', InternationalizationSupport, [ :set_locale ]
 
   controller(ApplicationController) do
     include InternationalizationSupport
@@ -22,7 +22,7 @@ RSpec.describe InternationalizationSupport, type: :controller do
   before do
     # Store and set up test environment
     @original_available_locales = I18n.available_locales
-    I18n.available_locales = [:en, :es, :fr]
+    I18n.available_locales = [ :en, :es, :fr ]
     I18n.locale = I18n.default_locale
     session.clear
   end

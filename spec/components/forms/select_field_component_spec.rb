@@ -331,11 +331,11 @@ RSpec.describe Forms::SelectFieldComponent, type: :component do
   describe "convert_options_format" do
     it "converts hash options" do
       result = component.send(:convert_options_format, { 'US' => 'United States' })
-      expect(result).to eq([[ 'United States', 'US' ]])
+      expect(result).to eq([ [ 'United States', 'US' ] ])
     end
 
     it "keeps array of arrays as-is" do
-      input = [[ 'United States', 'US' ]]
+      input = [ [ 'United States', 'US' ] ]
       result = component.send(:convert_options_format, input)
       expect(result).to eq(input)
     end

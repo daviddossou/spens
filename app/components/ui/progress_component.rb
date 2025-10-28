@@ -47,7 +47,7 @@ class Ui::ProgressComponent < ViewComponent::Base
 
   def final_html_options
     options = html_options.dup
-    options[:class] = [css_class, options[:class]].compact.join(' ')
+    options[:class] = [ css_class, options[:class] ].compact.join(" ")
     options
   end
 

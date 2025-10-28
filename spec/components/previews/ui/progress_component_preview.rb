@@ -13,7 +13,7 @@ class Ui::ProgressComponentPreview < ViewComponent::Preview
   def with_steps
     render Ui::ProgressComponent.new(
       current_step: "step_2",
-      steps: ["step_1", "step_2", "step_3", "step_4"],
+      steps: [ "step_1", "step_2", "step_3", "step_4" ],
       css_class: "w-full max-w-lg mx-auto"
     )
   end
@@ -22,7 +22,7 @@ class Ui::ProgressComponentPreview < ViewComponent::Preview
   def bar_only
     render Ui::ProgressComponent.new(
       current_step: "processing",
-      steps: ["pending", "processing", "completed"],
+      steps: [ "pending", "processing", "completed" ],
       labels: false,
       css_class: "w-full max-w-sm mx-auto"
     )
@@ -32,7 +32,7 @@ class Ui::ProgressComponentPreview < ViewComponent::Preview
   def labels_only
     render Ui::ProgressComponent.new(
       current_step: "review",
-      steps: ["draft", "review", "approved", "published"],
+      steps: [ "draft", "review", "approved", "published" ],
       show_bar: false,
       css_class: "flex justify-between w-full max-w-md mx-auto"
     )
@@ -42,7 +42,7 @@ class Ui::ProgressComponentPreview < ViewComponent::Preview
   def custom_percentage
     render Ui::ProgressComponent.new(
       current_step: "middle",
-      steps: ["start", "middle", "end"],
+      steps: [ "start", "middle", "end" ],
       percentage: 85, # Override calculated percentage
       css_class: "w-full max-w-md mx-auto"
     )
@@ -51,7 +51,7 @@ class Ui::ProgressComponentPreview < ViewComponent::Preview
   # Empty state (no current step)
   def empty_state
     render Ui::ProgressComponent.new(
-      steps: ["todo", "in_progress", "done"],
+      steps: [ "todo", "in_progress", "done" ],
       css_class: "w-full max-w-md mx-auto"
     )
   end
@@ -60,7 +60,7 @@ class Ui::ProgressComponentPreview < ViewComponent::Preview
   def single_step
     render Ui::ProgressComponent.new(
       current_step: "complete",
-      steps: ["complete"],
+      steps: [ "complete" ],
       css_class: "w-full max-w-md mx-auto"
     )
   end
@@ -69,7 +69,7 @@ class Ui::ProgressComponentPreview < ViewComponent::Preview
   def workflow_example
     render Ui::ProgressComponent.new(
       current_step: "testing",
-      steps: ["planning", "development", "testing", "deployment", "monitoring"],
+      steps: [ "planning", "development", "testing", "deployment", "monitoring" ],
       css_class: "w-full max-w-2xl mx-auto p-4 border rounded"
     )
   end

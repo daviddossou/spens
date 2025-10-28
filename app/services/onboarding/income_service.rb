@@ -7,13 +7,13 @@ class Onboarding::IncomeService
   class << self
     def frequency_options
       FREQUENCIES.map do |frequency|
-        [I18n.t("onboarding.income_frequencies.#{frequency}"), frequency]
+        [ I18n.t("onboarding.income_frequencies.#{frequency}"), frequency ]
       end
     end
 
     def source_options
       SOURCES.map do |source|
-        [I18n.t("onboarding.income_sources.#{source}"), source]
+        [ I18n.t("onboarding.income_sources.#{source}"), source ]
       end
     end
 

@@ -26,7 +26,7 @@ RSpec.describe Ui::ProgressComponent, type: :component do
       it 'uses the provided percentage' do
         component = described_class.new(
           percentage: 75,
-          steps: ['step1', 'step2', 'step3'],
+          steps: [ 'step1', 'step2', 'step3' ],
           current_step: 'step2'
         )
         expect(component.send(:calculated_percentage)).to eq(75)
@@ -36,7 +36,7 @@ RSpec.describe Ui::ProgressComponent, type: :component do
     context 'when percentage is calculated from steps' do
       it 'calculates correct percentage for first step' do
         component = described_class.new(
-          steps: ['step1', 'step2', 'step3'],
+          steps: [ 'step1', 'step2', 'step3' ],
           current_step: 'step1'
         )
         expect(component.send(:calculated_percentage)).to eq(33)
@@ -44,7 +44,7 @@ RSpec.describe Ui::ProgressComponent, type: :component do
 
       it 'calculates correct percentage for middle step' do
         component = described_class.new(
-          steps: ['step1', 'step2', 'step3'],
+          steps: [ 'step1', 'step2', 'step3' ],
           current_step: 'step2'
         )
         expect(component.send(:calculated_percentage)).to eq(67)
@@ -52,7 +52,7 @@ RSpec.describe Ui::ProgressComponent, type: :component do
 
       it 'calculates correct percentage for last step' do
         component = described_class.new(
-          steps: ['step1', 'step2', 'step3'],
+          steps: [ 'step1', 'step2', 'step3' ],
           current_step: 'step3'
         )
         expect(component.send(:calculated_percentage)).to eq(100)
@@ -65,7 +65,7 @@ RSpec.describe Ui::ProgressComponent, type: :component do
 
       it 'returns 0 when current_step not found in steps' do
         component = described_class.new(
-          steps: ['step1', 'step2', 'step3'],
+          steps: [ 'step1', 'step2', 'step3' ],
           current_step: 'unknown_step'
         )
         expect(component.send(:calculated_percentage)).to eq(0)
@@ -73,7 +73,7 @@ RSpec.describe Ui::ProgressComponent, type: :component do
 
       it 'returns 0 when current_step is nil' do
         component = described_class.new(
-          steps: ['step1', 'step2', 'step3'],
+          steps: [ 'step1', 'step2', 'step3' ],
           current_step: nil
         )
         expect(component.send(:calculated_percentage)).to eq(0)
@@ -83,7 +83,7 @@ RSpec.describe Ui::ProgressComponent, type: :component do
     context 'with different step counts' do
       it 'handles single step correctly' do
         component = described_class.new(
-          steps: ['only_step'],
+          steps: [ 'only_step' ],
           current_step: 'only_step'
         )
         expect(component.send(:calculated_percentage)).to eq(100)
@@ -101,7 +101,7 @@ RSpec.describe Ui::ProgressComponent, type: :component do
   end
 
   describe 'step classes' do
-    let(:steps) { ['step1', 'step2', 'step3', 'step4'] }
+    let(:steps) { [ 'step1', 'step2', 'step3', 'step4' ] }
     let(:current_step) { 'step2' }
 
     let(:component) do
@@ -149,7 +149,7 @@ RSpec.describe Ui::ProgressComponent, type: :component do
   describe 'data type handling' do
     it 'converts step names to strings' do
       component = described_class.new(
-        steps: [:step1, :step2, :step3],
+        steps: [ :step1, :step2, :step3 ],
         current_step: :step2
       )
       expect(component.send(:calculated_percentage)).to eq(67)
@@ -157,7 +157,7 @@ RSpec.describe Ui::ProgressComponent, type: :component do
 
     it 'converts current_step to string' do
       component = described_class.new(
-        steps: ['step1', 'step2', 'step3'],
+        steps: [ 'step1', 'step2', 'step3' ],
         current_step: :step2
       )
       expect(component.send(:calculated_percentage)).to eq(67)
@@ -165,7 +165,7 @@ RSpec.describe Ui::ProgressComponent, type: :component do
 
     it 'handles mixed string and symbol steps' do
       component = described_class.new(
-        steps: [:step1, 'step2', :step3],
+        steps: [ :step1, 'step2', :step3 ],
         current_step: 'step2'
       )
       expect(component.send(:calculated_percentage)).to eq(67)
@@ -256,7 +256,7 @@ RSpec.describe Ui::ProgressComponent, type: :component do
 
     it 'handles nil current_step gracefully' do
       rendered = render_inline(described_class.new(
-        steps: ['step1', 'step2'],
+        steps: [ 'step1', 'step2' ],
         current_step: nil
       ))
       expect(rendered.to_html).to be_present
@@ -264,7 +264,7 @@ RSpec.describe Ui::ProgressComponent, type: :component do
 
     it 'handles empty string current_step' do
       component = described_class.new(
-        steps: ['step1', 'step2'],
+        steps: [ 'step1', 'step2' ],
         current_step: ''
       )
       expect(component.send(:calculated_percentage)).to eq(0)

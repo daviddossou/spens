@@ -13,7 +13,7 @@ class Onboarding::FinancialGoals::SelectableCardComponentPreview < ViewComponent
 
   def selected_state
     user = User.new
-    user.financial_goals = ['build_wealth']
+    user.financial_goals = [ 'build_wealth' ]
     render_with_template locals: {
       goal: sample_goal,
       user: user
@@ -86,7 +86,7 @@ class Onboarding::FinancialGoals::SelectableCardComponentPreview < ViewComponent
     ]
 
     user = User.new
-    user.financial_goals = ['save_for_emergency', 'build_wealth']
+    user.financial_goals = [ 'save_for_emergency', 'build_wealth' ]
 
     render_with_template locals: {
       goals: goals,
@@ -115,7 +115,7 @@ class Onboarding::FinancialGoals::SelectableCardComponentPreview < ViewComponent
     ]
 
     user = User.new
-    user.financial_goals = ['selected_goal']
+    user.financial_goals = [ 'selected_goal' ]
 
     render_with_template locals: {
       goals: goals,
@@ -134,7 +134,7 @@ class Onboarding::FinancialGoals::SelectableCardComponentPreview < ViewComponent
     ]
 
     user = User.new
-    user.financial_goals = ['special_chars', 'unicode']
+    user.financial_goals = [ 'special_chars', 'unicode' ]
 
     render_with_template locals: {
       goals: goals,

@@ -40,18 +40,18 @@ class Ui::GridComponent < ViewComponent::Base
 
   def css_custom_properties
     properties = {}
-    properties['--grid-gap'] = gap unless gap == "1rem" # default
-    properties['--grid-min-width'] = min_width unless min_width == "300px" # default
+    properties["--grid-gap"] = gap unless gap == "1rem" # default
+    properties["--grid-min-width"] = min_width unless min_width == "300px" # default
     properties
   end
 
   def final_html_options
     options = html_options.dup
-    options[:class] = [grid_classes, options[:class]].compact.flatten.join(' ')
+    options[:class] = [ grid_classes, options[:class] ].compact.flatten.join(" ")
 
     if css_custom_properties.any?
-      style_props = css_custom_properties.map { |prop, value| "#{prop}: #{value}" }.join('; ')
-      options[:style] = [style_props, options[:style]].compact.join('; ')
+      style_props = css_custom_properties.map { |prop, value| "#{prop}: #{value}" }.join("; ")
+      options[:style] = [ style_props, options[:style] ].compact.join("; ")
     end
 
     options

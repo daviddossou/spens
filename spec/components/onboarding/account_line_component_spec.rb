@@ -304,7 +304,7 @@ RSpec.describe Onboarding::AccountLineComponent, type: :component do
     end
 
     it 'handles different currency symbols' do
-      currencies = ['XOF', 'USD', 'EUR', 'GBP', 'NGN', 'GHS', 'XAF']
+      currencies = [ 'XOF', 'USD', 'EUR', 'GBP', 'NGN', 'GHS', 'XAF' ]
 
       currencies.each do |currency|
         rendered = render_inline(described_class.new(

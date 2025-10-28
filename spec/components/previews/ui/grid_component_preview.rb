@@ -75,7 +75,7 @@ class Ui::GridComponentPreview < ViewComponent::Preview
   end
 
   def single_column
-    items = ["Header", "Navigation", "Main Content", "Sidebar", "Footer"]
+    items = [ "Header", "Navigation", "Main Content", "Sidebar", "Footer" ]
 
     render Ui::GridComponent.new(
       columns: 1,
@@ -84,10 +84,10 @@ class Ui::GridComponentPreview < ViewComponent::Preview
     ) do
       items.map.with_index do |item, index|
         height_class = case item
-                      when "Main Content" then "h-32"
-                      when "Header", "Footer" then "h-16"
-                      else "h-12"
-                      end
+        when "Main Content" then "h-32"
+        when "Header", "Footer" then "h-16"
+        else "h-12"
+        end
 
         content_tag :div, class: "#{height_class} bg-gray-200 rounded flex items-center justify-center font-medium" do
           item
@@ -97,7 +97,7 @@ class Ui::GridComponentPreview < ViewComponent::Preview
   end
 
   def flexible_content
-    items = ["Dashboard", "Analytics", "Settings", "Profile", "Reports", "Users"]
+    items = [ "Dashboard", "Analytics", "Settings", "Profile", "Reports", "Users" ]
 
     render Ui::GridComponent.new(
       columns: 3,

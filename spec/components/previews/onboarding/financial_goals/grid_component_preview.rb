@@ -5,7 +5,7 @@ class Onboarding::FinancialGoals::GridComponentPreview < ViewComponent::Preview
   include ActionView::Context
 
   def default
-    user = User.new(financial_goals: ['save_for_emergency'])
+    user = User.new(financial_goals: [ 'save_for_emergency' ])
     form_object = Onboarding::FinancialGoalForm.new(user)
 
     render_with_template locals: {

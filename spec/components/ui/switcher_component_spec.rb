@@ -94,7 +94,7 @@ RSpec.describe Ui::SwitcherComponent, type: :component do
 
   describe 'option handling' do
     it 'handles hash options with text and value keys' do
-      options = [{ text: 'Label', value: 'val', url: '/path' }]
+      options = [ { text: 'Label', value: 'val', url: '/path' } ]
       rendered = render_inline(described_class.new(options: options, current: 'val'))
 
       expect(rendered.to_html).to include('Label')
@@ -102,28 +102,28 @@ RSpec.describe Ui::SwitcherComponent, type: :component do
     end
 
     it 'handles hash options with string keys' do
-      options = [{ 'text' => 'Label', 'value' => 'val', 'url' => '/path' }]
+      options = [ { 'text' => 'Label', 'value' => 'val', 'url' => '/path' } ]
       rendered = render_inline(described_class.new(options: options, current: 'val'))
 
       expect(rendered.to_html).to include('Label')
     end
 
     it 'uses label as fallback for text' do
-      options = [{ label: 'My Label', value: 'val', url: '/path' }]
+      options = [ { label: 'My Label', value: 'val', url: '/path' } ]
       rendered = render_inline(described_class.new(options: options, current: 'val'))
 
       expect(rendered.to_html).to include('My Label')
     end
 
     it 'defaults to # for missing url' do
-      options = [{ text: 'Option', value: 'opt' }]
+      options = [ { text: 'Option', value: 'opt' } ]
       rendered = render_inline(described_class.new(options: options))
 
       expect(rendered.to_html).to include('href="#"')
     end
 
     it 'handles data attributes' do
-      options = [{ text: 'Option', value: 'opt', url: '/path', data: { turbo: false, action: 'click' } }]
+      options = [ { text: 'Option', value: 'opt', url: '/path', data: { turbo: false, action: 'click' } } ]
       rendered = render_inline(described_class.new(options: options))
 
       link = rendered.css('a').first
@@ -175,7 +175,7 @@ RSpec.describe Ui::SwitcherComponent, type: :component do
     end
 
     it 'compares current with option value, not text' do
-      options = [{ text: 'English', value: 'en', url: '/en' }]
+      options = [ { text: 'English', value: 'en', url: '/en' } ]
       rendered = render_inline(described_class.new(options: options, current: 'en'))
 
       expect(rendered.css('a.active').count).to eq(1)
@@ -191,7 +191,7 @@ RSpec.describe Ui::SwitcherComponent, type: :component do
     end
 
     it 'handles single option' do
-      options = [{ text: 'Only Option', value: 'only', url: '/only' }]
+      options = [ { text: 'Only Option', value: 'only', url: '/only' } ]
       rendered = render_inline(described_class.new(options: options, current: 'only'))
 
       expect(rendered.css('a').count).to eq(1)

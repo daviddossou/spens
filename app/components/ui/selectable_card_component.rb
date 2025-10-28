@@ -36,12 +36,12 @@ class Ui::SelectableCardComponent < ViewComponent::Base
 
   def final_html_options
     options = html_options.dup
-    options[:class] = [options[:class], root_classes].compact.join(' ')
+    options[:class] = [ options[:class], root_classes ].compact.join(" ")
 
     # Add Stimulus controller for toggle behavior
     options[:data] ||= {}
-    options[:data][:controller] = [options[:data][:controller], 'ui--selectable-card'].compact.join(' ')
-    options[:data][:action] = [options[:data][:action], 'click->ui--selectable-card#toggle'].compact.join(' ')
+    options[:data][:controller] = [ options[:data][:controller], "ui--selectable-card" ].compact.join(" ")
+    options[:data][:action] = [ options[:data][:action], "click->ui--selectable-card#toggle" ].compact.join(" ")
 
     options
   end
@@ -54,8 +54,8 @@ class Ui::SelectableCardComponent < ViewComponent::Base
       multiple: true,
       checked: selected?,
       hide_label: true,
-      wrapper_classes: 'hidden',
-      data: { 'ui--selectable-card-target': 'checkbox' }
+      wrapper_classes: "hidden",
+      data: { 'ui--selectable-card-target': "checkbox" }
     }
   end
 
@@ -73,12 +73,12 @@ class Ui::SelectableCardComponent < ViewComponent::Base
 
   def item_name
     return item if item.is_a?(String)
-    item[:name] || item['name'] || (item.respond_to?(:name) ? item.name : item.to_s)
+    item[:name] || item["name"] || (item.respond_to?(:name) ? item.name : item.to_s)
   end
 
   def item_description
     return nil if item.is_a?(String)
-    item[:description] || item['description'] || (item.respond_to?(:description) ? item.description : nil)
+    item[:description] || item["description"] || (item.respond_to?(:description) ? item.description : nil)
   end
 
   def item_value
@@ -86,9 +86,9 @@ class Ui::SelectableCardComponent < ViewComponent::Base
 
     # Try hash-style access first
     return item[:key] if item.is_a?(Hash) && item.key?(:key)
-    return item['key'] if item.is_a?(Hash) && item.key?('key')
+    return item["key"] if item.is_a?(Hash) && item.key?("key")
     return item[:value] if item.is_a?(Hash) && item.key?(:value)
-    return item['value'] if item.is_a?(Hash) && item.key?('value')
+    return item["value"] if item.is_a?(Hash) && item.key?("value")
 
     # Try method access for objects/structs
     return item.id if item.respond_to?(:id)

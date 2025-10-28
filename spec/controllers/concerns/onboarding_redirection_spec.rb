@@ -6,7 +6,7 @@ RSpec.describe OnboardingRedirection, type: :controller do
   include Devise::Test::ControllerHelpers
 
   it_behaves_like 'a controller concern', OnboardingRedirection
-  it_behaves_like 'a concern with before_actions', OnboardingRedirection, [:redirect_to_onboarding]
+  it_behaves_like 'a concern with before_actions', OnboardingRedirection, [ :redirect_to_onboarding ]
 
   controller(ApplicationController) do
     include OnboardingRedirection

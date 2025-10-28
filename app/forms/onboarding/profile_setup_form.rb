@@ -3,8 +3,8 @@
 class Onboarding::ProfileSetupForm < BaseForm
   ##
   # Constants
-  CURRENT_STEP = 'onboarding_profile_setup'
-  NEXT_STEP = 'onboarding_account_setup'
+  CURRENT_STEP = "onboarding_profile_setup"
+  NEXT_STEP = "onboarding_account_setup"
 
   ##
   # Attributes
@@ -28,7 +28,7 @@ class Onboarding::ProfileSetupForm < BaseForm
 
     super(
       country: payload[:country] || user.country,
-      currency: payload[:currency] || user.currency || 'XOF',
+      currency: payload[:currency] || user.currency || "XOF",
       income_frequency: payload[:income_frequency] || user.income_frequency,
       main_income_source: payload[:main_income_source] || user.main_income_source
     )

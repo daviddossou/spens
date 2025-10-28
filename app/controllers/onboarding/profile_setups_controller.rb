@@ -18,7 +18,7 @@ class Onboarding::ProfileSetupsController < ApplicationController
     end
   rescue StandardError => e
     Rails.logger.error "Error when updating profile setup: #{e.message}"
-    redirect_to onboarding_profile_setups_path, alert: t('onboarding.errors.generic')
+    redirect_to onboarding_profile_setups_path, alert: t("onboarding.errors.generic")
   end
 
   private

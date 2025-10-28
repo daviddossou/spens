@@ -4,7 +4,7 @@ class Navigation::LanguageSwitcherComponentPreview < ViewComponent::Preview
   def default
     render Navigation::LanguageSwitcherComponent.new(
       current_locale: :en,
-      available_locales: [:en, :fr],
+      available_locales: [ :en, :fr ],
       params: {}
     )
   end
@@ -12,7 +12,7 @@ class Navigation::LanguageSwitcherComponentPreview < ViewComponent::Preview
   def multilingual_app
     render Navigation::LanguageSwitcherComponent.new(
       current_locale: :es,
-      available_locales: [:en, :fr, :es, :de, :it],
+      available_locales: [ :en, :fr, :es, :de, :it ],
       params: {}
     )
   end
@@ -20,7 +20,7 @@ class Navigation::LanguageSwitcherComponentPreview < ViewComponent::Preview
   def with_page_state
     render Navigation::LanguageSwitcherComponent.new(
       current_locale: :en,
-      available_locales: [:en, :fr],
+      available_locales: [ :en, :fr ],
       params: { page: 2, search: "financial goals", category: "savings" }
     )
   end
@@ -28,7 +28,7 @@ class Navigation::LanguageSwitcherComponentPreview < ViewComponent::Preview
   def single_language_edge_case
     render Navigation::LanguageSwitcherComponent.new(
       current_locale: :en,
-      available_locales: [:en],
+      available_locales: [ :en ],
       params: {}
     )
   end

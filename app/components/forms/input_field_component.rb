@@ -139,9 +139,9 @@ class Forms::InputFieldComponent < ViewComponent::Base
     if autocomplete_options.first.is_a?(Array)
       autocomplete_options
     elsif autocomplete_options.first.is_a?(Hash)
-      autocomplete_options.map { |opt| [opt[:label] || opt[:text], opt[:value] || opt[:id]] }
+      autocomplete_options.map { |opt| [ opt[:label] || opt[:text], opt[:value] || opt[:id] ] }
     else
-      autocomplete_options.map { |opt| [opt, opt] }
+      autocomplete_options.map { |opt| [ opt, opt ] }
     end
   end
 end

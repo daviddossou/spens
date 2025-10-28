@@ -19,7 +19,7 @@ class Ui::SwitcherComponent < ViewComponent::Base
 
   def final_html_options
     opts = html_options.dup
-    opts[:class] = [css_class, opts[:class]].compact.join(' ')
+    opts[:class] = [ css_class, opts[:class] ].compact.join(" ")
     opts
   end
 
@@ -33,7 +33,7 @@ class Ui::SwitcherComponent < ViewComponent::Base
 
   def is_current?(option)
     if option.is_a?(Hash)
-      option_value = option[:value] || option['value']
+      option_value = option[:value] || option["value"]
     else
       option_value = option
     end
@@ -43,7 +43,7 @@ class Ui::SwitcherComponent < ViewComponent::Base
 
   def option_text(option)
     if option.is_a?(Hash)
-      option[:text] || option['text'] || option[:label] || option['label'] || option_value(option).to_s
+      option[:text] || option["text"] || option[:label] || option["label"] || option_value(option).to_s
     else
       option.to_s
     end
@@ -51,7 +51,7 @@ class Ui::SwitcherComponent < ViewComponent::Base
 
   def option_value(option)
     if option.is_a?(Hash)
-      option[:value] || option['value'] || option[:text] || option['text']
+      option[:value] || option["value"] || option[:text] || option["text"]
     else
       option
     end
@@ -59,7 +59,7 @@ class Ui::SwitcherComponent < ViewComponent::Base
 
   def option_url(option)
     if option.is_a?(Hash)
-      option[:url] || option['url'] || "#"
+      option[:url] || option["url"] || "#"
     else
       "#"
     end
@@ -67,7 +67,7 @@ class Ui::SwitcherComponent < ViewComponent::Base
 
   def option_data(option)
     if option.is_a?(Hash)
-      option[:data] || option['data'] || {}
+      option[:data] || option["data"] || {}
     else
       {}
     end

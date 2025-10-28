@@ -24,7 +24,7 @@ class Forms::InputFieldComponentPreview < ViewComponent::Preview
   # Different field types
   def field_types
     render_with_template locals: {
-      field_types: [:text_field, :email_field, :password_field, :number_field, :url_field, :telephone_field]
+      field_types: [ :text_field, :email_field, :password_field, :number_field, :url_field, :telephone_field ]
     }
   end
 

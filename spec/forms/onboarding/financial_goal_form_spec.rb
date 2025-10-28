@@ -4,7 +4,7 @@ require 'rails_helper'
 
 RSpec.describe Onboarding::FinancialGoalForm, type: :model do
   let(:user) { create(:user, onboarding_current_step: :onboarding_financial_goal) }
-  let(:valid_goals) { ['save_for_emergency', 'save_for_retirement'] }
+  let(:valid_goals) { [ 'save_for_emergency', 'save_for_retirement' ] }
   let(:form) { described_class.new(user, { financial_goals: valid_goals }) }
 
   describe 'inheritance' do
@@ -26,16 +26,16 @@ RSpec.describe Onboarding::FinancialGoalForm, type: :model do
   describe '#initialize' do
     context 'with financial_goals in payload' do
       it 'sets financial_goals from payload' do
-        form = described_class.new(user, { financial_goals: ['save_for_retirement'] })
-        expect(form.financial_goals).to eq(['save_for_retirement'])
+        form = described_class.new(user, { financial_goals: [ 'save_for_retirement' ] })
+        expect(form.financial_goals).to eq([ 'save_for_retirement' ])
       end
     end
 
     context 'without financial_goals in payload' do
       it 'sets financial_goals from user' do
-        user.update!(financial_goals: ['save_for_house'])
+        user.update!(financial_goals: [ 'save_for_house' ])
         form = described_class.new(user, {})
-        expect(form.financial_goals).to eq(['save_for_house'])
+        expect(form.financial_goals).to eq([ 'save_for_house' ])
       end
     end
 
@@ -77,7 +77,7 @@ RSpec.describe Onboarding::FinancialGoalForm, type: :model do
       end
 
       it 'is valid with financial_goals present' do
-        form = described_class.new(user, { financial_goals: ['save_for_retirement'] })
+        form = described_class.new(user, { financial_goals: [ 'save_for_retirement' ] })
         expect(form).to be_valid
       end
     end
@@ -85,25 +85,25 @@ RSpec.describe Onboarding::FinancialGoalForm, type: :model do
     context 'goals_are_allowed validation' do
       it 'is valid with allowed goals' do
         User::FINANCIAL_GOALS.each do |goal|
-          form = described_class.new(user, { financial_goals: [goal] })
+          form = described_class.new(user, { financial_goals: [ goal ] })
           expect(form).to be_valid
         end
       end
 
       it 'is invalid with disallowed goals' do
-        form = described_class.new(user, { financial_goals: ['invalid_goal'] })
+        form = described_class.new(user, { financial_goals: [ 'invalid_goal' ] })
         expect(form).not_to be_valid
         expect(form.errors[:financial_goals]).to be_present
       end
 
       it 'is invalid with mix of valid and invalid goals' do
-        form = described_class.new(user, { financial_goals: ['save_for_retirement', 'invalid_goal'] })
+        form = described_class.new(user, { financial_goals: [ 'save_for_retirement', 'invalid_goal' ] })
         expect(form).not_to be_valid
         expect(form.errors[:financial_goals]).to be_present
       end
 
       it 'adds error message with invalid goal names' do
-        form = described_class.new(user, { financial_goals: ['bad_goal', 'worse_goal'] })
+        form = described_class.new(user, { financial_goals: [ 'bad_goal', 'worse_goal' ] })
         form.valid?
         error_message = form.errors[:financial_goals].first
         expect(error_message).to include('bad_goal')
@@ -114,7 +114,7 @@ RSpec.describe Onboarding::FinancialGoalForm, type: :model do
 
   describe '#submit' do
     context 'when form is valid' do
-      let(:form) { described_class.new(user, { financial_goals: ['save_for_retirement', 'save_for_emergency'] }) }
+      let(:form) { described_class.new(user, { financial_goals: [ 'save_for_retirement', 'save_for_emergency' ] }) }
 
       it 'returns true' do
         expect(form.submit).to be true
@@ -161,7 +161,7 @@ RSpec.describe Onboarding::FinancialGoalForm, type: :model do
         end
         allow(user).to receive(:valid?).and_return(false)
         allow(user).to receive(:errors).and_return(
-          instance_double(ActiveModel::Errors, messages: { country: ['is required for this step'] })
+          instance_double(ActiveModel::Errors, messages: { country: [ 'is required for this step' ] })
         )
       end
 
@@ -255,7 +255,7 @@ RSpec.describe Onboarding::FinancialGoalForm, type: :model do
 
   describe 'integration with user model' do
     it 'successfully completes the onboarding step' do
-      form = described_class.new(user, { financial_goals: ['save_for_retirement'] })
+      form = described_class.new(user, { financial_goals: [ 'save_for_retirement' ] })
 
       expect {
         form.submit
@@ -265,7 +265,7 @@ RSpec.describe Onboarding::FinancialGoalForm, type: :model do
     end
 
     it 'persists multiple financial goals' do
-      goals = ['save_for_retirement', 'save_for_emergency', 'save_for_house']
+      goals = [ 'save_for_retirement', 'save_for_emergency', 'save_for_house' ]
       form = described_class.new(user, { financial_goals: goals })
 
       form.submit

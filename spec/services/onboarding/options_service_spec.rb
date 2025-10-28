@@ -231,7 +231,7 @@ RSpec.describe Onboarding::OptionsService do
 
   describe 'data structure consistency' do
     it 'all options return [label, value] pairs' do
-      [:country, :currency, :income_frequency, :main_income_source].each do |field|
+      [ :country, :currency, :income_frequency, :main_income_source ].each do |field|
         options = described_class.options_for(field)
 
         options.each do |option|
@@ -244,7 +244,7 @@ RSpec.describe Onboarding::OptionsService do
     end
 
     it 'priority options return [label, value] pairs when present' do
-      [:country, :currency].each do |field|
+      [ :country, :currency ].each do |field|
         options = described_class.priority_options_for(field)
 
         next if options.nil?

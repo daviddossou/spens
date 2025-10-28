@@ -7,4 +7,4 @@ Rails.application.config.assets.version = "1.0"
 # Rails.application.config.assets.paths << Emoji.images_path
 
 # Precompile additional assets for vendor stylesheets
-Rails.application.config.assets.precompile += %w( tom-select.bootstrap5.css )
+Rails.application.config.assets.precompile += %w[ tom-select.bootstrap5.css ]

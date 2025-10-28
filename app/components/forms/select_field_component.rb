@@ -119,12 +119,12 @@ class Forms::SelectFieldComponent < ViewComponent::Base
 
     if include_blank
       blank_text = include_blank.is_a?(String) ? include_blank : ""
-      result << [blank_text, ""]
+      result << [ blank_text, "" ]
     end
 
     result += priority_opts
 
-    result << ["───────────────", "___divider___", { disabled: true, class: "option-divider" }]
+    result << [ "───────────────", "___divider___", { disabled: true, class: "option-divider" } ]
 
     result += regular_opts
 

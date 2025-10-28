@@ -7,7 +7,7 @@ class Onboarding::ProgressComponent < Ui::ProgressComponent
     super(
       current_step: @current_step,
       steps: onboarding_steps,
-      css_class: 'onboarding-progress'
+      css_class: "onboarding-progress"
     )
   end
 

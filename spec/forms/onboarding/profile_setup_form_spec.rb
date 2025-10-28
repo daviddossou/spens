@@ -214,7 +214,7 @@ RSpec.describe Onboarding::ProfileSetupForm, type: :model do
       end
 
       it 'accepts any string value' do
-        ['salary', 'business', 'freelance', 'investments'].each do |source|
+        [ 'salary', 'business', 'freelance', 'investments' ].each do |source|
           form = described_class.new(user, valid_payload.merge(main_income_source: source))
           expect(form).to be_valid
         end
@@ -323,7 +323,7 @@ RSpec.describe Onboarding::ProfileSetupForm, type: :model do
         end
         allow(user).to receive(:invalid?).and_return(true)
         allow(user).to receive(:errors).and_return(
-          instance_double(ActiveModel::Errors, messages: { base: ['Some user validation error'] })
+          instance_double(ActiveModel::Errors, messages: { base: [ 'Some user validation error' ] })
         )
       end
 

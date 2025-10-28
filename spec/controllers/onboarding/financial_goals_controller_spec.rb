@@ -57,7 +57,7 @@ RSpec.describe Onboarding::FinancialGoalsController, type: :controller do
     let(:financial_goals_params) do
       {
         onboarding_financial_goal_form: {
-          financial_goals: ['retirement', 'emergency_fund']
+          financial_goals: [ 'retirement', 'emergency_fund' ]
         }
       }
     end
@@ -76,7 +76,7 @@ RSpec.describe Onboarding::FinancialGoalsController, type: :controller do
       end
 
       it 'builds form with submitted parameters' do
-        expected_params = ActionController::Parameters.new(financial_goals: ['retirement', 'emergency_fund']).permit(financial_goals: [])
+        expected_params = ActionController::Parameters.new(financial_goals: [ 'retirement', 'emergency_fund' ]).permit(financial_goals: [])
         expect(Onboarding::FinancialGoalForm).to receive(:new).with(user, expected_params)
 
         patch :update, params: financial_goals_params
@@ -150,13 +150,13 @@ RSpec.describe Onboarding::FinancialGoalsController, type: :controller do
       it 'filters unpermitted parameters' do
         params_with_extra = {
           onboarding_financial_goal_form: {
-            financial_goals: ['retirement'],
+            financial_goals: [ 'retirement' ],
             unauthorized_field: 'should be filtered'
           }
         }
 
         # The controller should only pass permitted params to the form
-        expected_params = ActionController::Parameters.new(financial_goals: ['retirement']).permit(financial_goals: [])
+        expected_params = ActionController::Parameters.new(financial_goals: [ 'retirement' ]).permit(financial_goals: [])
         expect(Onboarding::FinancialGoalForm).to receive(:new).with(user, expected_params)
 
         allow(form_double).to receive(:submit).and_return(true)
@@ -175,7 +175,7 @@ RSpec.describe Onboarding::FinancialGoalsController, type: :controller do
 
     describe '#build_form' do
       it 'creates new form with user and payload' do
-        payload = { financial_goals: ['test'] }
+        payload = { financial_goals: [ 'test' ] }
         expect(Onboarding::FinancialGoalForm).to receive(:new).with(user, payload)
 
         controller.send(:build_form, payload)
@@ -198,7 +198,7 @@ RSpec.describe Onboarding::FinancialGoalsController, type: :controller do
       let(:params_hash) do
         ActionController::Parameters.new({
           onboarding_financial_goal_form: {
-            financial_goals: ['retirement', 'savings'],
+            financial_goals: [ 'retirement', 'savings' ],
             unauthorized_param: 'not allowed'
           }
         })
@@ -210,12 +210,12 @@ RSpec.describe Onboarding::FinancialGoalsController, type: :controller do
 
       it 'permits only financial_goals array' do
         result = controller.send(:financial_goals_params)
-        expect(result.to_h).to eq({ 'financial_goals' => ['retirement', 'savings'] })
+        expect(result.to_h).to eq({ 'financial_goals' => [ 'retirement', 'savings' ] })
       end
 
       it 'requires onboarding_financial_goal_form key' do
         params_without_required = ActionController::Parameters.new({
-          other_form: { financial_goals: ['test'] }
+          other_form: { financial_goals: [ 'test' ] }
         })
         allow(controller).to receive(:params).and_return(params_without_required)
 
@@ -285,7 +285,7 @@ RSpec.describe Onboarding::FinancialGoalsController, type: :controller do
 
         patch :update, params: {
           onboarding_financial_goal_form: {
-            financial_goals: ['retirement', 'emergency_fund', 'house']
+            financial_goals: [ 'retirement', 'emergency_fund', 'house' ]
           }
         }
 
@@ -303,7 +303,7 @@ RSpec.describe Onboarding::FinancialGoalsController, type: :controller do
         expect(Rails.logger).to receive(:error)
 
         patch :update, params: {
-          onboarding_financial_goal_form: { financial_goals: ['test'] }
+          onboarding_financial_goal_form: { financial_goals: [ 'test' ] }
         }
 
         expect(response).to redirect_to(onboarding_financial_goals_path)

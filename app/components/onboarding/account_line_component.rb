@@ -13,6 +13,6 @@ class Onboarding::AccountLineComponent < ViewComponent::Base
 
   def account_suggestions
     # Get all account template suggestions from i18n
-    I18n.t('account_templates').values
+    I18n.t("account_templates").values
   end
 end

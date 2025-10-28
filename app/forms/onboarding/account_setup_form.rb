@@ -3,10 +3,10 @@
 class Onboarding::AccountSetupForm < BaseForm
   ##
   # Constants
-  CURRENT_STEP = 'onboarding_account_setup'
-  NEXT_STEP = 'onboarding_completed'
-  TRANSACTION_TYPE_NAME = 'Transfer In'
-  TRANSACTION_TYPE_KIND = 'transfer_in'
+  CURRENT_STEP = "onboarding_account_setup"
+  NEXT_STEP = "onboarding_completed"
+  TRANSACTION_TYPE_NAME = "Transfer In"
+  TRANSACTION_TYPE_KIND = "transfer_in"
 
   ##
   # Attributes
@@ -73,7 +73,7 @@ class Onboarding::AccountSetupForm < BaseForm
         amount: nil,
         transaction_date: Date.current
       ).tap do |transaction|
-        transaction.account = Account.new(name: '')
+        transaction.account = Account.new(name: "")
         transaction.transaction_type = TransactionType.new(name: TRANSACTION_TYPE_NAME)
       end
     ]
@@ -110,7 +110,7 @@ class Onboarding::AccountSetupForm < BaseForm
   def persist_transaction(transaction)
     transaction.account = find_or_create_account(transaction.account)
     transaction.transaction_type = find_or_create_transaction_type(transaction.transaction_type)
-    transaction.description = I18n.t('onboarding.account_setups.initial_balance_description', account_name: transaction.account.name)
+    transaction.description = I18n.t("onboarding.account_setups.initial_balance_description", account_name: transaction.account.name)
 
     validate_and_save_transaction!(transaction)
   end
@@ -145,7 +145,7 @@ class Onboarding::AccountSetupForm < BaseForm
     end
 
     if valid_transactions.empty?
-      errors.add(:base, I18n.t('onboarding.account_setups.errors.at_least_one_transaction'))
+      errors.add(:base, I18n.t("onboarding.account_setups.errors.at_least_one_transaction"))
     end
   end
 end

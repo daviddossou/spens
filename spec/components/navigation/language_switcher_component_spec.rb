@@ -11,28 +11,28 @@ RSpec.describe Navigation::LanguageSwitcherComponent, type: :component do
 
     it "uses I18n defaults when no parameters provided" do
       allow(I18n).to receive(:locale).and_return(:en)
-      allow(I18n).to receive(:available_locales).and_return([:en, :fr])
+      allow(I18n).to receive(:available_locales).and_return([ :en, :fr ])
 
       component = described_class.new
       expect(component.instance_variable_get(:@current_locale)).to eq(:en)
-      expect(component.instance_variable_get(:@available_locales)).to eq([:en, :fr])
+      expect(component.instance_variable_get(:@available_locales)).to eq([ :en, :fr ])
     end
 
     it "accepts custom parameters" do
       component = described_class.new(
         current_locale: :fr,
-        available_locales: [:en, :fr, :es],
+        available_locales: [ :en, :fr, :es ],
         params: { page: 1 }
       )
 
       expect(component.instance_variable_get(:@current_locale)).to eq(:fr)
-      expect(component.instance_variable_get(:@available_locales)).to eq([:en, :fr, :es])
+      expect(component.instance_variable_get(:@available_locales)).to eq([ :en, :fr, :es ])
       expect(component.instance_variable_get(:@params)).to eq({ page: 1 })
     end
   end
 
   describe "locale options generation" do
-    let(:component) { described_class.new(current_locale: :en, available_locales: [:en, :fr]) }
+    let(:component) { described_class.new(current_locale: :en, available_locales: [ :en, :fr ]) }
 
     it "transforms available locales into switcher options format" do
       options = component.send(:locale_options)
@@ -53,11 +53,11 @@ RSpec.describe Navigation::LanguageSwitcherComponent, type: :component do
     end
 
     it "converts locale symbols to uppercase text" do
-      component = described_class.new(available_locales: [:en, :es, :de])
+      component = described_class.new(available_locales: [ :en, :es, :de ])
       options = component.send(:locale_options)
 
       texts = options.map { |opt| opt[:text] }
-      expect(texts).to eq(['EN', 'ES', 'DE'])
+      expect(texts).to eq([ 'EN', 'ES', 'DE' ])
     end
   end
 

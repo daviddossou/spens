@@ -20,7 +20,7 @@ class Onboarding::AccountSetupsController < ApplicationController
   rescue StandardError => e
     Rails.logger.error "Error in Onboarding::AccountSetupsController#update: #{e.message}"
     Rails.logger.error e.backtrace.join("\n")
-    redirect_to onboarding_account_setups_path, alert: t('onboarding.errors.generic')
+    redirect_to onboarding_account_setups_path, alert: t("onboarding.errors.generic")
   end
 
   private
@@ -33,8 +33,8 @@ class Onboarding::AccountSetupsController < ApplicationController
     params.require(:onboarding_account_setup_form).permit(
       transactions_attributes: [
         :amount, :transaction_date,
-        account_attributes: [:name],
-        transaction_type_attributes: [:name, :kind]
+        account_attributes: [ :name ],
+        transaction_type_attributes: [ :name, :kind ]
       ]
     )
   end

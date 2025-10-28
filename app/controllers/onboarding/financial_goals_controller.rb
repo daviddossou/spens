@@ -17,7 +17,7 @@ class Onboarding::FinancialGoalsController < ApplicationController
     end
   rescue => e
     Rails.logger.error "Error when updating financial goals: #{e.message}"
-    redirect_to onboarding_financial_goals_path, alert:  t('onboarding.errors.generic')
+    redirect_to onboarding_financial_goals_path, alert:  t("onboarding.errors.generic")
   end
 
   private

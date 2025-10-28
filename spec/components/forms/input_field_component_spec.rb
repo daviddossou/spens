@@ -198,7 +198,7 @@ RSpec.describe Forms::InputFieldComponent, type: :component do
 
   describe "autocomplete functionality" do
     context "with autocomplete enabled" do
-      let(:suggestions) { ['Option 1', 'Option 2', 'Option 3'] }
+      let(:suggestions) { [ 'Option 1', 'Option 2', 'Option 3' ] }
       let(:component) do
         described_class.new(
           form: form,
@@ -446,7 +446,7 @@ RSpec.describe Forms::InputFieldComponent, type: :component do
           form: form,
           field: field,
           autocomplete: true,
-          autocomplete_options: ['Option 1'],
+          autocomplete_options: [ 'Option 1' ],
           placeholder: "Type to search..."
         )
       end
@@ -470,13 +470,13 @@ RSpec.describe Forms::InputFieldComponent, type: :component do
           form: form,
           field: field,
           autocomplete: true,
-          autocomplete_options: ['Apple', 'Banana', 'Cherry']
+          autocomplete_options: [ 'Apple', 'Banana', 'Cherry' ]
         )
       end
 
       it "converts to [label, value] format" do
         result = component.send(:autocomplete_options_for_select)
-        expect(result).to eq([['Apple', 'Apple'], ['Banana', 'Banana'], ['Cherry', 'Cherry']])
+        expect(result).to eq([ [ 'Apple', 'Apple' ], [ 'Banana', 'Banana' ], [ 'Cherry', 'Cherry' ] ])
       end
     end
 
@@ -486,13 +486,13 @@ RSpec.describe Forms::InputFieldComponent, type: :component do
           form: form,
           field: field,
           autocomplete: true,
-          autocomplete_options: [['Apple Label', 'apple'], ['Banana Label', 'banana']]
+          autocomplete_options: [ [ 'Apple Label', 'apple' ], [ 'Banana Label', 'banana' ] ]
         )
       end
 
       it "keeps the [label, value] format" do
         result = component.send(:autocomplete_options_for_select)
-        expect(result).to eq([['Apple Label', 'apple'], ['Banana Label', 'banana']])
+        expect(result).to eq([ [ 'Apple Label', 'apple' ], [ 'Banana Label', 'banana' ] ])
       end
     end
 
@@ -511,7 +511,7 @@ RSpec.describe Forms::InputFieldComponent, type: :component do
 
       it "converts to [label, value] format" do
         result = component.send(:autocomplete_options_for_select)
-        expect(result).to eq([['Apple', 'apple'], ['Banana', 'banana']])
+        expect(result).to eq([ [ 'Apple', 'apple' ], [ 'Banana', 'banana' ] ])
       end
     end
 

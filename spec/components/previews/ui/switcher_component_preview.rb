@@ -4,7 +4,7 @@ class Ui::SwitcherComponentPreview < ViewComponent::Preview
   # Simple string options with current selection
   def default
     render Ui::SwitcherComponent.new(
-      options: ["Option 1", "Option 2", "Option 3"],
+      options: [ "Option 1", "Option 2", "Option 3" ],
       current: "Option 2"
     )
   end
@@ -36,7 +36,7 @@ class Ui::SwitcherComponentPreview < ViewComponent::Preview
   # No current selection (all inactive)
   def no_selection
     render Ui::SwitcherComponent.new(
-      options: ["Draft", "Published", "Archived"],
+      options: [ "Draft", "Published", "Archived" ],
       current: nil
     )
   end
@@ -44,7 +44,7 @@ class Ui::SwitcherComponentPreview < ViewComponent::Preview
   # Single option
   def single_option
     render Ui::SwitcherComponent.new(
-      options: ["Only Option"],
+      options: [ "Only Option" ],
       current: "Only Option"
     )
   end
@@ -52,7 +52,7 @@ class Ui::SwitcherComponentPreview < ViewComponent::Preview
   # Custom CSS class
   def with_custom_class
     render Ui::SwitcherComponent.new(
-      options: ["Small", "Medium", "Large"],
+      options: [ "Small", "Medium", "Large" ],
       current: "Medium",
       css_class: "inline-flex bg-gray-100 rounded-lg p-1"
     )
