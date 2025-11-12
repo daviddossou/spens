@@ -12,7 +12,7 @@
 
   <%= form.select field,
                   has_priority_options? ? priority_and_regular_options : options_for_select,
-                  { include_blank: include_blank },
+                  select_options,
                   { class: final_field_classes, **final_field_options } %>
 
   <% if has_errors? %>

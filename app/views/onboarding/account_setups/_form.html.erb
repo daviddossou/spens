@@ -12,13 +12,13 @@
 
   <div class="account-setup__container">
     <div data-onboarding--account-setup-target="accountsContainer" class="account-setup__accounts-container">
-      <%= f.fields_for :transactions, @form.transactions do |transaction_fields| %>
+      <%= f.fields_for :transactions, @form.transaction_forms do |transaction_form| %>
         <%= render Onboarding::AccountLineComponent.new(
-          form: transaction_fields,
-          index: transaction_fields.index,
-          transaction: transaction_fields.object,
+          form: transaction_form,
+          index: transaction_form.index,
+          transaction: transaction_form.object,
           currency: current_user.currency,
-          can_remove: @form.transactions.size > 1
+          can_remove: @form.transaction_forms.size > 1
         ) %>
       <% end %>
     </div>
@@ -39,11 +39,11 @@
     <% end %>
 
     <template data-onboarding--account-setup-target="template">
-      <%= f.fields_for :transactions, Transaction.new(account: Account.new, transaction_type: TransactionType.new(name: Onboarding::AccountSetupForm::TRANSACTION_TYPE_NAME)), child_index: 'TEMPLATE_INDEX' do |transaction_fields| %>
+      <%= f.fields_for :transactions, Onboarding::TransactionForm.new(user: current_user), child_index: 'TEMPLATE_INDEX' do |transaction_form| %>
         <%= render Onboarding::AccountLineComponent.new(
-          form: transaction_fields,
+          form: transaction_form,
           index: 0,
-          transaction: transaction_fields.object,
+          transaction: transaction_form.object,
           currency: current_user.currency,
           can_remove: true
         ) %>

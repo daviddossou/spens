@@ -1,0 +1,115 @@
+<div class="preview-container" style="max-width: 800px; padding: 2rem;">
+  <style>
+    .plan-card {
+      position: relative;
+      padding: 1.5rem;
+      border: 2px solid #e5e7eb;
+      border-radius: 0.75rem;
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+    .plan-card:hover {
+      border-color: #3b82f6;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+    .plan-card.selected {
+      border-color: #3b82f6;
+      background-color: #eff6ff;
+    }
+    .card-title {
+      font-weight: 600;
+      font-size: 1.125rem;
+      margin-bottom: 0.5rem;
+      display: block;
+    }
+    .card-description {
+      color: #6b7280;
+      font-size: 0.875rem;
+      line-height: 1.5;
+    }
+    .card-price {
+      font-weight: 700;
+      color: #3b82f6;
+      font-size: 1.25rem;
+      margin-top: 0.75rem;
+      display: block;
+    }
+  </style>
+
+  <h3 style="margin-bottom: 1.5rem;">Select your plan</h3>
+
+  <% user = User.new %>
+  <%= form_with(model: user, url: "#", method: :post) do |f| %>
+    <div style="display: grid; gap: 1rem;">
+      <%= render Ui::SelectableCardComponent.new(
+        item: { name: "Starter", value: "starter" },
+        form: f,
+        field: :plan,
+        css_class: "plan-card",
+        show_visual_checkbox: false,
+        multiple: false
+      ) do %>
+        <span class="card-title">Starter</span>
+        <p class="card-description">
+          Perfect for individuals and small teams just getting started.
+          Includes 10 projects, 5 GB storage, and basic support.
+        </p>
+        <span class="card-price">$9/month</span>
+      <% end %>
+
+      <%= render Ui::SelectableCardComponent.new(
+        item: { name: "Professional", value: "professional" },
+        form: f,
+        field: :plan,
+        css_class: "plan-card",
+        show_visual_checkbox: false,
+        multiple: false,
+        selected: true
+      ) do %>
+        <span class="card-title">Professional</span>
+        <p class="card-description">
+          For growing teams that need more power and flexibility.
+          Includes unlimited projects, 100 GB storage, priority support, and advanced analytics.
+        </p>
+        <span class="card-price">$29/month</span>
+      <% end %>
+
+      <%= render Ui::SelectableCardComponent.new(
+        item: { name: "Enterprise", value: "enterprise" },
+        form: f,
+        field: :plan,
+        css_class: "plan-card",
+        show_visual_checkbox: false,
+        multiple: false
+      ) do %>
+        <span class="card-title">Enterprise</span>
+        <p class="card-description">
+          For large organizations with custom needs.
+          Includes everything in Professional plus dedicated support, custom integrations, and SLA guarantees.
+        </p>
+        <span class="card-price">Contact us</span>
+      <% end %>
+    </div>
+  <% end %>
+
+  <div style="margin-top: 2rem; padding: 1rem; background: #f3f4f6; border-radius: 0.5rem;">
+    <h4 style="margin-bottom: 0.5rem; font-size: 0.875rem; font-weight: 600;">Card-Style Pattern with SelectableCardComponent</h4>
+    <p style="font-size: 0.875rem; margin: 0.5rem 0;">
+      This example uses <code>Ui::SelectableCardComponent</code> with radio buttons (<code>multiple: false</code>)
+      to create clickable card selections. The entire card is clickable thanks to the built-in Stimulus controller.
+    </p>
+    <p style="font-size: 0.875rem; margin: 0.5rem 0;">
+      <strong>Key features:</strong>
+    </p>
+    <ul style="font-size: 0.875rem; margin: 0.5rem 0; padding-left: 1.5rem;">
+      <li><code>multiple: false</code> - Uses radio buttons for single selection</li>
+      <li><code>show_visual_checkbox: false</code> - Hides the radio button visually (still accessible)</li>
+      <li>Entire card is clickable - No need to click the radio button directly</li>
+      <li>Automatic visual feedback - Selected card gets highlighted</li>
+      <li>Content blocks - Rich HTML content with pricing and descriptions</li>
+    </ul>
+    <p style="font-size: 0.875rem; margin: 0.5rem 0;">
+      Perfect for pricing plans, feature tiers, or any mutually exclusive choices that benefit from visual comparison.
+    </p>
+  </div>
+</div>

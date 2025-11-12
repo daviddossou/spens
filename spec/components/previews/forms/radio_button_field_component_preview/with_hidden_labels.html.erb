@@ -1,0 +1,30 @@
+<div class="preview-container" style="max-width: 600px; padding: 2rem;">
+  <h3 style="margin-bottom: 1.5rem;">Star rating</h3>
+  <p style="color: #6b7280; margin-bottom: 1rem;">Labels are hidden visually but remain accessible to screen readers</p>
+
+  <%= form_with(model: User.new, url: "#", method: :post) do |f| %>
+    <div style="display: flex; gap: 0.5rem; align-items: center;">
+      <% (1..5).each do |rating| %>
+        <div style="display: inline-block;">
+          <%= render Forms::RadioButtonFieldComponent.new(
+            form: f,
+            field: :rating,
+            value: rating.to_s,
+            label: "#{rating} star#{rating > 1 ? 's' : ''}",
+            hide_label: true,
+            wrapper_classes: "inline-radio"
+          ) %>
+          <span style="font-size: 1.5rem; cursor: pointer;">⭐</span>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+
+  <div style="margin-top: 2rem; padding: 1rem; background: #f3f4f6; border-radius: 0.5rem;">
+    <h4 style="margin-bottom: 0.5rem; font-size: 0.875rem; font-weight: 600;">Accessibility Note</h4>
+    <p style="font-size: 0.875rem; margin: 0;">
+      Use <code>hide_label: true</code> when you have a custom visual representation, but always provide a meaningful label for screen readers.
+      This also hides help text and error messages when set to true.
+    </p>
+  </div>
+</div>

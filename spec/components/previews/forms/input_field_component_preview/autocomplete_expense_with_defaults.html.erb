@@ -1,0 +1,45 @@
+<div class="max-w-xl mx-auto p-8">
+  <h2 class="text-2xl font-bold mb-6">Autocomplete - <%= model_name %></h2>
+
+  <p class="text-gray-600 mb-4">
+    Shows most commonly used expense types by default (15 options), but allows searching through all expense types when typing.
+  </p>
+
+  <div class="space-y-2 mb-4 p-3 bg-blue-50 rounded text-sm">
+    <div><strong>Total expense types:</strong> <%= all_suggestions.size %> types</div>
+    <div><strong>Default shown:</strong> <%= default_suggestions.size %> most common</div>
+    <div class="text-xs text-gray-600 mt-2">
+      <strong>Use case:</strong> Transaction form shows groceries, rent, utilities first. User can search for "sports betting" to find less common types.
+    </div>
+  </div>
+
+  <%= form_with model: TransactionType.new, url: "#", method: :post do |form| %>
+    <%= render Forms::InputFieldComponent.new(
+      form: form,
+      field: :name,
+      label: "Transaction Type",
+      placeholder: "Select or search expense types...",
+      autocomplete: true,
+      autocomplete_options: all_suggestions,
+      default_autocomplete_options: default_suggestions,
+      allow_create: allow_create,
+      required: true,
+      help_text: "Common expense types shown by default, search to find all #{all_suggestions.size} options"
+    ) %>
+
+    <div class="mt-4">
+      <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+        Test Submit
+      </button>
+    </div>
+  <% end %>
+
+  <div class="mt-6 p-4 bg-gray-50 rounded">
+    <h3 class="font-semibold mb-2">Default Expense Types (most common):</h3>
+    <ul class="text-sm text-gray-700 space-y-1 grid grid-cols-2 gap-2">
+      <% default_suggestions.each do |suggestion| %>
+        <li>• <%= suggestion %></li>
+      <% end %>
+    </ul>
+  </div>
+</div>

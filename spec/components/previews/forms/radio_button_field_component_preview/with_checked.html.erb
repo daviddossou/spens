@@ -1,0 +1,45 @@
+<div class="preview-container" style="max-width: 600px; padding: 2rem;">
+  <h3 style="margin-bottom: 1.5rem;">Notification preferences</h3>
+
+  <% user = User.new %>
+  <%= form_with(model: user, url: "#", method: :post) do |f| %>
+    <div style="display: flex; flex-direction: column; gap: 1rem;">
+      <%= render Forms::RadioButtonFieldComponent.new(
+        form: f,
+        field: :frequency,
+        value: "daily",
+        label: "Daily",
+        checked: false
+      ) %>
+
+      <%= render Forms::RadioButtonFieldComponent.new(
+        form: f,
+        field: :frequency,
+        value: "weekly",
+        label: "Weekly",
+        checked: true
+      ) %>
+
+      <%= render Forms::RadioButtonFieldComponent.new(
+        form: f,
+        field: :frequency,
+        value: "monthly",
+        label: "Monthly",
+        checked: false
+      ) %>
+
+      <%= render Forms::RadioButtonFieldComponent.new(
+        form: f,
+        field: :frequency,
+        value: "never",
+        label: "Never",
+        checked: false
+      ) %>
+    </div>
+  <% end %>
+
+  <div style="margin-top: 2rem; padding: 1rem; background: #f3f4f6; border-radius: 0.5rem;">
+    <h4 style="margin-bottom: 0.5rem; font-size: 0.875rem; font-weight: 600;">Note</h4>
+    <p style="font-size: 0.875rem; margin: 0;">The <code>checked</code> parameter explicitly sets the selected state. Use this when you need to control selection programmatically.</p>
+  </div>
+</div>

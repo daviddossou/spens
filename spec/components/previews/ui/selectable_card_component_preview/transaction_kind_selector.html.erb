@@ -1,0 +1,91 @@
+<div class="max-w-xl mx-auto p-8">
+  <h2 class="text-2xl font-bold mb-6">Transaction Kind Selector (Real-World Example)</h2>
+
+  <p class="text-gray-600 mb-4">
+    This is how the component is used in the actual transaction form - compact, mobile-friendly, with radio button behavior.
+  </p>
+
+  <div class="mb-4 p-3 bg-blue-50 rounded text-sm space-y-1">
+    <div><strong>Configuration:</strong></div>
+    <div>• <code>compact: true</code> - Smaller, horizontal layout</div>
+    <div>• <code>multiple: false</code> - Only one kind can be selected</div>
+    <div>• <code>show_visual_checkbox: false</code> - No checkbox icon</div>
+    <div>• <code>additional_classes: 'kind-card'</code> - Custom styling (centered text)</div>
+  </div>
+
+  <%= form_with url: "#", method: :post, class: "space-y-6" do |form| %>
+    <!-- Kind Selector -->
+    <div>
+      <label class="block text-sm font-medium mb-2">Transaction Kind</label>
+      <div class="flex gap-2">
+        <%= render Ui::SelectableCardComponent.new(
+          item: { name: "Expense", value: "expense", description: "Money you spend" },
+          form: form,
+          field: :kind,
+          selected: true,
+          compact: true,
+          multiple: false,
+          show_visual_checkbox: false,
+          additional_classes: 'kind-card'
+        ) %>
+
+        <%= render Ui::SelectableCardComponent.new(
+          item: { name: "Income", value: "income", description: "Money you receive" },
+          form: form,
+          field: :kind,
+          selected: false,
+          compact: true,
+          multiple: false,
+          show_visual_checkbox: false,
+          additional_classes: 'kind-card'
+        ) %>
+
+        <%= render Ui::SelectableCardComponent.new(
+          item: { name: "Loan", value: "loan", description: "Money you lend" },
+          form: form,
+          field: :kind,
+          selected: false,
+          compact: true,
+          multiple: false,
+          show_visual_checkbox: false,
+          additional_classes: 'kind-card'
+        ) %>
+      </div>
+    </div>
+
+    <!-- Amount Field (example) -->
+    <div>
+      <label class="block text-sm font-medium mb-2">Amount</label>
+      <input type="number" class="w-full px-3 py-2 border border-gray-300 rounded-md" placeholder="0.00" step="0.01" />
+    </div>
+
+    <!-- Submit Button -->
+    <div>
+      <button type="submit" class="w-full px-4 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 font-medium">
+        Save Transaction
+      </button>
+    </div>
+  <% end %>
+
+  <div class="mt-6 p-4 bg-gray-50 rounded">
+    <h4 class="font-semibold mb-2">Benefits of this approach:</h4>
+    <ul class="text-sm space-y-1">
+      <li>📱 <strong>Mobile-friendly:</strong> Compact horizontal layout saves space</li>
+      <li>🎯 <strong>Clear selection:</strong> Radio behavior prevents multiple selections</li>
+      <li>✨ <strong>Clean UI:</strong> No visual checkboxes, just selected state styling</li>
+      <li>🎨 <strong>Customizable:</strong> Additional classes for centering text</li>
+    </ul>
+  </div>
+</div>
+
+<style>
+  .kind-card {
+    text-align: center;
+    min-width: 100px;
+  }
+
+  .kind-card h4 {
+    padding-left: 1px;
+    padding-right: 1px;
+  }
+</style>

@@ -1,0 +1,51 @@
+<div class="max-w-2xl mx-auto p-8">
+  <h2 class="text-2xl font-bold mb-6">Radio Button Mode</h2>
+
+  <p class="text-gray-600 mb-4">
+    When <code>multiple: false</code>, the component uses radio buttons internally, ensuring only one option can be selected.
+  </p>
+
+  <div class="mb-4 p-3 bg-blue-50 rounded text-sm space-y-2">
+    <div><strong>Feature:</strong> <code>multiple: false</code></div>
+    <div><strong>Behavior:</strong> Clicking a card deselects all others (radio button group)</div>
+    <div><strong>Use case:</strong> Transaction type, priority level, status selection</div>
+  </div>
+
+  <%= form_with url: "#", method: :post do |form| %>
+    <div class="space-y-3">
+      <%= render Ui::SelectableCardComponent.new(
+        item: { name: "Low Priority", value: "low", description: "Can be done later" },
+        form: form,
+        field: :priority,
+        selected: false,
+        multiple: false
+      ) %>
+
+      <%= render Ui::SelectableCardComponent.new(
+        item: { name: "Medium Priority", value: "medium", description: "Should be done soon" },
+        form: form,
+        field: :priority,
+        selected: true,
+        multiple: false
+      ) %>
+
+      <%= render Ui::SelectableCardComponent.new(
+        item: { name: "High Priority", value: "high", description: "Urgent - must be done now" },
+        form: form,
+        field: :priority,
+        selected: false,
+        multiple: false
+      ) %>
+    </div>
+
+    <div class="mt-6">
+      <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+        Save Priority
+      </button>
+    </div>
+  <% end %>
+
+  <div class="mt-6 p-4 bg-gray-50 rounded text-sm">
+    <strong>Try it:</strong> Click different cards to see radio button behavior - only one stays selected at a time.
+  </div>
+</div>

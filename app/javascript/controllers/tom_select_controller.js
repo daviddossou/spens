@@ -9,7 +9,8 @@ export default class extends Controller {
     allowCreate: Boolean,
     placeholder: String,
     maxItems: Number,
-    suggestions: Array
+    suggestions: Array,
+    defaultSuggestions: Array
   }
 
   connect() {
@@ -31,10 +32,6 @@ export default class extends Controller {
   defaultConfig() {
     const config = {
       create: this.hasAllowCreateValue ? this.allowCreateValue : false,
-      sortField: {
-        field: "text",
-        direction: "asc"
-      },
       placeholder: this.hasPlaceholderValue ? this.placeholderValue : "Type to search...",
       maxItems: this.hasMaxItemsValue ? this.maxItemsValue : 1,
       onInitialize: function () {
@@ -64,12 +61,41 @@ export default class extends Controller {
 
     // If suggestions are provided (for text input autocomplete)
     if (this.hasSuggestionsValue && this.suggestionsValue.length > 0) {
-      config.options = this.suggestionsValue.map(item => {
+      const allOptions = this.suggestionsValue.map(item => {
         if (typeof item === 'string') {
           return { value: item, text: item }
         }
         return item
       })
+
+      // If default suggestions are provided, use them initially
+      if (this.hasDefaultSuggestionsValue && this.defaultSuggestionsValue.length > 0) {
+        config.options = this.defaultSuggestionsValue.map(item => {
+          if (typeof item === 'string') {
+            return { value: item, text: item }
+          }
+          return item
+        })
+
+        // Override load to filter through all suggestions when typing
+        config.load = (query, callback) => {
+          if (!query.length) {
+            // Show default suggestions when empty
+            callback(config.options)
+            return
+          }
+
+          // Filter through all suggestions when typing
+          const filtered = allOptions.filter(option =>
+            option.text.toLowerCase().includes(query.toLowerCase())
+          )
+          callback(filtered)
+        }
+      } else {
+        // No default suggestions, use all suggestions
+        config.options = allOptions
+      }
+
       config.labelField = 'text'
       config.valueField = 'value'
       config.searchField = ['text']

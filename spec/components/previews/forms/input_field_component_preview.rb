@@ -82,6 +82,71 @@ class Forms::InputFieldComponentPreview < ViewComponent::Preview
     }
   end
 
+  # Autocomplete with default suggestions (limited initial display)
+  def autocomplete_with_default_suggestions
+    # Simulate all account templates (many options)
+    all_accounts = I18n.t('account_templates').values
+
+    # Only show 10 most common accounts initially
+    default_accounts = [
+      "Cash",
+      "Checking Account",
+      "Savings Account",
+      "Credit Card",
+      "Mobile Money",
+      "Wallet",
+      "PayPal",
+      "Bank Account",
+      "Investment Account",
+      "Emergency Fund"
+    ]
+
+    render_with_template locals: {
+      all_suggestions: all_accounts,
+      default_suggestions: default_accounts,
+      allow_create: true,
+      model_name: "Account (with defaults)"
+    }
+  end
+
+  # Autocomplete for expense types with default suggestions
+  def autocomplete_expense_with_defaults
+    # Get all expense transaction types
+    all_expense_types = I18n.t('transaction_type_templates')
+      .select { |_, attrs| attrs[:kind] == 'expense' }
+      .map { |_, attrs| attrs[:name] }
+
+    # Get default expense types using the same logic as TransactionType.default_template_keys
+    default_keys = %w[
+      groceries
+      dining_out
+      fuel_transport
+      public_transport
+      rent
+      electricity_water
+      telecommunication_internet
+      insurance
+      medical_care_pharmacy
+      education_tuition
+      entertainment
+      clothing_shopping
+      subscriptions_memberships
+      maintenance_repairs
+      gifts_expense
+    ]
+
+    default_expense_types = I18n.t('transaction_type_templates')
+      .select { |key, attrs| default_keys.include?(key.to_s) && attrs[:kind] == 'expense' }
+      .map { |_, attrs| attrs[:name] }
+
+    render_with_template locals: {
+      all_suggestions: all_expense_types,
+      default_suggestions: default_expense_types,
+      allow_create: true,
+      model_name: "TransactionType (Expense with defaults)"
+    }
+  end
+
   # Field with prepend addon (currency)
   def with_prepend_addon
     render_with_template

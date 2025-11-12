@@ -1,0 +1,45 @@
+<div class="max-w-xl mx-auto p-8">
+  <h2 class="text-2xl font-bold mb-6">Autocomplete - <%= model_name %></h2>
+
+  <p class="text-gray-600 mb-4">
+    Demonstrates default suggestions feature: Shows only 10 common options initially, but searches through all when typing.
+  </p>
+
+  <div class="space-y-2 mb-4 p-3 bg-blue-50 rounded text-sm">
+    <div><strong>Total suggestions available:</strong> <%= all_suggestions.size %> options</div>
+    <div><strong>Default suggestions shown:</strong> <%= default_suggestions.size %> common options</div>
+    <div class="text-xs text-gray-600 mt-2">
+      <strong>Behavior:</strong> Click the field to see only 10 common options. Start typing to search all <%= all_suggestions.size %> available options.
+    </div>
+  </div>
+
+  <%= form_with model: Account.new, url: "#", method: :post do |form| %>
+    <%= render Forms::InputFieldComponent.new(
+      form: form,
+      field: :name,
+      label: "Account Name",
+      placeholder: "Click to see default suggestions, type to search all...",
+      autocomplete: true,
+      autocomplete_options: all_suggestions,
+      default_autocomplete_options: default_suggestions,
+      allow_create: allow_create,
+      required: true,
+      help_text: "Shows #{default_suggestions.size} common accounts by default, searches #{all_suggestions.size} total when typing"
+    ) %>
+
+    <div class="mt-4">
+      <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+        Test Submit
+      </button>
+    </div>
+  <% end %>
+
+  <div class="mt-6 p-4 bg-gray-50 rounded">
+    <h3 class="font-semibold mb-2">Default Suggestions (shown initially):</h3>
+    <ul class="text-sm text-gray-700 space-y-1">
+      <% default_suggestions.take(10).each do |suggestion| %>
+        <li>• <%= suggestion %></li>
+      <% end %>
+    </ul>
+  </div>
+</div>

@@ -13,6 +13,7 @@ class Forms::InputFieldComponent < ViewComponent::Base
     field_classes: nil,
     autocomplete: false,
     autocomplete_options: [],
+    default_autocomplete_options: nil,
     allow_create: false,
     prepend: nil,
     append: nil,
@@ -32,6 +33,7 @@ class Forms::InputFieldComponent < ViewComponent::Base
     @field_classes = field_classes
     @autocomplete = autocomplete
     @autocomplete_options = autocomplete_options
+    @default_autocomplete_options = default_autocomplete_options
     @allow_create = allow_create
     @prepend = prepend
     @append = append
@@ -45,7 +47,7 @@ class Forms::InputFieldComponent < ViewComponent::Base
 
   attr_reader :form, :field, :type, :label, :required, :help_text,
               :wrapper_classes, :label_classes, :field_classes, :field_options,
-              :autocomplete, :autocomplete_options, :allow_create,
+              :autocomplete, :autocomplete_options, :default_autocomplete_options, :allow_create,
               :prepend, :append,
               :custom_name, :custom_id, :custom_value
 
@@ -68,6 +70,10 @@ class Forms::InputFieldComponent < ViewComponent::Base
 
     if autocomplete_options.any?
       data[:tom_select_suggestions_value] = autocomplete_options.to_json
+    end
+
+    if default_autocomplete_options.present?
+      data[:tom_select_default_suggestions_value] = default_autocomplete_options.to_json
     end
 
     if field_options[:url].present?

@@ -1,0 +1,78 @@
+<div class="preview-container" style="max-width: 600px; padding: 2rem;">
+  <style>
+    .inline-radio-group {
+      display: flex;
+      gap: 2rem;
+      flex-wrap: wrap;
+    }
+    .inline-radio .radio-input-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+  </style>
+
+  <h3 style="margin-bottom: 1.5rem;">Gender</h3>
+
+  <%= form_with(model: User.new, url: "#", method: :post) do |f| %>
+    <div class="inline-radio-group">
+      <%= render Forms::RadioButtonFieldComponent.new(
+        form: f,
+        field: :gender,
+        value: "male",
+        label: "Male",
+        wrapper_classes: "inline-radio"
+      ) %>
+
+      <%= render Forms::RadioButtonFieldComponent.new(
+        form: f,
+        field: :gender,
+        value: "female",
+        label: "Female",
+        wrapper_classes: "inline-radio"
+      ) %>
+
+      <%= render Forms::RadioButtonFieldComponent.new(
+        form: f,
+        field: :gender,
+        value: "other",
+        label: "Other",
+        wrapper_classes: "inline-radio"
+      ) %>
+
+      <%= render Forms::RadioButtonFieldComponent.new(
+        form: f,
+        field: :gender,
+        value: "prefer_not_to_say",
+        label: "Prefer not to say",
+        wrapper_classes: "inline-radio"
+      ) %>
+    </div>
+  <% end %>
+
+  <div style="margin-top: 3rem;">
+    <h3 style="margin-bottom: 1.5rem;">T-shirt size</h3>
+
+    <%= form_with(model: User.new, url: "#", method: :post) do |f| %>
+      <div class="inline-radio-group">
+        <% %w[XS S M L XL XXL].each do |size| %>
+          <%= render Forms::RadioButtonFieldComponent.new(
+            form: f,
+            field: :size,
+            value: size.downcase,
+            label: size,
+            wrapper_classes: "inline-radio"
+          ) %>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+
+  <div style="margin-top: 2rem; padding: 1rem; background: #f3f4f6; border-radius: 0.5rem;">
+    <h4 style="margin-bottom: 0.5rem; font-size: 0.875rem; font-weight: 600;">Inline Layout</h4>
+    <p style="font-size: 0.875rem; margin: 0;">
+      Use custom wrapper classes and CSS to arrange radio buttons horizontally.
+      Perfect for short lists of simple options.
+    </p>
+  </div>
+</div>

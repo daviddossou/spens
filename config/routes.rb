@@ -9,6 +9,9 @@ Rails.application.routes.draw do
     root "home#index"
     get "dashboard", to: "home#dashboard"
 
+    # Transactions
+    resources :transactions, only: [:new, :create, :index, :show, :edit, :update, :destroy]
+
     # Onboarding routes
     get "onboarding", to: "onboarding#show"
 

@@ -1,0 +1,36 @@
+<div class="preview-container" style="max-width: 600px; padding: 2rem;">
+  <h3 style="margin-bottom: 1.5rem;">Choose shipping method</h3>
+
+  <%= form_with(model: User.new, url: "#", method: :post) do |f| %>
+    <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+      <%= render Forms::RadioButtonFieldComponent.new(
+        form: f,
+        field: :shipping,
+        value: "standard",
+        label: "Standard Shipping",
+        help_text: "Delivery in 5-7 business days. Free for orders over $50."
+      ) %>
+
+      <%= render Forms::RadioButtonFieldComponent.new(
+        form: f,
+        field: :shipping,
+        value: "express",
+        label: "Express Shipping",
+        help_text: "Delivery in 2-3 business days. $15 flat rate."
+      ) %>
+
+      <%= render Forms::RadioButtonFieldComponent.new(
+        form: f,
+        field: :shipping,
+        value: "overnight",
+        label: "Overnight Shipping",
+        help_text: "Next business day delivery. $25 flat rate."
+      ) %>
+    </div>
+  <% end %>
+
+  <div style="margin-top: 2rem; padding: 1rem; background: #f3f4f6; border-radius: 0.5rem;">
+    <h4 style="margin-bottom: 0.5rem; font-size: 0.875rem; font-weight: 600;">Help Text</h4>
+    <p style="font-size: 0.875rem; margin: 0;">Use <code>help_text</code> to provide additional context or instructions for each option.</p>
+  </div>
+</div>

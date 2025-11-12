@@ -7,8 +7,11 @@ class Ui::SelectableCardComponent < ViewComponent::Base
     field:,
     selected: false,
     css_class: "card",
+    additional_classes: nil,
     description_classes: nil,
     show_visual_checkbox: true,
+    multiple: true,
+    compact: false,
     **html_options
   )
     @item = item
@@ -16,22 +19,32 @@ class Ui::SelectableCardComponent < ViewComponent::Base
     @field = field
     @selected = selected
     @css_class = css_class
+    @additional_classes = additional_classes
     @description_classes = description_classes
     @show_visual_checkbox = show_visual_checkbox
+    @multiple = multiple
+    @compact = compact
     @html_options = html_options
   end
 
   private
 
-  attr_reader :item, :form, :field, :selected, :css_class, :description_classes, :show_visual_checkbox, :html_options
+  attr_reader :item, :form, :field, :selected, :css_class, :additional_classes, :description_classes, :show_visual_checkbox, :multiple, :compact, :html_options
 
   def selected?
     selected
   end
 
   def root_classes
-    return css_class unless selected?
-    "#{css_class} selected"
+    classes = [css_class]
+    classes << additional_classes if additional_classes.present?
+    classes << "selected" if selected?
+    classes << "compact" if compact?
+    classes.join(" ")
+  end
+
+  def compact?
+    compact
   end
 
   def final_html_options
@@ -46,17 +59,22 @@ class Ui::SelectableCardComponent < ViewComponent::Base
     options
   end
 
-  def checkbox_options
+  def input_field_options
     {
       form: form,
       field: field,
       value: item_value,
-      multiple: true,
       checked: selected?,
       hide_label: true,
       wrapper_classes: "hidden",
-      data: { 'ui--selectable-card-target': "checkbox" }
-    }
+      data: { 'ui--selectable-card-target': multiple? ? "checkbox" : "radio" }
+    }.tap do |opts|
+      opts[:multiple] = true if multiple?
+    end
+  end
+
+  def multiple?
+    multiple
   end
 
   def content_section_classes

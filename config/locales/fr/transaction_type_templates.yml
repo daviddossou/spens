@@ -1,94 +1,241 @@
 fr:
   transaction_type_templates:
-    cash_out_transfer:
-      name: "Décaissement (transfert de compte)"
-      kind: "transfer_out"
-    cash_in_transfer:
-      name: "Encaissement (transfert de compte)"
-      kind: "transfer_in"
-    rent:
-      name: "Loyer"
-      kind: "expense"
-    telecommunication_internet:
-      name: "Télécommunication & Internet"
-      kind: "expense"
-    electricity_water:
-      name: "Électricité & Eau"
-      kind: "expense"
-    insurance:
-      name: "Assurances"
-      kind: "expense"
-    groceries:
-      name: "Provisions"
-      kind: "expense"
-    fuel_transport:
-      name: "Essence & Transport"
-      kind: "expense"
-    shopping_errands:
-      name: "Courses"
-      kind: "expense"
-    leisure:
-      name: "Loisirs"
-      kind: "expense"
-    gifts_expense:
-      name: "Cadeaux (Dépense)"
-      kind: "expense"
-    clothing_shopping:
-      name: "Vêtements & Shopping"
-      kind: "expense"
-    maintenance_repairs:
-      name: "Entretien & Réparations"
-      kind: "expense"
-    holidays:
-      name: "Vacances"
-      kind: "expense"
-    tontine:
-      name: "Tontine"
-      kind: "expense"
-    salary:
-      name: "Salaire"
-      kind: "income"
-    debts_borrowings:
-      name: "Dettes / Emprunts (que j'emprunte)"
-      kind: "debt"
-    loans_lent_out:
-      name: "Prêts (que j'accorde)"
-      kind: "loan"
-    performance_bonuses:
-      name: "Primes de rendement"
-      kind: "income"
-    donations_tips_expense:
-      name: "Dons & Pourboire (Dépense)"
-      kind: "expense"
-    money_loss:
-      name: "Perte d'argent"
-      kind: "expense"
+    # ============================================
+    # TYPES DE TRANSACTIONS DÉPENSES
+    # ============================================
+
+    # Dépenses Générales
     expense_other:
       name: "Dépense (Autre)"
       kind: "expense"
-    income_other:
-      name: "Revenu (Autre)"
-      kind: "income"
-    investment:
-      name: "Investissement (Dépense)"
+    money_out:
+      name: "Sortie d'argent"
       kind: "expense"
     unexpected:
       name: "Imprévu"
       kind: "expense"
-    gifts_income:
-      name: "Cadeaux (Revenu)"
-      kind: "income"
-    donations_tips_income:
-      name: "Dons & Pourboire (Revenu)"
-      kind: "income"
-    taxes:
-      name: "Impôts"
+    uncategorized_expense:
+      name: "Non catégorisé"
+      kind: "expense"
+
+    # Logement & Services Publics
+    rent:
+      name: "Loyer"
+      kind: "expense"
+    housing:
+      name: "Logement"
+      kind: "expense"
+    electricity_water:
+      name: "Électricité & Eau"
+      kind: "expense"
+    telecommunication_internet:
+      name: "Télécommunication & Internet"
+      kind: "expense"
+    home_improvement:
+      name: "Amélioration du logement"
+      kind: "expense"
+    security_services:
+      name: "Sécurité & Services"
+      kind: "expense"
+
+    # Dépenses Quotidiennes
+    groceries:
+      name: "Provisions"
+      kind: "expense"
+    groceries_enjoyment:
+      name: "Provisions (plaisir)"
       kind: "expense"
     food_restaurant:
       name: "Nourriture / Restaurant"
       kind: "expense"
+    dining_out:
+      name: "Repas à l’extérieur"
+      kind: "expense"
+    cafe_coffee:
+      name: "Café / Petit-déjeuner"
+      kind: "expense"
+    shopping_errands:
+      name: "Courses"
+      kind: "expense"
+    clothing_shopping:
+      name: "Vêtements & Shopping"
+      kind: "expense"
+
+    # Transport & Voyages
+    fuel_transport:
+      name: "Essence & Transport"
+      kind: "expense"
+    car_maintenance:
+      name: "Entretien automobile"
+      kind: "expense"
+    parking_toll:
+      name: "Parking & Péage"
+      kind: "expense"
+    public_transport:
+      name: "Transport public"
+      kind: "expense"
+    travel:
+      name: "Voyage"
+      kind: "expense"
+
+    # Divertissement & Loisirs
+    leisure:
+      name: "Loisirs"
+      kind: "expense"
+    entertainment:
+      name: "Divertissement"
+      kind: "expense"
+    holidays:
+      name: "Vacances"
+      kind: "expense"
+    tourist_activities:
+      name: "Activités touristiques"
+      kind: "expense"
+    music_streaming:
+      name: "Musique & Streaming"
+      kind: "expense"
+    sports_fitness:
+      name: "Sport & Fitness"
+      kind: "expense"
+    culture_events:
+      name: "Culture & Évènements"
+      kind: "expense"
+
+    # Services Financiers
+    insurance:
+      name: "Assurances"
+      kind: "expense"
+    taxes:
+      name: "Impôts"
+      kind: "expense"
+    bank_account_fees:
+      name: "Frais compte bancaire"
+      kind: "expense"
+    mobile_money_fees:
+      name: "Frais mobile money"
+      kind: "expense"
+    conversion_fees:
+      name: "Frais de conversion"
+      kind: "expense"
+    online_purchase_fees:
+      name: "Frais d’achat en ligne"
+      kind: "expense"
+    delivery_fees:
+      name: "Frais de livraison"
+      kind: "expense"
+
+    # Abonnements & Services
+    subscriptions_memberships:
+      name: "Abonnements & Adhésions"
+      kind: "expense"
+    streaming_services:
+      name: "Services de streaming"
+      kind: "expense"
+
+    # Santé & Bien-être
+    medical_care_pharmacy:
+      name: "Soins médicaux & Pharmacie"
+      kind: "expense"
+    health_fitness:
+      name: "Santé & Fitness"
+      kind: "expense"
+    beauty_personal_care:
+      name: "Beauté & Soins personnels"
+      kind: "expense"
+
+    # Maison & Propriété
+    maintenance_repairs:
+      name: "Entretien & Réparations"
+      kind: "expense"
+    cleaning:
+      name: "Nettoyage"
+      kind: "expense"
+    household_items_furniture:
+      name: "Articles ménagers / Meubles"
+      kind: "expense"
+
+    # Technologie
+    technology_electronics:
+      name: "Technologie / Électronique"
+      kind: "expense"
+    communication_pc:
+      name: "Communication & Informatique"
+      kind: "expense"
+
+    # Éducation & Développement
+    education_tuition:
+      name: "Éducation / Scolarité"
+      kind: "expense"
     training_event:
       name: "Formation / Évènement"
+      kind: "expense"
+    career_training:
+      name: "Formation professionnelle"
+      kind: "expense"
+    school_supplies:
+      name: "Fournitures scolaires"
+      kind: "expense"
+
+    # Famille & Enfants
+    children_childcare:
+      name: "Enfants / Garde"
+      kind: "expense"
+    family_expenses:
+      name: "Dépenses familiales"
+      kind: "expense"
+
+    # Animaux de Compagnie
+    pets_animals:
+      name: "Animaux de compagnie"
+      kind: "expense"
+
+    # Social & Communauté
+    gifts_expense:
+      name: "Cadeaux (Dépense)"
+      kind: "expense"
+    donations_tips_expense:
+      name: "Dons & Pourboire (Dépense)"
+      kind: "expense"
+    charity_donation:
+      name: "Charité / Don"
+      kind: "expense"
+    collection_offering:
+      name: "Quête / Offrande"
+      kind: "expense"
+    religious_contribution:
+      name: "Contribution religieuse"
+      kind: "expense"
+    wedding_celebration:
+      name: "Mariage / Fête"
+      kind: "expense"
+    tontine:
+      name: "Tontine"
+      kind: "expense"
+
+    # Assistance & Soutien
+    financial_support_expense:
+      name: "Assistance financière (Dépense)"
+      kind: "expense"
+    family_support_expense:
+      name: "Assistance familiale (Dépense)"
+      kind: "expense"
+
+    # Travail & Professionnel
+    work_expenses:
+      name: "Dépenses de travail"
+      kind: "expense"
+    business_expenses:
+      name: "Dépenses professionnelles"
+      kind: "expense"
+
+    # Investissement & Épargne
+    investment:
+      name: "Investissement (Dépense)"
+      kind: "expense"
+
+    # Pertes
+    money_loss:
+      name: "Perte d'argent"
       kind: "expense"
     bank_account_loss:
       name: "Perte compte bancaire"
@@ -99,120 +246,111 @@ fr:
     wallet_loss:
       name: "Perte porte monnaie"
       kind: "expense"
-    medical_care_pharmacy:
-      name: "Soins médicaux & Pharmacie"
-      kind: "expense"
-    technology_electronics:
-      name: "Technologie / Électronique"
-      kind: "expense"
-    financial_support_income:
-      name: "Assistance financière (Revenu)"
-      kind: "income"
-    financial_support_expense:
-      name: "Assistance financière (Dépense)"
-      kind: "expense"
-    family_support_income:
-      name: "Assistance familial (Revenu)"
-      kind: "income"
-    family_support_expense:
-      name: "Assistance familial (Dépense)"
-      kind: "expense"
-    subscriptions_memberships:
-      name: "Abonnements & Adhésions"
-      kind: "expense"
-    streaming_services:
-      name: "Services de streaming"
-      kind: "expense"
-    bank_account_fees:
-      name: "Frais compte bancaire"
-      kind: "expense"
-    mobile_money_fees:
-      name: "Frais mobile money"
-      kind: "expense"
-    collection_offering:
-      name: "Quête / Offrande"
-      kind: "expense"
-    online_purchase_fees:
-      name: "Frais achat en ligne"
-      kind: "expense"
-    delivery_fees:
-      name: "Frais de livraison"
-      kind: "expense"
-    money_in:
-      name: "Entrée d'argent"
-      kind: "income"
-    cleaning:
-      name: "Nettoyage"
-      kind: "expense"
-    groceries_enjoyment:
-      name: "Provisions (plaisir)"
-      kind: "expense"
-    interest_credit_bank:
-      name: "Intérêt Créditeur (Banque)"
-      kind: "income"
+
+    # Jeux & Paris
     sports_betting_expense:
       name: "Paris sportif (Dépense)"
       kind: "expense"
-    sports_betting_winnings:
-      name: "Paris sportif (Gain)"
-      kind: "income"
-    money_out:
-      name: "Sortie d'argent"
-      kind: "expense"
-    housing:
-      name: "Logement"
-      kind: "expense"
-    conversion_fees:
-      name: "Frais conversion"
-      kind: "expense"
-    tourist_activities:
-      name: "Activités touristique"
-      kind: "expense"
-    education_tuition:
-      name: "Éducation / Scolarité"
-      kind: "expense"
-    children_childcare:
-      name: "Enfants / Garde"
-      kind: "expense"
-    household_items_furniture:
-      name: "Articles ménagers / Meubles"
-      kind: "expense"
-    business_expenses:
-      name: "Dépenses professionnelles"
-      kind: "expense"
-    pets_animals:
-      name: "Animaux de compagnie"
-      kind: "expense"
-    school_supplies:
-      name: "Fournitures scolaires"
-      kind: "expense"
-    wedding_celebration:
-      name: "Mariage / Fête"
-      kind: "expense"
-    religious_contribution:
-      name: "Contribution religieuse"
-      kind: "expense"
-    side_hustle:
-      name: "Activité annexe / Freelance"
-      kind: "income"
-    investment_return:
-      name: "Rendement d'investissement (Revenu)"
-      kind: "income"
-    refund_reimbursement:
-      name: "Remboursement (Revenu)"
-      kind: "income"
-    grant_scholarship:
-      name: "Bourse / Subvention"
-      kind: "income"
+
+    # Remboursement de Dette
     debt_repayment:
       name: "Remboursement de dette (Dépense)"
       kind: "expense"
+
+    # ============================================
+    # TYPES DE TRANSACTIONS REVENUS
+    # ============================================
+
+    # Revenus Généraux
+    income_other:
+      name: "Revenu (Autre)"
+      kind: "income"
+    money_in:
+      name: "Entrée d'argent"
+      kind: "income"
+
+    # Emploi
+    salary:
+      name: "Salaire"
+      kind: "income"
+    performance_bonuses:
+      name: "Primes de rendement"
+      kind: "income"
+    side_hustle:
+      name: "Activité annexe / Freelance"
+      kind: "income"
+
+    # Cadeaux & Soutien
+    gifts_income:
+      name: "Cadeaux (Revenu)"
+      kind: "income"
+    donations_tips_income:
+      name: "Dons & Pourboire (Revenu)"
+      kind: "income"
+    financial_support_income:
+      name: "Assistance financière (Revenu)"
+      kind: "income"
+    family_support_income:
+      name: "Assistance familial (Revenu)"
+      kind: "income"
+
+    # Rendements Financiers
+    investment_return:
+      name: "Rendement d'investissement (Revenu)"
+      kind: "income"
+    interest_credit_bank:
+      name: "Intérêt Créditeur (Banque)"
+      kind: "income"
+
+    # Remboursements
+    refund_reimbursement:
+      name: "Remboursement (Revenu)"
+      kind: "income"
+
+    # Éducation & Bourses
+    grant_scholarship:
+      name: "Bourse / Subvention"
+      kind: "income"
+
+    # Jeux & Paris
+    sports_betting_winnings:
+      name: "Paris sportif (Gain)"
+      kind: "income"
+
+    # Remboursement de Prêt Reçu
     loan_repayment:
       name: "Remboursement de prêt (Revenu)"
       kind: "income"
+
+    # ============================================
+    # TYPES DE TRANSACTIONS DETTES (j'emprunte)
+    # ============================================
+
+    debts_borrowings:
+      name: "Dettes / Emprunts (que j'emprunte)"
+      kind: "debt"
     borrowed_from_friend:
       name: "Emprunt ami (Dette)"
       kind: "debt"
+
+    # ============================================
+    # TYPES DE TRANSACTIONS PRÊTS (j'accorde)
+    # ============================================
+
+    loans_lent_out:
+      name: "Prêts (que j'accorde)"
+      kind: "loan"
     lent_to_friend:
       name: "Prêt à un ami (Prêt)"
       kind: "loan"
+
+    # ============================================
+    # TYPES DE TRANSACTIONS TRANSFERTS
+    # ============================================
+
+    cash_out_transfer:
+      name: "Décaissement (transfert de compte)"
+      kind: "transfer_out"
+    cash_in_transfer:
+      name: "Encaissement (transfert de compte)"
+      kind: "transfer_in"

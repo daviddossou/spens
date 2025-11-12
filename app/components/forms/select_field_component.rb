@@ -70,6 +70,8 @@ class Forms::SelectFieldComponent < ViewComponent::Base
   def final_field_options
     opts = field_options.dup
 
+    @selected_value = opts.delete(:selected) if opts.key?(:selected)
+
     if searchable
       opts[:data] ||= {}
       existing_controller = opts[:data][:controller]
@@ -81,6 +83,12 @@ class Forms::SelectFieldComponent < ViewComponent::Base
     end
 
     opts
+  end
+
+  def select_options
+    options = { include_blank: include_blank }
+    options[:selected] = @selected_value if @selected_value.present?
+    options
   end
 
   def has_errors?

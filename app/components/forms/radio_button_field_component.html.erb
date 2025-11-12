@@ -1,0 +1,25 @@
+<%= content_tag :div, **wrapper_html_options do %>
+  <div class="radio-input-wrapper">
+    <%= form.radio_button field, value, final_field_options %>
+
+    <% unless hide_label %>
+      <% if content.present? %>
+        <label class="<%= label_classes %>"><%= content %></label>
+      <% else %>
+        <%= form.label "#{field}_#{value}", field_label, class: label_classes %>
+      <% end %>
+    <% end %>
+  </div>
+
+  <% if help_text && !hide_label %>
+    <p class="help-text"><%= help_text %></p>
+  <% end %>
+
+  <% if has_errors? && !hide_label %>
+    <div class="error-messages">
+      <% field_errors.each do |error| %>
+        <p class="error-text"><%= error %></p>
+      <% end %>
+    </div>
+  <% end %>
+<% end %>

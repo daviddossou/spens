@@ -74,7 +74,7 @@
   opacity: 1;
 }
 
-/* Hide the actual checkbox */
+/* Hide the actual checkbox/radio */
 .card .hidden {
   position: absolute;
   width: 1px;
@@ -85,6 +85,72 @@
   clip: rect(0, 0, 0, 0);
   white-space: nowrap;
   border-width: 0;
+}
+
+/* Compact mode - switcher-like styling */
+.card.compact {
+  padding: 0.5rem 1rem;
+  min-height: auto;
+  border-radius: 0.5rem;
+  transition: all 0.2s ease;
+}
+
+.card.compact:hover {
+  background-color: var(--primary-light, rgba(79, 70, 229, 0.1));
+  border-color: var(--color-primary);
+}
+
+.card.compact.selected {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+.card.compact .card-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: row;
+}
+
+.card.compact .card-content h4 {
+  margin: 0;
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.25rem;
+  color: var(--text-default);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card.compact.selected .card-content h4 {
+  color: white;
+}
+
+.card.compact .card-content p {
+  display: none;
+  /* Hide descriptions in compact mode */
+}
+
+/* Compact mode responsive - smaller text on mobile */
+@media (max-width: 640px) {
+  .card.compact {
+    padding: 0.5rem 0.75rem;
+  }
+
+  .card.compact .card-content h4 {
+    font-size: 0.8125rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .card.compact {
+    padding: 0.5rem 0.5rem;
+  }
+
+  .card.compact .card-content h4 {
+    font-size: 0.75rem;
+  }
 }
 
 /* Responsive adjustments for tablets */

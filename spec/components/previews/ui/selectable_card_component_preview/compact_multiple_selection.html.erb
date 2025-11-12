@@ -1,0 +1,65 @@
+<div class="max-w-2xl mx-auto p-8">
+  <h2 class="text-2xl font-bold mb-6">Compact Mode - Multiple Selection (Checkboxes)</h2>
+
+  <p class="text-gray-600 mb-4">
+    Compact cards with checkbox behavior (multiple can be selected). Useful for tag/category selection.
+  </p>
+
+  <div class="mb-4 p-3 bg-blue-50 rounded text-sm">
+    <strong>Features:</strong> <code>compact: true</code>, <code>multiple: true</code>, <code>show_visual_checkbox: false</code>
+  </div>
+
+  <%= form_with url: "#", method: :post do |form| %>
+    <div class="flex gap-2 flex-wrap">
+      <%= render Ui::SelectableCardComponent.new(
+        item: { name: "Food", value: "food" },
+        form: form,
+        field: :categories,
+        selected: true,
+        compact: true,
+        multiple: true,
+        show_visual_checkbox: false,
+        additional_classes: 'text-center'
+      ) %>
+
+      <%= render Ui::SelectableCardComponent.new(
+        item: { name: "Transport", value: "transport" },
+        form: form,
+        field: :categories,
+        selected: true,
+        compact: true,
+        multiple: true,
+        show_visual_checkbox: false,
+        additional_classes: 'text-center'
+      ) %>
+
+      <%= render Ui::SelectableCardComponent.new(
+        item: { name: "Entertainment", value: "entertainment" },
+        form: form,
+        field: :categories,
+        selected: false,
+        compact: true,
+        multiple: true,
+        show_visual_checkbox: false,
+        additional_classes: 'text-center'
+      ) %>
+
+      <%= render Ui::SelectableCardComponent.new(
+        item: { name: "Shopping", value: "shopping" },
+        form: form,
+        field: :categories,
+        selected: false,
+        compact: true,
+        multiple: true,
+        show_visual_checkbox: false,
+        additional_classes: 'text-center'
+      ) %>
+    </div>
+
+    <div class="mt-4">
+      <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+        Submit Selection
+      </button>
+    </div>
+  <% end %>
+</div>

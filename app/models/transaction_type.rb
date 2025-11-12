@@ -42,6 +42,7 @@ class TransactionType < ApplicationRecord
     expense: "expense",
     loan: "loan",
     debt: "debt",
+    transfer: "transfer", # General type for transfers
     transfer_in: "transfer_in", # System type for money coming in from another account
     transfer_out: "transfer_out" # System type for money going out to another account
   }
@@ -51,6 +52,50 @@ class TransactionType < ApplicationRecord
   class << self
     def templates(locale = I18n.locale)
       I18n.t("transaction_type_templates", locale: locale)
+    end
+
+    # Default template keys to suggest for each kind (most commonly used)
+    def default_template_keys(kind)
+      case kind
+      when "expense"
+        %w[
+          groceries
+          dining_out
+          fuel_transport
+          public_transport
+          rent
+          electricity_water
+          telecommunication_internet
+          insurance
+          medical_care_pharmacy
+          education_tuition
+          entertainment
+          clothing_shopping
+          subscriptions_memberships
+          maintenance_repairs
+          gifts_expense
+        ]
+      when "income"
+        %w[
+          salary
+          side_hustle
+          gifts_income
+          performance_bonuses
+          general_income
+        ]
+      when "loan"
+        %w[
+          loans_lent_out
+          lent_to_friend
+        ]
+      when "debt"
+        %w[
+          debts_borrowings
+          borrowed_from_friend
+        ]
+      else
+        []
+      end
     end
   end
 end

@@ -229,6 +229,27 @@ RSpec.describe Forms::InputFieldComponent, type: :component do
         expect(classes).to include('form-input-autocomplete')
       end
 
+      context "with default_autocomplete_options" do
+        let(:all_suggestions) { [ 'Option 1', 'Option 2', 'Option 3', 'Option 4', 'Option 5', 'Option 6', 'Option 7', 'Option 8', 'Option 9', 'Option 10' ] }
+        let(:default_suggestions) { [ 'Option 1', 'Option 2', 'Option 3' ] }
+        let(:component) do
+          described_class.new(
+            form: form,
+            field: field,
+            autocomplete: true,
+            autocomplete_options: all_suggestions,
+            default_autocomplete_options: default_suggestions
+          )
+        end
+
+        it "includes both suggestions and default suggestions in data attributes" do
+          render_inline(component)
+          data = component.send(:tom_select_data)
+          expect(data[:tom_select_suggestions_value]).to eq(all_suggestions.to_json)
+          expect(data[:tom_select_default_suggestions_value]).to eq(default_suggestions.to_json)
+        end
+      end
+
       context "with allow_create enabled" do
         let(:component) do
           described_class.new(

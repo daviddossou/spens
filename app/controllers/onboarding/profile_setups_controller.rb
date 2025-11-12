@@ -1,8 +1,7 @@
 # frozen_string_literal: true
 
-class Onboarding::ProfileSetupsController < ApplicationController
+class Onboarding::ProfileSetupsController < OnboardingController
   before_action :authenticate_user!
-  before_action :redirect_if_completed
 
   def show
     @form = build_form
@@ -30,10 +29,6 @@ class Onboarding::ProfileSetupsController < ApplicationController
   def profile_setup_params
     params.require(:onboarding_profile_setup_form)
           .permit(:country, :currency, :income_frequency, :main_income_source)
-  end
-
-  def redirect_if_completed
-    redirect_to dashboard_path if current_user.onboarding_completed?
   end
 
   def next_step_path

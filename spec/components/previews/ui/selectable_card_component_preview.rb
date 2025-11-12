@@ -79,4 +79,34 @@ class Ui::SelectableCardComponentPreview < ViewComponent::Preview
   def visual_checkbox_comparison
     render_with_template locals: {}
   end
+
+  # Compact mode - single selection (radio buttons)
+  def compact_single_selection
+    render_with_template locals: {}
+  end
+
+  # Compact mode - multiple selection (checkboxes)
+  def compact_multiple_selection
+    render_with_template locals: {}
+  end
+
+  # Compact vs Normal comparison
+  def compact_comparison
+    render_with_template locals: {}
+  end
+
+  # Radio button mode - transaction kind selector
+  def radio_button_mode
+    render_with_template locals: {}
+  end
+
+  # Additional classes example
+  def with_additional_classes
+    render_with_template locals: {}
+  end
+
+  # Real-world example: Transaction form kind selector
+  def transaction_kind_selector
+    render_with_template locals: {}
+  end
 end

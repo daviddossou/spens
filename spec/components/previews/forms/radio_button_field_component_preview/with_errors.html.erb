@@ -1,0 +1,60 @@
+<div class="preview-container" style="max-width: 600px; padding: 2rem;">
+  <style>
+    .radio-field.has-errors {
+      padding: 1rem;
+      background: #fef2f2;
+      border: 1px solid #fca5a5;
+      border-radius: 0.5rem;
+    }
+    .error-text {
+      color: #dc2626;
+      font-size: 0.875rem;
+      margin-top: 0.25rem;
+    }
+  </style>
+
+  <h3 style="margin-bottom: 1.5rem;">Payment method (with validation)</h3>
+
+  <%
+    # Simulate a model with errors
+    payment_model = User.new
+    payment_model.errors.add(:payment_method, "must be selected")
+  %>
+
+  <%= form_with(model: payment_model, url: "#", method: :post) do |f| %>
+    <div style="display: flex; flex-direction: column; gap: 1rem;">
+      <%= render Forms::RadioButtonFieldComponent.new(
+        form: f,
+        field: :payment_method,
+        value: "credit_card",
+        label: "Credit Card"
+      ) %>
+
+      <%= render Forms::RadioButtonFieldComponent.new(
+        form: f,
+        field: :payment_method,
+        value: "paypal",
+        label: "PayPal"
+      ) %>
+
+      <%= render Forms::RadioButtonFieldComponent.new(
+        form: f,
+        field: :payment_method,
+        value: "bank_transfer",
+        label: "Bank Transfer"
+      ) %>
+    </div>
+  <% end %>
+
+  <div style="margin-top: 2rem; padding: 1rem; background: #f3f4f6; border-radius: 0.5rem;">
+    <h4 style="margin-bottom: 0.5rem; font-size: 0.875rem; font-weight: 600;">Error Handling</h4>
+    <p style="font-size: 0.875rem; margin: 0;">
+      When the field has validation errors, the component automatically:
+    </p>
+    <ul style="font-size: 0.875rem; margin: 0.5rem 0; padding-left: 1.5rem;">
+      <li>Adds <code>has-errors</code> class to the wrapper</li>
+      <li>Displays error messages below the field</li>
+      <li>Inherits error state from the form object</li>
+    </ul>
+  </div>
+</div>

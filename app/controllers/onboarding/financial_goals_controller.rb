@@ -1,6 +1,5 @@
-class Onboarding::FinancialGoalsController < ApplicationController
+class Onboarding::FinancialGoalsController < OnboardingController
   before_action :authenticate_user!
-  before_action :redirect_if_completed
   before_action :build_form, only: [ :show ]
 
   # GET /onboarding/financial_goals
@@ -30,10 +29,6 @@ class Onboarding::FinancialGoalsController < ApplicationController
     params.require(:onboarding_financial_goal_form).permit(
       financial_goals: []
     )
-  end
-
-  def redirect_if_completed
-    redirect_to dashboard_path if current_user.onboarding_completed?
   end
 
   def next_step_path

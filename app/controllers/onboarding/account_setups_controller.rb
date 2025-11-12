@@ -1,8 +1,7 @@
 # frozen_string_literal: true
 
-class Onboarding::AccountSetupsController < ApplicationController
+class Onboarding::AccountSetupsController < OnboardingController
   before_action :authenticate_user!
-  before_action :redirect_if_completed
   before_action :build_form, only: [ :show ]
 
   def show
@@ -32,15 +31,13 @@ class Onboarding::AccountSetupsController < ApplicationController
   def account_setup_params
     params.require(:onboarding_account_setup_form).permit(
       transactions_attributes: [
-        :amount, :transaction_date,
-        account_attributes: [ :name ],
-        transaction_type_attributes: [ :name, :kind ]
+        :account_name,
+        :amount,
+        :transaction_date,
+        :transaction_type_name,
+        :transaction_type_kind
       ]
     )
-  end
-
-  def redirect_if_completed
-    redirect_to dashboard_path if current_user.onboarding_completed?
   end
 
   def next_step_path

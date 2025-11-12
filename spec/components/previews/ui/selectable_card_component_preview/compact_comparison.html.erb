@@ -1,0 +1,72 @@
+<div class="max-w-4xl mx-auto p-8">
+  <h2 class="text-2xl font-bold mb-6">Compact vs Normal Comparison</h2>
+
+  <p class="text-gray-600 mb-6">
+    Side-by-side comparison showing the difference between compact and normal card sizes.
+  </p>
+
+  <%= form_with url: "#", method: :post do |form| %>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <!-- Normal Size -->
+      <div>
+        <h3 class="text-lg font-semibold mb-4">Normal Size</h3>
+        <div class="space-y-3">
+          <%= render Ui::SelectableCardComponent.new(
+            item: { name: "Option 1", value: "opt1", description: "This is a normal-sized card with full description" },
+            form: form,
+            field: :normal_option,
+            selected: true,
+            compact: false,
+            multiple: false
+          ) %>
+
+          <%= render Ui::SelectableCardComponent.new(
+            item: { name: "Option 2", value: "opt2", description: "Another normal card showing full content" },
+            form: form,
+            field: :normal_option,
+            selected: false,
+            compact: false,
+            multiple: false
+          ) %>
+        </div>
+      </div>
+
+      <!-- Compact Size -->
+      <div>
+        <h3 class="text-lg font-semibold mb-4">Compact Size</h3>
+        <div class="flex gap-2 flex-wrap">
+          <%= render Ui::SelectableCardComponent.new(
+            item: { name: "Option 1", value: "opt1", description: "Compact card" },
+            form: form,
+            field: :compact_option,
+            selected: true,
+            compact: true,
+            multiple: false,
+            show_visual_checkbox: false,
+            additional_classes: 'text-center'
+          ) %>
+
+          <%= render Ui::SelectableCardComponent.new(
+            item: { name: "Option 2", value: "opt2", description: "Another compact" },
+            form: form,
+            field: :compact_option,
+            selected: false,
+            compact: true,
+            multiple: false,
+            show_visual_checkbox: false,
+            additional_classes: 'text-center'
+          ) %>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-6 p-4 bg-gray-50 rounded">
+      <h4 class="font-semibold mb-2">Key Differences:</h4>
+      <ul class="text-sm space-y-1">
+        <li>• <strong>Normal:</strong> Larger padding, visible descriptions, stacked layout</li>
+        <li>• <strong>Compact:</strong> Minimal padding, hidden descriptions, horizontal layout</li>
+        <li>• <strong>Use case:</strong> Normal for detailed options, Compact for quick selectors (mobile-friendly)</li>
+      </ul>
+    </div>
+  <% end %>
+</div>

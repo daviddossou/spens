@@ -5,13 +5,11 @@ class Onboarding::AccountSetupForm < BaseForm
   # Constants
   CURRENT_STEP = "onboarding_account_setup"
   NEXT_STEP = "onboarding_completed"
-  TRANSACTION_TYPE_NAME = "Transfer In"
-  TRANSACTION_TYPE_KIND = "transfer_in"
 
   ##
   # Attributes
   attr_accessor :user
-  attr_reader :transactions
+  attr_reader :transaction_forms
 
   ##
   # Validations
@@ -30,29 +28,36 @@ class Onboarding::AccountSetupForm < BaseForm
   def initialize(user, payload = {})
     @user = user
 
-    if payload[:transactions_attributes].present?
-      self.transactions_attributes = payload[:transactions_attributes]
-    else
-      @transactions = default_transactions
-    end
+    @transaction_forms =
+      if payload[:transactions_attributes].present?
+        build_transactions_from(payload[:transactions_attributes])
+      else
+        initialize_transaction
+      end
 
     user.onboarding_current_step ||= CURRENT_STEP
   end
 
+  def transactions
+    @transaction_forms
+  end
+
   def transactions_attributes=(attributes)
-    @transactions = attributes.values.map do |attrs|
-      build_transaction_from_nested_attributes(attrs)
-    end
+    @transaction_forms = build_transactions_from(attributes)
   end
 
   def submit
     return false if invalid?
 
     ActiveRecord::Base.transaction do
-      transactions.each do |transaction|
-        next if should_skip_transaction?(transaction)
+      transaction_forms.each do |transaction_form|
+        next if transaction_form.should_skip?
 
-        persist_transaction(transaction)
+        result = transaction_form.submit
+        unless result
+          promote_errors(transaction_form.errors.messages)
+          raise ActiveRecord::Rollback
+        end
       end
 
       user.onboarding_current_step = NEXT_STEP
@@ -67,84 +72,34 @@ class Onboarding::AccountSetupForm < BaseForm
 
   private
 
-  def default_transactions
+  def build_transactions_from(transaction_attributes)
+    transaction_attributes.values.map do |attrs|
+      Onboarding::TransactionForm.new(
+        user: user,
+        account_name: attrs[:account_name],
+        amount: attrs[:amount],
+        transaction_date: attrs[:transaction_date],
+        transaction_type_name: attrs[:transaction_type_name],
+        transaction_type_kind: attrs[:transaction_type_kind]
+      )
+    end
+  end
+
+  def initialize_transaction
     [
-      user.transactions.new(
+      Onboarding::TransactionForm.new(
+        user: user,
+        account_name: "",
         amount: nil,
         transaction_date: Date.current
-      ).tap do |transaction|
-        transaction.account = Account.new(name: "")
-        transaction.transaction_type = TransactionType.new(name: TRANSACTION_TYPE_NAME)
-      end
+      )
     ]
   end
 
-  def build_transaction_from_nested_attributes(attrs)
-    user.transactions.new(
-      amount: attrs[:amount],
-      transaction_date: attrs[:transaction_date] || Date.current
-    ).tap do |transaction|
-      transaction.account = build_account_from_attributes(attrs)
-      transaction.transaction_type = build_transaction_type_from_attributes(attrs)
-    end
-  end
-
-  def build_account_from_attributes(attrs)
-    account_name = attrs.dig(:account_attributes, :name) || attrs.dig(:account, :name)
-    Account.new(name: account_name)
-  end
-
-  def build_transaction_type_from_attributes(attrs)
-    type_name = attrs.dig(:transaction_type_attributes, :name).presence ||
-                attrs.dig(:transaction_type, :name).presence ||
-                TRANSACTION_TYPE_NAME
-    TransactionType.new(name: type_name)
-  end
-
-  def should_skip_transaction?(transaction)
-    transaction.account.nil? ||
-      transaction.account.name.blank? ||
-      transaction.amount.to_f <= 0
-  end
-
-  def persist_transaction(transaction)
-    transaction.account = find_or_create_account(transaction.account)
-    transaction.transaction_type = find_or_create_transaction_type(transaction.transaction_type)
-    transaction.description = I18n.t("onboarding.account_setups.initial_balance_description", account_name: transaction.account.name)
-
-    validate_and_save_transaction!(transaction)
-  end
-
-  def find_or_create_account(account)
-    user.accounts.find_or_create_by!(name: account.name.to_s.strip) do |new_account|
-      new_account.balance = 0.0
-      new_account.saving_goal = 0.0
-    end
-  end
-
-  def find_or_create_transaction_type(transaction_type)
-    user.transaction_types.find_or_create_by!(kind: transaction_type.kind || TRANSACTION_TYPE_KIND) do |tt|
-      tt.name = transaction_type.name || TRANSACTION_TYPE_NAME
-      tt.budget_goal = 0.0
-    end
-  end
-
-  def validate_and_save_transaction!(transaction)
-    if transaction.invalid?
-      promote_errors(transaction.errors.messages)
-      raise ActiveRecord::RecordInvalid, transaction
-    end
-
-    transaction.save!
-  end
-
   def at_least_one_valid_transaction
-    valid_transactions = transactions.select do |transaction|
-      account_name = transaction.account&.name
-      account_name.present? && transaction.amount.to_f > 0
-    end
+    valid_forms = transaction_forms.reject(&:should_skip?)
 
-    if valid_transactions.empty?
+    if valid_forms.empty?
       errors.add(:base, I18n.t("onboarding.account_setups.errors.at_least_one_transaction"))
     end
   end
