@@ -1,0 +1,149 @@
+<%= form_with model: @form, url: transactions_path, method: :post, class: "transaction-form", data: { controller: "transaction-form" } do |f| %>
+    <%= render "shared/form_errors", object: @form %>
+
+    <!-- Hidden field to store the selected kind -->
+    <%= f.hidden_field :kind %>
+
+    <!-- Kind Selector -->
+    <div class="transaction-form__kind">
+      <div class="kind-selector">
+        <%= link_to new_transaction_path(kind: 'expense'), data: { turbo_frame: "transaction_form" }, class: "kind-link" do %>
+          <%= render Ui::SelectableCardComponent.new(
+            item: { name: t('.kind_expense'), value: 'expense' },
+            selected: @form.kind == 'expense',
+            compact: true,
+            additional_classes: 'kind-card',
+            show_visual_checkbox: false,
+            link_mode: true
+          ) %>
+        <% end %>
+
+        <%= link_to new_transaction_path(kind: 'income'), data: { turbo_frame: "transaction_form" }, class: "kind-link" do %>
+          <%= render Ui::SelectableCardComponent.new(
+            item: { name: t('.kind_income'), value: 'income' },
+            selected: @form.kind == 'income',
+            compact: true,
+            additional_classes: 'kind-card',
+            show_visual_checkbox: false,
+            link_mode: true
+          ) %>
+        <% end %>
+
+        <%= link_to new_transaction_path(kind: 'transfer'), data: { turbo_frame: "transaction_form" }, class: "kind-link" do %>
+          <%= render Ui::SelectableCardComponent.new(
+            item: { name: t('.kind_transfer'), value: 'transfer' },
+            selected: @form.kind == 'transfer',
+            compact: true,
+            additional_classes: 'kind-card',
+            show_visual_checkbox: false,
+            link_mode: true
+          ) %>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- Amount Field (Required) -->
+    <div class="transaction-form__amount">
+      <%= render Forms::InputFieldComponent.new(
+        form: f,
+        field: :amount,
+        type: :number_field,
+        label: t('.amount_label'),
+        required: true,
+        prepend: current_user.currency,
+        field_options: {
+          step: 0.01,
+          placeholder: t('.amount_placeholder'),
+          autofocus: true
+        }
+      ) %>
+    </div>
+
+    <!-- Account Field (Required) -->
+    <div class="transaction-form__account">
+      <%= render Forms::InputFieldComponent.new(
+        form: f,
+        field: :account_name,
+        label: t('.account_label'),
+        required: true,
+        autocomplete: true,
+        autocomplete_options: @form.account_suggestions,
+        default_autocomplete_options: @form.default_account_suggestions,
+        allow_create: true,
+        field_options: {
+          placeholder: t('.account_placeholder')
+        }
+      ) %>
+    </div>
+
+    <!-- Transaction Type Field with Autocomplete (Required) -->
+    <div class="transaction-form__transaction-type">
+      <%= render Forms::InputFieldComponent.new(
+        form: f,
+        field: :transaction_type_name,
+        label: t('.transaction_type_label'),
+        required: true,
+        autocomplete: true,
+        autocomplete_options: @form.transaction_type_suggestions,
+        default_autocomplete_options: @form.default_transaction_type_suggestions,
+        allow_create: true,
+        field_options: {
+          placeholder: t('.transaction_type_placeholder')
+        }
+      ) %>
+    </div>
+
+    <!-- More Details Toggle -->
+    <div class="transaction-form__toggle">
+      <button
+        type="button"
+        class="link-button"
+        data-action="click->transaction-form#toggleDetails"
+        data-transaction-form-target="toggleButton"
+        data-show-text="<%= t('.show_more_details') %>"
+        data-hide-text="<%= t('.hide_more_details') %>">
+        <%= t('.show_more_details') %>
+      </button>
+    </div>
+
+    <!-- Optional Fields (Initially Hidden) -->
+    <div class="transaction-form__optional-fields" data-transaction-form-target="optionalFields" style="display: none;">
+      <div class="transaction-form__date">
+        <%= render Forms::InputFieldComponent.new(
+          form: f,
+          field: :transaction_date,
+          type: :date_field,
+          label: t('.date_label'),
+          required: false,
+          field_options: {
+            value: @form.transaction_date
+          }
+        ) %>
+      </div>
+
+      <div class="transaction-form__note">
+        <%= render Forms::InputFieldComponent.new(
+          form: f,
+          field: :note,
+          type: :text_area,
+          label: t('.note_label'),
+          help_text: t('.note_help'),
+          field_options: {
+            rows: 3,
+            placeholder: t('.note_placeholder')
+          }
+        ) %>
+      </div>
+    </div>
+
+    <!-- Submit Button -->
+    <div class="transaction-form__actions">
+      <%= render Ui::ButtonComponent.new(
+        text: t('.save_transaction'),
+        type: :submit,
+        variant: :primary,
+        size: :lg,
+        full_width: true
+      ) %>
+    </div>
+  <% end %>

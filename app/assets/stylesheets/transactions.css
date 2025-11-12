@@ -43,6 +43,17 @@
   flex-wrap: nowrap;
 }
 
+.kind-link {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  flex: 1;
+}
+
+.kind-link:hover {
+  text-decoration: none;
+}
+
 .kind-card {
   min-width: 100px;
 

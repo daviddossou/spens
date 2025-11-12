@@ -377,6 +377,82 @@ RSpec.describe Ui::SelectableCardComponent, type: :component do
     end
   end
 
+  describe 'link_mode parameter' do
+    context 'when link_mode is true' do
+      it 'renders without form inputs' do
+        rendered = render_inline(described_class.new(
+          item: item,
+          selected: true,
+          compact: true,
+          additional_classes: 'kind-card',
+          link_mode: true
+        ))
+
+        expect(rendered.css('input[type="checkbox"]')).to be_empty
+        expect(rendered.css('input[type="radio"]')).to be_empty
+      end
+
+      it 'renders without Stimulus controller' do
+        rendered = render_inline(described_class.new(
+          item: item,
+          selected: false,
+          link_mode: true
+        ))
+
+        root = rendered.css('div').first
+        expect(root['data-controller']).to be_nil
+        expect(root['data-action']).to be_nil
+      end
+
+      it 'still applies selected state visually' do
+        rendered = render_inline(described_class.new(
+          item: item,
+          selected: true,
+          link_mode: true
+        ))
+
+        root = rendered.css('div').first
+        expect(root['class']).to include('selected')
+      end
+
+      it 'can be used without form or field parameters' do
+        expect do
+          render_inline(described_class.new(
+            item: { name: 'Test', value: 'test' },
+            selected: true,
+            link_mode: true
+          ))
+        end.not_to raise_error
+      end
+    end
+
+    context 'when link_mode is false (default)' do
+      it 'renders with form inputs as normal' do
+        rendered = render_inline(described_class.new(
+          item: item,
+          form: form,
+          field: :test_field,
+          link_mode: false
+        ))
+
+        expect(rendered.css('input[type="checkbox"]')).to be_present
+      end
+
+      it 'includes Stimulus controller' do
+        rendered = render_inline(described_class.new(
+          item: item,
+          form: form,
+          field: :test_field,
+          link_mode: false
+        ))
+
+        root = rendered.css('div').first
+        expect(root['data-controller']).to include('ui--selectable-card')
+        expect(root['data-action']).to include('click->ui--selectable-card#toggle')
+      end
+    end
+  end
+
   describe 'combined features' do
     it 'works with all features together' do
       rendered = render_inline(described_class.new(

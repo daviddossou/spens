@@ -4,6 +4,7 @@ en:
       title: "New Transaction"
       add_transaction: "Add Transaction"
       subtitle: "Quickly record your income or expense"
+    form:
       kind_label: "Kind"
       kind_expense: "Expense"
       kind_income: "Income"

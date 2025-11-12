@@ -89,7 +89,7 @@
 
 /* Compact mode - switcher-like styling */
 .card.compact {
-  padding: 0.5rem 1rem;
+  padding: 0.25rem 0.5rem;
   min-height: auto;
   border-radius: 0.5rem;
   transition: all 0.2s ease;
@@ -135,7 +135,7 @@
 /* Compact mode responsive - smaller text on mobile */
 @media (max-width: 640px) {
   .card.compact {
-    padding: 0.5rem 0.75rem;
+    padding: 0.25rem 0.25rem;
   }
 
   .card.compact .card-content h4 {
@@ -145,7 +145,7 @@
 
 @media (max-width: 480px) {
   .card.compact {
-    padding: 0.5rem 0.5rem;
+    padding: 0.25rem 0.25rem;
   }
 
   .card.compact .card-content h4 {

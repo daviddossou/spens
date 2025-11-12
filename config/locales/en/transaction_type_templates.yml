@@ -265,8 +265,8 @@ en:
     general_income:
       name: "Income / Money In"
       kind: "income"
-    money_in:
-      name: "Money In"
+    other_income:
+      name: "Other Income"
       kind: "income"
 
     # Employment
@@ -278,6 +278,20 @@ en:
       kind: "income"
     side_hustle:
       name: "Side Hustle / Freelance"
+      kind: "income"
+    commission_income:
+      name: "Commissions"
+      kind: "income"
+    allowance:
+      name: "Allowance / Pocket Money"
+      kind: "income"
+
+    # Business
+    business_income:
+      name: "Business Income"
+      kind: "income"
+    petty_cash_income:
+      name: "Petty Cash"
       kind: "income"
 
     # Gifts & Support
@@ -300,6 +314,12 @@ en:
       kind: "income"
     interest_credit_bank:
       name: "Interest Credit (Bank)"
+      kind: "income"
+    rewards_cashback:
+      name: "Rewards / Cashback"
+      kind: "income"
+    rental_income:
+      name: "Rental Income"
       kind: "income"
 
     # Refunds & Reimbursements

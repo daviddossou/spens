@@ -14,7 +14,7 @@ class TransactionForm < BaseForm
 
   ##
   # Validations
-  validates :kind, presence: true, inclusion: { in: %w[expense] }
+  validates :kind, presence: true, inclusion: { in: %w[expense income transfer loan debt] }
   validates :account_name, presence: true
   validates :amount, presence: true, numericality: { greater_than: 0 }
   validates :transaction_date, presence: true
@@ -32,6 +32,7 @@ class TransactionForm < BaseForm
   # Instance Methods
   def initialize(user, payload = {})
     @user = user
+
     super(
       kind: payload[:kind] || 'expense',
       account_name: payload[:account_name],

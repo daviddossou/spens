@@ -12,9 +12,9 @@
 #
 # Indexes
 #
-#  index_transaction_types_on_kind                    (kind)
-#  index_transaction_types_on_lower_name_and_user_id  (lower((name)::text), user_id) UNIQUE
-#  index_transaction_types_on_user_id                 (user_id)
+#  index_transaction_types_on_kind                      (kind)
+#  index_transaction_types_on_lower_name_user_and_kind  (lower((name)::text), user_id, kind) UNIQUE
+#  index_transaction_types_on_user_id                   (user_id)
 #
 # Foreign Keys
 #
@@ -33,7 +33,7 @@ class TransactionType < ApplicationRecord
 
   ##
   # Validations & Enums
-  validates :name, presence: true, length: { maximum: 100 }, uniqueness: { scope: :user_id, case_sensitive: false }
+  validates :name, presence: true, length: { maximum: 100 }, uniqueness: { scope: [:user_id, :kind], case_sensitive: false }
   validates :kind, presence: true
   validates :budget_goal, presence: true, numericality: { greater_than_or_equal_to: 0 }
 
@@ -79,8 +79,18 @@ class TransactionType < ApplicationRecord
         %w[
           salary
           side_hustle
+          business_income
+          allowance
+          commission_income
+          investment_return
+          interest_credit_bank
+          grant_scholarship
           gifts_income
-          performance_bonuses
+          financial_support_income
+          refund_reimbursement
+          rewards_cashback
+          sports_betting_winnings
+          loan_repayment
           general_income
         ]
       when "loan"

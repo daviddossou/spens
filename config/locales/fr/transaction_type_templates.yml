@@ -261,12 +261,16 @@ fr:
     # TYPES DE TRANSACTIONS REVENUS
     # ============================================
 
+    # ============================================
+    # TYPES DE TRANSACTIONS REVENUS
+    # ============================================
+
     # Revenus Généraux
-    income_other:
-      name: "Revenu (Autre)"
+    general_income:
+      name: "Revenu / Entrée d'argent"
       kind: "income"
-    money_in:
-      name: "Entrée d'argent"
+    other_income:
+      name: "Autre Revenu"
       kind: "income"
 
     # Emploi
@@ -279,6 +283,20 @@ fr:
     side_hustle:
       name: "Activité annexe / Freelance"
       kind: "income"
+    commission_income:
+      name: "Commissions"
+      kind: "income"
+    allowance:
+      name: "Allocation / Argent de poche"
+      kind: "income"
+
+    # Affaires
+    business_income:
+      name: "Revenu d’entreprise"
+      kind: "income"
+    petty_cash_income:
+      name: "Petite caisse"
+      kind: "income"
 
     # Cadeaux & Soutien
     gifts_income:
@@ -288,26 +306,32 @@ fr:
       name: "Dons & Pourboire (Revenu)"
       kind: "income"
     financial_support_income:
-      name: "Assistance financière (Revenu)"
+      name: "Soutien financier (Revenu)"
       kind: "income"
     family_support_income:
-      name: "Assistance familial (Revenu)"
+      name: "Aide familiale (Revenu)"
       kind: "income"
 
-    # Rendements Financiers
+    # Revenus Financiers
     investment_return:
-      name: "Rendement d'investissement (Revenu)"
+      name: "Rendement d’investissement"
       kind: "income"
     interest_credit_bank:
-      name: "Intérêt Créditeur (Banque)"
+      name: "Intérêt créditeur (Banque)"
+      kind: "income"
+    rewards_cashback:
+      name: "Récompenses / Cashback"
+      kind: "income"
+    rental_income:
+      name: "Revenu locatif"
       kind: "income"
 
     # Remboursements
     refund_reimbursement:
-      name: "Remboursement (Revenu)"
+      name: "Remboursement / Compensation"
       kind: "income"
 
-    # Éducation & Bourses
+    # Éducation & Subventions
     grant_scholarship:
       name: "Bourse / Subvention"
       kind: "income"
@@ -319,7 +343,7 @@ fr:
 
     # Remboursement de Prêt Reçu
     loan_repayment:
-      name: "Remboursement de prêt (Revenu)"
+      name: "Remboursement de prêt (Reçu)"
       kind: "income"
 
     # ============================================

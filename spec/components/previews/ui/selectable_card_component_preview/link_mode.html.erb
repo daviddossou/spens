@@ -1,0 +1,102 @@
+<div class="max-w-2xl mx-auto p-8">
+  <h2 class="text-2xl font-bold mb-6">Link Mode</h2>
+
+  <p class="text-gray-600 mb-4">
+    When <code>link_mode: true</code>, the component renders as a pure visual element without form inputs or Stimulus controllers.
+    Perfect for wrapping in links or buttons.
+  </p>
+
+  <div class="mb-4 p-3 bg-blue-50 rounded text-sm space-y-2">
+    <div><strong>Features:</strong></div>
+    <div>• No hidden checkbox/radio inputs</div>
+    <div>• No Stimulus controller attached</div>
+    <div>• Visual state (selected class) still applied</div>
+    <div>• Can be used without form or field parameters</div>
+    <div>• Perfect for clickable navigation cards</div>
+  </div>
+
+  <h3 class="text-lg font-semibold mb-3">Example: Navigation Cards</h3>
+
+  <div class="space-y-3">
+    <%= link_to "#expense", class: "block" do %>
+      <%= render Ui::SelectableCardComponent.new(
+        item: { name: "Expense", description: "Record money you spent" },
+        selected: true,
+        link_mode: true
+      ) %>
+    <% end %>
+
+    <%= link_to "#income", class: "block" do %>
+      <%= render Ui::SelectableCardComponent.new(
+        item: { name: "Income", description: "Record money you received" },
+        selected: false,
+        link_mode: true
+      ) %>
+    <% end %>
+
+    <%= link_to "#transfer", class: "block" do %>
+      <%= render Ui::SelectableCardComponent.new(
+        item: { name: "Transfer", description: "Move money between accounts" },
+        selected: false,
+        link_mode: true
+      ) %>
+    <% end %>
+  </div>
+
+  <h3 class="text-lg font-semibold mb-3 mt-8">Example: Compact Horizontal Layout</h3>
+
+  <div class="flex gap-2">
+    <%= link_to "#option1", class: "flex-1" do %>
+      <%= render Ui::SelectableCardComponent.new(
+        item: { name: "Option 1" },
+        selected: true,
+        compact: true,
+        link_mode: true,
+        additional_classes: 'text-center'
+      ) %>
+    <% end %>
+
+    <%= link_to "#option2", class: "flex-1" do %>
+      <%= render Ui::SelectableCardComponent.new(
+        item: { name: "Option 2" },
+        selected: false,
+        compact: true,
+        link_mode: true,
+        additional_classes: 'text-center'
+      ) %>
+    <% end %>
+
+    <%= link_to "#option3", class: "flex-1" do %>
+      <%= render Ui::SelectableCardComponent.new(
+        item: { name: "Option 3" },
+        selected: false,
+        compact: true,
+        link_mode: true,
+        additional_classes: 'text-center'
+      ) %>
+    <% end %>
+  </div>
+
+  <div class="mt-6 p-4 bg-gray-50 rounded">
+    <h4 class="font-semibold mb-2">When to use link_mode:</h4>
+    <ul class="text-sm space-y-1">
+      <li>✅ Cards wrapped in links for navigation</li>
+      <li>✅ Cards that trigger Turbo Frame updates</li>
+      <li>✅ Cards used as clickable tabs or filters</li>
+      <li>✅ Any case where you don't need form submission</li>
+      <li>❌ Not for actual form selections (use default mode)</li>
+    </ul>
+  </div>
+
+  <div class="mt-4 p-4 bg-yellow-50 rounded border border-yellow-200">
+    <h4 class="font-semibold mb-2 text-yellow-800">Code Example:</h4>
+    <pre class="text-xs overflow-x-auto"><code>&lt;%= link_to path, class: "block" do %&gt;
+  &lt;%= render Ui::SelectableCardComponent.new(
+    item: { name: "Card Title", description: "Card description" },
+    selected: current_selection == 'value',
+    compact: true,
+    link_mode: true
+  ) %&gt;
+&lt;% end %&gt;</code></pre>
+  </div>
+</div>

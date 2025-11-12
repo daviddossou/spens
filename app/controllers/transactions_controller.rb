@@ -4,7 +4,12 @@ class TransactionsController < ApplicationController
   before_action :authenticate_user!
   before_action :build_form, only: [ :new ]
 
-  def new ; end
+  def new
+    respond_to do |format|
+      format.html
+      format.turbo_stream { render turbo_stream: turbo_stream.replace("transaction_form", partial: "form") }
+    end
+  end
 
   def create
     build_form(transaction_params)
@@ -19,7 +24,8 @@ class TransactionsController < ApplicationController
   private
 
   def build_form(payload = {})
-    @form = TransactionForm.new(current_user, payload)
+    kind = params[:kind] || payload[:kind] || 'expense'
+    @form = TransactionForm.new(current_user, payload.merge(kind: kind))
   end
 
   def transaction_params

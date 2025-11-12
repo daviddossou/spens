@@ -51,8 +51,8 @@ class Onboarding::TransactionForm < BaseForm
     return false if invalid?
 
     ActiveRecord::Base.transaction do
-      account = find_or_create_account!
-      transaction_type = find_or_create_transaction_type!
+      account = find_or_create_account
+      transaction_type = find_or_create_transaction_type
       transaction = create_transaction(account, transaction_type)
 
       transaction
@@ -69,35 +69,31 @@ class Onboarding::TransactionForm < BaseForm
 
   private
 
-  def find_or_create_account!
-    user.accounts.find_or_create_by!(name: account_name.strip) do |new_account|
-      new_account.balance = 0.0
-      new_account.saving_goal = 0.0
-    end
+  def find_or_create_account
+    FindOrCreateAccountService.new(user, account_name).call
   end
 
-  def find_or_create_transaction_type!
-    user.transaction_types.find_or_create_by!(kind: transaction_type_kind) do |tt|
-      tt.name = transaction_type_name
-      tt.budget_goal = 0.0
-    end
+  def find_or_create_transaction_type
+    FindOrCreateTransactionTypeService.new(user, transaction_type_name, transaction_type_kind).call
   end
 
   def create_transaction(account, transaction_type)
-    transaction = user.transactions.new(
-      account: account,
-      transaction_type: transaction_type,
-      amount: amount,
-      transaction_date: transaction_date,
-      description: I18n.t("onboarding.account_setups.initial_balance_description", account_name: account.name)
-    )
+    description = I18n.t("onboarding.account_setups.initial_balance_description", account_name: account.name)
+
+    transaction = CreateTransactionService.new(
+      user,
+      account,
+      transaction_type,
+      amount,
+      transaction_date,
+      nil, # note
+      description
+    ).call
 
     if transaction.invalid?
       promote_errors(transaction.errors.messages)
-      raise ActiveRecord::RecordInvalid, transaction
     end
 
-    transaction.save!
     transaction
   end
 end

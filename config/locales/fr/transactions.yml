@@ -4,6 +4,7 @@ fr:
       title: "Nouvelle Transaction"
       add_transaction: "Ajouter une Transaction"
       subtitle: "Enregistrez rapidement vos revenus ou dépenses"
+    form:
       kind_label: "Catégorie"
       kind_expense: "Dépense"
       kind_income: "Revenu"

@@ -15,7 +15,7 @@ class CreateTransactionService
     transaction = @user.transactions.new(
       account: @account,
       transaction_type: @transaction_type,
-      amount: -@amount.abs, # Negative for expense
+      amount: normalized_amount,
       transaction_date: @transaction_date,
       note: @note,
       description: @description
@@ -27,5 +27,18 @@ class CreateTransactionService
 
     transaction.save!
     transaction
+  end
+
+  private
+
+  def normalized_amount
+    case @transaction_type.kind
+    when "expense", "loan", "transfer_out", "debt"
+      -@amount.abs
+    when "income", "transfer_in"
+      @amount.abs
+    else
+      @amount
+    end
   end
 end

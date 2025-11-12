@@ -1,8 +1,10 @@
 <%= content_tag :div, **final_html_options do %>
-  <% if multiple? %>
-    <%= render Forms::CheckboxFieldComponent.new(**input_field_options) %>
-  <% else %>
-    <%= render Forms::RadioButtonFieldComponent.new(**input_field_options) %>
+  <% unless link_mode? %>
+    <% if multiple? %>
+      <%= render Forms::CheckboxFieldComponent.new(**input_field_options) %>
+    <% else %>
+      <%= render Forms::RadioButtonFieldComponent.new(**input_field_options) %>
+    <% end %>
   <% end %>
 
   <div class="<%= content_section_classes %>">

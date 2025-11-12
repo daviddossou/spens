@@ -12,9 +12,9 @@
 #
 # Indexes
 #
-#  index_transaction_types_on_kind                    (kind)
-#  index_transaction_types_on_lower_name_and_user_id  (lower((name)::text), user_id) UNIQUE
-#  index_transaction_types_on_user_id                 (user_id)
+#  index_transaction_types_on_kind                      (kind)
+#  index_transaction_types_on_lower_name_user_and_kind  (lower((name)::text), user_id, kind) UNIQUE
+#  index_transaction_types_on_user_id                   (user_id)
 #
 # Foreign Keys
 #

@@ -3,8 +3,8 @@
 class Ui::SelectableCardComponent < ViewComponent::Base
   def initialize(
     item:,
-    form:,
-    field:,
+    form: nil,
+    field: nil,
     selected: false,
     css_class: "card",
     additional_classes: nil,
@@ -12,6 +12,7 @@ class Ui::SelectableCardComponent < ViewComponent::Base
     show_visual_checkbox: true,
     multiple: true,
     compact: false,
+    link_mode: false,
     **html_options
   )
     @item = item
@@ -24,12 +25,13 @@ class Ui::SelectableCardComponent < ViewComponent::Base
     @show_visual_checkbox = show_visual_checkbox
     @multiple = multiple
     @compact = compact
+    @link_mode = link_mode
     @html_options = html_options
   end
 
   private
 
-  attr_reader :item, :form, :field, :selected, :css_class, :additional_classes, :description_classes, :show_visual_checkbox, :multiple, :compact, :html_options
+  attr_reader :item, :form, :field, :selected, :css_class, :additional_classes, :description_classes, :show_visual_checkbox, :multiple, :compact, :link_mode, :html_options
 
   def selected?
     selected
@@ -51,12 +53,18 @@ class Ui::SelectableCardComponent < ViewComponent::Base
     options = html_options.dup
     options[:class] = [ options[:class], root_classes ].compact.join(" ")
 
-    # Add Stimulus controller for toggle behavior
-    options[:data] ||= {}
-    options[:data][:controller] = [ options[:data][:controller], "ui--selectable-card" ].compact.join(" ")
-    options[:data][:action] = [ options[:data][:action], "click->ui--selectable-card#toggle" ].compact.join(" ")
+    # Only add Stimulus controller if not in link mode
+    unless link_mode?
+      options[:data] ||= {}
+      options[:data][:controller] = [ options[:data][:controller], "ui--selectable-card" ].compact.join(" ")
+      options[:data][:action] = [ options[:data][:action], "click->ui--selectable-card#toggle" ].compact.join(" ")
+    end
 
     options
+  end
+
+  def link_mode?
+    link_mode
   end
 
   def input_field_options

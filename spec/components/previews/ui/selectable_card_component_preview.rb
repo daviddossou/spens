@@ -109,4 +109,9 @@ class Ui::SelectableCardComponentPreview < ViewComponent::Preview
   def transaction_kind_selector
     render_with_template locals: {}
   end
+
+  # Link mode - cards as pure visual elements
+  def link_mode
+    render_with_template locals: {}
+  end
 end
