@@ -29,6 +29,7 @@ fr:
       not_saved:
         one: "1 erreur a empêché cet(te) %{resource} d'être sauvegardé(e) :"
         other: "%{count} erreurs ont empêché cet(te) %{resource} d'être sauvegardé(e) :"
+      different_account: "doit être différent du compte source"
     attributes:
       email: "Email"
       password: "Mot de passe"

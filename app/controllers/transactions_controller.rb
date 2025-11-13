@@ -32,6 +32,8 @@ class TransactionsController < ApplicationController
     params.require(:transaction).permit(
       :kind,
       :account_name,
+      :from_account_name,
+      :to_account_name,
       :amount,
       :transaction_date,
       :transaction_type_name,

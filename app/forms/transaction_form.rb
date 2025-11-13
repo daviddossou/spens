@@ -7,6 +7,8 @@ class TransactionForm < BaseForm
 
   attribute :kind, :string, default: 'expense'
   attribute :account_name, :string
+  attribute :from_account_name, :string
+  attribute :to_account_name, :string
   attribute :amount, :decimal
   attribute :transaction_date, :date, default: -> { Date.current }
   attribute :transaction_type_name, :string
@@ -15,10 +17,15 @@ class TransactionForm < BaseForm
   ##
   # Validations
   validates :kind, presence: true, inclusion: { in: %w[expense income transfer loan debt] }
-  validates :account_name, presence: true
   validates :amount, presence: true, numericality: { greater_than: 0 }
   validates :transaction_date, presence: true
-  validates :transaction_type_name, presence: true
+
+  # Conditional validations based on kind
+  validates :account_name, presence: true, unless: :transfer?
+  validates :transaction_type_name, presence: true, unless: :transfer?
+  validates :from_account_name, presence: true, if: :transfer?
+  validates :to_account_name, presence: true, if: :transfer?
+  validate :different_accounts_for_transfer, if: :transfer?
 
   ##
   # Class Methods
@@ -36,6 +43,8 @@ class TransactionForm < BaseForm
     super(
       kind: payload[:kind] || 'expense',
       account_name: payload[:account_name],
+      from_account_name: payload[:from_account_name],
+      to_account_name: payload[:to_account_name],
       amount: payload[:amount],
       transaction_date: payload[:transaction_date] || Date.current,
       transaction_type_name: payload[:transaction_type_name],
@@ -55,9 +64,18 @@ class TransactionForm < BaseForm
     return false if invalid?
 
     ActiveRecord::Base.transaction do
-      account = find_or_create_account
-      transaction_type = find_or_create_transaction_type
-      create_transaction(account, transaction_type)
+      if transfer?
+        create_transfer_transactions
+      else
+        account = find_or_create_account
+        transaction_type = find_or_create_transaction_type
+        create_and_validate_transaction(
+          account: account,
+          transaction_type: transaction_type,
+          amount: amount,
+          description: transaction_type_name
+        )
+      end
     end
 
     true
@@ -85,6 +103,17 @@ class TransactionForm < BaseForm
 
   private
 
+  def transfer?
+    kind == 'transfer'
+  end
+
+  def different_accounts_for_transfer
+    return unless from_account_name.present? && to_account_name.present? &&
+                  from_account_name.strip.downcase == to_account_name.strip.downcase
+
+    errors.add(:to_account_name, I18n.t('errors.messages.different_account'))
+  end
+
   def find_or_create_account
     FindOrCreateAccountService.new(user, account_name).call
   end
@@ -93,7 +122,7 @@ class TransactionForm < BaseForm
     FindOrCreateTransactionTypeService.new(user, transaction_type_name, kind).call
   end
 
-  def create_transaction(account, transaction_type)
+  def create_and_validate_transaction(account:, transaction_type:, amount:, description:)
     transaction = CreateTransactionService.new(
       user,
       account,
@@ -101,13 +130,53 @@ class TransactionForm < BaseForm
       amount,
       transaction_date,
       note,
-      transaction_type_name
+      description
     ).call
 
     if transaction.invalid?
       promote_errors(transaction.errors.messages)
+      raise ActiveRecord::RecordInvalid, transaction
     end
 
     transaction
+  end
+
+  def create_transfer_transactions
+    transfer_out = create_and_validate_transaction(
+      account: from_account,
+      transaction_type: transfer_type_out,
+      amount: amount,
+      description: I18n.t('transactions.transfer.description_out', from_account_name: from_account.name, to_account_name: to_account.name)
+    )
+
+    transfer_in = create_and_validate_transaction(
+      account: to_account,
+      transaction_type: transfer_type_in,
+      amount: amount,
+      description: I18n.t('transactions.transfer.description_in', from_account_name: from_account.name, to_account_name: to_account.name)
+    )
+
+    [transfer_out, transfer_in]
+  end
+
+  def find_or_create_transfer_type(kind)
+    type_name = I18n.t("transactions.transfer.type_name.#{kind}")
+    FindOrCreateTransactionTypeService.new(user, type_name, kind).call
+  end
+
+  def from_account
+    @from_account ||= FindOrCreateAccountService.new(user, from_account_name).call
+  end
+
+  def to_account
+    @to_account ||= FindOrCreateAccountService.new(user, to_account_name).call
+  end
+
+  def transfer_type_out
+    @transfer_type_out ||= find_or_create_transfer_type(TransactionType::KIND_TRANSFER_OUT)
+  end
+
+  def transfer_type_in
+    @transfer_type_in ||= find_or_create_transfer_type(TransactionType::KIND_TRANSFER_IN)
   end
 end

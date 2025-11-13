@@ -6,260 +6,256 @@ fr:
 
     # Dépenses Générales
     expense_other:
-      name: "Dépense (Autre)"
+      name: "💸 Dépense (Autre)"
       kind: "expense"
     money_out:
-      name: "Sortie d'argent"
+      name: "💸 Sortie d'argent"
       kind: "expense"
     unexpected:
-      name: "Imprévu"
+      name: "⚠️ Imprévu"
       kind: "expense"
     uncategorized_expense:
-      name: "Non catégorisé"
+      name: "❓ Non catégorisé"
       kind: "expense"
 
     # Logement & Services Publics
     rent:
-      name: "Loyer"
+      name: "🏠 Loyer"
       kind: "expense"
     housing:
-      name: "Logement"
+      name: "🏠 Logement"
       kind: "expense"
     electricity_water:
-      name: "Électricité & Eau"
+      name: "💡 Électricité & Eau"
       kind: "expense"
     telecommunication_internet:
-      name: "Télécommunication & Internet"
+      name: "📱 Télécommunication & Internet"
       kind: "expense"
     home_improvement:
-      name: "Amélioration du logement"
+      name: "🔨 Amélioration du logement"
       kind: "expense"
     security_services:
-      name: "Sécurité & Services"
+      name: "🔒 Sécurité & Services"
       kind: "expense"
 
     # Dépenses Quotidiennes
     groceries:
-      name: "Provisions"
+      name: "🛒 Provisions"
       kind: "expense"
     groceries_enjoyment:
-      name: "Provisions (plaisir)"
+      name: "🍰 Provisions (plaisir)"
       kind: "expense"
     food_restaurant:
-      name: "Nourriture / Restaurant"
+      name: "🍽️ Nourriture / Restaurant"
       kind: "expense"
     dining_out:
-      name: "Repas à l’extérieur"
+      name: "🍽️ Repas à l’extérieur"
       kind: "expense"
     cafe_coffee:
-      name: "Café / Petit-déjeuner"
+      name: "☕ Café / Petit-déjeuner"
       kind: "expense"
     shopping_errands:
-      name: "Courses"
+      name: "🛍️ Courses"
       kind: "expense"
     clothing_shopping:
-      name: "Vêtements & Shopping"
+      name: "👕 Vêtements & Shopping"
       kind: "expense"
 
     # Transport & Voyages
     fuel_transport:
-      name: "Essence & Transport"
+      name: "⛽ Essence & Transport"
       kind: "expense"
     car_maintenance:
-      name: "Entretien automobile"
+      name: "🔧 Entretien automobile"
       kind: "expense"
     parking_toll:
-      name: "Parking & Péage"
+      name: "🅿️ Parking & Péage"
       kind: "expense"
     public_transport:
-      name: "Transport public"
+      name: "🚌 Transport public"
       kind: "expense"
     travel:
-      name: "Voyage"
+      name: "✈️ Voyage"
       kind: "expense"
 
     # Divertissement & Loisirs
     leisure:
-      name: "Loisirs"
+      name: "🎮 Loisirs"
       kind: "expense"
     entertainment:
-      name: "Divertissement"
+      name: "🎬 Divertissement"
       kind: "expense"
     holidays:
-      name: "Vacances"
+      name: "🏖️ Vacances"
       kind: "expense"
     tourist_activities:
-      name: "Activités touristiques"
+      name: "🗺️ Activités touristiques"
       kind: "expense"
     music_streaming:
-      name: "Musique & Streaming"
+      name: "🎵 Musique & Streaming"
       kind: "expense"
     sports_fitness:
-      name: "Sport & Fitness"
+      name: "⚽ Sport & Fitness"
       kind: "expense"
     culture_events:
-      name: "Culture & Évènements"
+      name: "🎭 Culture & Évènements"
       kind: "expense"
 
     # Services Financiers
     insurance:
-      name: "Assurances"
+      name: "🛡️ Assurances"
       kind: "expense"
     taxes:
-      name: "Impôts"
+      name: "💰 Impôts"
       kind: "expense"
     bank_account_fees:
-      name: "Frais compte bancaire"
+      name: "🏦 Frais compte bancaire"
       kind: "expense"
     mobile_money_fees:
-      name: "Frais mobile money"
+      name: "📲 Frais mobile money"
       kind: "expense"
     conversion_fees:
-      name: "Frais de conversion"
+      name: "💱 Frais de conversion"
       kind: "expense"
     online_purchase_fees:
-      name: "Frais d’achat en ligne"
+      name: "🌐 Frais d’achat en ligne"
       kind: "expense"
     delivery_fees:
-      name: "Frais de livraison"
+      name: "📦 Frais de livraison"
       kind: "expense"
 
     # Abonnements & Services
     subscriptions_memberships:
-      name: "Abonnements & Adhésions"
+      name: "🔄 Abonnements & Adhésions"
       kind: "expense"
     streaming_services:
-      name: "Services de streaming"
+      name: "📺 Services de streaming"
       kind: "expense"
 
     # Santé & Bien-être
     medical_care_pharmacy:
-      name: "Soins médicaux & Pharmacie"
+      name: "💊 Soins médicaux & Pharmacie"
       kind: "expense"
     health_fitness:
-      name: "Santé & Fitness"
+      name: "💪 Santé & Fitness"
       kind: "expense"
     beauty_personal_care:
-      name: "Beauté & Soins personnels"
+      name: "💄 Beauté & Soins personnels"
       kind: "expense"
 
     # Maison & Propriété
     maintenance_repairs:
-      name: "Entretien & Réparations"
+      name: "🛠️ Entretien & Réparations"
       kind: "expense"
     cleaning:
-      name: "Nettoyage"
+      name: "🧹 Nettoyage"
       kind: "expense"
     household_items_furniture:
-      name: "Articles ménagers / Meubles"
+      name: "🛋️ Articles ménagers / Meubles"
       kind: "expense"
 
     # Technologie
     technology_electronics:
-      name: "Technologie / Électronique"
+      name: "💻 Technologie / Électronique"
       kind: "expense"
     communication_pc:
-      name: "Communication & Informatique"
+      name: "🖥️ Communication & Informatique"
       kind: "expense"
 
     # Éducation & Développement
     education_tuition:
-      name: "Éducation / Scolarité"
+      name: "🎓 Éducation / Scolarité"
       kind: "expense"
     training_event:
-      name: "Formation / Évènement"
+      name: "📚 Formation / Évènement"
       kind: "expense"
     career_training:
-      name: "Formation professionnelle"
+      name: "👨‍💼 Formation professionnelle"
       kind: "expense"
     school_supplies:
-      name: "Fournitures scolaires"
+      name: "✏️ Fournitures scolaires"
       kind: "expense"
 
     # Famille & Enfants
     children_childcare:
-      name: "Enfants / Garde"
+      name: "👶 Enfants / Garde"
       kind: "expense"
     family_expenses:
-      name: "Dépenses familiales"
+      name: "👨‍👩‍👧‍👦 Dépenses familiales"
       kind: "expense"
 
     # Animaux de Compagnie
     pets_animals:
-      name: "Animaux de compagnie"
+      name: "🐾 Animaux de compagnie"
       kind: "expense"
 
     # Social & Communauté
     gifts_expense:
-      name: "Cadeaux (Dépense)"
+      name: "🎁 Cadeaux (Dépense)"
       kind: "expense"
     donations_tips_expense:
-      name: "Dons & Pourboire (Dépense)"
+      name: "🤝 Dons & Pourboire (Dépense)"
       kind: "expense"
     charity_donation:
-      name: "Charité / Don"
+      name: "❤️ Charité / Don"
       kind: "expense"
     collection_offering:
-      name: "Quête / Offrande"
+      name: "🙏 Quête / Offrande"
       kind: "expense"
     religious_contribution:
-      name: "Contribution religieuse"
+      name: "⛪ Contribution religieuse"
       kind: "expense"
     wedding_celebration:
-      name: "Mariage / Fête"
+      name: "💒 Mariage / Fête"
       kind: "expense"
     tontine:
-      name: "Tontine"
+      name: "💰 Tontine"
       kind: "expense"
 
     # Assistance & Soutien
     financial_support_expense:
-      name: "Assistance financière (Dépense)"
+      name: "💸 Assistance financière (Dépense)"
       kind: "expense"
     family_support_expense:
-      name: "Assistance familiale (Dépense)"
+      name: "👨‍👩‍👧‍👦 Assistance familiale (Dépense)"
       kind: "expense"
 
     # Travail & Professionnel
     work_expenses:
-      name: "Dépenses de travail"
+      name: "💼 Dépenses de travail"
       kind: "expense"
     business_expenses:
-      name: "Dépenses professionnelles"
+      name: "🏢 Dépenses professionnelles"
       kind: "expense"
 
     # Investissement & Épargne
     investment:
-      name: "Investissement (Dépense)"
+      name: "📈 Investissement (Dépense)"
       kind: "expense"
 
     # Pertes
     money_loss:
-      name: "Perte d'argent"
+      name: "😢 Perte d'argent"
       kind: "expense"
     bank_account_loss:
-      name: "Perte compte bancaire"
+      name: "🏦 Perte compte bancaire"
       kind: "expense"
     mobile_money_loss:
-      name: "Perte mobile money"
+      name: "📲 Perte mobile money"
       kind: "expense"
     wallet_loss:
-      name: "Perte porte monnaie"
+      name: "👛 Perte porte monnaie"
       kind: "expense"
 
     # Jeux & Paris
     sports_betting_expense:
-      name: "Paris sportif (Dépense)"
+      name: "🎲 Paris sportif (Dépense)"
       kind: "expense"
 
     # Remboursement de Dette
     debt_repayment:
-      name: "Remboursement de dette (Dépense)"
+      name: "💳 Remboursement de dette (Dépense)"
       kind: "expense"
-
-    # ============================================
-    # TYPES DE TRANSACTIONS REVENUS
-    # ============================================
 
     # ============================================
     # TYPES DE TRANSACTIONS REVENUS
@@ -267,83 +263,83 @@ fr:
 
     # Revenus Généraux
     general_income:
-      name: "Revenu / Entrée d'argent"
+      name: "💵 Revenu / Entrée d'argent"
       kind: "income"
     other_income:
-      name: "Autre Revenu"
+      name: "💵 Autre Revenu"
       kind: "income"
 
     # Emploi
     salary:
-      name: "Salaire"
+      name: "💼 Salaire"
       kind: "income"
     performance_bonuses:
-      name: "Primes de rendement"
+      name: "🎖️ Primes de rendement"
       kind: "income"
     side_hustle:
-      name: "Activité annexe / Freelance"
+      name: "💪 Activité annexe / Freelance"
       kind: "income"
     commission_income:
-      name: "Commissions"
+      name: "💰 Commissions"
       kind: "income"
     allowance:
-      name: "Allocation / Argent de poche"
+      name: "👛 Allocation / Argent de poche"
       kind: "income"
 
     # Affaires
     business_income:
-      name: "Revenu d’entreprise"
+      name: "🏢 Revenu d’entreprise"
       kind: "income"
     petty_cash_income:
-      name: "Petite caisse"
+      name: "💵 Petite caisse"
       kind: "income"
 
     # Cadeaux & Soutien
     gifts_income:
-      name: "Cadeaux (Revenu)"
+      name: "🎁 Cadeaux (Revenu)"
       kind: "income"
     donations_tips_income:
-      name: "Dons & Pourboire (Revenu)"
+      name: "🤝 Dons & Pourboire (Revenu)"
       kind: "income"
     financial_support_income:
-      name: "Soutien financier (Revenu)"
+      name: "💸 Soutien financier (Revenu)"
       kind: "income"
     family_support_income:
-      name: "Aide familiale (Revenu)"
+      name: "👨‍👩‍👧‍👦 Aide familiale (Revenu)"
       kind: "income"
 
     # Revenus Financiers
     investment_return:
-      name: "Rendement d’investissement"
+      name: "📈 Rendement d’investissement"
       kind: "income"
     interest_credit_bank:
-      name: "Intérêt créditeur (Banque)"
+      name: "🏦 Intérêt créditeur (Banque)"
       kind: "income"
     rewards_cashback:
-      name: "Récompenses / Cashback"
+      name: "🎉 Récompenses / Cashback"
       kind: "income"
     rental_income:
-      name: "Revenu locatif"
+      name: "🏠 Revenu locatif"
       kind: "income"
 
     # Remboursements
     refund_reimbursement:
-      name: "Remboursement / Compensation"
+      name: "↩️ Remboursement / Compensation"
       kind: "income"
 
     # Éducation & Subventions
     grant_scholarship:
-      name: "Bourse / Subvention"
+      name: "🎓 Bourse / Subvention"
       kind: "income"
 
     # Jeux & Paris
     sports_betting_winnings:
-      name: "Paris sportif (Gain)"
+      name: "🎲 Paris sportif (Gain)"
       kind: "income"
 
     # Remboursement de Prêt Reçu
     loan_repayment:
-      name: "Remboursement de prêt (Reçu)"
+      name: "💳 Remboursement de prêt (Reçu)"
       kind: "income"
 
     # ============================================
@@ -351,10 +347,10 @@ fr:
     # ============================================
 
     debts_borrowings:
-      name: "Dettes / Emprunts (que j'emprunte)"
+      name: "💳 Dettes / Emprunts (que j'emprunte)"
       kind: "debt"
     borrowed_from_friend:
-      name: "Emprunt ami (Dette)"
+      name: "🤝 Emprunt ami (Dette)"
       kind: "debt"
 
     # ============================================
@@ -362,19 +358,19 @@ fr:
     # ============================================
 
     loans_lent_out:
-      name: "Prêts (que j'accorde)"
+      name: "💰 Prêts (que j'accorde)"
       kind: "loan"
     lent_to_friend:
-      name: "Prêt à un ami (Prêt)"
+      name: "🤝 Prêt à un ami (Prêt)"
       kind: "loan"
 
     # ============================================
     # TYPES DE TRANSACTIONS TRANSFERTS
     # ============================================
 
-    cash_out_transfer:
-      name: "Décaissement (transfert de compte)"
+    transfer_out:
+      name: "📤 Décaissement (transfert de compte)"
       kind: "transfer_out"
-    cash_in_transfer:
-      name: "Encaissement (transfert de compte)"
+    transfer_in:
+      name: "📥 Encaissement (transfert de compte)"
       kind: "transfer_in"

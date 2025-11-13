@@ -51,47 +51,73 @@
         label: t('.amount_label'),
         required: true,
         prepend: current_user.currency,
-        field_options: {
-          step: 0.01,
-          placeholder: t('.amount_placeholder'),
-          autofocus: true
-        }
+        step: 0.01,
+        placeholder: t('.amount_placeholder'),
+        autofocus: true
       ) %>
     </div>
 
-    <!-- Account Field (Required) -->
-    <div class="transaction-form__account">
-      <%= render Forms::InputFieldComponent.new(
-        form: f,
-        field: :account_name,
-        label: t('.account_label'),
-        required: true,
-        autocomplete: true,
-        autocomplete_options: @form.account_suggestions,
-        default_autocomplete_options: @form.default_account_suggestions,
-        allow_create: true,
-        field_options: {
+    <!-- Transfer Mode: From and To Accounts -->
+    <% if @form.kind == 'transfer' %>
+      <div class="transaction-form__transfer-accounts">
+        <div class="transaction-form__from-account">
+          <%= render Forms::InputFieldComponent.new(
+            form: f,
+            field: :from_account_name,
+            label: t('.from_account_label'),
+            required: true,
+            autocomplete: true,
+            autocomplete_options: @form.account_suggestions,
+            default_autocomplete_options: @form.default_account_suggestions,
+            allow_create: true,
+            placeholder: t('.from_account_placeholder')
+          ) %>
+        </div>
+
+        <div class="transaction-form__to-account">
+          <%= render Forms::InputFieldComponent.new(
+            form: f,
+            field: :to_account_name,
+            label: t('.to_account_label'),
+            required: true,
+            autocomplete: true,
+            autocomplete_options: @form.account_suggestions,
+            default_autocomplete_options: @form.default_account_suggestions,
+            allow_create: true,
+            placeholder: t('.to_account_placeholder')
+          ) %>
+        </div>
+      </div>
+    <% else %>
+      <!-- Regular Mode: Single Account and Transaction Type -->
+      <div class="transaction-form__account">
+        <%= render Forms::InputFieldComponent.new(
+          form: f,
+          field: :account_name,
+          label: t('.account_label'),
+          required: true,
+          autocomplete: true,
+          autocomplete_options: @form.account_suggestions,
+          default_autocomplete_options: @form.default_account_suggestions,
+          allow_create: true,
           placeholder: t('.account_placeholder')
-        }
-      ) %>
-    </div>
+        ) %>
+      </div>
 
-    <!-- Transaction Type Field with Autocomplete (Required) -->
-    <div class="transaction-form__transaction-type">
-      <%= render Forms::InputFieldComponent.new(
-        form: f,
-        field: :transaction_type_name,
-        label: t('.transaction_type_label'),
-        required: true,
-        autocomplete: true,
-        autocomplete_options: @form.transaction_type_suggestions,
-        default_autocomplete_options: @form.default_transaction_type_suggestions,
-        allow_create: true,
-        field_options: {
+      <div class="transaction-form__transaction-type">
+        <%= render Forms::InputFieldComponent.new(
+          form: f,
+          field: :transaction_type_name,
+          label: t('.transaction_type_label'),
+          required: true,
+          autocomplete: true,
+          autocomplete_options: @form.transaction_type_suggestions,
+          default_autocomplete_options: @form.default_transaction_type_suggestions,
+          allow_create: true,
           placeholder: t('.transaction_type_placeholder')
-        }
-      ) %>
-    </div>
+        ) %>
+      </div>
+    <% end %>
 
     <!-- More Details Toggle -->
     <div class="transaction-form__toggle">
@@ -107,17 +133,14 @@
     </div>
 
     <!-- Optional Fields (Initially Hidden) -->
-    <div class="transaction-form__optional-fields" data-transaction-form-target="optionalFields" style="display: none;">
+    <div class="transaction-form__optional-fields hidden" data-transaction-form-target="optionalFields">
       <div class="transaction-form__date">
         <%= render Forms::InputFieldComponent.new(
           form: f,
           field: :transaction_date,
           type: :date_field,
           label: t('.date_label'),
-          required: false,
-          field_options: {
-            value: @form.transaction_date
-          }
+          required: false
         ) %>
       </div>
 
@@ -128,10 +151,8 @@
           type: :text_area,
           label: t('.note_label'),
           help_text: t('.note_help'),
-          field_options: {
-            rows: 3,
-            placeholder: t('.note_placeholder')
-          }
+          rows: 3,
+          placeholder: t('.note_placeholder')
         ) %>
       </div>
     </div>

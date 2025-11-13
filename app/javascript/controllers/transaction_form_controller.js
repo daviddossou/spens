@@ -7,7 +7,7 @@ export default class extends Controller {
   connect() {
     // Ensure optional fields are hidden on initial load and after turbo frame updates
     if (this.hasOptionalFieldsTarget) {
-      this.optionalFieldsTarget.style.display = 'none'
+      this.optionalFieldsTarget.classList.add('hidden')
     }
     
     // Reset toggle button text on connect (after turbo frame reload)
@@ -21,11 +21,11 @@ export default class extends Controller {
     const optionalFields = this.optionalFieldsTarget
     const toggleButton = this.toggleButtonTarget
 
-    if (optionalFields.style.display === 'none') {
-      optionalFields.style.display = 'block'
+    if (optionalFields.classList.contains('hidden')) {
+      optionalFields.classList.remove('hidden')
       toggleButton.textContent = toggleButton.dataset.hideText || 'Hide details'
     } else {
-      optionalFields.style.display = 'none'
+      optionalFields.classList.add('hidden')
       toggleButton.textContent = toggleButton.dataset.showText || 'More details'
     }
   }

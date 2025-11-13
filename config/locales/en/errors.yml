@@ -29,6 +29,7 @@ en:
       not_saved:
         one: "1 error prohibited this %{resource} from being saved:"
         other: "%{count} errors prohibited this %{resource} from being saved:"
+      different_account: "must be different from the source account"
     attributes:
       email: "Email"
       password: "Password"

@@ -1,15 +1,13 @@
 fr:
   transactions:
     new:
-      title: "Nouvelle Transaction"
-      add_transaction: "Ajouter une Transaction"
-      subtitle: "Enregistrez rapidement vos revenus ou dépenses"
+      title: "Ajouter une transaction"
+      subtitle: "Entre tes revenus ou dépenses rapidement"
     form:
       kind_label: "Catégorie"
       kind_expense: "Dépense"
       kind_income: "Revenu"
       kind_debt: "Dette"
-      kind_loan: "Prêt"
       kind_transfer: "Transfert"
       amount_label: "Montant"
       amount_placeholder: "0.00"
@@ -30,3 +28,9 @@ fr:
       save_transaction: "Enregistrer la Transaction"
     create:
       success: "Transaction enregistrée avec succès !"
+    transfer:
+      type_name:
+        transfer_out: "Décaissement (transfert de compte)"
+        transfer_in: "Encaissement (transfert de compte)"
+      description_out: "%{from_account_name} → %{to_account_name}"
+      description_in: "%{to_account_name} ← %{from_account_name}"
