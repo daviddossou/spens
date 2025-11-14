@@ -12,6 +12,19 @@ class AccountSuggestionsService
     (user_accounts + templates).uniq
   end
 
+  def all_with_balances
+    user_accounts = @user.accounts.order(updated_at: :desc).pluck(:name, :balance)
+    user_suggestions = user_accounts.map { |name, balance| { name: name, balance: balance } }
+
+    templates = Account.templates(I18n.locale).values
+    template_suggestions = templates.map { |name| { name: name, balance: 0 } }
+
+    existing_names = user_accounts.map(&:first)
+    template_suggestions.reject! { |t| existing_names.include?(t[:name]) }
+
+    user_suggestions + template_suggestions
+  end
+
   def defaults
     user_accounts = @user.accounts.order(updated_at: :desc).pluck(:name)
 
@@ -22,5 +35,21 @@ class AccountSuggestionsService
     needed = 10 - user_accounts.length
 
     user_accounts + available_templates.take(needed)
+  end
+
+  def defaults_with_balances
+    user_accounts = @user.accounts.order(updated_at: :desc).pluck(:name, :balance)
+    user_suggestions = user_accounts.map { |name, balance| { name: name, balance: balance } }
+
+    return user_suggestions if user_suggestions.length >= 10
+
+    templates = Account.templates(I18n.locale).values
+    template_suggestions = templates.map { |name| { name: name, balance: 0 } }
+
+    existing_names = user_accounts.map(&:first)
+    available_templates = template_suggestions.reject { |t| existing_names.include?(t[:name]) }
+
+    needed = 10 - user_suggestions.length
+    user_suggestions + available_templates.take(needed)
   end
 end

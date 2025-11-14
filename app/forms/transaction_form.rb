@@ -4,6 +4,7 @@ class TransactionForm < BaseForm
   ##
   # Attributes
   attr_accessor :user, :transaction
+  attr_reader :account_id
 
   attribute :kind, :string, default: 'expense'
   attribute :account_name, :string
@@ -39,6 +40,15 @@ class TransactionForm < BaseForm
   # Instance Methods
   def initialize(user, payload = {})
     @user = user
+    @account_id = payload[:account_id]
+
+    if @account_id.present?
+      account = user.accounts.find_by(id: @account_id)
+      if account
+        payload[:account_name] ||= account.name
+        payload[:to_account_name] ||= account.name if payload[:kind] == 'transfer'
+      end
+    end
 
     super(
       kind: payload[:kind] || 'expense',
@@ -99,6 +109,12 @@ class TransactionForm < BaseForm
 
   def default_account_suggestions
     AccountSuggestionsService.new(user).defaults
+  end
+
+  def kind_params(target_kind)
+    params = { kind: target_kind }
+    params[:account_id] = account_id if account_id.present?
+    params
   end
 
   private

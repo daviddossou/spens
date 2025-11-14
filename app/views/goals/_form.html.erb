@@ -1,0 +1,60 @@
+<%= render 'shared/form_errors', object: form.object %>
+
+<div class="goal-form__container">
+    <!-- Account Name Field with Autocomplete -->
+    <div class="goal-form__field">
+      <% if disable_account_field %>
+        <%= form.hidden_field :account_name %>
+      <% end %>
+
+      <%= render Forms::InputFieldComponent.new(
+        form: form,
+        field: :account_name,
+        label: t('.account_label'),
+        required: true,
+        autocomplete: !(disable_account_field.presence || false),
+        autocomplete_options: @form.account_suggestions,
+        default_autocomplete_options: @form.default_account_suggestions,
+        allow_create: !(disable_account_field.presence || false),
+        placeholder: t('.account_placeholder'),
+        help_text: t('.account_help'),
+        disabled: (disable_account_field || false),
+        field_data: {
+          goal_form_target: "accountName"
+        }
+      ) %>
+    </div>
+
+    <!-- Current Balance Field -->
+    <div class="goal-form__field">
+      <%= render Forms::InputFieldComponent.new(
+        form: form,
+        field: :current_balance,
+        type: :number_field,
+        label: t('.current_balance_label'),
+        required: true,
+        prepend: current_user.currency,
+        step: 0.01,
+        placeholder: "0.00",
+        help_text: t('.current_balance_help'),
+        field_data: {
+          goal_form_target: "currentBalance"
+        }
+      ) %>
+    </div>
+
+    <!-- Saving Goal Field -->
+    <div class="goal-form__field">
+      <%= render Forms::InputFieldComponent.new(
+        form: form,
+        field: :saving_goal,
+        type: :number_field,
+        label: t('.saving_goal_label'),
+        required: true,
+        prepend: current_user.currency,
+        step: 0.01,
+        placeholder: "0.00",
+        help_text: t('.saving_goal_help')
+      ) %>
+    </div>
+  </div>

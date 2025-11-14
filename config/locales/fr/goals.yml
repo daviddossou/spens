@@ -1,0 +1,51 @@
+fr:
+  goals:
+    index:
+      title: "Mes Objectifs d'Épargne"
+      subtitle: "Suivez votre progression vers vos objectifs financiers"
+      current_balance: "Actuel"
+      goal: "Objectif"
+      no_goals_title: "Aucun objectif pour le moment"
+      no_goals_message: "Commencez à définir vos objectifs d'épargne pour suivre votre progression financière"
+      add_new_goal: "Ajouter un Objectif"
+    new:
+      title: "Ajouter un Objectif d'Épargne"
+      subtitle: "Définissez un montant cible pour votre compte"
+      save_goal: "Enregistrer l'Objectif"
+    form:
+      account_label: "Compte"
+      account_placeholder: "Sélectionnez ou créez un compte..."
+      account_help: "Choisissez un compte existant ou créez-en un nouveau"
+      current_balance_label: "Solde Actuel"
+      current_balance_help: "Entrez le solde actuel de ce compte"
+      saving_goal_label: "Objectif d'Épargne"
+      saving_goal_help: "Combien voulez-vous épargner ?"
+      cancel: "Annuler"
+    create:
+      success: "Objectif d'épargne créé avec succès !"
+      error: "Une erreur s'est produite lors de la création de votre objectif"
+    edit:
+      title: "Modifier %{account_name}"
+      subtitle: "Mettez à jour votre objectif d'épargne"
+      back_to_goal: "Retour à l'Objectif"
+      update_goal: "Mettre à Jour l'Objectif"
+    update:
+      success: "Objectif d'épargne mis à jour avec succès !"
+      error: "Une erreur s'est produite lors de la mise à jour de votre objectif"
+    show:
+      back_to_goals: "Retour aux Objectifs"
+      subtitle: "Gérez votre objectif d'épargne"
+      actions_title: "Actions"
+      add_transaction: "Ajouter une Transaction"
+      edit_goal: "Modifier l'Objectif"
+      recent_transactions: "Transactions Récentes"
+      no_transactions: "Aucune transaction pour cet objectif"
+    errors:
+      not_found: "Objectif introuvable"
+    balance_adjustment_in_note: "Ajustement du solde (augmentation)"
+    balance_adjustment_in_description: "Ajustement du solde pour %{account_name}: +%{amount}"
+    balance_adjustment_out_note: "Ajustement du solde (diminution)"
+    balance_adjustment_out_description: "Ajustement du solde pour %{account_name}: -%{amount}"
+  errors:
+    messages:
+      goal_must_be_greater: "doit être supérieur au solde actuel"

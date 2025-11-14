@@ -9,8 +9,10 @@ class Forms::InputFieldComponent < ViewComponent::Base
     required: false,
     help_text: nil,
     wrapper_classes: nil,
+    wrapper_data: {},
     label_classes: nil,
     field_classes: nil,
+    field_data: {},
     autocomplete: false,
     autocomplete_options: [],
     default_autocomplete_options: nil,
@@ -29,8 +31,10 @@ class Forms::InputFieldComponent < ViewComponent::Base
     @required = required
     @help_text = help_text
     @wrapper_classes = wrapper_classes
+    @wrapper_data = wrapper_data
     @label_classes = label_classes
     @field_classes = field_classes
+    @field_data = field_data
     @autocomplete = autocomplete
     @autocomplete_options = autocomplete_options
     @default_autocomplete_options = default_autocomplete_options
@@ -46,7 +50,7 @@ class Forms::InputFieldComponent < ViewComponent::Base
   private
 
   attr_reader :form, :field, :type, :label, :required, :help_text,
-              :wrapper_classes, :label_classes, :field_classes, :field_options,
+              :wrapper_classes, :wrapper_data, :label_classes, :field_classes, :field_data, :field_options,
               :autocomplete, :autocomplete_options, :default_autocomplete_options, :allow_create,
               :prepend, :append,
               :custom_name, :custom_id, :custom_value
@@ -128,7 +132,20 @@ class Forms::InputFieldComponent < ViewComponent::Base
       options.delete(:placeholder)
     end
 
+    # Merge field_data if provided
+    if field_data.present?
+      options[:data] ||= {}
+      options[:data].merge!(field_data)
+    end
+
     options
+  end
+
+  def wrapper_html_options
+    opts = {}
+    opts[:class] = final_wrapper_classes
+    opts[:data] = wrapper_data if wrapper_data.present?
+    opts
   end
 
   def has_errors?

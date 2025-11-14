@@ -1,4 +1,4 @@
-<div class="<%= final_wrapper_classes %>">
+<div <%= tag.attributes(wrapper_html_options) %>>
   <div class="form-label-wrapper">
     <%= form.label field, field_label, class: final_label_classes %>
     <% if required %>

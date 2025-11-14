@@ -1,0 +1,38 @@
+<% content_for :title, t('.title') %>
+
+<div class="page-container page-container--narrow">
+  <header class="page-header">
+    <h1 class="page-header__title"><%= t('.title') %></h1>
+    <p class="page-header__subtitle"><%= t('.subtitle') %></p>
+  </header>
+
+  <div class="page-content">
+    <%= form_with model: @form,
+                  url: goals_path,
+                  method: :post,
+                  local: true,
+                  class: "goal-form",
+                  data: { controller: "goal-form" } do |f| %>
+      <%= render 'form', form: f, disable_account_field: false %>
+
+      <!-- Form Actions -->
+      <div class="goal-form__actions">
+        <%= render Ui::ButtonComponent.new(
+          text: t('.save_goal'),
+          type: :submit,
+          variant: :primary,
+          size: :lg,
+          full_width: true
+        ) %>
+
+        <%= render Ui::ButtonComponent.new(
+          text: t('.cancel'),
+          url: goals_path,
+          variant: :'outline-secondary',
+          size: :lg,
+          full_width: true
+        ) %>
+      </div>
+    <% end %>
+  </div>
+</div>

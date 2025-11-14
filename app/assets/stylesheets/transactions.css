@@ -1,31 +1,5 @@
 /* Transaction Form Styles */
 
-.transaction-form-container {
-  width: 100%;
-  max-width: 600px;
-  margin: 0 auto;
-  padding: 2rem 1rem;
-  min-height: 100vh;
-  background-color: var(--bg-surface, #ffffff);
-}
-
-.transaction-form-header {
-  text-align: center;
-  margin-bottom: 1rem;
-}
-
-.transaction-form-title {
-  font-size: 2rem;
-  font-weight: 700;
-  color: var(--text-default);
-  margin-bottom: 0.5rem;
-}
-
-.transaction-form-subtitle {
-  font-size: 1rem;
-  color: var(--text-muted);
-}
-
 .transaction-form {
   display: flex;
   flex-direction: column;
@@ -95,20 +69,15 @@
   gap: 1rem;
 }
 
+.transaction-form__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 1.25rem;
+}
+
 /* Responsive - Tablet */
 @media (max-width: 768px) {
-  .transaction-form-container {
-    padding: 1.5rem 1rem;
-  }
-
-  .transaction-form-title {
-    font-size: 1.75rem;
-  }
-
-  .transaction-form-subtitle {
-    font-size: 0.9375rem;
-  }
-
   .transaction-form__optional-fields {
     gap: 1.25rem;
   }
@@ -116,19 +85,6 @@
 
 /* Responsive - Mobile */
 @media (max-width: 640px) {
-  .transaction-form-container {
-    max-width: 100%;
-    padding: 1rem 0.75rem;
-  }
-
-  .transaction-form-title {
-    font-size: 1.5rem;
-  }
-
-  .transaction-form-subtitle {
-    font-size: 0.875rem;
-  }
-
   .transaction-form__kind {
     margin-top: 0.75rem;
     margin-bottom: 0.75rem;
@@ -145,18 +101,6 @@
 
 /* Responsive - Small Mobile */
 @media (max-width: 480px) {
-  .transaction-form-container {
-    padding: 0.75rem 0.5rem;
-  }
-
-  .transaction-form-title {
-    font-size: 1.375rem;
-  }
-
-  .transaction-form-subtitle {
-    font-size: 0.8125rem;
-  }
-
   .transaction-form__optional-fields {
     gap: 0.875rem;
     padding-top: 0.75rem;

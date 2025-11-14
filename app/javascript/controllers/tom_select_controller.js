@@ -30,6 +30,8 @@ export default class extends Controller {
   }
 
   defaultConfig() {
+    const element = this.element
+
     const config = {
       create: this.hasAllowCreateValue ? this.allowCreateValue : false,
       placeholder: this.hasPlaceholderValue ? this.placeholderValue : "Type to search...",
@@ -37,12 +39,21 @@ export default class extends Controller {
       onInitialize: function () {
         const tomSelect = this
 
-        this.on('change', function () {
+        this.on('change', function (value) {
           const input = tomSelect.control_input
           if (input && tomSelect.items.length > 0) {
             input.placeholder = ''
           } else {
             input.placeholder = config.placeholder
+          }
+
+          // Store balance in data attribute if available
+          const option = tomSelect.options[value]
+
+          if (option && option.balance !== undefined) {
+            element.dataset.balance = option.balance
+          } else {
+            delete element.dataset.balance
           }
         })
 
@@ -65,6 +76,14 @@ export default class extends Controller {
         if (typeof item === 'string') {
           return { value: item, text: item }
         }
+        // Handle object with name/balance structure
+        if (item.name !== undefined) {
+          return {
+            value: item.name,
+            text: item.name,
+            balance: item.balance !== undefined ? item.balance : null
+          }
+        }
         return item
       })
 
@@ -73,6 +92,14 @@ export default class extends Controller {
         config.options = this.defaultSuggestionsValue.map(item => {
           if (typeof item === 'string') {
             return { value: item, text: item }
+          }
+          // Handle object with name/balance structure
+          if (item.name !== undefined) {
+            return {
+              value: item.name,
+              text: item.name,
+              balance: item.balance !== undefined ? item.balance : null
+            }
           }
           return item
         })

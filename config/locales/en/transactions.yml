@@ -26,11 +26,12 @@ en:
       note_help: "Optional: Add any additional details"
       note_placeholder: "Add a note..."
       save_transaction: "Save Transaction"
+      cancel: "Cancel"
     create:
       success: "Transaction saved successfully!"
     transfer:
       type_name:
-        transfer_out: "Cash out (account transfer)"
-        transfer_in: "Cash in (account transfer)"
-      description_out: "%{from_account_name} → %{to_account_name}"
-      description_in: "%{to_account_name} ← %{from_account_name}"
+        transfer_out: "📤 Cash out (account transfer)"
+        transfer_in: "📥 Cash in (account transfer)"
+      description_out: "%{from_account_name} ➡️ %{to_account_name}"
+      description_in: "%{to_account_name} ⬅️ %{from_account_name}"

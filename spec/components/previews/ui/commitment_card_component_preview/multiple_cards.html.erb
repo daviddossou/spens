@@ -1,0 +1,11 @@
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; padding: 2rem;">
+  <% goals.each do |goal| %>
+    <%= render(Ui::CommitmentCardComponent.new(
+      title: goal[:title],
+      current_value: goal[:current],
+      target_value: goal[:target],
+      currency: "XOF",
+      url: "/goals/#{rand(1..100)}"
+    )) %>
+  <% end %>
+</div>

@@ -32,6 +32,10 @@ class Account < ApplicationRecord
   validates :balance, presence: true, numericality: true
 
   ##
+  # Scopes
+  scope :with_saving_goals, -> { where.not(saving_goal: 0) }
+
+  ##
   # Class Methods
   class << self
     def templates(locale = I18n.locale)

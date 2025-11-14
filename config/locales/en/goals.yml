@@ -1,0 +1,51 @@
+en:
+  goals:
+    index:
+      title: "My Savings Goals"
+      subtitle: "Track your progress towards your financial goals"
+      current_balance: "Current"
+      goal: "Goal"
+      no_goals_title: "No goals yet"
+      no_goals_message: "Start setting up your savings goals to track your financial progress"
+      add_new_goal: "Add New Goal"
+    new:
+      title: "Add a Savings Goal"
+      subtitle: "Set a target amount for your account"
+      save_goal: "Save Goal"
+    form:
+      account_label: "Account"
+      account_placeholder: "Select or create an account..."
+      account_help: "Choose an existing account or create a new one"
+      current_balance_label: "Current Balance"
+      current_balance_help: "Enter the current balance of this account"
+      saving_goal_label: "Saving Goal"
+      saving_goal_help: "How much do you want to save?"
+      cancel: "Cancel"
+    create:
+      success: "Savings goal created successfully!"
+      error: "An error occurred while creating your goal"
+    edit:
+      title: "Edit %{account_name}"
+      subtitle: "Update your savings goal"
+      back_to_goal: "Back to Goal"
+      update_goal: "Update Goal"
+    update:
+      success: "Savings goal updated successfully!"
+      error: "An error occurred while updating your goal"
+    show:
+      back_to_goals: "Back to Goals"
+      subtitle: "Manage your savings goal"
+      actions_title: "Actions"
+      add_transaction: "Add Transaction"
+      edit_goal: "Edit Goal"
+      recent_transactions: "Recent Transactions"
+      no_transactions: "No transactions yet for this goal"
+    errors:
+      not_found: "Goal not found"
+    balance_adjustment_in_note: "Balance adjustment (increase)"
+    balance_adjustment_in_description: "Balance adjustment for %{account_name}: +%{amount}"
+    balance_adjustment_out_note: "Balance adjustment (decrease)"
+    balance_adjustment_out_description: "Balance adjustment for %{account_name}: -%{amount}"
+  errors:
+    messages:
+      goal_must_be_greater: "must be greater than current balance"

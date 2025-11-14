@@ -1,0 +1,38 @@
+<% content_for :title, t('.title', account_name: @account.name) %>
+
+<div class="page-container page-container--narrow">
+  <header class="page-header">
+    <h1 class="page-header__title"><%= t('.title', account_name: @account.name) %></h1>
+    <p class="page-header__subtitle"><%= t('.subtitle') %></p>
+  </header>
+
+  <div class="page-content">
+    <%= form_with model: @form,
+                  url: goal_path(id: @account.id),
+                  method: :patch,
+                  local: true,
+                  class: "goal-form",
+                  data: { controller: "goal-form" } do |f| %>
+      <%= render 'form', form: f, disable_account_field: true %>
+
+      <!-- Form Actions -->
+      <div class="goal-form__actions">
+        <%= render Ui::ButtonComponent.new(
+          text: t('.update_goal'),
+          type: :submit,
+          variant: :primary,
+          size: :lg,
+          full_width: true
+        ) %>
+
+        <%= render Ui::ButtonComponent.new(
+          text: t('.cancel'),
+          url: goal_path(id: @account.id),
+          variant: :'outline-secondary',
+          size: :lg,
+          full_width: true
+        ) %>
+      </div>
+    <% end %>
+  </div>
+</div>

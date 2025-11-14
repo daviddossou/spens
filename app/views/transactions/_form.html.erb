@@ -7,7 +7,7 @@
     <!-- Kind Selector -->
     <div class="transaction-form__kind">
       <div class="kind-selector">
-        <%= link_to new_transaction_path(kind: 'expense'), data: { turbo_frame: "transaction_form" }, class: "kind-link" do %>
+        <%= link_to new_transaction_path(@form.kind_params('expense')), data: { turbo_frame: "transaction_form" }, class: "kind-link" do %>
           <%= render Ui::SelectableCardComponent.new(
             item: { name: t('.kind_expense'), value: 'expense' },
             selected: @form.kind == 'expense',
@@ -18,7 +18,7 @@
           ) %>
         <% end %>
 
-        <%= link_to new_transaction_path(kind: 'income'), data: { turbo_frame: "transaction_form" }, class: "kind-link" do %>
+        <%= link_to new_transaction_path(@form.kind_params('income')), data: { turbo_frame: "transaction_form" }, class: "kind-link" do %>
           <%= render Ui::SelectableCardComponent.new(
             item: { name: t('.kind_income'), value: 'income' },
             selected: @form.kind == 'income',
@@ -29,7 +29,7 @@
           ) %>
         <% end %>
 
-        <%= link_to new_transaction_path(kind: 'transfer'), data: { turbo_frame: "transaction_form" }, class: "kind-link" do %>
+        <%= link_to new_transaction_path(@form.kind_params('transfer')), data: { turbo_frame: "transaction_form" }, class: "kind-link" do %>
           <%= render Ui::SelectableCardComponent.new(
             item: { name: t('.kind_transfer'), value: 'transfer' },
             selected: @form.kind == 'transfer',
@@ -165,6 +165,15 @@
         variant: :primary,
         size: :lg,
         full_width: true
+      ) %>
+
+      <%= render Ui::ButtonComponent.new(
+        text: t('.cancel'),
+        url: dashboard_path,
+        variant: :'outline-secondary',
+        size: :lg,
+        full_width: true,
+        data: { turbo_frame: "_top" }
       ) %>
     </div>
   <% end %>

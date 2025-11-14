@@ -1,0 +1,115 @@
+/* Commitment Card Styles */
+
+.commitment-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: 0.5rem;
+  padding: 2rem 1.5rem;
+  transition: all 0.2s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  text-decoration: none;
+  color: inherit;
+}
+
+.commitment-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.commitment-card--clickable {
+  cursor: pointer;
+}
+
+.commitment-card--clickable:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+}
+
+.commitment-card__progress-circle {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  margin-bottom: 1.5rem;
+}
+
+.commitment-card .progress-ring {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.commitment-card .progress-ring__circle-bg {
+  stroke: #e5e7eb;
+}
+
+.commitment-card .progress-ring__circle {
+  stroke: var(--color-primary);
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.5s ease;
+}
+
+.commitment-card__percentage {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--text-default);
+}
+
+.commitment-card__name {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-default);
+  margin: 0 0 1rem 0;
+}
+
+.commitment-card__amounts {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-size: 1rem;
+}
+
+.commitment-card .amount-value {
+  font-weight: 600;
+  color: var(--text-default);
+}
+
+.commitment-card .amount-separator {
+  color: var(--text-muted);
+}
+
+.commitment-card .amount-goal {
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+/* Responsive - Mobile */
+@media (max-width: 640px) {
+  .commitment-card {
+    padding: 1.5rem 1rem;
+  }
+
+  .commitment-card__progress-circle {
+    width: 100px;
+    height: 100px;
+    margin-bottom: 1rem;
+  }
+
+  .commitment-card__percentage {
+    font-size: 1.25rem;
+  }
+
+  .commitment-card__name {
+    font-size: 1.125rem;
+  }
+
+  .commitment-card__amounts {
+    font-size: 0.875rem;
+  }
+}

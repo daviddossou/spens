@@ -1,0 +1,49 @@
+<% if url.present? %>
+  <%= link_to url, class: "commitment-card commitment-card--clickable" do %>
+    <div class="commitment-card__progress-circle">
+      <svg class="progress-ring" viewBox="0 0 120 120">
+        <circle class="progress-ring__circle-bg" stroke="#e5e7eb" stroke-width="8" fill="transparent" r="52" cx="60" cy="60"/>
+        <circle class="progress-ring__circle" stroke="currentColor" stroke-width="8" fill="transparent" r="52" cx="60" cy="60"
+                style="stroke-dasharray: <%= circumference %>; stroke-dashoffset: <%= stroke_dashoffset %>;"
+                transform="rotate(-90 60 60)"/>
+      </svg>
+      <div class="commitment-card__percentage">
+        <%= percentage %>%
+      </div>
+    </div>
+
+    <h3 class="commitment-card__name">
+      <%= title %>
+    </h3>
+
+    <div class="commitment-card__amounts">
+      <span class="amount-value"><%= formatted_current_value %></span>
+      <span class="amount-separator">/</span>
+      <span class="amount-goal"><%= formatted_target_value %></span>
+    </div>
+  <% end %>
+<% else %>
+  <div class="commitment-card">
+    <div class="commitment-card__progress-circle">
+      <svg class="progress-ring" viewBox="0 0 120 120">
+        <circle class="progress-ring__circle-bg" stroke="#e5e7eb" stroke-width="8" fill="transparent" r="52" cx="60" cy="60"/>
+        <circle class="progress-ring__circle" stroke="currentColor" stroke-width="8" fill="transparent" r="52" cx="60" cy="60"
+                style="stroke-dasharray: <%= circumference %>; stroke-dashoffset: <%= stroke_dashoffset %>;"
+                transform="rotate(-90 60 60)"/>
+      </svg>
+      <div class="commitment-card__percentage">
+        <%= percentage %>%
+      </div>
+    </div>
+
+    <h3 class="commitment-card__name">
+      <%= title %>
+    </h3>
+
+    <div class="commitment-card__amounts">
+      <span class="amount-value"><%= formatted_current_value %></span>
+      <span class="amount-separator">/</span>
+      <span class="amount-goal"><%= formatted_target_value %></span>
+    </div>
+  </div>
+<% end %>

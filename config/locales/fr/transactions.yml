@@ -26,6 +26,7 @@ fr:
       note_help: "Optionnel: Ajoutez des détails supplémentaires"
       note_placeholder: "Ajouter une note..."
       save_transaction: "Enregistrer la Transaction"
+      cancel: "Annuler"
     create:
       success: "Transaction enregistrée avec succès !"
     transfer:

@@ -1,0 +1,68 @@
+<% content_for :title, @account.name %>
+
+<div class="page-container page-container--narrow">
+  <header class="page-header">
+    <%= link_to goals_path, class: "page-header__back-link" do %>
+      <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+      </svg>
+      <%= t('.back_to_goals') %>
+    <% end %>
+
+    <h1 class="page-header__title"><%= @account.name %></h1>
+    <p class="page-header__subtitle"><%= t('.subtitle') %></p>
+  </header>
+
+  <div class="page-content">
+    <div class="goal-detail-card">
+      <%= render Ui::CommitmentCardComponent.new(
+        title: @account.name,
+        current_value: @account.balance,
+        target_value: @account.saving_goal,
+        currency: current_user.currency
+      ) %>
+    </div>
+
+    <div class="goal-detail-actions">
+      <h2><%= t('.actions_title') %></h2>
+      <div class="action-buttons">
+        <%= render Ui::ButtonComponent.new(
+          text: t('.add_transaction'),
+          url: new_transaction_path(kind: 'transfer', account_id: @account.id),
+          variant: :primary,
+          size: :lg,
+          full_width: true
+        ) %>
+
+        <%= render Ui::ButtonComponent.new(
+          text: t('.edit_goal'),
+          url: edit_goal_path(id: @account.id),
+          variant: :secondary,
+          size: :lg,
+          full_width: true
+        ) %>
+      </div>
+    </div>
+
+    <div class="goal-detail-transactions">
+      <h2><%= t('.recent_transactions') %></h2>
+      <% if @latest_transactions.any? %>
+        <div class="transactions-list">
+          <% @latest_transactions.each do |transaction| %>
+            <div class="transaction-item">
+              <div class="transaction-info">
+                <span class="transaction-type"><%= transaction.description %></span>
+                <span class="transaction-date"><%= l(transaction.transaction_date, format: :short) %></span>
+              </div>
+              <span class="transaction-amount">
+                <%= number_to_currency(transaction.amount, unit: current_user.currency, precision: 0) %>
+              </span>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <p class="no-transactions"><%= t('.no_transactions') %></p>
+      <% end %>
+    </div>
+  </div>
+</div>
