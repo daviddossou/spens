@@ -119,6 +119,33 @@ RSpec.describe Account, type: :model do
     end
   end
 
+  describe 'scopes' do
+    describe '.with_saving_goals' do
+      let(:user) { create(:user) }
+      let!(:account_with_goal) { create(:account, user: user, saving_goal: 5000.0) }
+      let!(:account_without_goal) { create(:account, user: user, saving_goal: 0.0) }
+      let!(:another_account_with_goal) { create(:account, user: user, saving_goal: 1000.0) }
+
+      it 'returns accounts with non-zero saving goals' do
+        expect(described_class.with_saving_goals).to include(account_with_goal, another_account_with_goal)
+      end
+
+      it 'excludes accounts with zero saving goals' do
+        expect(described_class.with_saving_goals).not_to include(account_without_goal)
+      end
+
+      it 'returns correct count for specific user accounts' do
+        expect(user.accounts.with_saving_goals.count).to eq(2)
+      end
+
+      it 'includes accounts with negative saving goals if any exist' do
+        # Even though validation prevents this, test the scope behavior
+        account_with_goal.update_column(:saving_goal, -100.0)
+        expect(described_class.with_saving_goals).to include(account_with_goal)
+      end
+    end
+  end
+
   describe '.templates' do
     it 'returns a hash of template keys -> names for current locale' do
       I18n.with_locale(:en) do
@@ -137,16 +164,16 @@ RSpec.describe Account, type: :model do
     it 'returns translated values for English locale' do
       I18n.with_locale(:en) do
         templates = described_class.templates
-        expect(templates[:wallet]).to eq('Wallet')
-        expect(templates[:checking_account]).to eq('Checking account')
-        expect(templates[:savings_account]).to eq('Savings account')
+        expect(templates[:wallet]).to eq('👛 Wallet')
+        expect(templates[:checking_account]).to eq('🏦 Checking account')
+        expect(templates[:savings_account]).to eq('💰 Savings account')
       end
     end
 
     it 'returns translated values for French locale' do
       I18n.with_locale(:fr) do
         templates = described_class.templates(:fr)
-        expect(templates[:wallet]).to eq('Porte-monnaie')
+        expect(templates[:wallet]).to eq('👛 Porte-monnaie')
       end
     end
 
@@ -154,14 +181,14 @@ RSpec.describe Account, type: :model do
       templates_en = described_class.templates(:en)
       templates_fr = described_class.templates(:fr)
 
-      expect(templates_en[:wallet]).to eq('Wallet')
-      expect(templates_fr[:wallet]).to eq('Porte-monnaie')
+      expect(templates_en[:wallet]).to eq('👛 Wallet')
+      expect(templates_fr[:wallet]).to eq('👛 Porte-monnaie')
     end
 
     it 'uses current I18n.locale by default' do
       I18n.with_locale(:fr) do
         templates = described_class.templates
-        expect(templates[:wallet]).to eq('Porte-monnaie')
+        expect(templates[:wallet]).to eq('👛 Porte-monnaie')
       end
     end
 

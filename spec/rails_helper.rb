@@ -36,6 +36,7 @@ begin
 rescue ActiveRecord::PendingMigrationError => e
   abort e.to_s.strip
 end
+
 RSpec.configure do |config|
   # Remove this line if you're not using ActiveRecord or ActiveRecord fixtures
   config.fixture_paths = [
@@ -81,6 +82,20 @@ RSpec.configure do |config|
   # Configure ViewComponent preview paths for testing
   config.before(:each, type: :component) do
     ViewComponent::Base.config.preview_paths = [ Rails.root.join("spec/components/previews") ]
+  end
+
+  # Set default host for request specs to avoid host authorization issues
+  config.before(:each, type: :request) do
+    host! "localhost"
+  end
+
+  # Disable CSRF protection for request specs
+  config.before(:each, type: :request) do
+    ActionController::Base.allow_forgery_protection = false
+  end
+
+  config.after(:each, type: :request) do
+    ActionController::Base.allow_forgery_protection = true
   end
 end
 

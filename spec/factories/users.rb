@@ -42,6 +42,10 @@ FactoryBot.define do
     last_name { "Doe" }
     phone_number { "+1234567890" }
     country { "BJ" }
-    onboarding_current_step { "onboarding_financial_goal" }
+    onboarding_current_step { "onboarding_completed" }
+
+    trait :onboarding_incomplete do
+      onboarding_current_step { "onboarding_financial_goal" }
+    end
   end
 end
