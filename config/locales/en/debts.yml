@@ -1,0 +1,52 @@
+en:
+  debts:
+    index:
+      title: "Debts & Loans"
+      subtitle: "Track money you've lent to others"
+      no_debts_title: "No debts yet"
+      no_debts_message: "Start tracking money you lend to friends and family"
+      add_new_debt: "Record New Loan"
+    new:
+      title: "Record a Loan"
+      subtitle: "Track money you’ve lent to someone"
+      save_debt: "Record Loan"
+      cancel: "Cancel"
+    form:
+      contact_name_label: "Contact Name"
+      contact_name_placeholder: "Who are you lending to?"
+      contact_name_help: "Name of the person or entity"
+      total_amount_label: "Total Amount Lent"
+      total_amount_help: "How much did you lend?"
+      account_label: "Account"
+      account_placeholder: "Select the account the money came from…"
+      account_help: "Choose the account you used to lend the money (selecting an account will debit it)"
+      show_more_details: "More details"
+      hide_more_details: "Hide details"
+      amount_reimbursed_label: "Amount Already Reimbursed"
+      amount_reimbursed_help: "Enter how much has already been paid back (leave empty if none)"
+      note_label: "Note"
+      note_placeholder: "Add any details about this loan..."
+      note_help: "Reason, terms, or any other details"
+    show:
+      back_to_debts: "Back to Debts"
+      subtitle: "Track reimbursements and details"
+      actions_title: "Actions"
+      add_transaction: "Add Transaction"
+      edit_debt: "Edit Debt"
+      note_title: "Note"
+      recent_transactions: "Recent Transactions"
+      no_transactions: "No transactions yet for this debt"
+    create:
+      success: "Loan recorded successfully"
+      error: "An error occurred while recording the loan"
+    errors:
+      not_found: "Debt not found"
+      reimbursed_exceeds_lent: "Amount reimbursed cannot exceed total amount lent"
+    transaction_type:
+      lent_out: "Money lent"
+      reimbursement: "Debt reimbursement"
+    transaction_description:
+      lent_to: "Lent money to %{contact_name}"
+      lent_adjustment: "Loan adjustment for %{contact_name}"
+      reimbursed_by: "Reimbursed by %{contact_name}"
+      reimbursement_adjustment: "Reimbursement adjustment for %{contact_name}"

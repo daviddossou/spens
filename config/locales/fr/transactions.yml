@@ -2,12 +2,18 @@ fr:
   transactions:
     new:
       title: "Ajouter une transaction"
-      subtitle: "Entre tes revenus ou dépenses rapidement"
+      subtitle:
+        expense: "Sur quoi as-tu dépensé de l'argent ?"
+        income: "D'où vient ton argent ?"
+        debt_in: "Combien t'a-t-on remboursé ?"
+        debt_out: "Combien as-tu prêté ?"
+        transfer: "Transférer de l'argent entre tes comptes"
     form:
       kind_label: "Catégorie"
       kind_expense: "Dépense"
       kind_income: "Revenu"
-      kind_debt: "Dette"
+      kind_debt_in: "Remboursement reçu"
+      kind_debt_out: "Argent prêté"
       kind_transfer: "Transfert"
       amount_label: "Montant"
       amount_placeholder: "0.00"
@@ -33,5 +39,5 @@ fr:
       type_name:
         transfer_out: "Décaissement (transfert de compte)"
         transfer_in: "Encaissement (transfert de compte)"
-      description_out: "%{from_account_name} → %{to_account_name}"
-      description_in: "%{to_account_name} ← %{from_account_name}"
+      description_out: "%{from_account_name} ➡️ %{to_account_name}"
+      description_in: "%{to_account_name} ⬅️ %{from_account_name}"

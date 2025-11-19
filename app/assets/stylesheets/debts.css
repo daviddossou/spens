@@ -1,0 +1,33 @@
+/* Debt Styles */
+
+.debts-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+/* Debt Form Styles */
+
+.debt-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+}
+
+.debt-form .form-field {
+  margin-bottom: 0.5rem !important;
+}
+
+/* Toggle Button for More Details */
+.debt-form__toggle {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.debt-form__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 1.25rem;
+}

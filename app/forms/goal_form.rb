@@ -87,33 +87,31 @@ class GoalForm < BaseForm
     difference = current_balance.to_f - account.balance
     adjustment_type = difference.positive? ? :transfer_in : :transfer_out
 
-    create_adjustment_transaction(account, difference.abs, adjustment_type)
+    send("create_#{adjustment_type}_transaction", account, difference.abs)
   end
 
-  def create_adjustment_transaction(account, amount, type)
-    transaction_type = find_or_create_transaction_type(*adjustment_params(type))
+  def create_transfer_in_transaction(account, amount)
+    create_adjustment_transaction(account, amount, :transfer_in, TransactionType::KIND_TRANSFER_IN)
+  end
 
-    CreateTransactionService.new(
+  def create_transfer_out_transaction(account, amount)
+    create_adjustment_transaction(account, amount, :transfer_out, TransactionType::KIND_TRANSFER_OUT)
+  end
+
+  def create_adjustment_transaction(account, amount, type, kind)
+    type_name = I18n.t("transactions.transfer.type_name.#{kind}")
+
+    transaction_form = TransactionForm.new(
       user,
-      account,
-      transaction_type,
-      amount,
-      Date.current,
-      nil,
-      transaction_type.name,
-    ).call
-  end
+      account_id: account.id,
+      amount: amount,
+      transaction_date: Date.current,
+      transaction_type_name: type_name,
+      kind: kind
+    )
 
-  def adjustment_params(type)
-    case type
-    when :transfer_in
-      [I18n.t('transactions.transfer.type_name.transfer_in'), TransactionType::KIND_TRANSFER_IN]
-    when :transfer_out
-      [I18n.t('transactions.transfer.type_name.transfer_out'), TransactionType::KIND_TRANSFER_OUT]
-    end
-  end
+    transaction_form.submit
 
-  def find_or_create_transaction_type(name, kind)
-    FindOrCreateTransactionTypeService.new(user, name, kind).call
+    raise StandardError, transaction_form.errors.full_messages.join(", ") unless transaction_form.errors.empty?
   end
 end

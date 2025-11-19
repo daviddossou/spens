@@ -81,13 +81,12 @@ class Onboarding::TransactionForm < BaseForm
     description = I18n.t("onboarding.account_setups.initial_balance_description", account_name: account.name)
 
     transaction = CreateTransactionService.new(
-      user,
-      account,
-      transaction_type,
-      amount,
-      transaction_date,
-      nil, # note
-      description
+      user: user,
+      account: account,
+      transaction_type: transaction_type,
+      amount: amount,
+      transaction_date: transaction_date,
+      description: description
     ).call
 
     if transaction.invalid?

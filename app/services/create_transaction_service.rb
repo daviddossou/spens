@@ -1,24 +1,20 @@
 # frozen_string_literal: true
 
 class CreateTransactionService
-  def initialize(user, account, transaction_type, amount, transaction_date, note, description)
+  def initialize(user:, **attributes)
     @user = user
-    @account = account
-    @transaction_type = transaction_type
-    @amount = amount
-    @transaction_date = transaction_date
-    @note = note
-    @description = description
+    @attributes = attributes
   end
 
   def call
     transaction = @user.transactions.new(
-      account: @account,
-      transaction_type: @transaction_type,
+      account: @attributes[:account],
+      transaction_type: @attributes[:transaction_type],
       amount: normalized_amount,
-      transaction_date: @transaction_date,
-      note: @note,
-      description: @description
+      transaction_date: @attributes[:transaction_date],
+      note: @attributes[:note],
+      description: @attributes[:description],
+      debt: @attributes[:debt]
     )
 
     if transaction.invalid?
@@ -32,13 +28,13 @@ class CreateTransactionService
   private
 
   def normalized_amount
-    case @transaction_type.kind
-    when "expense", "loan", "transfer_out", "debt"
-      -@amount.abs
-    when "income", "transfer_in"
-      @amount.abs
+    case @attributes[:transaction_type].kind
+    when "expense", "transfer_out", "debt_out"
+      -@attributes[:amount].abs
+    when "income", "transfer_in", "debt_in"
+      @attributes[:amount].abs
     else
-      @amount
+      @attributes[:amount]
     end
   end
 end

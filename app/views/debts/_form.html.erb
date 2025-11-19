@@ -1,0 +1,74 @@
+<%= render 'shared/form_errors', object: form.object %>
+
+<div class="debt-form__container">
+  <!-- Contact Name Field -->
+  <div class="debt-form__field">
+    <%= render Forms::InputFieldComponent.new(
+      form: form,
+      field: :contact_name,
+      label: t('.contact_name_label'),
+      required: true,
+      placeholder: t('.contact_name_placeholder'),
+      help_text: t('.contact_name_help')
+    ) %>
+  </div>
+
+  <!-- Total Amount Field -->
+  <div class="debt-form__field">
+    <%= render Forms::InputFieldComponent.new(
+      form: form,
+      field: :total_lent,
+      type: :number_field,
+      label: t('.total_amount_label'),
+      required: true,
+      prepend: current_user.currency,
+      step: 0.01,
+      placeholder: "0.00",
+      help_text: t('.total_amount_help')
+    ) %>
+  </div>
+
+  <!-- More Details Toggle -->
+  <div class="debt-form__toggle">
+    <button
+      type="button"
+      class="link-button"
+      data-action="click->transaction-form#toggleDetails"
+      data-transaction-form-target="toggleButton"
+      data-show-text="<%= t('.show_more_details') %>"
+      data-hide-text="<%= t('.hide_more_details') %>">
+      <%= t('.show_more_details') %>
+    </button>
+  </div>
+
+  <!-- Optional Fields (Initially Hidden) -->
+  <div class="debt-form__optional-fields hidden" data-transaction-form-target="optionalFields">
+    <!-- Amount Reimbursed Field -->
+    <div class="debt-form__field">
+      <%= render Forms::InputFieldComponent.new(
+        form: form,
+        field: :total_reimbursed,
+        type: :number_field,
+        label: t('.amount_reimbursed_label'),
+        required: false,
+        prepend: current_user.currency,
+        step: 0.01,
+        placeholder: "0.00",
+        help_text: t('.amount_reimbursed_help')
+      ) %>
+    </div>
+
+    <!-- Note Field -->
+    <div class="debt-form__field">
+      <%= render Forms::InputFieldComponent.new(
+        form: form,
+        field: :note,
+        type: :text_area,
+        label: t('.note_label'),
+        placeholder: t('.note_placeholder'),
+        help_text: t('.note_help'),
+        rows: 3
+      ) %>
+    </div>
+  </div>
+</div>

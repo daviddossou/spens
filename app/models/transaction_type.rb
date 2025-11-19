@@ -25,6 +25,8 @@ class TransactionType < ApplicationRecord
   # Constants
   KIND_TRANSFER_IN = "transfer_in"
   KIND_TRANSFER_OUT = "transfer_out"
+  KIND_DEBT_IN = "debt_in"
+  KIND_DEBT_OUT = "debt_out"
 
   ##
   # Associations
@@ -40,11 +42,11 @@ class TransactionType < ApplicationRecord
   enum :kind, {
     income: "income",
     expense: "expense",
-    loan: "loan",
-    debt: "debt",
-    transfer: "transfer", # General type for transfers
-    transfer_in: "transfer_in", # System type for money coming in from another account
-    transfer_out: "transfer_out" # System type for money going out to another account
+    debt_in: "debt_in",           # user receives money, related to a debt/loan
+    debt_out: "debt_out",         # user gives money, related to a debt/loan
+    transfer: "transfer",         # General type for transfers
+    transfer_in: "transfer_in",   # user receives money to some account from another account
+    transfer_out: "transfer_out"  # user gives money from some account to another account
   }
 
   ##
@@ -93,18 +95,6 @@ class TransactionType < ApplicationRecord
           loan_repayment
           general_income
         ]
-      when "loan"
-        %w[
-          loans_lent_out
-          lent_to_friend
-        ]
-      when "debt"
-        %w[
-          debts_borrowings
-          borrowed_from_friend
-        ]
-      else
-        []
       end
     end
   end

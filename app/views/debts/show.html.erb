@@ -1,24 +1,24 @@
-<% content_for :title, @account.name %>
+<% content_for :title, @debt.name %>
 
 <div class="page-container page-container--narrow">
   <header class="page-header">
-    <%= link_to goals_path, class: "page-header__back-link" do %>
+    <%= link_to debts_path, class: "page-header__back-link" do %>
       <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
       </svg>
-      <%= t('.back_to_goals') %>
+      <%= t('.back_to_debts') %>
     <% end %>
 
-    <h1 class="page-header__title"><%= @account.name %></h1>
+    <h1 class="page-header__title"><%= @debt.name %></h1>
     <p class="page-header__subtitle"><%= t('.subtitle') %></p>
   </header>
 
   <div class="page-content">
     <div class="commitment-detail-card">
       <%= render Ui::CommitmentCardComponent.new(
-        title: @account.name,
-        current_value: @account.balance,
-        target_value: @account.saving_goal,
+        title: @debt.name,
+        current_value: @debt.total_reimbursed,
+        target_value: @debt.total_lent,
         currency: current_user.currency
       ) %>
     </div>
@@ -28,21 +28,28 @@
       <div class="action-buttons">
         <%= render Ui::ButtonComponent.new(
           text: t('.add_transaction'),
-          url: new_transaction_path(kind: 'transfer', account_id: @account.id),
+          url: new_transaction_path(debt_id: @debt.id, kind: 'debt_in'),
           variant: :primary,
           size: :lg,
           full_width: true
         ) %>
 
         <%= render Ui::ButtonComponent.new(
-          text: t('.edit_goal'),
-          url: edit_goal_path(id: @account.id),
+          text: t('.edit_debt'),
+          url: '#',
           variant: :secondary,
           size: :lg,
           full_width: true
         ) %>
       </div>
     </div>
+
+    <% if @debt.note.present? %>
+      <div class="commitment-detail-note">
+        <h3><%= t('.note_title') %></h3>
+        <p><%= @debt.note %></p>
+      </div>
+    <% end %>
 
     <div class="commitment-detail-transactions">
       <h2><%= t('.recent_transactions') %></h2>

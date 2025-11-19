@@ -74,6 +74,32 @@
   gap: 2rem;
 }
 
+/* Empty State */
+
+.empty-state {
+  text-align: center;
+  padding: 3rem 1rem;
+}
+
+.empty-state__icon {
+  width: 4rem;
+  height: 4rem;
+  color: var(--text-muted);
+  margin: 0 auto 1rem;
+}
+
+.empty-state h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-default);
+  margin-bottom: 0.5rem;
+}
+
+.empty-state p {
+  font-size: 1rem;
+  color: var(--text-muted);
+}
+
 /* Mobile Full Width */
 @media (max-width: 640px) {
 

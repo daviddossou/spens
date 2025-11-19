@@ -343,28 +343,6 @@ en:
       kind: "income"
 
     # ============================================
-    # DEBT TRANSACTION TYPES (I borrow)
-    # ============================================
-
-    debts_borrowings:
-      name: "💳 Debts / Borrowings (I borrow)"
-      kind: "debt"
-    borrowed_from_friend:
-      name: "🤝 Borrowed from Friend (Debt)"
-      kind: "debt"
-
-    # ============================================
-    # LOAN TRANSACTION TYPES (I lend)
-    # ============================================
-
-    loans_lent_out:
-      name: "💰 Loans (I lend)"
-      kind: "loan"
-    lent_to_friend:
-      name: "🤝 Lent to Friend (Loan)"
-      kind: "loan"
-
-    # ============================================
     # TRANSFER TRANSACTION TYPES
     # ============================================
 

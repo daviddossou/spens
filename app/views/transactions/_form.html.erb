@@ -7,37 +7,62 @@
     <!-- Kind Selector -->
     <div class="transaction-form__kind">
       <div class="kind-selector">
-        <%= link_to new_transaction_path(@form.kind_params('expense')), data: { turbo_frame: "transaction_form" }, class: "kind-link" do %>
-          <%= render Ui::SelectableCardComponent.new(
-            item: { name: t('.kind_expense'), value: 'expense' },
-            selected: @form.kind == 'expense',
-            compact: true,
-            additional_classes: 'kind-card',
-            show_visual_checkbox: false,
-            link_mode: true
-          ) %>
-        <% end %>
+        <% if @form.debt_transaction? %>
+          <%= f.hidden_field :debt_id %>
+          <%= link_to new_transaction_path(@form.kind_params('debt_in')), data: { turbo_frame: "transaction_form" }, class: "kind-link" do %>
+            <%= render Ui::SelectableCardComponent.new(
+              item: { name: t('.kind_debt_in'), value: 'debt_in' },
+              selected: @form.kind == 'debt_in',
+              compact: true,
+              additional_classes: 'kind-card',
+              show_visual_checkbox: false,
+              link_mode: true
+            ) %>
+          <% end %>
 
-        <%= link_to new_transaction_path(@form.kind_params('income')), data: { turbo_frame: "transaction_form" }, class: "kind-link" do %>
-          <%= render Ui::SelectableCardComponent.new(
-            item: { name: t('.kind_income'), value: 'income' },
-            selected: @form.kind == 'income',
-            compact: true,
-            additional_classes: 'kind-card',
-            show_visual_checkbox: false,
-            link_mode: true
-          ) %>
-        <% end %>
+          <%= link_to new_transaction_path(@form.kind_params('debt_out')), data: { turbo_frame: "transaction_form" }, class: "kind-link" do %>
+            <%= render Ui::SelectableCardComponent.new(
+              item: { name: t('.kind_debt_out'), value: 'debt_out' },
+              selected: @form.kind == 'debt_out',
+              compact: true,
+              additional_classes: 'kind-card',
+              show_visual_checkbox: false,
+              link_mode: true
+            ) %>
+          <% end %>
+        <% else %>
+          <%= link_to new_transaction_path(@form.kind_params('expense')), data: { turbo_frame: "transaction_form" }, class: "kind-link" do %>
+            <%= render Ui::SelectableCardComponent.new(
+              item: { name: t('.kind_expense'), value: 'expense' },
+              selected: @form.kind == 'expense',
+              compact: true,
+              additional_classes: 'kind-card',
+              show_visual_checkbox: false,
+              link_mode: true
+            ) %>
+          <% end %>
 
-        <%= link_to new_transaction_path(@form.kind_params('transfer')), data: { turbo_frame: "transaction_form" }, class: "kind-link" do %>
-          <%= render Ui::SelectableCardComponent.new(
-            item: { name: t('.kind_transfer'), value: 'transfer' },
-            selected: @form.kind == 'transfer',
-            compact: true,
-            additional_classes: 'kind-card',
-            show_visual_checkbox: false,
-            link_mode: true
-          ) %>
+          <%= link_to new_transaction_path(@form.kind_params('income')), data: { turbo_frame: "transaction_form" }, class: "kind-link" do %>
+            <%= render Ui::SelectableCardComponent.new(
+              item: { name: t('.kind_income'), value: 'income' },
+              selected: @form.kind == 'income',
+              compact: true,
+              additional_classes: 'kind-card',
+              show_visual_checkbox: false,
+              link_mode: true
+            ) %>
+          <% end %>
+
+          <%= link_to new_transaction_path(@form.kind_params('transfer')), data: { turbo_frame: "transaction_form" }, class: "kind-link" do %>
+            <%= render Ui::SelectableCardComponent.new(
+              item: { name: t('.kind_transfer'), value: 'transfer' },
+              selected: @form.kind == 'transfer',
+              compact: true,
+              additional_classes: 'kind-card',
+              show_visual_checkbox: false,
+              link_mode: true
+            ) %>
+          <% end %>
         <% end %>
       </div>
     </div>
@@ -87,6 +112,21 @@
             placeholder: t('.to_account_placeholder')
           ) %>
         </div>
+      </div>
+    <% elsif @form.debt_transaction? %>
+      <!-- Debt Mode: Only Account (contact name and transaction type are handled by debt) -->
+      <div class="transaction-form__account">
+        <%= render Forms::InputFieldComponent.new(
+          form: f,
+          field: :account_name,
+          label: t('.account_label'),
+          required: true,
+          autocomplete: true,
+          autocomplete_options: @form.account_suggestions,
+          default_autocomplete_options: @form.default_account_suggestions,
+          allow_create: true,
+          placeholder: t('.account_placeholder')
+        ) %>
       </div>
     <% else %>
       <!-- Regular Mode: Single Account and Transaction Type -->

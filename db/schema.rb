@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_11_12_184057) do
+ActiveRecord::Schema[8.0].define(version: 2025_11_19_183109) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -24,6 +24,20 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_12_184057) do
     t.datetime "updated_at", null: false
     t.index "lower((name)::text), user_id", name: "index_accounts_on_lower_name_and_user_id", unique: true
     t.index ["user_id"], name: "index_accounts_on_user_id"
+  end
+
+  create_table "debts", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "user_id", null: false
+    t.string "name", null: false
+    t.float "total_lent", default: 0.0, null: false
+    t.float "total_reimbursed", default: 0.0, null: false
+    t.text "note"
+    t.string "status", default: "ongoing", null: false
+    t.string "direction", default: "lent", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["status"], name: "index_debts_on_status"
+    t.index ["user_id"], name: "index_debts_on_user_id"
   end
 
   create_table "transaction_types", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -45,10 +59,12 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_12_184057) do
     t.date "transaction_date", null: false
     t.uuid "user_id", null: false
     t.uuid "transaction_type_id", null: false
-    t.uuid "account_id", null: false
+    t.uuid "account_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.uuid "debt_id"
     t.index ["account_id"], name: "index_transactions_on_account_id"
+    t.index ["debt_id"], name: "index_transactions_on_debt_id"
     t.index ["transaction_date"], name: "index_transactions_on_transaction_date"
     t.index ["transaction_type_id"], name: "index_transactions_on_transaction_type_id"
     t.index ["user_id"], name: "index_transactions_on_user_id"
@@ -84,8 +100,10 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_12_184057) do
   end
 
   add_foreign_key "accounts", "users"
+  add_foreign_key "debts", "users"
   add_foreign_key "transaction_types", "users"
   add_foreign_key "transactions", "accounts"
+  add_foreign_key "transactions", "debts"
   add_foreign_key "transactions", "transaction_types"
   add_foreign_key "transactions", "users"
 end

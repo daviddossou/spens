@@ -1,0 +1,52 @@
+fr:
+  debts:
+    index:
+      title: "Dettes & Prêts"
+      subtitle: "Suivez l'argent que vous avez prêté"
+      no_debts_title: "Aucune dette pour le moment"
+      no_debts_message: "Commencez à suivre l'argent que vous prêtez à vos proches"
+      add_new_debt: "Enregistrer un prêt"
+    new:
+      title: "Enregistrer un prêt"
+      subtitle: "Suivez l'argent que vous prêtez à quelqu'un"
+      save_debt: "Enregistrer le prêt"
+      cancel: "Annuler"
+    form:
+      contact_name_label: "Nom du contact"
+      contact_name_placeholder: "À qui prêtez-vous?"
+      contact_name_help: "Nom de la personne ou de l'entité"
+      total_amount_label: "Montant total à rembourser"
+      total_amount_help: "Combien doit être remboursé?"
+      account_label: "Compte"
+      account_placeholder: "Sélectionner le compte d'où provient l'argent…"
+      account_help: "Choisis le compte que tu as utilisé pour prêter l'argent (sélectionner un compte le débitera)"
+      show_more_details: "Plus de détails"
+      hide_more_details: "Masquer les détails"
+      amount_reimbursed_label: "Montant déjà remboursé"
+      amount_reimbursed_help: "Entre combien a déjà été remboursé (laisser vide si rien)"
+      note_label: "Note"
+      note_placeholder: "Ajouter des détails sur ce prêt..."
+      note_help: "Raison, conditions ou autres détails"
+    show:
+      back_to_debts: "Retour aux dettes"
+      subtitle: "Suivez les remboursements et les détails"
+      actions_title: "Actions"
+      add_transaction: "Ajouter une transaction"
+      edit_debt: "Modifier la dette"
+      note_title: "Note"
+      recent_transactions: "Transactions récentes"
+      no_transactions: "Aucune transaction pour cette dette"
+    create:
+      success: "Prêt enregistré avec succès"
+      error: "Une erreur s'est produite lors de l'enregistrement du prêt"
+    errors:
+      not_found: "Dette introuvable"
+      reimbursed_exceeds_lent: "Le montant remboursé ne peut pas dépasser le montant total prêté"
+    transaction_type:
+      lent_out: "Argent prêté"
+      reimbursement: "Remboursement de dette"
+    transaction_description:
+      lent_to: "Argent prêté à %{contact_name}"
+      lent_adjustment: "Ajustement du prêt pour %{contact_name}"
+      reimbursed_by: "Remboursé par %{contact_name}"
+      reimbursement_adjustment: "Ajustement du remboursement pour %{contact_name}"

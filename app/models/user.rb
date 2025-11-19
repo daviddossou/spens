@@ -44,6 +44,7 @@ class User < ApplicationRecord
   has_many :accounts, dependent: :destroy
   has_many :transaction_types, dependent: :destroy
   has_many :transactions, dependent: :destroy
+  has_many :debts, dependent: :destroy
 
   ##
   # Constants

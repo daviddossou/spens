@@ -343,28 +343,6 @@ fr:
       kind: "income"
 
     # ============================================
-    # TYPES DE TRANSACTIONS DETTES (j'emprunte)
-    # ============================================
-
-    debts_borrowings:
-      name: "💳 Dettes / Emprunts (que j'emprunte)"
-      kind: "debt"
-    borrowed_from_friend:
-      name: "🤝 Emprunt ami (Dette)"
-      kind: "debt"
-
-    # ============================================
-    # TYPES DE TRANSACTIONS PRÊTS (j'accorde)
-    # ============================================
-
-    loans_lent_out:
-      name: "💰 Prêts (que j'accorde)"
-      kind: "loan"
-    lent_to_friend:
-      name: "🤝 Prêt à un ami (Prêt)"
-      kind: "loan"
-
-    # ============================================
     # TYPES DE TRANSACTIONS TRANSFERTS
     # ============================================
 
