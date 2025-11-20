@@ -62,7 +62,7 @@ group :development do
 end
 
 gem "devise", "~> 4.9"
-gem "sidekiq", "~> 7.0"
+gem "sidekiq", "~> 8.0"
 gem "redis", "~> 5.0"
 gem "view_component", "~> 3.0"
 gem "rspec-rails", "~> 8.0"
