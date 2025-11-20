@@ -36,7 +36,7 @@
 
         <%= render Ui::ButtonComponent.new(
           text: t('.edit_debt'),
-          url: '#',
+          url: edit_debt_path(id: @debt.id),
           variant: :secondary,
           size: :lg,
           full_width: true

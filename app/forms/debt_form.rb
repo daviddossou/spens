@@ -17,6 +17,8 @@ class DebtForm < BaseForm
   validates :total_lent, presence: true, numericality: { greater_than: 0 }
   validates :total_reimbursed, numericality: { greater_than_or_equal_to: 0 }, allow_blank: true
   validate :reimbursed_not_exceeding_lent
+  validate :total_lent_not_less_than_existing, if: -> { debt.present? }
+  validate :total_reimbursed_not_less_than_existing, if: -> { debt.present? }
 
   ##
   # Class Methods
@@ -30,6 +32,8 @@ class DebtForm < BaseForm
   # Instance Methods
   def initialize(user, payload = {})
     @user = user
+    @debt = Debt.find(payload[:id]) if payload[:id].present?
+
     super(
       contact_name: payload[:contact_name],
       total_lent: payload[:total_lent],
@@ -40,7 +44,7 @@ class DebtForm < BaseForm
   end
 
   def persisted?
-    false
+    @debt.present?
   end
 
   def to_model
@@ -51,7 +55,7 @@ class DebtForm < BaseForm
     return false if invalid?
 
     ActiveRecord::Base.transaction do
-      debt = create_debt
+      create_or_update_debt
       create_debt_out_transaction
       create_debt_in_transaction if total_reimbursed.to_f > 0.0
       debt
@@ -70,7 +74,19 @@ class DebtForm < BaseForm
     errors.add(:total_reimbursed, I18n.t('debts.errors.reimbursed_exceeds_lent'))
   end
 
-  def create_debt
+  def total_lent_not_less_than_existing
+    return if total_lent.to_f >= (debt.total_lent || 0.0)
+
+    errors.add(:total_lent, I18n.t('debts.errors.total_lent_cannot_be_less'))
+  end
+
+  def total_reimbursed_not_less_than_existing
+    return if total_reimbursed.to_f >= (debt.total_reimbursed || 0.0)
+
+    errors.add(:total_reimbursed, I18n.t('debts.errors.total_reimbursed_cannot_be_less'))
+  end
+
+  def create_or_update_debt
     debt_attributes = {
       name: contact_name,
       direction: direction,
@@ -78,22 +94,27 @@ class DebtForm < BaseForm
       note: note
     }
 
-    @debt = user.debts.create(debt_attributes)
-    debt
+    if @debt.nil?
+      @debt = user.debts.create!(debt_attributes)
+    else
+      @debt.update!(debt_attributes)
+    end
   end
 
   def create_debt_out_transaction
-    create_transaction('debt_out')
+    difference = total_lent.to_f - (debt.total_lent || 0.0)
+    create_transaction('debt_out', difference) if difference.positive?
   end
 
   def create_debt_in_transaction
-    create_transaction('debt_in')
+    difference = total_reimbursed.to_f - (debt.total_reimbursed || 0.0)
+    create_transaction('debt_in', difference) if difference.positive?
   end
 
-  def create_transaction(kind)
+  def create_transaction(kind, amount)
     transaction_form = TransactionForm.new(
       user,
-      amount: total_lent.abs,
+      amount: amount.abs,
       transaction_date: Date.current,
       kind: kind,
       debt_id: debt.id

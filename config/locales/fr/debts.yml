@@ -11,6 +11,12 @@ fr:
       subtitle: "Suivez l'argent que vous prêtez à quelqu'un"
       save_debt: "Enregistrer le prêt"
       cancel: "Annuler"
+    edit:
+      title: "Modifier le prêt"
+      subtitle: "Mettre à jour les détails du prêt"
+      back_to_debt: "Retour à la dette"
+      save_changes: "Enregistrer les modifications"
+      cancel: "Annuler"
     form:
       contact_name_label: "Nom du contact"
       contact_name_placeholder: "À qui prêtez-vous?"
@@ -39,9 +45,14 @@ fr:
     create:
       success: "Prêt enregistré avec succès"
       error: "Une erreur s'est produite lors de l'enregistrement du prêt"
+    update:
+      success: "Prêt mis à jour avec succès"
+      error: "Une erreur s'est produite lors de la mise à jour du prêt"
     errors:
       not_found: "Dette introuvable"
       reimbursed_exceeds_lent: "Le montant remboursé ne peut pas dépasser le montant total prêté"
+      total_lent_cannot_be_less: "ne peut pas être inférieur au montant prêté existant"
+      total_reimbursed_cannot_be_less: "ne peut pas être inférieur au montant remboursé existant"
     transaction_type:
       lent_out: "Argent prêté"
       reimbursement: "Remboursement de dette"

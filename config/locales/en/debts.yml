@@ -8,8 +8,14 @@ en:
       add_new_debt: "Record New Loan"
     new:
       title: "Record a Loan"
-      subtitle: "Track money you’ve lent to someone"
+      subtitle: "Track money you've lent to someone"
       save_debt: "Record Loan"
+      cancel: "Cancel"
+    edit:
+      title: "Edit Loan"
+      subtitle: "Update loan details"
+      back_to_debt: "Back to Debt"
+      save_changes: "Save Changes"
       cancel: "Cancel"
     form:
       contact_name_label: "Contact Name"
@@ -39,9 +45,14 @@ en:
     create:
       success: "Loan recorded successfully"
       error: "An error occurred while recording the loan"
+    update:
+      success: "Loan updated successfully"
+      error: "An error occurred while updating the loan"
     errors:
       not_found: "Debt not found"
       reimbursed_exceeds_lent: "Amount reimbursed cannot exceed total amount lent"
+      total_lent_cannot_be_less: "cannot be less than the existing amount"
+      total_reimbursed_cannot_be_less: "cannot be less than the existing amount"
     transaction_type:
       lent_out: "Money lent"
       reimbursement: "Debt reimbursement"

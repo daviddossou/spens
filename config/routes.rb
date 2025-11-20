@@ -16,7 +16,7 @@ Rails.application.routes.draw do
     resources :goals, only: [:index, :show, :new, :create, :edit, :update, :destroy]
 
     # Debts
-    resources :debts, only: [:index, :show, :new, :create]
+    resources :debts, only: [:index, :show, :new, :create, :edit, :update]
 
     # Onboarding routes
     get "onboarding", to: "onboarding#show"
