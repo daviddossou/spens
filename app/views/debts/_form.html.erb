@@ -1,15 +1,17 @@
 <%= render 'shared/form_errors', object: form.object %>
 
 <div class="debt-form__container">
+  <%= form.hidden_field :direction %>
+
   <!-- Contact Name Field -->
   <div class="debt-form__field">
     <%= render Forms::InputFieldComponent.new(
       form: form,
       field: :contact_name,
-      label: t('.contact_name_label'),
+      label: t(".contact_name_label.#{ form.object.direction }"),
       required: true,
-      placeholder: t('.contact_name_placeholder'),
-      help_text: t('.contact_name_help')
+      placeholder: t(".contact_name_placeholder.#{ form.object.direction }"),
+      help_text: t(".contact_name_help.#{ form.object.direction }")
     ) %>
   </div>
 
@@ -19,12 +21,12 @@
       form: form,
       field: :total_lent,
       type: :number_field,
-      label: t('.total_amount_label'),
+      label: t(".total_amount_label.#{ form.object.direction }"),
       required: true,
       prepend: current_user.currency,
       step: 0.01,
       placeholder: "0.00",
-      help_text: t('.total_amount_help')
+      help_text: t(".total_amount_help.#{ form.object.direction }")
     ) %>
   </div>
 
@@ -49,12 +51,12 @@
         form: form,
         field: :total_reimbursed,
         type: :number_field,
-        label: t('.amount_reimbursed_label'),
+        label: t(".amount_reimbursed_label.#{ form.object.direction }"),
         required: false,
         prepend: current_user.currency,
         step: 0.01,
         placeholder: "0.00",
-        help_text: t('.amount_reimbursed_help')
+        help_text: t(".amount_reimbursed_help.#{ form.object.direction }")
       ) %>
     </div>
 

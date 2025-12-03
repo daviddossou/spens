@@ -12,8 +12,12 @@ fr:
       kind_label: "Catégorie"
       kind_expense: "Dépense"
       kind_income: "Revenu"
-      kind_debt_in: "Remboursement reçu"
-      kind_debt_out: "Argent prêté"
+      kind_debt_in:
+        lent: "Remboursement Reçu"
+        borrowed: "Argent Emprunté"
+      kind_debt_out:
+        lent: "Argent prêté"
+        borrowed: "Dette remboursée"
       kind_transfer: "Transfert"
       amount_label: "Montant"
       amount_placeholder: "0.00"

@@ -53,8 +53,6 @@ class Transaction < ApplicationRecord
   # Callbacks
   after_save :update_account_balance
   after_save :update_debt_totals
-  after_destroy :revert_account_balance
-  after_destroy :revert_debt_totals
 
   private
 
@@ -65,38 +63,17 @@ class Transaction < ApplicationRecord
     account.save!
   end
 
-  def revert_account_balance
-    return unless account
-
-    account.balance = (account.balance || 0.0) - amount
-    account.save!
-  end
-
   def update_debt_totals
     return unless debt
     return unless transaction_type
 
-    case transaction_type.kind
-    when TransactionType::KIND_DEBT_OUT
-      debt.total_lent = (debt.total_lent || 0.0) + amount.abs
-      debt.save!
-    when TransactionType::KIND_DEBT_IN
-      debt.total_reimbursed = (debt.total_reimbursed || 0.0) + amount.abs
-      debt.save!
-    end
-  end
+    is_debt_increase = (debt.lent? && transaction_type.debt_out?) ||
+                       (debt.borrowed? && transaction_type.debt_in?)
 
-  def revert_debt_totals
-    return unless debt
-    return unless transaction_type
-
-    case transaction_type.kind
-    when TransactionType::KIND_DEBT_OUT
-      debt.total_lent = (debt.total_lent || 0.0) - amount.abs
-      debt.save!
-    when TransactionType::KIND_DEBT_IN
-      debt.total_reimbursed = (debt.total_reimbursed || 0.0) - amount.abs
-      debt.save!
+    if is_debt_increase
+      debt.increment!(:total_lent, amount.abs)
+    else
+      debt.increment!(:total_reimbursed, amount.abs)
     end
   end
 

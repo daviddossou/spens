@@ -45,7 +45,6 @@ class TransactionForm < BaseForm
 
     if @debt_id.present?
       @debt = user.debts.find_by(id: @debt_id)
-      payload[:kind] ||= 'debt_in' if @debt&.lent?
     end
 
     if @account_id.present?
@@ -160,7 +159,7 @@ class TransactionForm < BaseForm
     description = transaction_type_name.presence || I18n.t('transactions.transfer.description_in', from_account_name: from_account.name, to_account_name: to_account.name)
 
     create_and_validate_transaction(
-      account: from_account,
+      account: to_account,
       transaction_type: transfer_type_in,
       amount: amount,
       description: description
@@ -173,7 +172,7 @@ class TransactionForm < BaseForm
     description = transaction_type_name.presence || I18n.t('transactions.transfer.description_out', from_account_name: from_account.name, to_account_name: to_account.name)
 
     create_and_validate_transaction(
-      account: to_account,
+      account: from_account,
       transaction_type: transfer_type_out,
       amount: amount,
       description: description
@@ -181,17 +180,8 @@ class TransactionForm < BaseForm
   end
 
   def create_debt_transaction
-    description, type_name = if kind == TransactionType::KIND_DEBT_IN
-                                [
-                                  I18n.t('debts.transaction_description.reimbursed_by', contact_name: debt.name),
-                                  I18n.t('debts.transaction_type.reimbursement')
-                                ]
-                             else
-                                [
-                                  I18n.t('debts.transaction_description.lent_to', contact_name: debt.name),
-                                  I18n.t('debts.transaction_type.lent_out')
-                                ]
-                             end
+    description = I18n.t("debts.transaction_description.#{kind}.#{debt.direction}", contact_name: debt.name)
+    type_name = I18n.t("debts.transaction_type.#{kind}.#{debt.direction}")
 
     create_and_validate_transaction(
       account: find_or_create_account,

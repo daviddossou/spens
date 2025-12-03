@@ -1,9 +1,9 @@
-<% content_for :title, t('.title') %>
+<% content_for :title, t(".title.#{ @form.direction }") %>
 
 <div class="page-container page-container--narrow">
   <header class="page-header">
-    <h1 class="page-header__title"><%= t('.title') %></h1>
-    <p class="page-header__subtitle"><%= t('.subtitle') %></p>
+    <h1 class="page-header__title"><%= t(".title.#{ @form.direction }") %></h1>
+    <p class="page-header__subtitle"><%= t(".subtitle.#{ @form.direction }") %></p>
   </header>
 
   <div class="page-content">
@@ -18,7 +18,7 @@
       <!-- Form Actions -->
       <div class="debt-form__actions">
         <%= render Ui::ButtonComponent.new(
-          text: t('.save_debt'),
+          text: t(".save_debt.#{ @form.direction }"),
           type: :submit,
           variant: :primary,
           size: :lg,
@@ -27,7 +27,7 @@
 
         <%= render Ui::ButtonComponent.new(
           text: t('.cancel'),
-          url: debts_path,
+          url: debts_path(direction: @form.direction),
           variant: :'outline-secondary',
           size: :lg,
           full_width: true

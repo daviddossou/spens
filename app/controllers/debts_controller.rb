@@ -5,7 +5,8 @@ class DebtsController < ApplicationController
   before_action :set_debt, only: [:show, :edit, :update]
 
   def index
-    @debts = current_user.debts.ongoing.order(created_at: :desc)
+    @direction = params[:direction] || 'lent'
+    @debts = current_user.debts.ongoing.send(@direction).order(created_at: :desc)
   end
 
   def show
@@ -13,14 +14,14 @@ class DebtsController < ApplicationController
   end
 
   def new
-    build_form
+    build_form(direction: params[:direction] || 'lent')
   end
 
   def create
     build_form(debt_params)
 
     if @form.submit
-      redirect_to debts_path, notice: t('.success')
+      redirect_to debt_path(id: @form.debt.id), notice: t('.success')
     else
       render :new, status: :unprocessable_entity
     end
@@ -38,7 +39,7 @@ class DebtsController < ApplicationController
     build_form(debt_params.merge(id: @debt.id))
 
     if @form.submit
-      redirect_to debt_path(@debt), notice: t('.success')
+      redirect_to debt_path(id: @debt.id), notice: t('.success')
     else
       render :edit, status: :unprocessable_entity
     end
@@ -77,7 +78,8 @@ class DebtsController < ApplicationController
       :contact_name,
       :total_lent,
       :total_reimbursed,
-      :note
+      :note,
+      :direction
     )
   end
 end

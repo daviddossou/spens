@@ -1,4 +1,4 @@
-<%= form_with model: @form, url: transactions_path, method: :post, class: "transaction-form", data: { controller: "transaction-form" } do |f| %>
+<%= form_with model: @form, url: transactions_path, method: :post, class: "transaction-form", data: { controller: "transaction-form", turbo_frame: "_top" } do |f| %>
     <%= render "shared/form_errors", object: @form %>
 
     <!-- Hidden field to store the selected kind -->
@@ -11,7 +11,7 @@
           <%= f.hidden_field :debt_id %>
           <%= link_to new_transaction_path(@form.kind_params('debt_in')), data: { turbo_frame: "transaction_form" }, class: "kind-link" do %>
             <%= render Ui::SelectableCardComponent.new(
-              item: { name: t('.kind_debt_in'), value: 'debt_in' },
+              item: { name: t(".kind_debt_in.#{@form.debt.direction}"), value: 'debt_in' },
               selected: @form.kind == 'debt_in',
               compact: true,
               additional_classes: 'kind-card',
@@ -22,7 +22,7 @@
 
           <%= link_to new_transaction_path(@form.kind_params('debt_out')), data: { turbo_frame: "transaction_form" }, class: "kind-link" do %>
             <%= render Ui::SelectableCardComponent.new(
-              item: { name: t('.kind_debt_out'), value: 'debt_out' },
+              item: { name: t(".kind_debt_out.#{@form.debt.direction}"), value: 'debt_out' },
               selected: @form.kind == 'debt_out',
               compact: true,
               additional_classes: 'kind-card',

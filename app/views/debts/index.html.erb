@@ -7,6 +7,16 @@
   </header>
 
   <div class="page-content">
+    <!-- Direction Switcher -->
+    <div class="debts-switcher" style="margin-bottom: 2rem;">
+      <%= render Ui::SwitcherComponent.new(
+        options: [
+          { text: t('.i_lent'), value: 'lent', url: debts_path(direction: 'lent') },
+          { text: t('.i_borrowed'), value: 'borrowed', url: debts_path(direction: 'borrowed') }
+        ],
+        current: @direction
+      ) %>
+    </div>
     <% if @debts.any? %>
       <div class="debts-list">
         <% @debts.each do |debt| %>
@@ -31,8 +41,8 @@
 
     <div class="debts-actions">
       <%= render Ui::ButtonComponent.new(
-        text: t('.add_new_debt'),
-        url: new_debt_path,
+        text: t(".add_new.#{ @direction }"),
+        url: new_debt_path(direction: @direction),
         variant: :primary,
         size: :lg,
         full_width: true

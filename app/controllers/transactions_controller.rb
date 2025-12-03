@@ -15,7 +15,7 @@ class TransactionsController < ApplicationController
     build_form(transaction_params)
 
     if @form.submit
-      redirect_to new_transaction_path, notice: t('.success')
+      redirect_to dashboard_path, notice: t('.success')
     else
       render :new, status: :unprocessable_entity
     end

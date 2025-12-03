@@ -28,7 +28,7 @@ class GoalsController < ApplicationController
     build_form(goal_params)
 
     if @form.submit
-      redirect_to goals_path, notice: t('.success')
+      redirect_to goal_path(id: @form.account.id), notice: t('.success')
     else
       render :new, status: :unprocessable_entity
     end

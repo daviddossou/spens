@@ -57,7 +57,7 @@ class DebtForm < BaseForm
     ActiveRecord::Base.transaction do
       create_or_update_debt
       create_debt_out_transaction
-      create_debt_in_transaction if total_reimbursed.to_f > 0.0
+      create_debt_in_transaction
       debt
     end
   rescue StandardError => e
@@ -102,13 +102,25 @@ class DebtForm < BaseForm
   end
 
   def create_debt_out_transaction
-    difference = total_lent.to_f - (debt.total_lent || 0.0)
+    difference = lent? ? lent_difference : reimbursed_difference
     create_transaction('debt_out', difference) if difference.positive?
   end
 
   def create_debt_in_transaction
-    difference = total_reimbursed.to_f - (debt.total_reimbursed || 0.0)
+    difference = lent? ? reimbursed_difference : lent_difference
     create_transaction('debt_in', difference) if difference.positive?
+  end
+
+  def lent_difference
+    total_lent.to_f - (debt.total_lent || 0.0)
+  end
+
+  def reimbursed_difference
+    total_reimbursed.to_f - (debt.total_reimbursed || 0.0)
+  end
+
+  def lent?
+    direction == 'lent'
   end
 
   def create_transaction(kind, amount)

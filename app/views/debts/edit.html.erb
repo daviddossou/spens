@@ -1,4 +1,4 @@
-<% content_for :title, t('.title') %>
+<% content_for :title, t(".title.#{ @form.direction }") %>
 
 <div class="page-container page-container--narrow">
   <header class="page-header">
@@ -9,8 +9,8 @@
       <%= t('.back_to_debt') %>
     <% end %>
 
-    <h1 class="page-header__title"><%= t('.title') %></h1>
-    <p class="page-header__subtitle"><%= t('.subtitle') %></p>
+    <h1 class="page-header__title"><%= t(".title.#{ @form.direction }") %></h1>
+    <p class="page-header__subtitle"><%= t(".subtitle.#{ @form.direction }") %></p>
   </header>
 
   <div class="page-content">
@@ -25,7 +25,7 @@
       <!-- Form Actions -->
       <div class="debt-form__actions">
         <%= render Ui::ButtonComponent.new(
-          text: t('.save_changes'),
+          text: t(".update_debt.#{ @form.direction }"),
           type: :submit,
           variant: :primary,
           size: :lg,
@@ -34,7 +34,7 @@
 
         <%= render Ui::ButtonComponent.new(
           text: t('.cancel'),
-          url: debt_path(@debt),
+          url: debt_path(id: @debt.id),
           variant: :'outline-secondary',
           size: :lg,
           full_width: true

@@ -3,7 +3,7 @@
 class GoalForm < BaseForm
   ##
   # Attributes
-  attr_accessor :user
+  attr_accessor :user, :account
 
   attribute :account_name, :string
   attribute :current_balance, :decimal
@@ -47,7 +47,7 @@ class GoalForm < BaseForm
     return false if invalid?
 
     ActiveRecord::Base.transaction do
-      account = find_or_create_account
+      @account = find_or_create_account
       account.update!(saving_goal: saving_goal)
       adjust_account_balance(account) if balance_changed?(account)
       account

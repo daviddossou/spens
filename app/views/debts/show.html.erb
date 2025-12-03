@@ -10,7 +10,7 @@
     <% end %>
 
     <h1 class="page-header__title"><%= @debt.name %></h1>
-    <p class="page-header__subtitle"><%= t('.subtitle') %></p>
+    <p class="page-header__subtitle"><%= t(".subtitle.#{ @debt.direction }") %></p>
   </header>
 
   <div class="page-content">

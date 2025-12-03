@@ -40,8 +40,8 @@ class Debt < ApplicationRecord
   }
 
   enum :direction, {
-    lent: "lent"     # v1: User lent money to someone (they owe the user)
-    # borrowed: "borrowed"  # Future: User borrowed money (user owes someone)
+    lent: "lent",        # User lent money to someone (they owe the user)
+    borrowed: "borrowed"  # User borrowed money (user owes someone)
   }
 
   ##
@@ -49,6 +49,7 @@ class Debt < ApplicationRecord
   scope :ongoing, -> { where(status: "ongoing") }
   scope :paid, -> { where(status: "paid") }
   scope :lent, -> { where(direction: "lent") }
+  scope :borrowed, -> { where(direction: "borrowed") }
 
   ##
   # Methods
