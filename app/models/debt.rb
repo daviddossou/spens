@@ -30,7 +30,7 @@ class Debt < ApplicationRecord
 
   ##
   # Validations & Enums
-  validates :name, presence: true, length: { maximum: 100 }, uniqueness: { scope: [:user_id, :direction] }
+  validates :name, presence: true, length: { maximum: 100 }, uniqueness: { scope: [ :user_id, :direction ] }
   validates :status, presence: true
   validates :direction, presence: true
 

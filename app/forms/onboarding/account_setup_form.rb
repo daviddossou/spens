@@ -49,6 +49,8 @@ class Onboarding::AccountSetupForm < BaseForm
   def submit
     return false if invalid?
 
+    success = false
+
     ActiveRecord::Base.transaction do
       transaction_forms.each do |transaction_form|
         next if transaction_form.should_skip?
@@ -62,7 +64,10 @@ class Onboarding::AccountSetupForm < BaseForm
 
       user.onboarding_current_step = NEXT_STEP
       user.save!
+      success = true
     end
+
+    success
   rescue StandardError => e
     Rails.logger.error "AccountSetupForm submit error: #{e.message}\n#{e.backtrace.join("\n")}"
     add_custom_error(:base, e.message)
@@ -74,14 +79,18 @@ class Onboarding::AccountSetupForm < BaseForm
 
   def build_transactions_from(transaction_attributes)
     transaction_attributes.values.map do |attrs|
-      Onboarding::TransactionForm.new(
+      form_attrs = {
         user: user,
         account_name: attrs[:account_name],
         amount: attrs[:amount],
-        transaction_date: attrs[:transaction_date],
-        transaction_type_name: attrs[:transaction_type_name],
-        transaction_type_kind: attrs[:transaction_type_kind]
-      )
+        transaction_type_name: attrs[:transaction_type_name] || Onboarding::TransactionForm::DEFAULT_TRANSACTION_TYPE_NAME,
+        transaction_type_kind: attrs[:transaction_type_kind] || Onboarding::TransactionForm::DEFAULT_TRANSACTION_TYPE_KIND
+      }
+
+      # Only add transaction_date if it's present, otherwise let the default kick in
+      form_attrs[:transaction_date] = attrs[:transaction_date] if attrs[:transaction_date].present?
+
+      Onboarding::TransactionForm.new(**form_attrs)
     end
   end
 

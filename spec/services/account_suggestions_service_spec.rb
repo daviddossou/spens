@@ -97,7 +97,7 @@ RSpec.describe AccountSuggestionsService do
         results = service.all_with_balances
 
         expect(results.first).to be_a(Hash)
-        expect(results.first.keys).to match_array([:name, :balance])
+        expect(results.first.keys).to match_array([ :name, :balance ])
       end
     end
 
@@ -122,7 +122,7 @@ RSpec.describe AccountSuggestionsService do
         template_name = Account.templates(I18n.locale).values.first
 
         # Skip user accounts to get to templates
-        user_account_names = ['My Savings', 'My Checking']
+        user_account_names = [ 'My Savings', 'My Checking' ]
         template_result = results.find { |r| r[:name] == template_name && !user_account_names.include?(r[:name]) }
 
         expect(template_result[:balance]).to eq(0) if template_result
@@ -213,7 +213,7 @@ RSpec.describe AccountSuggestionsService do
         results = service.defaults
 
         expect(results.size).to eq(10)
-        expect(results.take(3)).to match_array(['Account 1', 'Account 2', 'Account 3'])
+        expect(results.take(3)).to match_array([ 'Account 1', 'Account 2', 'Account 3' ])
       end
 
       it 'does not include duplicate templates already used by user' do
@@ -301,7 +301,7 @@ RSpec.describe AccountSuggestionsService do
         results = service.defaults_with_balances
 
         expect(results.first).to be_a(Hash)
-        expect(results.first.keys).to match_array([:name, :balance])
+        expect(results.first.keys).to match_array([ :name, :balance ])
       end
     end
 

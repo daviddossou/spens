@@ -42,16 +42,6 @@ RSpec.describe TransactionForm, type: :model do
         expect(form).to be_valid
       end
 
-      it 'is valid with loan kind' do
-        form.kind = 'loan'
-        expect(form).to be_valid
-      end
-
-      it 'is valid with debt kind' do
-        form.kind = 'debt'
-        expect(form).to be_valid
-      end
-
       it 'is invalid without kind' do
         form.kind = nil
         expect(form).not_to be_valid
@@ -114,7 +104,7 @@ RSpec.describe TransactionForm, type: :model do
     end
 
     context 'for non-transfer transactions' do
-      %w[expense income loan debt].each do |kind|
+      %w[expense income].each do |kind|
         context "when kind is #{kind}" do
           before do
             form.kind = kind
@@ -342,7 +332,7 @@ RSpec.describe TransactionForm, type: :model do
   describe '#transaction_type_suggestions' do
     before do
       allow_any_instance_of(TransactionTypeSuggestionsService).to receive(:all)
-        .and_return(['Groceries', 'Rent', 'Utilities'])
+        .and_return([ 'Groceries', 'Rent', 'Utilities' ])
     end
 
     it 'calls TransactionTypeSuggestionsService with user and kind' do
@@ -351,14 +341,14 @@ RSpec.describe TransactionForm, type: :model do
     end
 
     it 'returns all transaction type suggestions' do
-      expect(form.transaction_type_suggestions).to eq(['Groceries', 'Rent', 'Utilities'])
+      expect(form.transaction_type_suggestions).to eq([ 'Groceries', 'Rent', 'Utilities' ])
     end
   end
 
   describe '#default_transaction_type_suggestions' do
     before do
       allow_any_instance_of(TransactionTypeSuggestionsService).to receive(:defaults)
-        .and_return(['Food', 'Transport', 'Entertainment'])
+        .and_return([ 'Food', 'Transport', 'Entertainment' ])
     end
 
     it 'calls TransactionTypeSuggestionsService with user and kind' do
@@ -367,14 +357,14 @@ RSpec.describe TransactionForm, type: :model do
     end
 
     it 'returns default transaction type suggestions' do
-      expect(form.default_transaction_type_suggestions).to eq(['Food', 'Transport', 'Entertainment'])
+      expect(form.default_transaction_type_suggestions).to eq([ 'Food', 'Transport', 'Entertainment' ])
     end
   end
 
   describe '#account_suggestions' do
     before do
       allow_any_instance_of(AccountSuggestionsService).to receive(:all)
-        .and_return(['Checking', 'Savings', 'Investment'])
+        .and_return([ 'Checking', 'Savings', 'Investment' ])
     end
 
     it 'calls AccountSuggestionsService with user' do
@@ -383,14 +373,14 @@ RSpec.describe TransactionForm, type: :model do
     end
 
     it 'returns all account suggestions' do
-      expect(form.account_suggestions).to eq(['Checking', 'Savings', 'Investment'])
+      expect(form.account_suggestions).to eq([ 'Checking', 'Savings', 'Investment' ])
     end
   end
 
   describe '#default_account_suggestions' do
     before do
       allow_any_instance_of(AccountSuggestionsService).to receive(:defaults)
-        .and_return(['Wallet', 'Bank Account'])
+        .and_return([ 'Wallet', 'Bank Account' ])
     end
 
     it 'calls AccountSuggestionsService with user' do
@@ -399,7 +389,7 @@ RSpec.describe TransactionForm, type: :model do
     end
 
     it 'returns default account suggestions' do
-      expect(form.default_account_suggestions).to eq(['Wallet', 'Bank Account'])
+      expect(form.default_account_suggestions).to eq([ 'Wallet', 'Bank Account' ])
     end
   end
 
@@ -460,13 +450,15 @@ RSpec.describe TransactionForm, type: :model do
 
       it 'calls CreateTransactionService with correct parameters' do
         expect(CreateTransactionService).to receive(:new).with(
-          user,
-          account,
-          transaction_type,
-          100.00,
-          Date.current,
-          'Weekly shopping',
-          'Groceries'
+          hash_including(
+            user: user,
+            account: account,
+            transaction_type: transaction_type,
+            amount: 100.00,
+            transaction_date: Date.current,
+            note: 'Weekly shopping',
+            description: 'Groceries'
+          )
         ).and_call_original
         form.submit
       end
@@ -479,8 +471,8 @@ RSpec.describe TransactionForm, type: :model do
         let(:invalid_transaction) { build(:transaction, user: user, account: account, transaction_type: transaction_type) }
         let(:mock_errors) do
           instance_double(ActiveModel::Errors,
-            messages: { amount: ['must be positive'] },
-            full_messages: ['Amount must be positive']
+            messages: { amount: [ 'must be positive' ] },
+            full_messages: [ 'Amount must be positive' ]
           )
         end
 
@@ -570,13 +562,15 @@ RSpec.describe TransactionForm, type: :model do
                                       to_account_name: 'Savings')
 
         expect(CreateTransactionService).to receive(:new).with(
-          user,
-          from_account,
-          transfer_type_out,
-          100.00,
-          Date.current,
-          'Savings transfer',
-          expected_description
+          hash_including(
+            user: user,
+            account: from_account,
+            transaction_type: transfer_type_out,
+            amount: 100.00,
+            transaction_date: Date.current,
+            note: 'Savings transfer',
+            description: expected_description
+          )
         ).and_call_original
 
         form.submit
@@ -588,13 +582,15 @@ RSpec.describe TransactionForm, type: :model do
                                       to_account_name: 'Savings')
 
         expect(CreateTransactionService).to receive(:new).with(
-          user,
-          to_account,
-          transfer_type_in,
-          100.00,
-          Date.current,
-          'Savings transfer',
-          expected_description
+          hash_including(
+            user: user,
+            account: to_account,
+            transaction_type: transfer_type_in,
+            amount: 100.00,
+            transaction_date: Date.current,
+            note: 'Savings transfer',
+            description: expected_description
+          )
         ).and_call_original
 
         form.submit
@@ -608,8 +604,8 @@ RSpec.describe TransactionForm, type: :model do
         let(:invalid_transaction) { build(:transaction, user: user, account: from_account, transaction_type: transfer_type_out) }
         let(:mock_errors) do
           instance_double(ActiveModel::Errors,
-            messages: { base: ['Insufficient funds'] },
-            full_messages: ['Insufficient funds']
+            messages: { base: [ 'Insufficient funds' ] },
+            full_messages: [ 'Insufficient funds' ]
           )
         end
 
@@ -709,8 +705,8 @@ RSpec.describe TransactionForm, type: :model do
     let(:invalid_transaction) { build(:transaction, user: user, account: account, transaction_type: transaction_type) }
     let(:mock_errors) do
       instance_double(ActiveModel::Errors,
-        messages: { base: ['Error'] },
-        full_messages: ['Error']
+        messages: { base: [ 'Error' ] },
+        full_messages: [ 'Error' ]
       )
     end
 

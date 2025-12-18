@@ -24,10 +24,25 @@
 #
 FactoryBot.define do
   factory :debt do
-    user { nil }
-    name { "MyString" }
-    note { "MyText" }
-    status { "MyString" }
-    direction { "MyString" }
+    association :user
+    sequence(:name) { |n| "Contact #{n}" }
+    note { "Test note" }
+    status { "ongoing" }
+    direction { "lent" }
+    total_lent { 1000.0 }
+    total_reimbursed { 0.0 }
+
+    trait :borrowed do
+      direction { "borrowed" }
+    end
+
+    trait :paid do
+      status { "paid" }
+      total_reimbursed { total_lent }
+    end
+
+    trait :partially_reimbursed do
+      total_reimbursed { total_lent / 2 }
+    end
   end
 end

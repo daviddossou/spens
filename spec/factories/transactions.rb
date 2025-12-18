@@ -34,6 +34,7 @@ FactoryBot.define do
     association :user
     association :account
     association :transaction_type
+    debt { nil }
     sequence(:description) { |n| "Transaction #{n}" }
     amount { 12.34 }
     transaction_date { Date.today }

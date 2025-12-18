@@ -22,7 +22,7 @@ module Ui
     end
 
     def stroke_dashoffset
-      circumference * (1 - [[percentage, 100].min / 100.0, 0].max)
+      circumference * (1 - [ [ percentage, 100 ].min / 100.0, 0 ].max)
     end
 
     def formatted_current_value

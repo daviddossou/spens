@@ -11,8 +11,7 @@
                   url: debts_path,
                   method: :post,
                   local: true,
-                  class: "debt-form",
-                  data: { controller: "transaction-form" } do |f| %>
+                  class: "debt-form" do |f| %>
       <%= render 'form', form: f %>
 
       <!-- Form Actions -->

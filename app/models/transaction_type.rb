@@ -35,7 +35,7 @@ class TransactionType < ApplicationRecord
 
   ##
   # Validations & Enums
-  validates :name, presence: true, length: { maximum: 100 }, uniqueness: { scope: [:user_id, :kind], case_sensitive: false }
+  validates :name, presence: true, length: { maximum: 100 }, uniqueness: { scope: [ :user_id, :kind ], case_sensitive: false }
   validates :kind, presence: true
   validates :budget_goal, presence: true, numericality: { greater_than_or_equal_to: 0 }
 

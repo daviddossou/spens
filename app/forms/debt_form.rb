@@ -9,7 +9,8 @@ class DebtForm < BaseForm
   attribute :total_lent, :decimal
   attribute :total_reimbursed, :decimal, default: 0.0
   attribute :note, :string
-  attribute :direction, :string, default: 'lent'
+  attribute :direction, :string, default: "lent"
+  attribute :account_name, :string
 
   ##
   # Validations
@@ -39,7 +40,8 @@ class DebtForm < BaseForm
       total_lent: payload[:total_lent],
       total_reimbursed: payload[:total_reimbursed] || 0.0,
       note: payload[:note],
-      direction: payload[:direction] || 'lent'
+      direction: payload[:direction] || "lent",
+      account_name: payload[:account_name]
     )
   end
 
@@ -66,24 +68,32 @@ class DebtForm < BaseForm
     false
   end
 
+  def account_suggestions
+    AccountSuggestionsService.new(user).all
+  end
+
+  def default_account_suggestions
+    AccountSuggestionsService.new(user).defaults
+  end
+
   private
 
   def reimbursed_not_exceeding_lent
     return if total_lent.present? && total_reimbursed.present? && total_reimbursed <= total_lent
 
-    errors.add(:total_reimbursed, I18n.t('debts.errors.reimbursed_exceeds_lent'))
+    errors.add(:total_reimbursed, I18n.t("debts.errors.reimbursed_exceeds_lent"))
   end
 
   def total_lent_not_less_than_existing
     return if total_lent.to_f >= (debt.total_lent || 0.0)
 
-    errors.add(:total_lent, I18n.t('debts.errors.total_lent_cannot_be_less'))
+    errors.add(:total_lent, I18n.t("debts.errors.total_lent_cannot_be_less"))
   end
 
   def total_reimbursed_not_less_than_existing
     return if total_reimbursed.to_f >= (debt.total_reimbursed || 0.0)
 
-    errors.add(:total_reimbursed, I18n.t('debts.errors.total_reimbursed_cannot_be_less'))
+    errors.add(:total_reimbursed, I18n.t("debts.errors.total_reimbursed_cannot_be_less"))
   end
 
   def create_or_update_debt
@@ -103,12 +113,12 @@ class DebtForm < BaseForm
 
   def create_debt_out_transaction
     difference = lent? ? lent_difference : reimbursed_difference
-    create_transaction('debt_out', difference) if difference.positive?
+    create_transaction("debt_out", difference) if difference.positive?
   end
 
   def create_debt_in_transaction
     difference = lent? ? reimbursed_difference : lent_difference
-    create_transaction('debt_in', difference) if difference.positive?
+    create_transaction("debt_in", difference) if difference.positive?
   end
 
   def lent_difference
@@ -120,7 +130,7 @@ class DebtForm < BaseForm
   end
 
   def lent?
-    direction == 'lent'
+    direction == "lent"
   end
 
   def create_transaction(kind, amount)
@@ -129,7 +139,8 @@ class DebtForm < BaseForm
       amount: amount.abs,
       transaction_date: Date.current,
       kind: kind,
-      debt_id: debt.id
+      debt_id: debt.id,
+      account_name: account_name
     )
 
     transaction_form.submit

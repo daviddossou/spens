@@ -38,7 +38,7 @@ class Ui::SelectableCardComponent < ViewComponent::Base
   end
 
   def root_classes
-    classes = [css_class]
+    classes = [ css_class ]
     classes << additional_classes if additional_classes.present?
     classes << "selected" if selected?
     classes << "compact" if compact?

@@ -143,7 +143,7 @@ RSpec.describe TransactionTypeSuggestionsService do
         results = service.defaults
 
         expect(results.size).to eq(15)
-        expect(results.take(3)).to match_array(['Type 1', 'Type 2', 'Type 3'])
+        expect(results.take(3)).to match_array([ 'Type 1', 'Type 2', 'Type 3' ])
       end
 
       it 'does not include duplicate templates already used by user' do
@@ -234,8 +234,12 @@ RSpec.describe TransactionTypeSuggestionsService do
         # They should be different sets
         expect(expense_results).not_to eq(income_results)
 
-        # Expense should have more options (15 default keys)
-        expect(expense_results.size).to be > income_results.size
+        # Each should return up to 15 items based on available default keys
+        expense_default_keys = TransactionType.default_template_keys('expense')
+        income_default_keys = TransactionType.default_template_keys('income')
+
+        expect(expense_results.size).to eq([expense_default_keys&.size || 0, 15].min)
+        expect(income_results.size).to eq([income_default_keys&.size || 0, 15].min)
       end
     end
   end

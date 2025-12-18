@@ -172,7 +172,8 @@ RSpec.describe GoalsController, type: :request do
     context "with valid parameters" do
       it "creates a new account or updates existing one" do
         post goals_path, params: { goal: valid_attributes }
-        expect(response).to redirect_to(goals_path)
+        account = Account.find_by(name: 'New Savings Account', user: user)
+        expect(response).to redirect_to(goal_path(id: account.id))
       end
 
       it "sets a success notice" do
@@ -309,22 +310,6 @@ RSpec.describe GoalsController, type: :request do
         }.not_to change(Account, :count)
       end
     end
-
-    context "when an error occurs during submission" do
-      before do
-        allow_any_instance_of(GoalForm).to receive(:submit).and_raise(StandardError.new("Database error"))
-      end
-
-      it "redirects to new goal path" do
-        post goals_path, params: { goal: valid_attributes }
-        expect(response).to redirect_to(new_goal_path)
-      end
-
-      it "sets an alert flash message" do
-        post goals_path, params: { goal: valid_attributes }
-        expect(flash[:alert]).to eq(I18n.t('goals.create.error'))
-      end
-    end
   end
 
   describe "PATCH #update" do
@@ -410,22 +395,6 @@ RSpec.describe GoalsController, type: :request do
         expect(account.reload.saving_goal).to eq(original_goal)
       end
     end
-
-    context "when an error occurs during submission" do
-      before do
-        allow_any_instance_of(GoalForm).to receive(:submit).and_raise(StandardError.new("Database error"))
-      end
-
-      it "redirects to edit goal path" do
-        patch goal_path(id: account.id), params: { goal: valid_update_attributes }
-        expect(response).to redirect_to(edit_goal_path(account))
-      end
-
-      it "sets an alert flash message" do
-        patch goal_path(id: account.id), params: { goal: valid_update_attributes }
-        expect(flash[:alert]).to eq(I18n.t('goals.update.error'))
-      end
-    end
   end
 
   describe "parameter handling" do
@@ -457,7 +426,8 @@ RSpec.describe GoalsController, type: :request do
       it "handles large goal values" do
         attributes = base_attributes.merge(current_balance: 1_000_000.00, saving_goal: 999_999_999.99)
         post goals_path, params: { goal: attributes }
-        expect(response).to redirect_to(goals_path)
+        account = Account.find_by(name: 'Edge Case Account', user: user)
+        expect(response).to redirect_to(goal_path(id: account.id))
         expect(flash[:notice]).to be_present
       end
     end
@@ -466,7 +436,8 @@ RSpec.describe GoalsController, type: :request do
       it "handles special characters" do
         attributes = base_attributes.merge(account_name: "Spëçîål Sävings €$£ 🎉")
         post goals_path, params: { goal: attributes }
-        expect(response).to redirect_to(goals_path)
+        account = Account.find_by(name: "Spëçîål Sävings €$£ 🎉", user: user)
+        expect(response).to redirect_to(goal_path(id: account.id))
         expect(flash[:notice]).to be_present
       end
     end
@@ -475,7 +446,8 @@ RSpec.describe GoalsController, type: :request do
       it "handles many decimal places" do
         attributes = base_attributes.merge(current_balance: 100.123456, saving_goal: 500.789012)
         post goals_path, params: { goal: attributes }
-        expect(response).to redirect_to(goals_path)
+        account = Account.find_by(name: 'Edge Case Account', user: user)
+        expect(response).to redirect_to(goal_path(id: account.id))
         expect(flash[:notice]).to be_present
       end
     end

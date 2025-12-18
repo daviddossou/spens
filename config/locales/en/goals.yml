@@ -14,12 +14,12 @@ en:
       save_goal: "Save Goal"
     form:
       account_label: "Account"
-      account_placeholder: "Select or create an account..."
-      account_help: "Choose an existing account or create a new one"
+      account_placeholder: "Choose an account"
+      account_help: "Select an existing account or create a new one."
       current_balance_label: "Current Balance"
-      current_balance_help: "Enter the current balance of this account"
-      saving_goal_label: "Saving Goal"
-      saving_goal_help: "How much do you want to save?"
+      current_balance_help: "How much money is currently in this account?"
+      saving_goal_label: "Savings Goal"
+      saving_goal_help: "How much do you want to save in total?"
       cancel: "Cancel"
     create:
       success: "Savings goal created successfully!"

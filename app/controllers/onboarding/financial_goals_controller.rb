@@ -1,5 +1,4 @@
 class Onboarding::FinancialGoalsController < OnboardingController
-  before_action :authenticate_user!
   before_action :build_form, only: [ :show ]
 
   # GET /onboarding/financial_goals

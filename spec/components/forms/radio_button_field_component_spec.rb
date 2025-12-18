@@ -198,7 +198,7 @@ RSpec.describe Forms::RadioButtonFieldComponent, type: :component do
 
     it "hides error messages when hide_label is true" do
       allow(errors).to receive(:key?).with(:test).and_return(true)
-      allow(errors).to receive(:full_messages_for).with(:test).and_return(["Test can't be blank"])
+      allow(errors).to receive(:full_messages_for).with(:test).and_return([ "Test can't be blank" ])
 
       rendered = render_inline(described_class.new(
         form: form,

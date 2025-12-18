@@ -72,7 +72,7 @@ class GoalForm < BaseForm
     return unless saving_goal.present? && current_balance.present?
     return if saving_goal > current_balance
 
-    errors.add(:saving_goal, I18n.t('errors.messages.goal_must_be_greater'))
+    errors.add(:saving_goal, I18n.t("errors.messages.goal_must_be_greater"))
   end
 
   def find_or_create_account
@@ -100,16 +100,29 @@ class GoalForm < BaseForm
 
   def create_adjustment_transaction(account, amount, type, kind)
     type_name = I18n.t("transactions.transfer.type_name.#{kind}")
-
-    transaction_form = TransactionForm.new(
-      user,
+    
+    # For transfer_in, the money comes from an external source to this account
+    # For transfer_out, the money goes from this account to an external destination
+    adjustment_account_name = "Balance Adjustment"
+    
+    params = {
       account_id: account.id,
       amount: amount,
       transaction_date: Date.current,
       transaction_type_name: type_name,
       kind: kind
-    )
+    }
+    
+    # Add the appropriate account names for the transfer direction
+    if kind == TransactionType::KIND_TRANSFER_IN
+      params[:to_account_name] = account.name
+      params[:from_account_name] = adjustment_account_name
+    else
+      params[:from_account_name] = account.name
+      params[:to_account_name] = adjustment_account_name
+    end
 
+    transaction_form = TransactionForm.new(user, params)
     transaction_form.submit
 
     raise StandardError, transaction_form.errors.full_messages.join(", ") unless transaction_form.errors.empty?

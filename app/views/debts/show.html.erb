@@ -28,7 +28,7 @@
       <div class="action-buttons">
         <%= render Ui::ButtonComponent.new(
           text: t('.add_transaction'),
-          url: new_transaction_path(debt_id: @debt.id, kind: 'debt_in'),
+          url: new_transaction_path(debt_id: @debt.id, kind: @debt.direction == 'lent' ? 'debt_in' : 'debt_out'),
           variant: :primary,
           size: :lg,
           full_width: true

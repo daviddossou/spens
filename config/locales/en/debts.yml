@@ -44,11 +44,20 @@ en:
         lent: "Name of the person or entity"
         borrowed: "Name of the person or entity"
       total_amount_label:
-        lent: "Total Amount Lent"
-        borrowed: "Total Amount Borrowed"
+        lent: "Amount Lent"
+        borrowed: "Amount Borrowed"
       total_amount_help:
         lent: "How much did you lend?"
         borrowed: "How much did you borrow?"
+      account_label:
+        lent: "Account Used"
+        borrowed: "Account Credited"
+      account_placeholder:
+        lent: "E.g., Cash, Bank Account, Mobile Money..."
+        borrowed: "E.g., Cash, Bank Account, Mobile Money..."
+      account_help:
+        lent: "Where did the money come from? (leave empty if already debited)"
+        borrowed: "Where did the money come from? (leave empty if already credited)"
       show_more_details: "More details"
       hide_more_details: "Hide details"
       amount_reimbursed_label:

@@ -4,37 +4,33 @@ require 'rails_helper'
 
 RSpec.describe Onboarding::AccountLineComponent, type: :component do
   let(:user) { create(:user) }
-  let(:transaction) do
-    Transaction.new(
+  let(:transaction_form) do
+    Onboarding::TransactionForm.new(
+      user: user,
       amount: 50_000.00,
       transaction_date: Date.current,
-      user: user
-    ).tap do |t|
-      t.build_account(name: 'Cash Wallet', user: user)
-      t.build_transaction_type(
-        name: Onboarding::AccountSetupForm::TRANSACTION_TYPE_NAME,
-        kind: TransactionType::KIND_TRANSFER_IN,
-        user: user
-      )
-    end
+      account_name: 'Cash Wallet',
+      transaction_type_name: Onboarding::TransactionForm::DEFAULT_TRANSACTION_TYPE_NAME,
+      transaction_type_kind: Onboarding::TransactionForm::DEFAULT_TRANSACTION_TYPE_KIND
+    )
   end
 
-  # Create a form builder for a Transaction object
-  let(:form) { mock_form_builder(transaction) }
+  # Create a form builder for the TransactionForm object
+  let(:form) { mock_form_builder(transaction_form) }
 
   describe '#initialize' do
     it 'accepts all required parameters' do
       component = described_class.new(
         form: form,
         index: 0,
-        transaction: transaction,
+        transaction: transaction_form,
         currency: 'XOF',
         can_remove: false
       )
 
       expect(component.instance_variable_get(:@form)).to eq(form)
       expect(component.instance_variable_get(:@index)).to eq(0)
-      expect(component.instance_variable_get(:@transaction)).to eq(transaction)
+      expect(component.instance_variable_get(:@transaction)).to eq(transaction_form)
       expect(component.instance_variable_get(:@currency)).to eq('XOF')
       expect(component.instance_variable_get(:@can_remove)).to be false
     end
@@ -43,7 +39,7 @@ RSpec.describe Onboarding::AccountLineComponent, type: :component do
       component = described_class.new(
         form: form,
         index: 0,
-        transaction: transaction,
+        transaction: transaction_form,
         currency: 'XOF'
       )
 
@@ -56,7 +52,7 @@ RSpec.describe Onboarding::AccountLineComponent, type: :component do
       component = described_class.new(
         form: form,
         index: 0,
-        transaction: transaction,
+        transaction: transaction_form,
         currency: 'XOF'
       )
 
@@ -71,7 +67,7 @@ RSpec.describe Onboarding::AccountLineComponent, type: :component do
       component = described_class.new(
         form: form,
         index: 0,
-        transaction: transaction,
+        transaction: transaction_form,
         currency: 'XOF'
       )
 
@@ -90,7 +86,7 @@ RSpec.describe Onboarding::AccountLineComponent, type: :component do
       rendered = render_inline(described_class.new(
         form: form,
         index: 0,
-        transaction: transaction,
+        transaction: transaction_form,
         currency: 'XOF'
       ))
 
@@ -102,7 +98,7 @@ RSpec.describe Onboarding::AccountLineComponent, type: :component do
       rendered = render_inline(described_class.new(
         form: form,
         index: 0,
-        transaction: transaction,
+        transaction: transaction_form,
         currency: 'XOF'
       ))
 
@@ -114,7 +110,7 @@ RSpec.describe Onboarding::AccountLineComponent, type: :component do
       rendered = render_inline(described_class.new(
         form: form,
         index: 0,
-        transaction: transaction,
+        transaction: transaction_form,
         currency: 'XOF'
       ))
 
@@ -126,7 +122,7 @@ RSpec.describe Onboarding::AccountLineComponent, type: :component do
       rendered = render_inline(described_class.new(
         form: form,
         index: 0,
-        transaction: transaction,
+        transaction: transaction_form,
         currency: 'XOF'
       ))
 
@@ -137,12 +133,12 @@ RSpec.describe Onboarding::AccountLineComponent, type: :component do
       rendered = render_inline(described_class.new(
         form: form,
         index: 0,
-        transaction: transaction,
+        transaction: transaction_form,
         currency: 'XOF'
       ))
 
-      expect(rendered.css('input[type="hidden"][name*="[name]"]')).to be_present
-      expect(rendered.css('input[type="hidden"][name*="[kind]"]')).to be_present
+      expect(rendered.css('input[type="hidden"][name*="transaction_type_name"]')).to be_present
+      expect(rendered.css('input[type="hidden"][name*="transaction_type_kind"]')).to be_present
     end
 
     context 'when can_remove is false' do
@@ -150,7 +146,7 @@ RSpec.describe Onboarding::AccountLineComponent, type: :component do
         rendered = render_inline(described_class.new(
           form: form,
           index: 0,
-          transaction: transaction,
+          transaction: transaction_form,
           currency: 'XOF',
           can_remove: false
         ))
@@ -164,7 +160,7 @@ RSpec.describe Onboarding::AccountLineComponent, type: :component do
         rendered = render_inline(described_class.new(
           form: form,
           index: 1,
-          transaction: transaction,
+          transaction: transaction_form,
           currency: 'XOF',
           can_remove: true
         ))
@@ -177,7 +173,7 @@ RSpec.describe Onboarding::AccountLineComponent, type: :component do
         rendered = render_inline(described_class.new(
           form: form,
           index: 1,
-          transaction: transaction,
+          transaction: transaction_form,
           currency: 'XOF',
           can_remove: true
         ))
@@ -192,7 +188,7 @@ RSpec.describe Onboarding::AccountLineComponent, type: :component do
       rendered = render_inline(described_class.new(
         form: form,
         index: 0,
-        transaction: transaction,
+        transaction: transaction_form,
         currency: 'XOF'
       ))
 
@@ -203,7 +199,7 @@ RSpec.describe Onboarding::AccountLineComponent, type: :component do
       rendered = render_inline(described_class.new(
         form: form,
         index: 0,
-        transaction: transaction,
+        transaction: transaction_form,
         currency: 'USD'
       ))
 
@@ -214,7 +210,7 @@ RSpec.describe Onboarding::AccountLineComponent, type: :component do
       rendered = render_inline(described_class.new(
         form: form,
         index: 0,
-        transaction: transaction,
+        transaction: transaction_form,
         currency: 'EUR'
       ))
 
@@ -223,39 +219,35 @@ RSpec.describe Onboarding::AccountLineComponent, type: :component do
   end
 
   describe 'integration with form object' do
-    it 'works with Transaction object' do
+    it 'works with TransactionForm object' do
       expect do
         render_inline(described_class.new(
           form: form,
           index: 0,
-          transaction: transaction,
+          transaction: transaction_form,
           currency: 'XOF'
         ))
       end.not_to raise_error
     end
 
     it 'renders multiple account lines with different indexes' do
-      transactions = 3.times.map do |i|
-        Transaction.new(
+      transaction_forms = 3.times.map do |i|
+        Onboarding::TransactionForm.new(
+          user: user,
           amount: 10_000 * (i + 1),
           transaction_date: Date.current,
-          user: user
-        ).tap do |t|
-          t.build_account(name: "Account #{i + 1}", user: user)
-          t.build_transaction_type(
-            name: Onboarding::AccountSetupForm::TRANSACTION_TYPE_NAME,
-            kind: TransactionType::KIND_TRANSFER_IN,
-            user: user
-          )
-        end
+          account_name: "Account #{i + 1}",
+          transaction_type_name: Onboarding::TransactionForm::DEFAULT_TRANSACTION_TYPE_NAME,
+          transaction_type_kind: Onboarding::TransactionForm::DEFAULT_TRANSACTION_TYPE_KIND
+        )
       end
 
-      transactions.each_with_index do |txn, index|
-        form_builder = mock_form_builder(txn)
+      transaction_forms.each_with_index do |txn_form, index|
+        form_builder = mock_form_builder(txn_form)
         component = described_class.new(
           form: form_builder,
           index: index,
-          transaction: txn,
+          transaction: txn_form,
           currency: 'XOF',
           can_remove: index > 0
         )
@@ -267,26 +259,26 @@ RSpec.describe Onboarding::AccountLineComponent, type: :component do
 
   describe 'edge cases' do
     it 'handles transaction with existing account name' do
-      transaction.account.name = 'My Existing Account'
+      transaction_form.account_name = 'My Existing Account'
 
       expect do
         render_inline(described_class.new(
           form: form,
           index: 0,
-          transaction: transaction,
+          transaction: transaction_form,
           currency: 'XOF'
         ))
       end.not_to raise_error
     end
 
     it 'handles transaction with zero amount' do
-      transaction.amount = 0
+      transaction_form.amount = 0
 
       expect do
         render_inline(described_class.new(
           form: form,
           index: 0,
-          transaction: transaction,
+          transaction: transaction_form,
           currency: 'XOF'
         ))
       end.not_to raise_error
@@ -297,7 +289,7 @@ RSpec.describe Onboarding::AccountLineComponent, type: :component do
         render_inline(described_class.new(
           form: form,
           index: 999,
-          transaction: transaction,
+          transaction: transaction_form,
           currency: 'XOF'
         ))
       end.not_to raise_error
@@ -310,7 +302,7 @@ RSpec.describe Onboarding::AccountLineComponent, type: :component do
         rendered = render_inline(described_class.new(
           form: form,
           index: 0,
-          transaction: transaction,
+          transaction: transaction_form,
           currency: currency
         ))
 

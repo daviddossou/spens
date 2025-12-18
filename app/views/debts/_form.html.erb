@@ -30,6 +30,22 @@
     ) %>
   </div>
 
+  <!-- Account Field -->
+  <div class="debt-form__field">
+    <%= render Forms::InputFieldComponent.new(
+      form: form,
+      field: :account_name,
+      label: t(".account_label.#{ form.object.direction }"),
+      required: false,
+      autocomplete: true,
+      autocomplete_options: form.object.account_suggestions,
+      default_autocomplete_options: form.object.default_account_suggestions,
+      allow_create: true,
+      placeholder: t(".account_placeholder.#{ form.object.direction }"),
+      help_text: t(".account_help.#{ form.object.direction }")
+    ) %>
+  </div>
+
   <!-- More Details Toggle -->
   <div class="debt-form__toggle">
     <button

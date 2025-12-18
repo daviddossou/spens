@@ -241,6 +241,7 @@ RSpec.describe GoalForm, type: :model do
       it 'returns false when validation fails' do
         form.account_name = nil
         expect(form.submit).to be(false)
+        expect(form.errors[:account_name]).to include("can't be blank")
       end
 
       it 'does not create or update account' do
@@ -288,33 +289,16 @@ RSpec.describe GoalForm, type: :model do
 
       context 'when current_balance is higher than account balance' do
         let(:account) { create(:account, user: user, name: 'Emergency Fund', balance: 500) }
-        let(:transaction_type) { create(:transaction_type, user: user, kind: TransactionType::KIND_TRANSFER_IN) }
 
-        before do
-          allow(FindOrCreateTransactionTypeService).to receive(:new)
-            .with(user, I18n.t('transactions.transfer.type_name.transfer_in'), TransactionType::KIND_TRANSFER_IN)
-            .and_return(instance_double(FindOrCreateTransactionTypeService, call: transaction_type))
-        end
+        it 'creates a transaction to adjust the balance' do
+          expect { form.submit }.to change { account.transactions.count }.by(1)
 
-        it 'creates transfer_in transaction for the difference' do
-          expect(CreateTransactionService).to receive(:new).with(
-            user,
-            account,
-            transaction_type,
-            500.0,
-            Date.current,
-            nil,
-            transaction_type.name
-          ).and_call_original
-
-          form.submit
+          transaction = account.transactions.order(:created_at).last
+          expect(transaction.amount).to eq(500.0)
+          expect(transaction.transaction_type.kind).to eq(TransactionType::KIND_TRANSFER_IN)
         end
 
         it 'adjusts account balance' do
-          allow_any_instance_of(CreateTransactionService).to receive(:call) do
-            account.update!(balance: account.balance + 500)
-          end
-
           form.submit
           expect(account.reload.balance).to eq(1000.00)
         end
@@ -322,33 +306,16 @@ RSpec.describe GoalForm, type: :model do
 
       context 'when current_balance is lower than account balance' do
         let(:account) { create(:account, user: user, name: 'Emergency Fund', balance: 1500) }
-        let(:transaction_type) { create(:transaction_type, user: user, kind: TransactionType::KIND_TRANSFER_OUT) }
 
-        before do
-          allow(FindOrCreateTransactionTypeService).to receive(:new)
-            .with(user, I18n.t('transactions.transfer.type_name.transfer_out'), TransactionType::KIND_TRANSFER_OUT)
-            .and_return(instance_double(FindOrCreateTransactionTypeService, call: transaction_type))
-        end
+        it 'creates a transaction to adjust the balance' do
+          expect { form.submit }.to change { account.transactions.count }.by(1)
 
-        it 'creates transfer_out transaction for the difference' do
-          expect(CreateTransactionService).to receive(:new).with(
-            user,
-            account,
-            transaction_type,
-            500.0,
-            Date.current,
-            nil,
-            transaction_type.name
-          ).and_call_original
-
-          form.submit
+          transaction = account.transactions.order(:created_at).last
+          expect(transaction.amount.abs).to eq(500.0)
+          expect(transaction.transaction_type.kind).to eq(TransactionType::KIND_TRANSFER_OUT)
         end
 
         it 'adjusts account balance' do
-          allow_any_instance_of(CreateTransactionService).to receive(:call) do
-            account.update!(balance: account.balance - 500)
-          end
-
           form.submit
           expect(account.reload.balance).to eq(1000.00)
         end
@@ -400,54 +367,41 @@ RSpec.describe GoalForm, type: :model do
     end
 
     context 'edge cases' do
-      let(:account) { create(:account, user: user, name: 'Test Account', balance: 0) }
-
-      before do
-        allow(FindOrCreateAccountService).to receive(:new).with(user, form.account_name)
-          .and_return(instance_double(FindOrCreateAccountService, call: account))
-      end
-
       it 'handles very large amounts' do
         form.current_balance = 999_999_999.99
         form.saving_goal = 1_000_000_000.00
-        expect(form.submit).to eq(account)
+        result = form.submit
+        expect(result).to be_an(Account)
+        expect(result.saving_goal).to eq(1_000_000_000.00)
       end
 
       it 'handles decimal precision correctly' do
         form.current_balance = 100.12345
         form.saving_goal = 200.67890
-        expect(form.submit).to eq(account)
-        expect(account.reload.saving_goal).to eq(200.67890)
+        result = form.submit
+        expect(result).to be_an(Account)
+        expect(result.saving_goal).to eq(200.67890)
       end
 
       it 'handles account names with special characters' do
         form.account_name = "John's Emergency Fund (💰)"
-        allow(FindOrCreateAccountService).to receive(:new).with(user, "John's Emergency Fund (💰)")
-          .and_return(instance_double(FindOrCreateAccountService, call: account))
-        expect(form.submit).to eq(account)
+        result = form.submit
+        expect(result).to be_an(Account)
+        expect(result.name).to eq("John's Emergency Fund (💰)")
       end
 
       it 'handles very small balance differences' do
-        account.update!(balance: 1000.01)
+        account = create(:account, user: user, name: 'Emergency Fund', balance: 1000.01)
+        form.account_name = account.name
         form.current_balance = 1000.02
         form.saving_goal = 2000.00
 
-        transaction_type = create(:transaction_type, user: user, kind: TransactionType::KIND_TRANSFER_IN)
-        allow(FindOrCreateTransactionTypeService).to receive(:new).and_return(double(call: transaction_type))
+        expect { form.submit }.to change { Transaction.count }.by(1)
 
-        # Due to floating point arithmetic, we need to use be_within matcher
-        expect(CreateTransactionService).to receive(:new) do |u, acc, tt, amount, date, desc, name|
-          expect(u).to eq(user)
-          expect(acc).to eq(account)
-          expect(tt).to eq(transaction_type)
-          expect(amount).to be_within(0.001).of(0.01)
-          expect(date).to eq(Date.current)
-          expect(desc).to be_nil
-          expect(name).to eq(transaction_type.name)
-          instance_double(FindOrCreateTransactionTypeService, call: true)
-        end
-
-        form.submit
+        # Verify transaction was created with the small difference
+        transaction = account.transactions.last
+        expect(transaction.amount).to be_within(0.001).of(0.01)
+        expect(account.reload.balance).to be_within(0.001).of(1000.02)
       end
     end
   end

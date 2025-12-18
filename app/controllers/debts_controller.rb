@@ -2,10 +2,10 @@
 
 class DebtsController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_debt, only: [:show, :edit, :update]
+  before_action :set_debt, only: [ :show, :edit, :update ]
 
   def index
-    @direction = params[:direction] || 'lent'
+    @direction = params[:direction] || "lent"
     @debts = current_user.debts.ongoing.send(@direction).order(created_at: :desc)
   end
 
@@ -14,21 +14,21 @@ class DebtsController < ApplicationController
   end
 
   def new
-    build_form(direction: params[:direction] || 'lent')
+    build_form(direction: params[:direction] || "lent")
   end
 
   def create
     build_form(debt_params)
 
     if @form.submit
-      redirect_to debt_path(id: @form.debt.id), notice: t('.success')
+      redirect_to debt_path(id: @form.debt.id), notice: t(".success")
     else
       render :new, status: :unprocessable_entity
     end
   rescue StandardError => e
     Rails.logger.error "Error in DebtsController#create: #{e.message}"
     Rails.logger.error e.backtrace.join("\n")
-    redirect_to new_debt_path, alert: t('.error')
+    redirect_to new_debt_path, alert: t(".error")
   end
 
   def edit
@@ -39,14 +39,14 @@ class DebtsController < ApplicationController
     build_form(debt_params.merge(id: @debt.id))
 
     if @form.submit
-      redirect_to debt_path(id: @debt.id), notice: t('.success')
+      redirect_to debt_path(id: @debt.id), notice: t(".success")
     else
       render :edit, status: :unprocessable_entity
     end
   rescue StandardError => e
     Rails.logger.error "Error in DebtsController#update: #{e.message}"
     Rails.logger.error e.backtrace.join("\n")
-    redirect_to edit_debt_path(@debt), alert: t('.error')
+    redirect_to edit_debt_path(@debt), alert: t(".error")
   end
 
   private
@@ -54,7 +54,7 @@ class DebtsController < ApplicationController
   def set_debt
     @debt = current_user.debts.find(params[:id])
   rescue ActiveRecord::RecordNotFound
-    redirect_to debts_path, alert: t('debts.errors.not_found')
+    redirect_to debts_path, alert: t("debts.errors.not_found")
   end
 
   def build_form(payload = {})
@@ -79,7 +79,8 @@ class DebtsController < ApplicationController
       :total_lent,
       :total_reimbursed,
       :note,
-      :direction
+      :direction,
+      :account_name
     )
   end
 end

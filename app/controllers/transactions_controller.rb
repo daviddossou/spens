@@ -15,7 +15,7 @@ class TransactionsController < ApplicationController
     build_form(transaction_params)
 
     if @form.submit
-      redirect_to dashboard_path, notice: t('.success')
+      redirect_to dashboard_path, notice: t(".success")
     else
       render :new, status: :unprocessable_entity
     end
@@ -24,7 +24,7 @@ class TransactionsController < ApplicationController
   private
 
   def build_form(payload = {})
-    kind = params[:kind] || payload[:kind] || 'expense'
+    kind = params[:kind] || payload[:kind] || "expense"
     account_id = params[:account_id] || payload[:account_id]
     debt_id = params[:debt_id] || payload[:debt_id]
 

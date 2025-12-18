@@ -79,7 +79,7 @@ class Transaction < ApplicationRecord
 
   def account_presence_based_on_type
     return unless transaction_type.present?
-    return if [TransactionType::KIND_DEBT_IN, TransactionType::KIND_DEBT_OUT].include?(transaction_type.kind)
+    return if [ TransactionType::KIND_DEBT_IN, TransactionType::KIND_DEBT_OUT ].include?(transaction_type.kind)
 
     errors.add(:account, :blank) if account.nil?
   end

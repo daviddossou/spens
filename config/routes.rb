@@ -10,13 +10,13 @@ Rails.application.routes.draw do
     get "dashboard", to: "home#dashboard"
 
     # Transactions
-    resources :transactions, only: [:new, :create, :index, :show, :edit, :update, :destroy]
+    resources :transactions, only: [ :new, :create, :index, :show, :edit, :update, :destroy ]
 
     # Goals
-    resources :goals, only: [:index, :show, :new, :create, :edit, :update, :destroy]
+    resources :goals, only: [ :index, :show, :new, :create, :edit, :update, :destroy ]
 
     # Debts
-    resources :debts, only: [:index, :show, :new, :create, :edit, :update]
+    resources :debts, only: [ :index, :show, :new, :create, :edit, :update ]
 
     # Onboarding routes
     get "onboarding", to: "onboarding#show"

@@ -6,7 +6,7 @@ class TransactionForm < BaseForm
   attr_accessor :user, :transaction, :debt
   attr_reader :account_id, :debt_id
 
-  attribute :kind, :string, default: 'expense'
+  attribute :kind, :string, default: "expense"
   attribute :account_name, :string
   attribute :from_account_name, :string
   attribute :to_account_name, :string
@@ -51,12 +51,12 @@ class TransactionForm < BaseForm
       account = user.accounts.find_by(id: @account_id)
       if account
         payload[:account_name] ||= account.name
-        payload[:to_account_name] ||= account.name if payload[:kind] == 'transfer'
+        payload[:to_account_name] ||= account.name if payload[:kind] == "transfer"
       end
     end
 
     super(
-      kind: payload[:kind] || 'expense',
+      kind: payload[:kind] || "expense",
       account_name: payload[:account_name],
       from_account_name: payload[:from_account_name],
       to_account_name: payload[:to_account_name],
@@ -125,18 +125,18 @@ class TransactionForm < BaseForm
   private
 
   def transfer?
-    ['transfer', 'transfer_in', 'transfer_out'].include?(kind)
+    [ "transfer", "transfer_in", "transfer_out" ].include?(kind)
   end
 
   def double_transfer?
-    kind == 'transfer'
+    kind == "transfer"
   end
 
   def different_accounts_for_transfer
     return unless from_account_name.present? && to_account_name.present? &&
                   from_account_name.strip.downcase == to_account_name.strip.downcase
 
-    errors.add(:to_account_name, I18n.t('errors.messages.different_account'))
+    errors.add(:to_account_name, I18n.t("errors.messages.different_account"))
   end
 
   def create_regular_transaction
@@ -154,9 +154,9 @@ class TransactionForm < BaseForm
   end
 
   def create_transfer_in_transaction
-    return unless kind == 'transfer' || kind == 'transfer_in'
+    return unless kind == "transfer" || kind == "transfer_in"
 
-    description = transaction_type_name.presence || I18n.t('transactions.transfer.description_in', from_account_name: from_account.name, to_account_name: to_account.name)
+    description = transaction_type_name.presence || I18n.t("transactions.transfer.description_in", from_account_name: from_account.name, to_account_name: to_account.name)
 
     create_and_validate_transaction(
       account: to_account,
@@ -167,9 +167,9 @@ class TransactionForm < BaseForm
   end
 
   def create_transfer_out_transaction
-    return unless kind == 'transfer' || kind == 'transfer_out'
+    return unless kind == "transfer" || kind == "transfer_out"
 
-    description = transaction_type_name.presence || I18n.t('transactions.transfer.description_out', from_account_name: from_account.name, to_account_name: to_account.name)
+    description = transaction_type_name.presence || I18n.t("transactions.transfer.description_out", from_account_name: from_account.name, to_account_name: to_account.name)
 
     create_and_validate_transaction(
       account: from_account,

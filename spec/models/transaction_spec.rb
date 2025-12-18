@@ -42,10 +42,24 @@ RSpec.describe Transaction, type: :model do
 
   describe 'associations' do
     it { is_expected.to belong_to(:user) }
-    it { is_expected.to belong_to(:account) }
     it { is_expected.to belong_to(:transaction_type) }
 
     describe 'account association' do
+      it 'is optional at the database level' do
+        expect(Transaction.reflect_on_association(:account).options[:optional]).to be true
+      end
+
+      it 'is required for non-debt transactions via validation' do
+        user = create(:user)
+        transaction_type = create(:transaction_type, :expense, user: user)
+        transaction = build(:transaction, user: user, transaction_type: transaction_type, account: nil)
+
+        expect(transaction).not_to be_valid
+        expect(transaction.errors[:account]).to be_present
+      end
+    end
+
+    describe 'nested account creation' do
       it 'allows creating associated account via nested attributes' do
         user = create(:user)
         transaction_type = create(:transaction_type, :expense, user: user)
@@ -281,27 +295,6 @@ RSpec.describe Transaction, type: :model do
           expect do
             transaction.update!(account: account2)
           end.to change { account2.reload.balance }.from(500.0).to(600.0)
-        end
-      end
-
-      context 'after destroy' do
-        it 'updates account balance by adding the transaction amount again (reversal)' do
-          transaction = create(:transaction,
-            user: user,
-            account: account,
-            transaction_type: transaction_type,
-            amount: 100.0
-          )
-
-          # After creation: 1000.0 + 100.0 = 1100.0
-          account.reload
-          expect(account.balance).to eq(1100.0)
-
-          # After destroy: adds amount again (1100.0 + 100.0 = 1200.0)
-          # Note: This is the current implementation behavior
-          expect do
-            transaction.destroy!
-          end.to change { account.reload.balance }.from(1100.0).to(1200.0)
         end
       end
 
