@@ -1,0 +1,51 @@
+<%= link_to transaction_path(locale: I18n.locale, id: transaction.id), class: "transaction-item", data: { turbo_frame: "_top" } do %>
+  <div class="transaction-item__content">
+    <!-- Left side: Transaction type and description -->
+    <div class="transaction-item__left">
+      <div class="transaction-item__info">
+        <!-- Icon based on kind -->
+        <div class="transaction-item__icon <%= icon_class %>">
+          <%= icon_svg %>
+        </div>
+
+        <!-- Transaction Type and Description -->
+        <div class="transaction-item__details">
+          <p class="transaction-item__type">
+            <%= transaction.transaction_type.name %>
+          </p>
+          <p class="transaction-item__description">
+            <%= transaction.description %>
+          </p>
+          <% if transaction.account.present? %>
+            <p class="transaction-item__account">
+              <%= transaction.account.name %>
+            </p>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right side: Amount and chevron -->
+    <div class="transaction-item__right">
+      <div class="transaction-item__amount-container">
+        <p class="transaction-item__amount <%= amount_class %>">
+          <%= amount_prefix %>
+          <%= helpers.smart_format_money(transaction.amount, helpers.current_user.currency) %>
+        </p>
+      </div>
+      <svg class="transaction-item__chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- Note indicator if present -->
+  <% if transaction.note.present? %>
+    <div class="transaction-item__note">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"/>
+      </svg>
+      <%= t('home.dashboard.has_note') %>
+    </div>
+  <% end %>
+<% end %>

@@ -25,3 +25,11 @@ en:
       nav_profile: "Profile"
       welcome_user: "Welcome"
       sign_out: "Sign Out"
+      transactions_title: "Recent Transactions"
+      add_transaction: "Add Transaction"
+      loading: "Loading more..."
+      has_note: "Has note"
+    empty_state:
+      no_transactions: "No transactions yet"
+      no_transactions_description: "Start tracking your finances by adding your first transaction"
+      add_first_transaction: "Add Your First Transaction"

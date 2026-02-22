@@ -21,6 +21,16 @@ class TransactionsController < ApplicationController
     end
   end
 
+  def show
+    @transaction = current_user.transactions.includes(:transaction_type, :account, :debt).find(params[:id])
+  end
+
+  def destroy
+    @transaction = current_user.transactions.find(params[:id])
+    @transaction.destroy
+    redirect_to dashboard_path, notice: t(".success")
+  end
+
   private
 
   def build_form(payload = {})

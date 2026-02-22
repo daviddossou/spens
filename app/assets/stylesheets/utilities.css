@@ -1,0 +1,43 @@
+/* Utility Classes */
+
+/* Cursor helpers */
+.cursor-help {
+  cursor: help;
+  position: relative;
+  border-bottom: 1px dotted currentColor;
+}
+
+/* Native tooltip enhancement - works on hover (desktop) and tap (mobile) */
+.cursor-help[title]:hover::after,
+.cursor-help[title]:focus::after,
+.cursor-help[title]:active::after {
+  content: attr(title);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgba(0, 0, 0, 0.9);
+  color: white;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  white-space: nowrap;
+  z-index: 1000;
+  margin-bottom: 0.5rem;
+  pointer-events: none;
+}
+
+.cursor-help[title]:hover::before,
+.cursor-help[title]:focus::before,
+.cursor-help[title]:active::before {
+  content: '';
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 6px solid transparent;
+  border-top-color: rgba(0, 0, 0, 0.9);
+  z-index: 1000;
+  margin-bottom: -0.25rem;
+  pointer-events: none;
+}

@@ -1,0 +1,16 @@
+<% grouped_transactions.each do |date, transactions| %>
+  <div class="transaction-group">
+    <!-- Date Header -->
+    <div class="flex items-center mb-3">
+      <h3 class="text-sm font-semibold text-muted uppercase tracking-wider">
+        <%= l(date, format: :long) %>
+      </h3>
+      <div class="flex-1 ml-4 h-px bg-gray-200"></div>
+    </div>
+
+    <!-- Transactions for this day -->
+    <div class="space-y-2">
+      <%= render TransactionItemComponent.with_collection(transactions, transaction: :itself) %>
+    </div>
+  </div>
+<% end %>

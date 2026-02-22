@@ -15,6 +15,25 @@ class HomeController < ApplicationController
   end
 
   def dashboard
-    # TODO: Add transaction data and analytics
+    @page = params[:page]&.to_i || 1
+    @per_page = 20
+
+    # Get transactions ordered by date (most recent first)
+    @transactions = current_user.transactions
+      .includes(:transaction_type, :account, :debt)
+      .order(transaction_date: :desc, created_at: :desc)
+      .offset((@page - 1) * @per_page)
+      .limit(@per_page)
+
+    # Group transactions by date for display
+    @grouped_transactions = @transactions.group_by(&:transaction_date)
+
+    # Check if there are more transactions
+    @has_more = current_user.transactions.count > (@page * @per_page)
+
+    respond_to do |format|
+      format.html
+      format.turbo_stream
+    end
   end
 end

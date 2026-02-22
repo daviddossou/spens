@@ -1,26 +1,21 @@
-<div class="min-h-screen bg-off-white">
+<div class="dashboard">
   <!-- Navigation -->
-  <nav class="bg-white shadow">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex justify-between h-16">
-        <div class="flex items-center space-x-8">
-          <h1 class="text-xl font-semibold text-dark"><%= t('.dashboard_title') %></h1>
+  <nav class="dashboard__nav">
+    <div class="dashboard__nav-container">
+      <div class="dashboard__nav-content">
+        <div class="dashboard__nav-left">
+          <h1 class="dashboard__title"><%= t('.dashboard_title') %></h1>
 
-          <!-- Future navigation items for transactions -->
-          <div class="hidden md:flex space-x-8">
-            <a href="#" class="text-secondary hover:text-primary px-3 py-2 rounded-md text-sm font-medium">
-              <%= t('.nav_transactions') %>
-            </a>
-            <a href="#" class="text-secondary hover:text-primary px-3 py-2 rounded-md text-sm font-medium">
-              <%= t('.nav_profile') %>
-            </a>
+          <div class="dashboard__nav-links">
+            <%= link_to t('.nav_transactions'), dashboard_path, class: "dashboard__nav-link dashboard__nav-link--active" %>
+            <%= link_to t('.nav_profile'), edit_user_registration_path, class: "dashboard__nav-link dashboard__nav-link--inactive" %>
           </div>
         </div>
 
-        <div class="flex items-center space-x-4">
+        <div class="dashboard__nav-right">
           <%= render Navigation::LanguageSwitcherComponent.new(params: params) %>
 
-          <span class="text-sm text-gray-700"><%= t('.welcome_user') %>, <%= user_display_name(current_user) %></span>
+          <span class="dashboard__welcome"><%= t('.welcome_user') %>, <%= user_display_name(current_user) %></span>
           <%= render Ui::ButtonComponent.new(
             text: t('.sign_out'),
             url: destroy_user_session_path,
@@ -35,67 +30,50 @@
   </nav>
 
   <!-- Main Content -->
-  <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-    <div class="px-4 py-6 sm:px-0">
-      <div class="bg-white overflow-hidden shadow rounded-lg">
-        <div class="px-4 py-5 sm:p-6">
-          <h2 class="text-lg font-medium text-dark mb-4"><%= t('.dashboard_title') %></h2>
-
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <!-- User Info Card -->
-            <div class="bg-card-1 p-4 rounded-lg">
-              <h3 class="text-md font-semibold text-dark"><%= t('.your_account') %></h3>
-              <p class="text-sm text-muted mt-2">Email: <%= current_user.email %></p>
-              <p class="text-sm text-muted">Display Name: <%= user_display_name(current_user) %></p>
-              <div class="mt-3">
-                <%= link_to t('.edit_profile'), edit_user_registration_path,
-                    class: "text-primary hover:text-primary text-sm font-medium" %>
-              </div>
-            </div>
-
-            <!-- Services Card -->
-            <div class="bg-card-2 p-4 rounded-lg">
-              <h3 class="text-md font-semibold text-dark"><%= t('.services') %></h3>
-              <ul class="text-sm text-muted mt-2 space-y-1">
-                <li>• Background Jobs</li>
-                <li>• Real-time Updates</li>
-                <li>• Secure Authentication</li>
-              </ul>
-              <div class="mt-3">
-                <%= link_to "View Sidekiq", "/sidekiq", target: "_blank",
-                    class: "text-primary hover:text-primary text-sm font-medium" %>
-              </div>
-            </div>
-
-            <!-- Quick Actions Card -->
-            <div class="bg-card-3 p-4 rounded-lg">
-              <h3 class="text-md font-semibold text-dark"><%= t('.quick_actions') %></h3>
-              <div class="mt-3 space-y-2">
-                <button class="w-full bg-royal-purple hover:bg-royal-purple text-white px-3 py-2 rounded text-sm font-medium">
-                  <%= t('.test_background_job') %>
-                </button>
-                <%= link_to t('.change_password'), edit_user_registration_path,
-                    class: "block w-full text-center bg-off-white hover:bg-warm-beige text-primary px-3 py-2 rounded text-sm font-medium" %>
-              </div>
-            </div>
-          </div>
-
-          <!-- Recent Activity -->
-          <div class="mt-8">
-            <h3 class="text-lg font-medium text-dark mb-4"><%= t('.recent_activity') %></h3>
-            <div class="bg-off-white p-4 rounded-lg">
-              <p class="text-sm text-secondary">
-                <%= t('.account_created') %>: <%= current_user.created_at.strftime("%B %d, %Y at %I:%M %p") %>
-              </p>
-              <% if current_user.last_sign_in_at %>
-                <p class="text-sm text-secondary">
-                  <%= t('.last_sign_in') %>: <%= current_user.last_sign_in_at.strftime("%B %d, %Y at %I:%M %p") %>
-                </p>
-              <% end %>
-            </div>
-          </div>
-        </div>
+  <div class="dashboard__main"
+       data-controller="infinite-scroll"
+       data-infinite-scroll-url-value="<%= dashboard_path %>"
+       data-infinite-scroll-page-value="<%= @has_more ? @page + 1 : 0 %>">
+    <div class="dashboard__content">
+      <!-- Header with Add Transaction Button -->
+      <div class="dashboard__header">
+        <h2 class="dashboard__header-title"><%= t('.transactions_title') %></h2>
+        <%= render Ui::ButtonComponent.new(
+          text: t('.add_transaction'),
+          url: new_transaction_path,
+          variant: :primary,
+          size: :md,
+          classes: "dashboard__add-button"
+        ) do %>
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+          </svg>
+          <%= t('.add_transaction') %>
+        <% end %>
       </div>
+
+      <!-- Transactions List -->
+      <div id="transactions-container" class="dashboard__transactions">
+        <%= render partial: "transactions_list", locals: { grouped_transactions: @grouped_transactions } %>
+      </div>
+
+      <!-- Loading Spinner -->
+      <div id="loading-spinner"
+           data-infinite-scroll-target="spinner"
+           class="dashboard__spinner hidden">
+        <div class="dashboard__spinner-icon"></div>
+        <p class="dashboard__spinner-text"><%= t('.loading') %></p>
+      </div>
+
+      <!-- Load More Trigger (Invisible) -->
+      <% if @has_more %>
+        <div data-infinite-scroll-target="trigger" class="dashboard__load-trigger"></div>
+      <% end %>
+
+      <!-- Empty State -->
+      <% if @transactions.empty? && @page == 1 %>
+        <%= render partial: "empty_state" %>
+      <% end %>
     </div>
   </div>
 </div>

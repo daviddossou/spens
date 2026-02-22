@@ -1,6 +1,6 @@
 class OnboardingController < ApplicationController
   before_action :authenticate_user!
-  before_action :redirect_if_completed
+  before_action :redirect_if_completed, if: :user_signed_in?
 
   # GET /onboarding
   def show

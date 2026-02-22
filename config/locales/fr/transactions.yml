@@ -39,9 +39,32 @@ fr:
       cancel: "Annuler"
     create:
       success: "Transaction enregistrée avec succès !"
+    destroy:
+      success: "Transaction supprimée avec succès !"
     transfer:
       type_name:
         transfer_out: "Décaissement (transfert de compte)"
         transfer_in: "Encaissement (transfert de compte)"
       description_out: "%{from_account_name} ➡️ %{to_account_name}"
       description_in: "%{to_account_name} ⬅️ %{from_account_name}"
+    show:
+      transaction_details: "Détails de la transaction"
+      description: "Description"
+      date: "Date"
+      account: "Compte"
+      related_debt: "Dette associée"
+      category: "Catégorie"
+      note: "Note"
+      created_at: "Créé"
+      updated_at: "Dernière mise à jour"
+      back_to_dashboard: "Retour au tableau de bord"
+      edit: "Modifier"
+      delete: "Supprimer"
+      delete_confirm: "Êtes-vous sûr de vouloir supprimer cette transaction ? Cette action est irréversible."
+      kind_income: "Revenu"
+      kind_expense: "Dépense"
+      kind_debt_in: "Dette reçue"
+      kind_debt_out: "Paiement de dette"
+      kind_transfer: "Transfert"
+      kind_transfer_in: "Transfert entrant"
+      kind_transfer_out: "Transfert sortant"

@@ -1,0 +1,14 @@
+<%= turbo_stream.append "transactions-container" do %>
+  <%= render partial: "transactions_list", locals: { grouped_transactions: @grouped_transactions } %>
+<% end %>
+
+<% if @has_more %>
+  <%= turbo_stream.replace "infinite-scroll-trigger" do %>
+    <div id="infinite-scroll-trigger"
+         data-next-page="<%= @page + 1 %>"
+         class="h-20">
+    </div>
+  <% end %>
+<% else %>
+  <%= turbo_stream.remove "infinite-scroll-trigger" %>
+<% end %>

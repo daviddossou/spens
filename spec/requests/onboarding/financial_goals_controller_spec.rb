@@ -15,6 +15,20 @@ RSpec.describe 'Onboarding::FinancialGoalsController', type: :request do
         expect(response).to redirect_to(new_user_session_path)
       end
     end
+
+    context 'when user has completed onboarding' do
+      before do
+        # Make sure user is fully completed by setting all required fields
+        completed_user.update!(country: 'US', currency: 'USD')
+        sign_in completed_user, scope: :user
+      end
+
+      it 'redirects to next step or dashboard' do
+        get onboarding_financial_goals_path
+        # User with completed onboarding should be redirected to dashboard
+        expect(response).to redirect_to(dashboard_path)
+      end
+    end
   end
 
   describe 'GET /onboarding/financial_goals' do

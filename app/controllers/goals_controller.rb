@@ -9,7 +9,10 @@ class GoalsController < ApplicationController
   end
 
   def show
-    @latest_transactions = @account.transactions.order(transaction_date: :desc).limit(10)
+    @latest_transactions = @account.transactions
+      .includes(:transaction_type, :account, :debt)
+      .order(transaction_date: :desc)
+      .limit(10)
   end
 
   def new

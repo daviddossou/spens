@@ -10,7 +10,10 @@ class DebtsController < ApplicationController
   end
 
   def show
-    @latest_transactions = @debt.transactions.order(transaction_date: :desc).limit(10)
+    @latest_transactions = @debt.transactions
+      .includes(:transaction_type, :account, :debt)
+      .order(transaction_date: :desc)
+      .limit(10)
   end
 
   def new
