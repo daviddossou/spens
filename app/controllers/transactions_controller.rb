@@ -15,7 +15,7 @@ class TransactionsController < ApplicationController
     build_form(transaction_params)
 
     if @form.submit
-      redirect_to dashboard_path, notice: t(".success")
+      redirect_with_reload_to dashboard_path, notice: t(".success"), status: :see_other
     else
       render :new, status: :unprocessable_entity
     end
@@ -28,7 +28,7 @@ class TransactionsController < ApplicationController
   def destroy
     @transaction = current_user.transactions.find(params[:id])
     @transaction.destroy
-    redirect_to dashboard_path, notice: t(".success")
+    redirect_with_reload_to dashboard_path, notice: t(".success"), status: :see_other
   end
 
   private

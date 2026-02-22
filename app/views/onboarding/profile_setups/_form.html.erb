@@ -1,7 +1,6 @@
 <%= form_with model: @form,
               url: onboarding_profile_setups_path,
               method: :patch,
-              local: true,
               class: "onboarding-form" do |f| %>
   <%= render 'shared/form_errors', object: @form %>
 

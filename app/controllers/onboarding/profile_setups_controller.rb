@@ -11,13 +11,13 @@ class Onboarding::ProfileSetupsController < OnboardingController
     @form = build_form(profile_setup_params)
 
     if @form.submit
-      redirect_to next_step_path
+      redirect_with_reload_to next_step_path, status: :see_other
     else
       render :show, status: :unprocessable_entity
     end
   rescue StandardError => e
     Rails.logger.error "Error when updating profile setup: #{e.message}"
-    redirect_to onboarding_profile_setups_path, alert: t("onboarding.errors.generic")
+    redirect_to onboarding_profile_setups_path, alert: t("onboarding.errors.generic"), status: :see_other
   end
 
   private

@@ -1,7 +1,6 @@
 <%= form_with model: @form,
               url: onboarding_financial_goals_path,
               method: :patch,
-              local: true,
               class: "onboarding-form",
               data: { controller: "onboarding--financial-goals" } do |f| %>
   <%= render 'shared/form_errors', object: @form %>

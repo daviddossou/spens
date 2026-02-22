@@ -31,28 +31,28 @@ class GoalsController < ApplicationController
     build_form(goal_params)
 
     if @form.submit
-      redirect_to goal_path(id: @form.account.id), notice: t(".success")
+      redirect_to goal_path(id: @form.account.id), notice: t(".success"), status: :see_other
     else
       render :new, status: :unprocessable_entity
     end
   rescue StandardError => e
     Rails.logger.error "Error in GoalsController#create: #{e.message}"
     Rails.logger.error e.backtrace.join("\n")
-    redirect_to new_goal_path, alert: t(".error")
+    redirect_to new_goal_path, alert: t(".error"), status: :see_other
   end
 
   def update
     build_form(goal_params)
 
     if @form.submit
-      redirect_to goal_path(id: @account.id), notice: t(".success")
+      redirect_to goal_path(id: @account.id), notice: t(".success"), status: :see_other
     else
       render :edit, status: :unprocessable_entity
     end
   rescue StandardError => e
     Rails.logger.error "Error in GoalsController#update: #{e.message}"
     Rails.logger.error e.backtrace.join("\n")
-    redirect_to edit_goal_path(@account), alert: t(".error")
+    redirect_to edit_goal_path(@account), alert: t(".error"), status: :see_other
   end
 
   private

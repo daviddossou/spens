@@ -35,7 +35,10 @@ RSpec.describe OnboardingRedirection, type: :controller do
     end
 
     context 'when user is signed in' do
-      before { sign_in user }
+      before do
+        sign_in user
+        allow(controller).to receive(:current_user).and_return(user)
+      end
 
       context 'when onboarding is completed' do
         before { allow(user).to receive(:onboarding_completed?).and_return(true) }

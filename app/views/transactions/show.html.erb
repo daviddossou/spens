@@ -4,8 +4,8 @@
     <div class="transaction-show__nav-container">
       <div class="transaction-show__nav-content">
         <div class="transaction-show__nav-left">
-          <%= link_to dashboard_path, class: "transaction-show__back-link" do %>
-            <svg class="transaction-show__back-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <%= link_to dashboard_path, class: "transaction-show__back-link", aria_label: t('.back_to_dashboard') do %>
+            <svg class="transaction-show__back-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
             </svg>
           <% end %>

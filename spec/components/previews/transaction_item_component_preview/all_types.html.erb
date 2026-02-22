@@ -1,0 +1,30 @@
+<!-- All Transaction Types Preview Template -->
+<div class="space-y-6 p-4 max-w-3xl mx-auto">
+  <h3 class="text-lg font-semibold mb-4">Transaction Types</h3>
+
+  <div class="space-y-3">
+    <% transactions.each do |type, transaction| %>
+      <div>
+        <h4 class="text-sm font-medium text-gray-600 mb-2"><%= type.to_s.humanize %></h4>
+        <%= render TransactionItemComponent.new(transaction: transaction) do |component|
+          user_stub = OpenStruct.new(id: "preview-user", currency: currency)
+          helpers_stub = Object.new.tap do |h|
+            h.define_singleton_method(:current_user) { user_stub }
+            h.define_singleton_method(:smart_format_money) do |amount, curr|
+              formatted = format("%.2f", amount.abs)
+              case curr.upcase
+              when "USD" then "$#{formatted}"
+              when "EUR" then "€#{formatted}"
+              when "GBP" then "£#{formatted}"
+              when "CAD" then "CA$#{formatted}"
+              else "#{curr} #{formatted}"
+              end
+            end
+          end
+          component.instance_variable_set(:@__vc_helpers, helpers_stub)
+          component
+        end %>
+      </div>
+    <% end %>
+  </div>
+</div>
