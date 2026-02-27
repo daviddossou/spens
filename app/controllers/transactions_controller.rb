@@ -25,12 +25,6 @@ class TransactionsController < ApplicationController
     @transaction = current_user.transactions.includes(:transaction_type, :account, :debt).find(params[:id])
   end
 
-  def destroy
-    @transaction = current_user.transactions.find(params[:id])
-    @transaction.destroy
-    redirect_with_reload_to dashboard_path, notice: t(".success"), status: :see_other
-  end
-
   private
 
   def build_form(payload = {})

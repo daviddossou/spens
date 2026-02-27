@@ -112,34 +112,6 @@
             variant: :secondary,
             size: :md
           ) %>
-
-          <div class="transaction-show__actions-right">
-            <%= render Ui::ButtonComponent.new(
-              text: t('.edit'),
-              url: edit_transaction_path(locale: I18n.locale, id: @transaction.id),
-              variant: :secondary,
-              size: :md
-            ) do %>
-              <svg class="transaction-show__action-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-              </svg>
-              <%= t('.edit') %>
-            <% end %>
-
-            <%= render Ui::ButtonComponent.new(
-              text: t('.delete'),
-              url: transaction_path(locale: I18n.locale, id: @transaction.id),
-              variant: :danger,
-              size: :md,
-              method: :delete,
-              data: { "turbo-method": "delete", "turbo-confirm": t('.delete_confirm') }
-            ) do %>
-              <svg class="transaction-show__action-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-              </svg>
-              <%= t('.delete') %>
-            <% end %>
-          </div>
         </div>
       </div>
     </div>

@@ -39,8 +39,7 @@ fr:
       cancel: "Annuler"
     create:
       success: "Transaction enregistrée avec succès !"
-    destroy:
-      success: "Transaction supprimée avec succès !"
+
     transfer:
       type_name:
         transfer_out: "Décaissement (transfert de compte)"
@@ -57,10 +56,8 @@ fr:
       note: "Note"
       created_at: "Créé"
       updated_at: "Dernière mise à jour"
-      back_to_dashboard: "Retour au tableau de bord"
-      edit: "Modifier"
-      delete: "Supprimer"
-      delete_confirm: "Êtes-vous sûr de vouloir supprimer cette transaction ? Cette action est irréversible."
+      back_to_dashboard: "Retour"
+
       kind_income: "Revenu"
       kind_expense: "Dépense"
       kind_debt_in: "Dette reçue"
