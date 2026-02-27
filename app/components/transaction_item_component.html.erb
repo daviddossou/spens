@@ -1,7 +1,7 @@
 <%= link_to transaction_path(locale: I18n.locale, id: transaction.id),
             class: "transaction-item",
             data: { turbo_frame: "_top" },
-            aria_label: "View #{transaction.transaction_type.name}: #{amount_prefix}#{helpers.smart_format_money(transaction.amount, helpers.current_user.currency)}" do %>
+            aria_label: "View #{transaction.transaction_type.name}: #{amount_prefix}#{helpers.smart_format_money(transaction.amount, transaction.user.currency)}" do %>
   <div class="transaction-item__content">
     <!-- Left side: Transaction type and description -->
     <div class="transaction-item__left">
@@ -33,7 +33,7 @@
       <div class="transaction-item__amount-container">
         <p class="transaction-item__amount <%= amount_class %>">
           <%= amount_prefix %>
-          <%= helpers.smart_format_money(transaction.amount, helpers.current_user.currency) %>
+          <%= helpers.smart_format_money(transaction.amount, transaction.user.currency) %>
         </p>
       </div>
       <svg class="transaction-item__chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">

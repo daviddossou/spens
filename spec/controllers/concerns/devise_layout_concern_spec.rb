@@ -22,6 +22,7 @@ RSpec.describe DeviseLayoutConcern, type: :controller do
     context 'when controller is a devise controller' do
       before do
         allow(controller).to receive(:devise_controller?).and_return(true)
+        allow(controller).to receive(:user_signed_in?).and_return(false)
       end
 
       it 'returns auth layout' do
@@ -32,6 +33,45 @@ RSpec.describe DeviseLayoutConcern, type: :controller do
         get :index
         expect(response).to have_http_status(:success)
         # The layout selection is tested through the layout_by_resource method
+      end
+    end
+
+    context 'when signed-in user is editing registration' do
+      before do
+        allow(controller).to receive(:devise_controller?).and_return(true)
+        allow(controller).to receive(:user_signed_in?).and_return(true)
+        allow(controller).to receive(:controller_name).and_return("registrations")
+        allow(controller).to receive(:action_name).and_return("edit")
+      end
+
+      it 'returns application layout' do
+        expect(controller.send(:layout_by_resource)).to eq('application')
+      end
+    end
+
+    context 'when signed-in user is updating registration' do
+      before do
+        allow(controller).to receive(:devise_controller?).and_return(true)
+        allow(controller).to receive(:user_signed_in?).and_return(true)
+        allow(controller).to receive(:controller_name).and_return("registrations")
+        allow(controller).to receive(:action_name).and_return("update")
+      end
+
+      it 'returns application layout' do
+        expect(controller.send(:layout_by_resource)).to eq('application')
+      end
+    end
+
+    context 'when signed-in user on non-registration devise page' do
+      before do
+        allow(controller).to receive(:devise_controller?).and_return(true)
+        allow(controller).to receive(:user_signed_in?).and_return(true)
+        allow(controller).to receive(:controller_name).and_return("sessions")
+        allow(controller).to receive(:action_name).and_return("new")
+      end
+
+      it 'returns auth layout' do
+        expect(controller.send(:layout_by_resource)).to eq('auth')
       end
     end
 
@@ -82,6 +122,10 @@ RSpec.describe DeviseLayoutConcern, type: :controller do
 
         def devise_controller?
           true
+        end
+
+        def user_signed_in?
+          false
         end
 
         def test_action

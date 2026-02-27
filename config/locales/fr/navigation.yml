@@ -1,0 +1,11 @@
+fr:
+  navigation:
+    header:
+      settings: "Paramètres"
+      contact_support: "Contacter le support"
+      log_out: "Se déconnecter"
+    bottom_nav:
+      dashboard: "Tableau de bord"
+      debts: "Dettes"
+      goals: "Objectifs"
+      accounts: "Comptes"

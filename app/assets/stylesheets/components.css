@@ -12,6 +12,10 @@
 @import url("components/switcher.css");
 @import url("components/transaction_item.css");
 
+/* Navigation Components */
+@import url("components/header.css");
+@import url("components/bottom_nav.css");
+
 /* Onboarding Components */
 @import url("components/onboarding/account_line.css");
 @import url("components/onboarding/account_setup_form.css");

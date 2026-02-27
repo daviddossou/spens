@@ -17,11 +17,6 @@ RSpec.describe TransactionItemComponent, type: :component do
     )
   end
 
-  before do
-    # Stub current_user in the helper context that ViewComponent uses
-    allow_any_instance_of(ActionView::Base).to receive(:current_user).and_return(user)
-  end
-
   it "renders transaction item" do
     render_inline(described_class.new(transaction: transaction))
 

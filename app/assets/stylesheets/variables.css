@@ -58,7 +58,7 @@
   --color-warm-beige: #D2B98B;
   --color-pale-gold: #D2D08B;
   --color-rose-pink: #D28B94;
-  --color-off-white: #EBEDF7;
+  --color-off-white: #F8F9FA;
 
   /* Semantic Color Mappings */
   --text-primary: var(--color-primary);
@@ -98,6 +98,7 @@
   --border-danger: var(--color-danger);
   --border-warning: var(--color-warning);
   --border-default: var(--color-slate-gray);
+  --border-light: var(--color-off-white);
   --border-focus: var(--color-primary);
 
   /* Interactive States */

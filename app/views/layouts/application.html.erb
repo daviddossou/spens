@@ -26,12 +26,24 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <body>
-    <main class="main-container">
+  <body style="background-color: var(--color-off-white);">
+    <% if user_signed_in? %>
+      <%= render Navigation::HeaderComponent.new(
+        page_title: content_for(:page_title).presence || content_for(:title).presence || "Spens",
+        current_user: current_user,
+        params: params
+      ) %>
+    <% end %>
+
+    <main class="main-container<%= ' main-container--with-shell' if user_signed_in? %>">
       <!-- Flash messages -->
       <%= render Ui::FlashMessageComponent.new(flash) %>
 
       <%= yield %>
     </main>
+
+    <% if user_signed_in? %>
+      <%= render Navigation::BottomNavComponent.new(current_path: request.path) %>
+    <% end %>
   </body>
 </html>

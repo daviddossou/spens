@@ -1,21 +1,25 @@
 /* Main Container */
 .main-container {
-  max-width: 1200px;
+  min-height: 100vh;
+  max-width: 640px;
   margin: 0 auto;
-  margin-top: 0.75rem;
-  padding-left: 1.25rem;
-  padding-right: 1.25rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
   display: flex;
   flex-direction: column;
+}
+
+/* When the app shell is present (authenticated), add spacing for fixed header + bottom nav */
+.main-container--with-shell {
+  padding-top: 56px;
+  padding-bottom: calc(64px + env(safe-area-inset-bottom, 0px));
 }
 
 /* Page Container Styles */
 .page-container {
   width: 100%;
   margin: 0 auto;
-  padding: 2rem 1rem;
-  min-height: 100vh;
-  background-color: var(--bg-surface, #ffffff);
+  padding: 1.5rem 0;
 }
 
 .page-container--narrow {
@@ -100,26 +104,8 @@
   color: var(--text-muted);
 }
 
-/* Mobile Full Width */
-@media (max-width: 640px) {
-
-  .main-container {
-    padding-left: 0;
-    padding-right: 0;
-  }
-
-  .page-header {
-    padding-left: 1rem;
-    padding-right: 1rem;
-  }
-}
-
 /* Responsive - Tablet */
 @media (max-width: 768px) {
-  .page-container {
-    padding: 1.5rem 1rem;
-  }
-
   .page-header__title {
     font-size: 1.75rem;
   }

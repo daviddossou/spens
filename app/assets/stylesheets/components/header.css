@@ -1,0 +1,212 @@
+/* App Header */
+.app-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 56px;
+  background-color: var(--bg-surface, #ffffff);
+  border-bottom: 1px solid var(--color-off-white, #EBEDF7);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.app-header__inner {
+  width: 100%;
+  max-width: 640px;
+  padding: 0 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Left section — profile avatar */
+.app-header__left {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.app-header__avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: var(--color-primary, #3F51B5);
+  color: #ffffff;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border: none;
+  padding: 0;
+  line-height: 1;
+  letter-spacing: 0.5px;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.app-header__avatar:active {
+  transform: scale(0.93);
+}
+
+/* Center — page title */
+.app-header__center {
+  flex: 1;
+  text-align: center;
+  min-width: 0;
+}
+
+.app-header__title {
+  font-size: 1.0625rem;
+  font-weight: 700;
+  color: var(--text-dark, #282A33);
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Right section — analytics */
+.app-header__right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.app-header__analytics-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  color: var(--text-muted, #8D909F);
+  text-decoration: none;
+  transition: background-color 0.15s ease, color 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.app-header__analytics-link:hover,
+.app-header__analytics-link:active {
+  background-color: var(--color-off-white, #EBEDF7);
+  color: var(--color-primary, #3F51B5);
+}
+
+.app-header__analytics-icon {
+  width: 22px;
+  height: 22px;
+}
+
+/* Profile dropdown */
+.app-header__dropdown-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 109;
+}
+
+.app-header__dropdown-backdrop[data-visible] {
+  display: block;
+}
+
+.app-header__dropdown {
+  display: none;
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  min-width: 220px;
+  background-color: var(--bg-surface, #ffffff);
+  border-radius: 12px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.12), 0 1px 4px rgba(0, 0, 0, 0.06);
+  padding: 0.5rem 0;
+  z-index: 110;
+  overflow: hidden;
+}
+
+.app-header__dropdown[data-visible] {
+  display: block;
+}
+
+.app-header__dropdown-header {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--color-off-white, #EBEDF7);
+}
+
+.app-header__dropdown-name {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--text-dark, #282A33);
+  margin: 0;
+}
+
+.app-header__dropdown-email {
+  font-size: 0.75rem;
+  color: var(--text-muted, #8D909F);
+  margin: 0.125rem 0 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.app-header__dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.625rem 1rem;
+  font-size: 0.875rem;
+  color: var(--text-dark, #282A33);
+  text-decoration: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  transition: background-color 0.12s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.app-header__dropdown-item:hover,
+.app-header__dropdown-item:active {
+  background-color: var(--color-off-white, #EBEDF7);
+}
+
+.app-header__dropdown-item--disabled {
+  color: var(--text-muted, #8D909F);
+  cursor: default;
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+.app-header__dropdown-item--danger {
+  color: var(--color-danger, #F44336);
+}
+
+.app-header__dropdown-item--danger:hover,
+.app-header__dropdown-item--danger:active {
+  background-color: var(--color-danger-20, #fcd9d6);
+}
+
+.app-header__dropdown-icon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.app-header__dropdown-divider {
+  height: 1px;
+  background-color: var(--color-off-white, #EBEDF7);
+  margin: 0.25rem 0;
+}
+
+/* Language switcher inside dropdown */
+.app-header__dropdown-language {
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

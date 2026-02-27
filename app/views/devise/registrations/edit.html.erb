@@ -1,84 +1,85 @@
 <% content_for :title, t('.edit_profile') %>
+<% content_for :page_title, t('.edit_profile') %>
 
-<%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { method: :put, class: "space-y-6" }) do |f| %>
-  <%= render "devise/shared/error_messages", resource: resource %>
+<div class="page-container page-container--narrow">
+  <div class="page-content">
+    <%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { method: :put, class: "space-y-6" }) do |f| %>
+      <%= render "devise/shared/error_messages", resource: resource %>
 
-  <%= render Forms::InputFieldComponent.new(
-    form: f,
-    field: :first_name,
-    type: :text_field,
-    label: t('.first_name'),
-    autocomplete: "given-name"
-  ) %>
+      <%= render Forms::InputFieldComponent.new(
+        form: f,
+        field: :first_name,
+        type: :text_field,
+        label: t('.first_name'),
+        autocomplete: "given-name"
+      ) %>
 
-  <%= render Forms::InputFieldComponent.new(
-    form: f,
-    field: :last_name,
-    type: :text_field,
-    label: t('.last_name'),
-    autocomplete: "family-name"
-  ) %>
+      <%= render Forms::InputFieldComponent.new(
+        form: f,
+        field: :last_name,
+        type: :text_field,
+        label: t('.last_name'),
+        autocomplete: "family-name"
+      ) %>
 
-  <%= render Forms::InputFieldComponent.new(
-    form: f,
-    field: :email,
-    type: :email_field,
-    label: t('.email'),
-    autofocus: true,
-    autocomplete: "email"
-  ) %>
+      <%= render Forms::InputFieldComponent.new(
+        form: f,
+        field: :email,
+        type: :email_field,
+        label: t('.email'),
+        autofocus: true,
+        autocomplete: "email"
+      ) %>
 
-  <% password_help = [t('.leave_blank_if_no_change'), @minimum_password_length ? t('.characters_minimum', count: @minimum_password_length) : nil].compact.join(' ') %>
-  <%= render Forms::InputFieldComponent.new(
-    form: f,
-    field: :password,
-    type: :password_field,
-    label: t('.password'),
-    autocomplete: "new-password",
-    help_text: password_help
-  ) %>
+      <% password_help = [t('.leave_blank_if_no_change'), @minimum_password_length ? t('.characters_minimum', count: @minimum_password_length) : nil].compact.join(' ') %>
+      <%= render Forms::InputFieldComponent.new(
+        form: f,
+        field: :password,
+        type: :password_field,
+        label: t('.password'),
+        autocomplete: "new-password",
+        help_text: password_help
+      ) %>
 
-  <%= render Forms::InputFieldComponent.new(
-    form: f,
-    field: :password_confirmation,
-    type: :password_field,
-    label: t('.password_confirmation'),
-    autocomplete: "new-password"
-  ) %>
+      <%= render Forms::InputFieldComponent.new(
+        form: f,
+        field: :password_confirmation,
+        type: :password_field,
+        label: t('.password_confirmation'),
+        autocomplete: "new-password"
+      ) %>
 
-  <%= render Forms::InputFieldComponent.new(
-    form: f,
-    field: :current_password,
-    type: :password_field,
-    label: t('.current_password'),
-    autocomplete: "current-password",
-    help_text: t('.current_password_help'),
-    required: true
-  ) %>
+      <%= render Forms::InputFieldComponent.new(
+        form: f,
+        field: :current_password,
+        type: :password_field,
+        label: t('.current_password'),
+        autocomplete: "current-password",
+        help_text: t('.current_password_help'),
+        required: true
+      ) %>
 
-  <div class="space-y-3">
-    <%= render Ui::ButtonComponent.new(
-      form: f,
-      text: t('.save'),
-      variant: :primary,
-      full_width: true
-    ) %>
+      <div class="space-y-3">
+        <%= render Ui::ButtonComponent.new(
+          form: f,
+          text: t('.save'),
+          variant: :primary,
+          full_width: true
+        ) %>
 
-    <%= render Ui::ButtonComponent.new(
-      text: t('.cancel_account'),
-      url: registration_path(resource_name),
-      method: :delete,
-      variant: :danger,
-      full_width: true,
-      data: {
-        confirm: t('.cancel_account_confirm'),
-        "turbo-method": "delete"
-      },
-      classes: 'mt-1'
-    ) %>
+        <%= render Ui::ButtonComponent.new(
+          text: t('.cancel_account'),
+          url: registration_path(resource_name),
+          method: :delete,
+          variant: :danger,
+          full_width: true,
+          data: {
+            confirm: t('.cancel_account_confirm'),
+            "turbo-method": "delete"
+          },
+          classes: 'mt-1'
+        ) %>
+      </div>
+    <% end %>
   </div>
-<% end %>
-
-<div class="mt-6">
-  <%= render "devise/shared/links" %>
 </div>

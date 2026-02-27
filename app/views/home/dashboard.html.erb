@@ -1,79 +1,49 @@
-<div class="dashboard">
-  <!-- Navigation -->
-  <nav class="dashboard__nav">
-    <div class="dashboard__nav-container">
-      <div class="dashboard__nav-content">
-        <div class="dashboard__nav-left">
-          <h1 class="dashboard__title"><%= t('.dashboard_title') %></h1>
+<% content_for :page_title, t('.dashboard_title') %>
 
-          <div class="dashboard__nav-links">
-            <%= link_to t('.nav_transactions'), dashboard_path, class: "dashboard__nav-link dashboard__nav-link--active" %>
-            <%= link_to t('.nav_profile'), edit_user_registration_path, class: "dashboard__nav-link dashboard__nav-link--inactive" %>
-          </div>
-        </div>
-
-        <div class="dashboard__nav-right">
-          <%= render Navigation::LanguageSwitcherComponent.new(params: params) %>
-
-          <span class="dashboard__welcome"><%= t('.welcome_user') %>, <%= user_display_name(current_user) %></span>
-          <%= render Ui::ButtonComponent.new(
-            text: t('.sign_out'),
-            url: destroy_user_session_path,
-            variant: :danger,
-            size: :sm,
-            method: :delete,
-            data: { "turbo-method": "delete" }
-          ) %>
-        </div>
-      </div>
-    </div>
-  </nav>
-
-  <!-- Main Content -->
-  <div class="dashboard__main"
+<div class="page-container page-container--narrow">
+  <div class="page-content"
        data-controller="infinite-scroll"
        data-infinite-scroll-url-value="<%= dashboard_path %>"
        data-infinite-scroll-page-value="<%= @has_more ? @page + 1 : 0 %>">
-    <div class="dashboard__content">
-      <!-- Header with Add Transaction Button -->
-      <div class="dashboard__header">
-        <h2 class="dashboard__header-title"><%= t('.transactions_title') %></h2>
-        <%= render Ui::ButtonComponent.new(
-          text: t('.add_transaction'),
-          url: new_transaction_path,
-          variant: :primary,
-          size: :md,
-          classes: "dashboard__add-button"
-        ) do %>
-          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-          </svg>
-          <%= t('.add_transaction') %>
-        <% end %>
-      </div>
 
-      <!-- Transactions List -->
-      <div id="transactions-container" class="dashboard__transactions">
-        <%= render partial: "transactions_list", locals: { grouped_transactions: @grouped_transactions } %>
-      </div>
-
-      <!-- Loading Spinner -->
-      <div id="loading-spinner"
-           data-infinite-scroll-target="spinner"
-           class="dashboard__spinner hidden">
-        <div class="dashboard__spinner-icon"></div>
-        <p class="dashboard__spinner-text"><%= t('.loading') %></p>
-      </div>
-
-      <!-- Load More Trigger (Invisible) -->
-      <% if @has_more %>
-        <div data-infinite-scroll-target="trigger" class="dashboard__load-trigger"></div>
-      <% end %>
-
-      <!-- Empty State -->
-      <% if @transactions.empty? && @page == 1 %>
-        <%= render partial: "empty_state" %>
+    <!-- Header with Add Transaction Button -->
+    <div class="dashboard__header">
+      <h2 class="dashboard__header-title"><%= t('.transactions_title') %></h2>
+      <%= render Ui::ButtonComponent.new(
+        text: t('.add_transaction'),
+        url: new_transaction_path,
+        variant: :primary,
+        size: :md,
+        classes: "dashboard__add-button"
+      ) do %>
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+        </svg>
+        <%= t('.add_transaction') %>
       <% end %>
     </div>
+
+    <!-- Transactions List -->
+    <div id="transactions-container" class="dashboard__transactions">
+      <%= render partial: "transactions_list", locals: { grouped_transactions: @grouped_transactions } %>
+    </div>
+
+    <!-- Loading Spinner -->
+    <div id="loading-spinner"
+         data-infinite-scroll-target="spinner"
+         class="dashboard__spinner hidden">
+      <div class="dashboard__spinner-icon"></div>
+      <p class="dashboard__spinner-text"><%= t('.loading') %></p>
+    </div>
+
+    <!-- Load More Trigger (Invisible) -->
+    <% if @has_more %>
+      <div data-infinite-scroll-target="trigger" class="dashboard__load-trigger"></div>
+    <% end %>
+
+    <!-- Empty State -->
+    <% if @transactions.empty? && @page == 1 %>
+      <%= render partial: "empty_state" %>
+    <% end %>
   </div>
 </div>

@@ -1,0 +1,11 @@
+en:
+  navigation:
+    header:
+      settings: "Settings"
+      contact_support: "Contact Support"
+      log_out: "Log Out"
+    bottom_nav:
+      dashboard: "Dashboard"
+      debts: "Debts"
+      goals: "Goals"
+      accounts: "Accounts"

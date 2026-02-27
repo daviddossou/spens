@@ -77,7 +77,7 @@ RSpec.describe 'Onboarding::FinancialGoalsController', type: :request do
       it 'redirects to next onboarding step' do
         patch onboarding_financial_goals_path, params: valid_params
 
-        expect(response).to redirect_to(onboarding_profile_setups_path)
+        expect(response).to redirect_to("#{onboarding_profile_setups_path}?format=html")
       end
     end
 

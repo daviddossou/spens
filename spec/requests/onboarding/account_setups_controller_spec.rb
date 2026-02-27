@@ -268,7 +268,7 @@ RSpec.describe 'Onboarding::AccountSetupsController', type: :request do
 
       patch onboarding_account_setups_path, params: params
       # Should process successfully, filtering unpermitted params
-      expect(response.status).to be_in([ 200, 302, 422 ])
+      expect(response.status).to be_in([ 200, 302, 303, 422 ])
     end
   end
 end

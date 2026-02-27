@@ -1,0 +1,75 @@
+/* Bottom Navigation Bar */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: var(--bg-surface, #ffffff);
+  border-top: 1px solid var(--color-off-white, #EBEDF7);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.bottom-nav__inner {
+  width: 100%;
+  max-width: 640px;
+  display: flex;
+  align-items: stretch;
+  justify-content: space-around;
+  height: 64px;
+}
+
+.bottom-nav__tab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  flex: 1;
+  text-decoration: none;
+  color: var(--text-muted, #8D909F);
+  padding: 0.5rem 0;
+  transition: color 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+  position: relative;
+}
+
+.bottom-nav__tab::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%) scaleX(0);
+  width: 50%;
+  height: 2px;
+  background-color: var(--color-primary, #3F51B5);
+  border-radius: 0 0 2px 2px;
+  transition: transform 0.2s ease;
+}
+
+.bottom-nav__tab--active {
+  color: var(--color-primary, #3F51B5);
+}
+
+.bottom-nav__tab--active::before {
+  transform: translateX(-50%) scaleX(1);
+}
+
+.bottom-nav__tab:active {
+  opacity: 0.7;
+}
+
+.bottom-nav__icon {
+  width: 24px;
+  height: 24px;
+}
+
+.bottom-nav__label {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  line-height: 1;
+}

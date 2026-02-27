@@ -1,118 +1,97 @@
-<div class="transaction-show">
-  <!-- Navigation -->
-  <nav class="transaction-show__nav">
-    <div class="transaction-show__nav-container">
-      <div class="transaction-show__nav-content">
-        <div class="transaction-show__nav-left">
-          <%= link_to dashboard_path, class: "transaction-show__back-link", aria_label: t('.back_to_dashboard') do %>
-            <svg class="transaction-show__back-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-            </svg>
-          <% end %>
-          <h1 class="transaction-show__nav-title"><%= t('.transaction_details') %></h1>
-        </div>
+<% content_for :page_title, t('.transaction_details') %>
 
-        <div class="transaction-show__nav-right">
-          <%= render Navigation::LanguageSwitcherComponent.new(params: params) %>
+<div class="page-container page-container--narrow">
+  <div class="page-content">
+    <div class="transaction-show__card">
+      <!-- Header with Amount -->
+      <% kind = @transaction.transaction_type.kind %>
+      <div class="transaction-show__header <%= transaction_header_class(kind) %>">
+        <div class="transaction-show__icon-wrapper">
+          <div class="transaction-show__icon <%= transaction_icon_class(kind) %>">
+            <%= transaction_icon_svg(kind) %>
+          </div>
+
+          <h2 class="transaction-show__amount <%= transaction_amount_class(kind) %>">
+            <%= transaction_amount_prefix(kind) %>
+            <%= format_money(@transaction.amount, current_user.currency) %>
+          </h2>
+          <p class="transaction-show__type"><%= @transaction.transaction_type.name %></p>
         </div>
       </div>
-    </div>
-  </nav>
 
-  <!-- Main Content -->
-  <div class="transaction-show__main">
-    <div class="transaction-show__content">
-      <div class="transaction-show__card">
-        <!-- Header with Amount -->
-        <% kind = @transaction.transaction_type.kind %>
-        <div class="transaction-show__header <%= transaction_header_class(kind) %>">
-          <div class="transaction-show__icon-wrapper">
-            <div class="transaction-show__icon <%= transaction_icon_class(kind) %>">
-              <%= transaction_icon_svg(kind) %>
-            </div>
+      <!-- Transaction Details -->
+      <div class="transaction-show__details">
+        <!-- Description -->
+        <div class="transaction-show__field">
+          <label class="transaction-show__label"><%= t('.description') %></label>
+          <p class="transaction-show__value"><%= @transaction.description %></p>
+        </div>
 
-            <h2 class="transaction-show__amount <%= transaction_amount_class(kind) %>">
-              <%= transaction_amount_prefix(kind) %>
-              <%= format_money(@transaction.amount, current_user.currency) %>
-            </h2>
-            <p class="transaction-show__type"><%= @transaction.transaction_type.name %></p>
+        <!-- Date -->
+        <div class="transaction-show__field">
+          <label class="transaction-show__label"><%= t('.date') %></label>
+          <p class="transaction-show__value"><%= l(@transaction.transaction_date, format: :long) %></p>
+        </div>
+
+        <!-- Account -->
+        <% if @transaction.account.present? %>
+          <div class="transaction-show__field">
+            <label class="transaction-show__label"><%= t('.account') %></label>
+            <p class="transaction-show__value"><%= @transaction.account.name %></p>
+          </div>
+        <% end %>
+
+        <!-- Debt -->
+        <% if @transaction.debt.present? %>
+          <div class="transaction-show__field">
+            <label class="transaction-show__label"><%= t('.related_debt') %></label>
+            <%= link_to @transaction.debt.name, debt_path(locale: I18n.locale, id: @transaction.debt.id), class: "transaction-show__link" %>
+          </div>
+        <% end %>
+
+        <!-- Category/Type -->
+        <div class="transaction-show__field">
+          <label class="transaction-show__label"><%= t('.category') %></label>
+          <div class="transaction-show__badge <%= transaction_badge_class(kind) %>">
+            <%= t(".kind_#{kind}") %>
           </div>
         </div>
 
-        <!-- Transaction Details -->
-        <div class="transaction-show__details">
-          <!-- Description -->
+        <!-- Note -->
+        <% if @transaction.note.present? %>
           <div class="transaction-show__field">
-            <label class="transaction-show__label"><%= t('.description') %></label>
-            <p class="transaction-show__value"><%= @transaction.description %></p>
-          </div>
-
-          <!-- Date -->
-          <div class="transaction-show__field">
-            <label class="transaction-show__label"><%= t('.date') %></label>
-            <p class="transaction-show__value"><%= l(@transaction.transaction_date, format: :long) %></p>
-          </div>
-
-          <!-- Account -->
-          <% if @transaction.account.present? %>
-            <div class="transaction-show__field">
-              <label class="transaction-show__label"><%= t('.account') %></label>
-              <p class="transaction-show__value"><%= @transaction.account.name %></p>
-            </div>
-          <% end %>
-
-          <!-- Debt -->
-          <% if @transaction.debt.present? %>
-            <div class="transaction-show__field">
-              <label class="transaction-show__label"><%= t('.related_debt') %></label>
-              <%= link_to @transaction.debt.name, debt_path(locale: I18n.locale, id: @transaction.debt.id), class: "transaction-show__link" %>
-            </div>
-          <% end %>
-
-          <!-- Category/Type -->
-          <div class="transaction-show__field">
-            <label class="transaction-show__label"><%= t('.category') %></label>
-            <div class="transaction-show__badge <%= transaction_badge_class(kind) %>">
-              <%= t(".kind_#{kind}") %>
+            <label class="transaction-show__label"><%= t('.note') %></label>
+            <div class="transaction-show__note">
+              <p class="transaction-show__note-text"><%= @transaction.note %></p>
             </div>
           </div>
+        <% end %>
 
-          <!-- Note -->
-          <% if @transaction.note.present? %>
-            <div class="transaction-show__field">
-              <label class="transaction-show__label"><%= t('.note') %></label>
-              <div class="transaction-show__note">
-                <p class="transaction-show__note-text"><%= @transaction.note %></p>
-              </div>
+        <!-- Metadata -->
+        <div class="transaction-show__metadata">
+          <div class="transaction-show__metadata-grid">
+            <div>
+              <p class="transaction-show__metadata-label"><%= t('.created_at') %></p>
+              <p><%= l(@transaction.created_at, format: :short) %></p>
             </div>
-          <% end %>
-
-          <!-- Metadata -->
-          <div class="transaction-show__metadata">
-            <div class="transaction-show__metadata-grid">
+            <% if @transaction.updated_at != @transaction.created_at %>
               <div>
-                <p class="transaction-show__metadata-label"><%= t('.created_at') %></p>
-                <p><%= l(@transaction.created_at, format: :short) %></p>
+                <p class="transaction-show__metadata-label"><%= t('.updated_at') %></p>
+                <p><%= l(@transaction.updated_at, format: :short) %></p>
               </div>
-              <% if @transaction.updated_at != @transaction.created_at %>
-                <div>
-                  <p class="transaction-show__metadata-label"><%= t('.updated_at') %></p>
-                  <p><%= l(@transaction.updated_at, format: :short) %></p>
-                </div>
-              <% end %>
-            </div>
+            <% end %>
           </div>
         </div>
+      </div>
 
-        <!-- Actions -->
-        <div class="transaction-show__actions">
-          <%= render Ui::ButtonComponent.new(
-            text: t('.back_to_dashboard'),
-            url: dashboard_path,
-            variant: :secondary,
-            size: :md
-          ) %>
-        </div>
+      <!-- Actions -->
+      <div class="transaction-show__actions">
+        <%= render Ui::ButtonComponent.new(
+          text: t('.back_to_dashboard'),
+          url: dashboard_path,
+          variant: :secondary,
+          size: :md
+        ) %>
       </div>
     </div>
   </div>

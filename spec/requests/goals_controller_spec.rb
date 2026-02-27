@@ -409,7 +409,7 @@ RSpec.describe GoalsController, type: :request do
       }
 
       post goals_path, params: params
-      expect(response).to have_http_status(:found)
+      expect(response).to have_http_status(:see_other)
     end
   end
 
