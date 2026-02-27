@@ -1,0 +1,52 @@
+fr:
+  accounts:
+    index:
+      title: "Mes Comptes"
+      subtitle: "Gérez vos comptes financiers"
+      has_goal: "Objectif d'Épargne"
+      no_accounts_title: "Aucun compte pour le moment"
+      no_accounts_message: "Commencez par ajouter votre premier compte pour suivre vos finances"
+      add_new_account: "Ajouter un Compte"
+    new:
+      title: "Ajouter un Compte"
+      subtitle: "Créer un nouveau compte financier"
+      save_account: "Enregistrer le Compte"
+      cancel: "Annuler"
+    edit:
+      title: "Modifier %{account_name}"
+      subtitle: "Mettre à jour les détails du compte"
+      back_to_account: "Retour au Compte"
+      update_account: "Mettre à Jour le Compte"
+      cancel: "Annuler"
+    form:
+      account_label: "Nom du Compte"
+      account_placeholder: "Ex: Espèces, Compte bancaire, Mobile Money..."
+      account_help: "Choisissez un nom pour ce compte"
+      current_balance_label: "Solde Actuel"
+      current_balance_help: "Combien d'argent y a-t-il actuellement dans ce compte ?"
+      saving_goal_label: "Objectif d'Épargne (Optionnel)"
+      saving_goal_help: "Définissez un objectif d'épargne pour ce compte (laissez à 0 si aucun)"
+    show:
+      back_to_accounts: "Retour aux Comptes"
+      subtitle: "Consultez et gérez votre compte"
+      balance: "Solde"
+      saving_goal: "Objectif d'Épargne"
+      actions_title: "Actions"
+      add_transaction: "Ajouter une Transaction"
+      edit_account: "Modifier le Compte"
+      delete_account: "Supprimer le Compte"
+      delete_confirmation: "Êtes-vous sûr de vouloir supprimer ce compte ? Cette action est irréversible."
+      recent_transactions: "Transactions Récentes"
+      no_transactions: "Aucune transaction pour ce compte"
+    create:
+      success: "Compte créé avec succès !"
+      error: "Une erreur s'est produite lors de la création du compte"
+    update:
+      success: "Compte mis à jour avec succès !"
+      error: "Une erreur s'est produite lors de la mise à jour du compte"
+    destroy:
+      success: "Compte supprimé avec succès"
+      has_transactions: "Impossible de supprimer un compte qui contient des transactions"
+      error: "Une erreur s'est produite lors de la suppression du compte"
+    errors:
+      not_found: "Compte introuvable"

@@ -1,0 +1,49 @@
+<% content_for :title, t('.title') %>
+
+<div class="page-container page-container--narrow">
+  <header class="page-header">
+    <h1 class="page-header__title"><%= t('.title') %></h1>
+    <p class="page-header__subtitle"><%= t('.subtitle') %></p>
+  </header>
+
+  <div class="page-content">
+    <% if @accounts.any? %>
+      <div class="accounts-list">
+        <% @accounts.each do |account| %>
+          <%= link_to account_path(id: account.id), class: "account-card" do %>
+            <div class="account-card__info">
+              <h3 class="account-card__name"><%= account.name %></h3>
+              <p class="account-card__balance"><%= format_money(account.balance, current_user.currency) %></p>
+            </div>
+            <div class="account-card__meta">
+              <% if account.saving_goal.to_f > 0 %>
+                <span class="account-card__goal-badge"><%= t('.has_goal') %></span>
+              <% end %>
+              <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+              </svg>
+            </div>
+          <% end %>
+        <% end %>
+      </div>
+    <% else %>
+      <div class="empty-state">
+        <svg class="empty-state__icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+        </svg>
+        <h3><%= t('.no_accounts_title') %></h3>
+        <p><%= t('.no_accounts_message') %></p>
+      </div>
+    <% end %>
+
+    <div class="accounts-actions">
+      <%= render Ui::ButtonComponent.new(
+        text: t('.add_new_account'),
+        url: new_account_path,
+        variant: :primary,
+        size: :lg,
+        full_width: true
+      ) %>
+    </div>
+  </div>
+</div>
