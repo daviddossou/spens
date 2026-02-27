@@ -14,7 +14,7 @@
   </header>
 
   <div class="page-content">
-    <div class="commitment-detail-card">
+    <div class="commitment-card-wrapper">
       <%= render Ui::CommitmentCardComponent.new(
         title: @account.name,
         current_value: @account.balance,
@@ -23,8 +23,8 @@
       ) %>
     </div>
 
-    <div class="commitment-detail-actions">
-      <h2><%= t('.actions_title') %></h2>
+    <div class="commitment-actions">
+      <h2 class="commitment-section-title"><%= t('.actions_title') %></h2>
       <div class="action-buttons">
         <%= render Ui::ButtonComponent.new(
           text: t('.add_transaction'),
@@ -44,14 +44,16 @@
       </div>
     </div>
 
-    <div class="commitment-detail-transactions">
-      <h2><%= t('.recent_transactions') %></h2>
+    <div class="commitment-transactions">
+      <h2 class="commitment-section-title"><%= t('.recent_transactions') %></h2>
       <% if @latest_transactions.any? %>
-        <div class="space-y-2">
+        <div class="transactions-list">
           <%= render TransactionItemComponent.with_collection(@latest_transactions, transaction: :itself) %>
         </div>
       <% else %>
-        <p class="no-transactions"><%= t('.no_transactions') %></p>
+        <div class="empty-state">
+          <p><%= t('.no_transactions') %></p>
+        </div>
       <% end %>
     </div>
   </div>
