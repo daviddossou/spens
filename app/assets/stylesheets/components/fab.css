@@ -1,0 +1,48 @@
+/* Floating Action Button */
+.fab {
+  position: fixed;
+  z-index: 101;
+  bottom: calc(64px + env(safe-area-inset-bottom, 0px) + 1rem);
+  right: 1rem;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+
+  background-color: var(--color-primary);
+  color: #ffffff;
+  box-shadow:
+    0 4px 12px rgba(var(--color-primary-rgb), 0.35),
+    0 2px 4px rgba(0, 0, 0, 0.1);
+
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+/* Keep FAB within the 640px content area on wide screens */
+@media (min-width: 672px) {
+  .fab {
+    right: calc(50% - 320px + 1rem);
+  }
+}
+
+.fab:hover {
+  transform: scale(1.05);
+  box-shadow:
+    0 6px 16px rgba(var(--color-primary-rgb), 0.4),
+    0 3px 6px rgba(0, 0, 0, 0.12);
+}
+
+.fab:active {
+  transform: scale(0.95);
+}
+
+.fab__icon {
+  width: 28px;
+  height: 28px;
+}

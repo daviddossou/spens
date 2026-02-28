@@ -1,13 +1,15 @@
 <% content_for :title, t('.title') %>
 
-<div class="page-container page-container--narrow">
-  <header class="page-header">
-    <p class="page-header__subtitle"><%= t(".subtitle.#{@form.kind}") %></p>
-  </header>
-
-  <div class="page-content">
+<%= turbo_frame_tag "modal" do %>
+  <div class="page-container page-container--narrow">
     <%= turbo_frame_tag "transaction_form" do %>
-      <%= render 'form' %>
+      <header class="page-header">
+        <p class="page-header__subtitle"><%= t(".subtitle.#{@form.kind}") %></p>
+      </header>
+
+      <div class="page-content">
+        <%= render 'form' %>
+      </div>
     <% end %>
   </div>
-</div>
+<% end %>

@@ -1,0 +1,142 @@
+/* Bottom Sheet Modal */
+.bottom-sheet {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.bottom-sheet[data-state="open"] {
+  pointer-events: auto;
+}
+
+/* Backdrop */
+.bottom-sheet__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.bottom-sheet[data-state="open"] .bottom-sheet__backdrop {
+  opacity: 1;
+}
+
+/* Panel */
+.bottom-sheet__panel {
+  position: relative;
+  background: var(--bg-surface, #ffffff);
+  border-radius: 1rem 1rem 0 0;
+  max-height: 92vh;
+  display: flex;
+  flex-direction: column;
+  transform: translateY(100%);
+  transition: transform 0.3s cubic-bezier(0.32, 0.72, 0, 1);
+  box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.12);
+}
+
+.bottom-sheet[data-state="open"] .bottom-sheet__panel {
+  transform: translateY(0);
+}
+
+/* Handle bar */
+.bottom-sheet__handle-bar {
+  display: flex;
+  justify-content: center;
+  padding: 0.75rem 0 0.25rem;
+  flex-shrink: 0;
+}
+
+.bottom-sheet__handle {
+  width: 36px;
+  height: 4px;
+  border-radius: 2px;
+  background-color: var(--color-secondary-20, #d9dadf);
+}
+
+/* Close button — aligned with the title row */
+.bottom-sheet__close {
+  position: absolute;
+  top: 1.25rem;
+  right: 1.25rem;
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: var(--color-secondary-10, #f0f1f4);
+  color: var(--text-muted, #8D909F);
+  font-size: 1.25rem;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color 0.15s ease;
+  z-index: 1;
+}
+
+.bottom-sheet__close:hover {
+  background-color: var(--color-secondary-20, #d9dadf);
+}
+
+/* Title (visible only inside the sheet) */
+.bottom-sheet__title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--text-primary, #2c3044);
+  text-align: center;
+  padding: 0 2.5rem 0.5rem;
+  margin: 0;
+  flex-shrink: 0;
+}
+
+/* Scrollable body */
+.bottom-sheet__body {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 0 1.25rem 1.5rem;
+  flex: 1;
+  min-height: 0;
+}
+
+/* Override nested page structure when inside bottom sheet */
+.bottom-sheet__body .page-container {
+  padding: 0;
+  max-width: none;
+}
+
+/* Style nested page header as sheet title */
+.bottom-sheet__body .page-header {
+  padding: 0 2.75rem 0.75rem 0;
+  display: flex;
+  align-items: center;
+  min-height: 32px;
+}
+
+.bottom-sheet__body .page-header__subtitle {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--text-dark, #282A33);
+  text-align: left;
+  margin: 0;
+  line-height: 32px;
+}
+
+.bottom-sheet__body .page-content {
+  padding: 0;
+}
+
+/* Ensure TomSelect dropdowns appear above the sheet */
+.bottom-sheet__body .ts-dropdown {
+  z-index: 210;
+}
+
+/* Prevent body scroll when sheet is open */
+body.bottom-sheet-open {
+  overflow: hidden;
+}

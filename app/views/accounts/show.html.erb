@@ -28,7 +28,8 @@
           url: new_transaction_path(kind: 'transfer', account_id: @account.id),
           variant: :primary,
           size: :lg,
-          full_width: true
+          full_width: true,
+          data: { turbo_frame: "modal" }
         ) %>
 
         <%= render Ui::ButtonComponent.new(
@@ -36,7 +37,8 @@
           url: edit_account_path(id: @account.id),
           variant: :secondary,
           size: :lg,
-          full_width: true
+          full_width: true,
+          data: { turbo_frame: "modal" }
         ) %>
 
         <% unless @account.transactions.exists? %>

@@ -23,7 +23,8 @@
           url: new_transaction_path(debt_id: @debt.id, kind: @debt.direction == 'lent' ? 'debt_in' : 'debt_out'),
           variant: :primary,
           size: :lg,
-          full_width: true
+          full_width: true,
+          data: { turbo_frame: "modal" }
         ) %>
 
         <%= render Ui::ButtonComponent.new(
@@ -31,7 +32,8 @@
           url: edit_debt_path(id: @debt.id),
           variant: :secondary,
           size: :lg,
-          full_width: true
+          full_width: true,
+          data: { turbo_frame: "modal" }
         ) %>
       </div>
     </div>

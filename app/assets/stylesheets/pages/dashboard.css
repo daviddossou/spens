@@ -129,12 +129,6 @@
   color: var(--color-dark);
 }
 
-.dashboard__add-button svg {
-  width: 1.25rem;
-  height: 1.25rem;
-  margin-right: 0.5rem;
-}
-
 .dashboard__transactions {
   display: flex;
   flex-direction: column;

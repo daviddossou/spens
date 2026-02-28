@@ -37,7 +37,7 @@
         <% if @transaction.account.present? %>
           <div class="transaction-show__field">
             <label class="transaction-show__label"><%= t('.account') %></label>
-            <p class="transaction-show__value"><%= @transaction.account.name %></p>
+            <%= link_to @transaction.account.name, account_path(locale: I18n.locale, id: @transaction.account.id), class: "transaction-show__link" %>
           </div>
         <% end %>
 

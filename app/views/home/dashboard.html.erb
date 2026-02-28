@@ -6,21 +6,9 @@
        data-infinite-scroll-url-value="<%= dashboard_path %>"
        data-infinite-scroll-page-value="<%= @has_more ? @page + 1 : 0 %>">
 
-    <!-- Header with Add Transaction Button -->
+    <!-- Header -->
     <div class="dashboard__header">
       <h2 class="dashboard__header-title"><%= t('.transactions_title') %></h2>
-      <%= render Ui::ButtonComponent.new(
-        text: t('.add_transaction'),
-        url: new_transaction_path,
-        variant: :primary,
-        size: :md,
-        classes: "dashboard__add-button"
-      ) do %>
-        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-        </svg>
-        <%= t('.add_transaction') %>
-      <% end %>
     </div>
 
     <!-- Transactions List -->
@@ -47,3 +35,5 @@
     <% end %>
   </div>
 </div>
+
+<%= render Ui::FabComponent.new(url: new_transaction_path, label: t('.add_transaction')) %>

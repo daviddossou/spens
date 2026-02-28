@@ -44,6 +44,22 @@
 
     <% if user_signed_in? %>
       <%= render Navigation::BottomNavComponent.new(current_path: request.path) %>
+
+      <!-- Bottom Sheet Modal -->
+      <div class="bottom-sheet" data-controller="bottom-sheet">
+        <div class="bottom-sheet__backdrop" data-action="click->bottom-sheet#close" data-bottom-sheet-target="backdrop"></div>
+        <div class="bottom-sheet__panel" data-bottom-sheet-target="panel">
+          <div class="bottom-sheet__handle-bar"><span class="bottom-sheet__handle"></span></div>
+          <button class="bottom-sheet__close" data-action="click->bottom-sheet#close" aria-label="Close">&times;</button>
+          <div class="bottom-sheet__body">
+            <%= turbo_frame_tag "modal",
+              data: {
+                bottom_sheet_target: "frame",
+                action: "turbo:frame-load->bottom-sheet#frameLoaded turbo:frame-missing->bottom-sheet#frameMissing"
+              } %>
+          </div>
+        </div>
+      </div>
     <% end %>
   </body>
 </html>

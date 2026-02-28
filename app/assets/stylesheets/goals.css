@@ -6,11 +6,6 @@
   gap: 1.5rem;
 }
 
-.goals-actions {
-  max-width: 400px;
-  margin: 0 auto;
-}
-
 /* Goal Form Styles */
 
 .goal-form__container {
@@ -97,10 +92,6 @@
   .empty-state__icon {
     width: 3rem;
     height: 3rem;
-  }
-
-  .goals-actions {
-    padding: 0 1rem;
   }
 
   .goal-form__container {

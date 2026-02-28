@@ -1,4 +1,4 @@
-<%= form_with model: @form, url: transactions_path, method: :post, class: "transaction-form", data: { controller: "transaction-form", turbo_frame: "_top" } do |f| %>
+<%= form_with model: @form, url: transactions_path, method: :post, class: "transaction-form", data: { controller: "transaction-form" } do |f| %>
     <%= render "shared/form_errors", object: @form %>
 
     <!-- Hidden field to store the selected kind -->
@@ -205,15 +205,6 @@
         variant: :primary,
         size: :lg,
         full_width: true
-      ) %>
-
-      <%= render Ui::ButtonComponent.new(
-        text: t('.cancel'),
-        url: dashboard_path,
-        variant: :'outline-secondary',
-        size: :lg,
-        full_width: true,
-        data: { turbo_frame: "_top" }
       ) %>
     </div>
   <% end %>

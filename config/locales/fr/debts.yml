@@ -51,9 +51,15 @@ fr:
         borrowed: "Combien avez-vous emprunté ?"
       show_more_details: "Plus de détails"
       hide_more_details: "Masquer les détails"
-      account_label: "Compte"
-      account_placeholder: "Ex: Espèces, Compte bancaire, Mobile Money..."
-      account_help: "Optionnel: Compte où l'argent est/était stocké"
+      account_label:
+        lent: "Compte utilisé"
+        borrowed: "Compte crédité"
+      account_placeholder:
+        lent: "Ex: Espèces, Compte bancaire, Mobile Money..."
+        borrowed: "Ex: Espèces, Compte bancaire, Mobile Money..."
+      account_help:
+        lent: "D'où vient l'argent ? (laisser vide si déjà débité)"
+        borrowed: "D'où vient l'argent ? (laisser vide si déjà crédité)"
       amount_reimbursed_label:
         lent: "Montant déjà remboursé"
         borrowed: "Montant déjà remboursé"

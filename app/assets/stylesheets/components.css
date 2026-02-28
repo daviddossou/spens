@@ -15,6 +15,8 @@
 /* Navigation Components */
 @import url("components/header.css");
 @import url("components/bottom_nav.css");
+@import url("components/fab.css");
+@import url("components/bottom_sheet.css");
 
 /* Onboarding Components */
 @import url("components/onboarding/account_line.css");
