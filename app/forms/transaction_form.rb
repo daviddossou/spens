@@ -14,6 +14,7 @@ class TransactionForm < BaseForm
   attribute :transaction_date, :date, default: -> { Date.current }
   attribute :transaction_type_name, :string
   attribute :note, :string
+  attribute :description, :string
 
   ##
   # Validations
@@ -63,7 +64,8 @@ class TransactionForm < BaseForm
       amount: payload[:amount],
       transaction_date: payload[:transaction_date] || Date.current,
       transaction_type_name: payload[:transaction_type_name],
-      note: payload[:note]
+      note: payload[:note],
+      description: payload[:description]
     )
   end
 
@@ -144,7 +146,7 @@ class TransactionForm < BaseForm
       account: find_or_create_account,
       transaction_type: find_or_create_transaction_type,
       amount: amount,
-      description: transaction_type_name
+      description: description.presence || transaction_type_name
     )
   end
 
@@ -156,38 +158,38 @@ class TransactionForm < BaseForm
   def create_transfer_in_transaction
     return unless kind == "transfer" || kind == "transfer_in"
 
-    description = transaction_type_name.presence || I18n.t("transactions.transfer.description_in", from_account_name: from_account.name, to_account_name: to_account.name)
+    auto_description = transaction_type_name.presence || I18n.t("transactions.transfer.description_in", from_account_name: from_account.name, to_account_name: to_account.name)
 
     create_and_validate_transaction(
       account: to_account,
       transaction_type: transfer_type_in,
       amount: amount,
-      description: description
+      description: description.presence || auto_description
     )
   end
 
   def create_transfer_out_transaction
     return unless kind == "transfer" || kind == "transfer_out"
 
-    description = transaction_type_name.presence || I18n.t("transactions.transfer.description_out", from_account_name: from_account.name, to_account_name: to_account.name)
+    auto_description = transaction_type_name.presence || I18n.t("transactions.transfer.description_out", from_account_name: from_account.name, to_account_name: to_account.name)
 
     create_and_validate_transaction(
       account: from_account,
       transaction_type: transfer_type_out,
       amount: amount,
-      description: description
+      description: description.presence || auto_description
     )
   end
 
   def create_debt_transaction
-    description = I18n.t("debts.transaction_description.#{kind}.#{debt.direction}", contact_name: debt.name)
+    auto_description = I18n.t("debts.transaction_description.#{kind}.#{debt.direction}", contact_name: debt.name)
     type_name = I18n.t("debts.transaction_type.#{kind}.#{debt.direction}")
 
     create_and_validate_transaction(
       account: find_or_create_account,
       transaction_type: find_or_create_transaction_type(type_name, kind),
       amount: amount,
-      description: description,
+      description: description.presence || auto_description,
       debt: debt
     )
   end

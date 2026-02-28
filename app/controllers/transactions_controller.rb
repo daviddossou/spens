@@ -48,7 +48,8 @@ class TransactionsController < ApplicationController
       :transaction_date,
       :transaction_type_name,
       :note,
-      :debt_id
+      :debt_id,
+      :description
     )
   end
 end
