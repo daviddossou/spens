@@ -3,8 +3,8 @@ en:
     index:
       title: "Debts & Loans"
       subtitle: "Track money you've lent to others"
-      i_lent: "I Lent"
-      i_borrowed: "I Borrowed"
+      i_lent: "Owed to Me"
+      i_borrowed: "I Owe"
       no_debts_title: "No debts yet"
       no_debts_message: "Start tracking money you lend to friends and family"
       add_new:

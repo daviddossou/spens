@@ -83,9 +83,10 @@ RSpec.describe TransactionsController, type: :request do
         }.to change(Transaction, :count).by(1)
       end
 
-      it "redirects to new transaction path" do
+      it "redirects to the transaction detail" do
         post transactions_path, params: { transaction: valid_attributes }
-        expect(response).to redirect_to("#{dashboard_path}?format=html")
+        created_transaction = Transaction.order(created_at: :desc).first
+        expect(response).to redirect_to("#{transaction_path(id: created_transaction.id)}?format=html")
       end
 
       it "sets a success notice" do
@@ -112,7 +113,7 @@ RSpec.describe TransactionsController, type: :request do
 
         it "redirects with success notice" do
           post transactions_path, params: { transaction: transfer_attributes }
-          expect(response).to redirect_to("#{dashboard_path}?format=html")
+          expect(response.location).to match(%r{/transactions/[^?]+\?format=html})
           expect(flash[:notice]).to be_present
         end
       end
@@ -124,12 +125,31 @@ RSpec.describe TransactionsController, type: :request do
 
         it "accepts custom transaction date" do
           post transactions_path, params: { transaction: attributes_with_date }
-          expect(response).to redirect_to("#{dashboard_path}?format=html")
+          expect(response.location).to match(%r{/transactions/[^?]+\?format=html})
         end
 
         it "accepts note field" do
           post transactions_path, params: { transaction: valid_attributes.merge(note: 'Test note') }
-          expect(response).to redirect_to("#{dashboard_path}?format=html")
+          expect(response.location).to match(%r{/transactions/[^?]+\?format=html})
+        end
+
+        it "accepts description field" do
+          post transactions_path, params: { transaction: valid_attributes.merge(description: 'Custom description') }
+          expect(response.location).to match(%r{/transactions/[^?]+\?format=html})
+        end
+
+        it "stores custom description on the transaction" do
+          expect {
+            post transactions_path, params: { transaction: valid_attributes.merge(description: 'My groceries') }
+          }.to change(Transaction, :count).by(1)
+          expect(Transaction.order(created_at: :desc).first.description).to eq('My groceries')
+        end
+
+        it "uses auto-generated description when description is blank" do
+          expect {
+            post transactions_path, params: { transaction: valid_attributes.merge(description: '') }
+          }.to change(Transaction, :count).by(1)
+          expect(Transaction.order(created_at: :desc).first.description).to eq('Groceries')
         end
       end
     end
@@ -242,6 +262,7 @@ RSpec.describe TransactionsController, type: :request do
           transaction_date: Date.current,
           transaction_type_name: 'Food',
           note: 'Test note',
+          description: 'Custom description',
           unpermitted_param: 'should be filtered'
         }
       }
@@ -266,7 +287,7 @@ RSpec.describe TransactionsController, type: :request do
       it "handles large decimal values" do
         attributes = base_attributes.merge(amount: 999_999_999.99)
         post transactions_path, params: { transaction: attributes }
-        expect(response).to redirect_to("#{dashboard_path}?format=html")
+        expect(response.location).to match(%r{/transactions/[^?]+\?format=html})
         expect(flash[:notice]).to be_present
       end
     end
@@ -275,14 +296,14 @@ RSpec.describe TransactionsController, type: :request do
       it "handles special characters in account names" do
         attributes = base_attributes.merge(account_name: "Spëçîål Àççöunt €$£")
         post transactions_path, params: { transaction: attributes }
-        expect(response).to redirect_to("#{dashboard_path}?format=html")
+        expect(response.location).to match(%r{/transactions/[^?]+\?format=html})
         expect(flash[:notice]).to be_present
       end
 
       it "handles special characters in notes" do
         attributes = base_attributes.merge(note: "Emoji test 🎉💰📈 and symbols @#$%")
         post transactions_path, params: { transaction: attributes }
-        expect(response).to redirect_to("#{dashboard_path}?format=html")
+        expect(response.location).to match(%r{/transactions/[^?]+\?format=html})
         expect(flash[:notice]).to be_present
       end
     end
@@ -291,7 +312,7 @@ RSpec.describe TransactionsController, type: :request do
       it "accepts future transaction dates" do
         attributes = base_attributes.merge(transaction_date: 1.week.from_now.to_date)
         post transactions_path, params: { transaction: attributes }
-        expect(response).to redirect_to("#{dashboard_path}?format=html")
+        expect(response.location).to match(%r{/transactions/[^?]+\?format=html})
         expect(flash[:notice]).to be_present
       end
     end
@@ -300,7 +321,7 @@ RSpec.describe TransactionsController, type: :request do
       it "handles amounts with many decimal places" do
         attributes = base_attributes.merge(amount: 100.123456)
         post transactions_path, params: { transaction: attributes }
-        expect(response).to redirect_to("#{dashboard_path}?format=html")
+        expect(response.location).to match(%r{/transactions/[^?]+\?format=html})
         expect(flash[:notice]).to be_present
       end
     end

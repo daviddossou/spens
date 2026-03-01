@@ -31,7 +31,7 @@ class GoalsController < ApplicationController
     build_form(goal_params)
 
     if @form.submit
-      redirect_to goal_path(id: @form.account.id), notice: t(".success"), status: :see_other
+      redirect_with_reload_to goal_path(id: @form.account.id), notice: t(".success"), status: :see_other
     else
       render :new, status: :unprocessable_entity
     end
@@ -45,7 +45,7 @@ class GoalsController < ApplicationController
     build_form(goal_params)
 
     if @form.submit
-      redirect_to goal_path(id: @account.id), notice: t(".success"), status: :see_other
+      redirect_with_reload_to goal_path(id: @account.id), notice: t(".success"), status: :see_other
     else
       render :edit, status: :unprocessable_entity
     end

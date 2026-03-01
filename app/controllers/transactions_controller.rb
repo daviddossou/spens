@@ -15,7 +15,7 @@ class TransactionsController < ApplicationController
     build_form(transaction_params)
 
     if @form.submit
-      redirect_with_reload_to dashboard_path, notice: t(".success"), status: :see_other
+      redirect_with_reload_to transaction_path(id: @form.transaction.id), notice: t(".success"), status: :see_other
     else
       render :new, status: :unprocessable_entity
     end

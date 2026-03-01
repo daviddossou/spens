@@ -24,7 +24,7 @@ class DebtsController < ApplicationController
     build_form(debt_params)
 
     if @form.submit
-      redirect_to debt_path(id: @form.debt.id), notice: t(".success"), status: :see_other
+      redirect_with_reload_to debt_path(id: @form.debt.id), notice: t(".success"), status: :see_other
     else
       render :new, status: :unprocessable_entity
     end
@@ -42,7 +42,7 @@ class DebtsController < ApplicationController
     build_form(debt_params.merge(id: @debt.id))
 
     if @form.submit
-      redirect_to debt_path(id: @debt.id), notice: t(".success"), status: :see_other
+      redirect_with_reload_to debt_path(id: @debt.id), notice: t(".success"), status: :see_other
     else
       render :edit, status: :unprocessable_entity
     end

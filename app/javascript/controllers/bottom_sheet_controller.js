@@ -14,6 +14,14 @@ export default class extends Controller {
 
     if (this.frameTarget.children.length > 0) {
       this.open()
+    } else if (this.isOpen) {
+      // Frame loaded empty content (e.g. redirect landed on a page where the
+      // layout's empty <turbo-frame id="modal"> was matched). Close the sheet
+      // and reload the page to reflect any changes made in the form.
+      this.close()
+      setTimeout(() => {
+        window.Turbo.visit(window.location.href, { action: "replace" })
+      }, 300)
     }
   }
 

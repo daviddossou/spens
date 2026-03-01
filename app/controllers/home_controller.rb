@@ -18,6 +18,16 @@ class HomeController < ApplicationController
     @page = params[:page]&.to_i || 1
     @per_page = 20
 
+    # Analytics
+    @currency = current_user.currency
+    @total_balance = current_user.accounts.sum(:balance)
+    @saved_this_month = current_user.transactions
+      .joins(:transaction_type)
+      .where(transaction_date: Date.current.all_month)
+      .sum(:amount)
+    @owed_to_me = current_user.debts.ongoing.lent.sum("total_lent - total_reimbursed")
+    @i_owe = current_user.debts.ongoing.borrowed.sum("total_lent - total_reimbursed")
+
     # Get transactions ordered by date (most recent first)
     @transactions = current_user.transactions
       .includes(:transaction_type, :account, :debt)

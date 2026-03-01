@@ -1,0 +1,25 @@
+<div class="stat-cards">
+  <%= render(Ui::StatCardComponent.new(
+    label: "Total Balance",
+    value: 1_250_000,
+    currency: "XOF"
+  )) %>
+  <%= render(Ui::StatCardComponent.new(
+    label: "Saved This Month",
+    value: 85_000,
+    currency: "XOF",
+    trend: :positive
+  )) %>
+  <%= render(Ui::StatCardComponent.new(
+    label: "Owed to Me",
+    value: 300_000,
+    currency: "XOF",
+    trend: :positive
+  )) %>
+  <%= render(Ui::StatCardComponent.new(
+    label: "I Owe",
+    value: 150_000,
+    currency: "XOF",
+    trend: :negative
+  )) %>
+</div>

@@ -1,0 +1,6 @@
+<div class="stat-card">
+  <span class="stat-card__label"><%= label %></span>
+  <span class="stat-card__value <%= "stat-card__value--positive" if trend == :positive %><%= "stat-card__value--negative" if trend == :negative %>">
+    <%= helpers.smart_format_money(value, currency) %>
+  </span>
+</div>

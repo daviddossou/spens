@@ -26,11 +26,11 @@ module Ui
     end
 
     def formatted_current_value
-      helpers.number_to_currency(current_value, unit: currency, precision: 0)
+      helpers.smart_format_money(current_value, currency)
     end
 
     def formatted_target_value
-      helpers.number_to_currency(target_value, unit: currency, precision: 0)
+      helpers.smart_format_money(target_value, currency)
     end
   end
 end

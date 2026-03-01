@@ -173,7 +173,7 @@ RSpec.describe GoalsController, type: :request do
       it "creates a new account or updates existing one" do
         post goals_path, params: { goal: valid_attributes }
         account = Account.find_by(name: 'New Savings Account', user: user)
-        expect(response).to redirect_to(goal_path(id: account.id))
+        expect(response).to redirect_to("#{goal_path(id: account.id)}?format=html")
       end
 
       it "sets a success notice" do
@@ -337,7 +337,7 @@ RSpec.describe GoalsController, type: :request do
 
       it "redirects to the goal show page" do
         patch goal_path(id: account.id), params: { goal: valid_update_attributes }
-        expect(response).to redirect_to(goal_path(id: account.id))
+        expect(response).to redirect_to("#{goal_path(id: account.id)}?format=html")
       end
 
       it "sets a success notice" do
@@ -427,7 +427,7 @@ RSpec.describe GoalsController, type: :request do
         attributes = base_attributes.merge(current_balance: 1_000_000.00, saving_goal: 999_999_999.99)
         post goals_path, params: { goal: attributes }
         account = Account.find_by(name: 'Edge Case Account', user: user)
-        expect(response).to redirect_to(goal_path(id: account.id))
+        expect(response).to redirect_to("#{goal_path(id: account.id)}?format=html")
         expect(flash[:notice]).to be_present
       end
     end
@@ -437,7 +437,7 @@ RSpec.describe GoalsController, type: :request do
         attributes = base_attributes.merge(account_name: "Spëçîål Sävings €$£ 🎉")
         post goals_path, params: { goal: attributes }
         account = Account.find_by(name: "Spëçîål Sävings €$£ 🎉", user: user)
-        expect(response).to redirect_to(goal_path(id: account.id))
+        expect(response).to redirect_to("#{goal_path(id: account.id)}?format=html")
         expect(flash[:notice]).to be_present
       end
     end
@@ -447,7 +447,7 @@ RSpec.describe GoalsController, type: :request do
         attributes = base_attributes.merge(current_balance: 100.123456, saving_goal: 500.789012)
         post goals_path, params: { goal: attributes }
         account = Account.find_by(name: 'Edge Case Account', user: user)
-        expect(response).to redirect_to(goal_path(id: account.id))
+        expect(response).to redirect_to("#{goal_path(id: account.id)}?format=html")
         expect(flash[:notice]).to be_present
       end
     end

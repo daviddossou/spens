@@ -225,6 +225,18 @@ RSpec.describe TransactionForm, type: :model do
         expect(form.transaction_type_name).to eq('Groceries')
         expect(form.note).to eq('Weekly shopping')
       end
+
+      it 'sets description to nil when not provided' do
+        expect(form.description).to be_nil
+      end
+    end
+
+    context 'with description in payload' do
+      let(:form) { described_class.new(user, valid_expense_attributes.merge(description: 'Custom description')) }
+
+      it 'sets the description attribute' do
+        expect(form.description).to eq('Custom description')
+      end
     end
 
     context 'with account_id in payload' do
@@ -461,6 +473,24 @@ RSpec.describe TransactionForm, type: :model do
           )
         ).and_call_original
         form.submit
+      end
+
+      it 'uses transaction_type_name as description when description is blank' do
+        expect(CreateTransactionService).to receive(:new).with(
+          hash_including(description: 'Groceries')
+        ).and_call_original
+        form.submit
+      end
+
+      context 'when custom description is provided' do
+        let(:form) { described_class.new(user, valid_expense_attributes.merge(description: 'My custom note')) }
+
+        it 'uses the custom description instead of auto-generated one' do
+          expect(CreateTransactionService).to receive(:new).with(
+            hash_including(description: 'My custom note')
+          ).and_call_original
+          form.submit
+        end
       end
 
       it 'returns true on success' do

@@ -91,16 +91,18 @@ RSpec.describe Ui::CommitmentCardComponent, type: :component do
   end
 
   describe "#formatted_current_value" do
-    it "formats the current value as currency without decimals" do
+    it "formats the current value using smart_format_money" do
       render_inline(component)
-      expect(component.formatted_current_value).to eq("XOF5,000")
+      expect(component.formatted_current_value.to_s).to include("5K")
+      expect(component.formatted_current_value.to_s).to include("FCFA")
     end
   end
 
   describe "#formatted_target_value" do
-    it "formats the target value as currency without decimals" do
+    it "formats the target value using smart_format_money" do
       render_inline(component)
-      expect(component.formatted_target_value).to eq("XOF10,000")
+      expect(component.formatted_target_value.to_s).to include("10K")
+      expect(component.formatted_target_value.to_s).to include("FCFA")
     end
   end
 
@@ -116,11 +118,13 @@ RSpec.describe Ui::CommitmentCardComponent, type: :component do
     end
 
     it "renders the current value" do
-      expect(rendered.to_html).to include("XOF5,000")
+      expect(rendered.to_html).to include("5K")
+      expect(rendered.to_html).to include("FCFA")
     end
 
     it "renders the target value" do
-      expect(rendered.to_html).to include("XOF10,000")
+      expect(rendered.to_html).to include("10K")
+      expect(rendered.to_html).to include("FCFA")
     end
 
     it "renders the SVG progress circle" do
@@ -172,7 +176,8 @@ RSpec.describe Ui::CommitmentCardComponent, type: :component do
       it "handles large numbers correctly" do
         render_inline(component)
         expect(component.percentage).to eq(50)
-        expect(component.formatted_current_value).to eq("XOF1,000,000,000")
+        expect(component.formatted_current_value.to_s).to include("1B")
+        expect(component.formatted_current_value.to_s).to include("FCFA")
       end
     end
 

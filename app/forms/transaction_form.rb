@@ -142,7 +142,7 @@ class TransactionForm < BaseForm
   end
 
   def create_regular_transaction
-    create_and_validate_transaction(
+    self.transaction = create_and_validate_transaction(
       account: find_or_create_account,
       transaction_type: find_or_create_transaction_type,
       amount: amount,
@@ -160,7 +160,7 @@ class TransactionForm < BaseForm
 
     auto_description = transaction_type_name.presence || I18n.t("transactions.transfer.description_in", from_account_name: from_account.name, to_account_name: to_account.name)
 
-    create_and_validate_transaction(
+    self.transaction = create_and_validate_transaction(
       account: to_account,
       transaction_type: transfer_type_in,
       amount: amount,
@@ -173,7 +173,7 @@ class TransactionForm < BaseForm
 
     auto_description = transaction_type_name.presence || I18n.t("transactions.transfer.description_out", from_account_name: from_account.name, to_account_name: to_account.name)
 
-    create_and_validate_transaction(
+    self.transaction = create_and_validate_transaction(
       account: from_account,
       transaction_type: transfer_type_out,
       amount: amount,
@@ -185,7 +185,7 @@ class TransactionForm < BaseForm
     auto_description = I18n.t("debts.transaction_description.#{kind}.#{debt.direction}", contact_name: debt.name)
     type_name = I18n.t("debts.transaction_type.#{kind}.#{debt.direction}")
 
-    create_and_validate_transaction(
+    self.transaction = create_and_validate_transaction(
       account: find_or_create_account,
       transaction_type: find_or_create_transaction_type(type_name, kind),
       amount: amount,

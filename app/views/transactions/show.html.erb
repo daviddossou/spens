@@ -13,7 +13,7 @@
 
           <h2 class="transaction-show__amount <%= transaction_amount_class(kind) %>">
             <%= transaction_amount_prefix(kind) %>
-            <%= format_money(@transaction.amount, current_user.currency) %>
+            <%= smart_format_money(@transaction.amount, current_user.currency) %>
           </h2>
           <p class="transaction-show__type"><%= @transaction.transaction_type.name %></p>
         </div>

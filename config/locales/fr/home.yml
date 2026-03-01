@@ -11,7 +11,7 @@ fr:
       sign_in_cta: "Se connecter"
       sign_up_cta: "S'inscrire"
     dashboard:
-      dashboard_title: "Tableau de bord Spens"
+      dashboard_title: "Tableau de bord"
       your_account: "Votre compte"
       edit_profile: "Modifier le profil"
       services: "Services"
@@ -29,6 +29,11 @@ fr:
       add_transaction: "Ajouter une transaction"
       loading: "Chargement..."
       has_note: "A une note"
+      stats:
+        total_balance: "Sur mes comptes"
+        saved_this_month: "Épargné Ce Mois"
+        owed_to_me: "On Me Doit"
+        i_owe: "Je Dois"
     empty_state:
       no_transactions: "Aucune transaction"
       no_transactions_description: "Commencez à suivre vos finances en ajoutant votre première transaction"

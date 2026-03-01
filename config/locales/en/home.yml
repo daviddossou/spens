@@ -11,7 +11,7 @@ en:
       sign_in_cta: "Sign In"
       sign_up_cta: "Sign Up"
     dashboard:
-      dashboard_title: "Spens Dashboard"
+      dashboard_title: "Dashboard"
       your_account: "Your Account"
       edit_profile: "Edit Profile"
       services: "Services"
@@ -29,6 +29,11 @@ en:
       add_transaction: "Add Transaction"
       loading: "Loading more..."
       has_note: "Has note"
+      stats:
+        total_balance: "Total Balance"
+        saved_this_month: "Saved This Month"
+        owed_to_me: "Owed to Me"
+        i_owe: "I Owe"
     empty_state:
       no_transactions: "No transactions yet"
       no_transactions_description: "Start tracking your finances by adding your first transaction"

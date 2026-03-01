@@ -6,9 +6,31 @@
        data-infinite-scroll-url-value="<%= dashboard_path %>"
        data-infinite-scroll-page-value="<%= @has_more ? @page + 1 : 0 %>">
 
-    <!-- Header -->
-    <div class="dashboard__header">
-      <h2 class="dashboard__header-title"><%= t('.transactions_title') %></h2>
+    <!-- Analytics Cards -->
+    <div class="stat-cards">
+      <%= render Ui::StatCardComponent.new(
+        label: t('.stats.total_balance'),
+        value: @total_balance,
+        currency: @currency
+      ) %>
+      <%= render Ui::StatCardComponent.new(
+        label: t('.stats.saved_this_month'),
+        value: @saved_this_month,
+        currency: @currency,
+        trend: @saved_this_month.positive? ? :positive : (@saved_this_month.negative? ? :negative : nil)
+      ) %>
+      <%= render Ui::StatCardComponent.new(
+        label: t('.stats.owed_to_me'),
+        value: @owed_to_me,
+        currency: @currency,
+        trend: @owed_to_me.positive? ? :positive : nil
+      ) %>
+      <%= render Ui::StatCardComponent.new(
+        label: t('.stats.i_owe'),
+        value: @i_owe,
+        currency: @currency,
+        trend: @i_owe.positive? ? :negative : nil
+      ) %>
     </div>
 
     <!-- Transactions List -->
