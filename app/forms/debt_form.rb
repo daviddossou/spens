@@ -69,11 +69,11 @@ class DebtForm < BaseForm
   end
 
   def account_suggestions
-    AccountSuggestionsService.new(user).all
+    AccountSuggestionsService.new(user).all_with_balances
   end
 
   def default_account_suggestions
-    AccountSuggestionsService.new(user).defaults
+    AccountSuggestionsService.new(user).defaults_with_balances
   end
 
   private

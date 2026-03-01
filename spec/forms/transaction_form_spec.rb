@@ -375,8 +375,12 @@ RSpec.describe TransactionForm, type: :model do
 
   describe '#account_suggestions' do
     before do
-      allow_any_instance_of(AccountSuggestionsService).to receive(:all)
-        .and_return([ 'Checking', 'Savings', 'Investment' ])
+      allow_any_instance_of(AccountSuggestionsService).to receive(:all_with_balances)
+        .and_return([
+          { name: 'Checking', balance: 1000 },
+          { name: 'Savings', balance: 5000 },
+          { name: 'Investment', balance: 0 }
+        ])
     end
 
     it 'calls AccountSuggestionsService with user' do
@@ -384,15 +388,22 @@ RSpec.describe TransactionForm, type: :model do
       form.account_suggestions
     end
 
-    it 'returns all account suggestions' do
-      expect(form.account_suggestions).to eq([ 'Checking', 'Savings', 'Investment' ])
+    it 'returns all account suggestions with balances' do
+      expect(form.account_suggestions).to eq([
+        { name: 'Checking', balance: 1000 },
+        { name: 'Savings', balance: 5000 },
+        { name: 'Investment', balance: 0 }
+      ])
     end
   end
 
   describe '#default_account_suggestions' do
     before do
-      allow_any_instance_of(AccountSuggestionsService).to receive(:defaults)
-        .and_return([ 'Wallet', 'Bank Account' ])
+      allow_any_instance_of(AccountSuggestionsService).to receive(:defaults_with_balances)
+        .and_return([
+          { name: 'Wallet', balance: 200 },
+          { name: 'Bank Account', balance: 0 }
+        ])
     end
 
     it 'calls AccountSuggestionsService with user' do
@@ -400,8 +411,11 @@ RSpec.describe TransactionForm, type: :model do
       form.default_account_suggestions
     end
 
-    it 'returns default account suggestions' do
-      expect(form.default_account_suggestions).to eq([ 'Wallet', 'Bank Account' ])
+    it 'returns default account suggestions with balances' do
+      expect(form.default_account_suggestions).to eq([
+        { name: 'Wallet', balance: 200 },
+        { name: 'Bank Account', balance: 0 }
+      ])
     end
   end
 

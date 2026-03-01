@@ -28,4 +28,11 @@ module TransactionHelper
   def transaction_amount_prefix(kind)
     TransactionIconService.amount_prefix(kind)
   end
+
+  # Get signed amount based on transaction kind
+  def transaction_signed_amount(transaction)
+    kind = transaction.transaction_type.kind
+    income_kinds = %w[income debt_in transfer_in]
+    income_kinds.include?(kind) ? transaction.amount.abs : -transaction.amount.abs
+  end
 end

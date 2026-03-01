@@ -10,7 +10,8 @@ export default class extends Controller {
     placeholder: String,
     maxItems: Number,
     suggestions: Array,
-    defaultSuggestions: Array
+    defaultSuggestions: Array,
+    currency: String
   }
 
   connect() {
@@ -68,6 +69,28 @@ export default class extends Controller {
       // Allow typing beyond the suggestions
       createOnBlur: true,
       highlight: true
+    }
+
+    // Add custom render for options with balance data
+    if (this.hasCurrencyValue && this.currencyValue) {
+      const currency = this.currencyValue
+
+      config.render = {
+        option: function (data, escape) {
+          if (data.balance !== null && data.balance !== undefined && parseFloat(data.balance) !== 0) {
+            const balanceValue = parseFloat(data.balance)
+            const isNegative = balanceValue < 0
+            const formatted = new Intl.NumberFormat('en', { minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(Math.abs(balanceValue))
+            const sign = isNegative ? '-' : ''
+            const balanceClass = isNegative ? 'ts-option-balance ts-option-balance--negative' : 'ts-option-balance'
+            return `<div class="ts-option-with-balance">
+              <span>${escape(data.text)}</span>
+              <span class="${balanceClass}">${sign}${escape(formatted)} ${escape(currency)}</span>
+            </div>`
+          }
+          return `<div>${escape(data.text)}</div>`
+        }
+      }
     }
 
     // If suggestions are provided (for text input autocomplete)

@@ -43,6 +43,10 @@
   margin: 0;
 }
 
+.account-card__balance--negative {
+  color: var(--color-danger);
+}
+
 .account-card__meta {
   display: flex;
   align-items: center;
@@ -89,6 +93,10 @@
   font-size: 1.25rem;
   font-weight: 700;
   color: var(--text-default);
+}
+
+.account-detail__balance-value--negative {
+  color: var(--color-danger);
 }
 
 .account-detail__goal-value {

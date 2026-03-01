@@ -12,7 +12,7 @@
           <%= link_to account_path(id: account.id), class: "account-card" do %>
             <div class="account-card__info">
               <h3 class="account-card__name"><%= account.name %></h3>
-              <p class="account-card__balance"><%= smart_format_money(account.balance, current_user.currency) %></p>
+              <p class="account-card__balance <%= 'account-card__balance--negative' if account.balance.negative? %>"><%= smart_format_money(account.balance, current_user.currency) %></p>
             </div>
             <div class="account-card__meta">
               <% if account.saving_goal.to_f > 0 %>

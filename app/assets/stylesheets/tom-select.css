@@ -144,6 +144,28 @@
   color: var(--text-default) !important;
 }
 
+/* Option with balance display */
+.ts-option-with-balance {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.ts-option-balance {
+  font-size: 0.75rem;
+  color: var(--color-gray-500);
+  white-space: nowrap;
+}
+
+.ts-option-balance--negative {
+  color: var(--color-danger);
+}
+
+.ts-dropdown .option.selected .ts-option-balance {
+  color: rgba(255, 255, 255, 0.8);
+}
+
 .ts-dropdown .create:hover,
 .ts-dropdown .create.active {
   background-color: var(--color-gray-100) !important;

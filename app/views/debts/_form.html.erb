@@ -23,7 +23,7 @@
       type: :number_field,
       label: t(".total_amount_label.#{ form.object.direction }"),
       required: true,
-      prepend: current_user.currency,
+      prepend: get_currency_symbol(current_user.currency),
       step: 0.01,
       placeholder: "0.00",
       help_text: t(".total_amount_help.#{ form.object.direction }")
@@ -42,7 +42,8 @@
       default_autocomplete_options: form.object.default_account_suggestions,
       allow_create: true,
       placeholder: t(".account_placeholder.#{ form.object.direction }"),
-      help_text: t(".account_help.#{ form.object.direction }")
+      help_text: t(".account_help.#{ form.object.direction }"),
+      field_data: { tom_select_currency_value: get_currency_symbol(current_user.currency) }
     ) %>
   </div>
 
@@ -69,7 +70,7 @@
         type: :number_field,
         label: t(".amount_reimbursed_label.#{ form.object.direction }"),
         required: false,
-        prepend: current_user.currency,
+        prepend: get_currency_symbol(current_user.currency),
         step: 0.01,
         placeholder: "0.00",
         help_text: t(".amount_reimbursed_help.#{ form.object.direction }")

@@ -30,4 +30,9 @@ class TransactionItemComponent < ViewComponent::Base
   def amount_prefix
     TransactionIconService.amount_prefix(kind)
   end
+
+  def signed_amount
+    income_kinds = %w[income debt_in transfer_in]
+    income_kinds.include?(kind) ? transaction.amount.abs : -transaction.amount.abs
+  end
 end
