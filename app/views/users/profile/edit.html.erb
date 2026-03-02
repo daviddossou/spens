@@ -1,0 +1,57 @@
+<% content_for :title, t('auth.profile.edit_profile') %>
+<% content_for :page_title, t('auth.profile.edit_profile') %>
+
+<div class="page-container page-container--narrow">
+  <div class="page-content">
+    <%= form_with model: @user, url: profile_path, method: :patch, class: "space-y-6" do |f| %>
+      <%= render "devise/shared/error_messages", resource: @user %>
+
+      <%= render Forms::InputFieldComponent.new(
+        form: f,
+        field: :first_name,
+        type: :text_field,
+        label: t('auth.profile.first_name'),
+        autocomplete: "given-name"
+      ) %>
+
+      <%= render Forms::InputFieldComponent.new(
+        form: f,
+        field: :last_name,
+        type: :text_field,
+        label: t('auth.profile.last_name'),
+        autocomplete: "family-name"
+      ) %>
+
+      <%= render Forms::InputFieldComponent.new(
+        form: f,
+        field: :email,
+        type: :email_field,
+        label: t('auth.profile.email'),
+        autofocus: true,
+        autocomplete: "email"
+      ) %>
+
+      <div class="space-y-3">
+        <%= render Ui::ButtonComponent.new(
+          form: f,
+          text: t('auth.profile.save'),
+          variant: :primary,
+          full_width: true
+        ) %>
+
+        <%= render Ui::ButtonComponent.new(
+          text: t('auth.profile.cancel_account'),
+          url: profile_path,
+          method: :delete,
+          variant: :danger,
+          full_width: true,
+          data: {
+            confirm: t('auth.profile.cancel_account_confirm'),
+            "turbo-method": "delete"
+          },
+          classes: 'mt-1'
+        ) %>
+      </div>
+    <% end %>
+  </div>
+</div>

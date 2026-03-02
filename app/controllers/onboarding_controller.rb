@@ -1,4 +1,6 @@
 class OnboardingController < ApplicationController
+  layout "onboarding"
+
   before_action :authenticate_user!
   before_action :redirect_if_completed, if: :user_signed_in?
 

@@ -64,26 +64,64 @@ RSpec.describe User, type: :model do
       end
     end
 
-    describe "password validation" do
-      it "requires a password" do
-        user.password = nil
-        user.password_confirmation = nil
-        expect(user).not_to be_valid
-        expect(user.errors[:password]).to include("can't be blank")
+    describe "OTP methods" do
+      let(:user) { create(:user) }
+
+      describe "#generate_otp!" do
+        it "generates a 6-digit OTP code" do
+          user.generate_otp!
+          expect(user.otp_code).to match(/\A\d{6}\z/)
+        end
+
+        it "sets otp_sent_at" do
+          user.generate_otp!
+          expect(user.otp_sent_at).to be_within(2.seconds).of(Time.current)
+        end
       end
 
-      it "requires minimum password length" do
-        user.password = "12345"
-        user.password_confirmation = "12345"
-        expect(user).not_to be_valid
-        expect(user.errors[:password]).to include("is too short (minimum 6 characters)")
+      describe "#verify_otp" do
+        before { user.generate_otp! }
+
+        it "returns true for a valid OTP" do
+          expect(user.verify_otp(user.otp_code)).to be true
+        end
+
+        it "returns false for an invalid OTP" do
+          expect(user.verify_otp("000000")).to be false
+        end
+
+        it "returns false for a blank OTP" do
+          expect(user.verify_otp("")).to be false
+        end
+
+        it "clears the OTP after successful verification" do
+          code = user.otp_code
+          user.verify_otp(code)
+          expect(user.otp_code).to be_nil
+          expect(user.otp_sent_at).to be_nil
+        end
+
+        it "returns false for an expired OTP" do
+          user.update_column(:otp_sent_at, 11.minutes.ago)
+          expect(user.verify_otp(user.otp_code)).to be false
+        end
       end
 
-      it "requires password confirmation to match" do
-        user.password = "password123"
-        user.password_confirmation = "different123"
-        expect(user).not_to be_valid
-        expect(user.errors[:password_confirmation]).to include("doesn't match")
+      describe "#otp_expired?" do
+        it "returns true when OTP is older than validity period" do
+          user.generate_otp!
+          user.update_column(:otp_sent_at, 11.minutes.ago)
+          expect(user.otp_expired?).to be true
+        end
+
+        it "returns false when OTP is within validity period" do
+          user.generate_otp!
+          expect(user.otp_expired?).to be false
+        end
+
+        it "returns true when otp_sent_at is nil" do
+          expect(user.otp_expired?).to be true
+        end
       end
     end
 
@@ -169,15 +207,9 @@ RSpec.describe User, type: :model do
     end
   end
 
-  describe "password length configuration" do
-    it "has correct minimum password length" do
-      length_validator = User.validators_on(:password).find { |v| v.kind == :length }
-      expect(length_validator.options[:minimum]).to eq(6)
-    end
-
-    it "has correct maximum password length" do
-      length_validator = User.validators_on(:password).find { |v| v.kind == :length }
-      expect(length_validator.options[:maximum]).to eq(128)
+  describe "OTP validity configuration" do
+    it "has a 10 minute OTP validity period" do
+      expect(User::OTP_VALIDITY).to eq(10.minutes)
     end
   end
 
@@ -186,24 +218,24 @@ RSpec.describe User, type: :model do
       expect(User.devise_modules).to include(:database_authenticatable)
     end
 
-    it "includes registerable" do
-      expect(User.devise_modules).to include(:registerable)
-    end
-
-    it "includes recoverable" do
-      expect(User.devise_modules).to include(:recoverable)
-    end
-
-    it "includes rememberable" do
-      expect(User.devise_modules).to include(:rememberable)
-    end
-
-    it "includes validatable" do
-      expect(User.devise_modules).to include(:validatable)
-    end
-
     it "includes trackable" do
       expect(User.devise_modules).to include(:trackable)
+    end
+
+    it "does not include registerable" do
+      expect(User.devise_modules).not_to include(:registerable)
+    end
+
+    it "does not include recoverable" do
+      expect(User.devise_modules).not_to include(:recoverable)
+    end
+
+    it "does not include rememberable" do
+      expect(User.devise_modules).not_to include(:rememberable)
+    end
+
+    it "does not include validatable" do
+      expect(User.devise_modules).not_to include(:validatable)
     end
   end
 

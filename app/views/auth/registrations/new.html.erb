@@ -1,0 +1,43 @@
+<% content_for :title, t('auth.registrations.sign_up') %>
+<% content_for :subtitle do %>
+  <%= t('auth.registrations.or') %>
+  <%= link_to t('auth.registrations.sign_in_link'), new_user_session_path, class: "font-medium text-primary hover:text-secondary" %>
+<% end %>
+
+<%= form_with model: @user, url: user_registration_path, method: :post, class: "space-y-6" do |f| %>
+  <%= render "devise/shared/error_messages", resource: @user %>
+
+  <%= render Forms::InputFieldComponent.new(
+    form: f,
+    field: :first_name,
+    type: :text_field,
+    label: t('auth.registrations.first_name'),
+    autocomplete: "given-name",
+    required: true
+  ) %>
+
+  <%= render Forms::InputFieldComponent.new(
+    form: f,
+    field: :last_name,
+    type: :text_field,
+    label: t('auth.registrations.last_name'),
+    autocomplete: "family-name",
+    required: true
+  ) %>
+
+  <%= render Forms::InputFieldComponent.new(
+    form: f,
+    field: :email,
+    type: :email_field,
+    label: t('auth.registrations.email'),
+    autocomplete: "email",
+    required: true
+  ) %>
+
+  <%= render Ui::ButtonComponent.new(
+    form: f,
+    text: t('auth.registrations.continue'),
+    variant: :primary,
+    full_width: true
+  ) %>
+<% end %>

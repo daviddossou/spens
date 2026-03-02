@@ -1,0 +1,19 @@
+<% content_for :title, t('auth.sessions.sign_in') %>
+<% content_for :subtitle do %>
+  <%= t('auth.sessions.or') %>
+  <%= link_to t('auth.sessions.sign_up_link'), new_user_registration_path, class: "font-medium text-primary hover:text-secondary" %>
+<% end %>
+
+<%= form_with url: user_session_path, method: :post, class: "space-y-6" do |f| %>
+  <div class="form-group">
+    <%= f.label :email, t('auth.sessions.email'), class: "form-label" %>
+    <%= f.email_field :email, class: "form-input", autofocus: true, autocomplete: "email", required: true, placeholder: t('auth.sessions.email_placeholder') %>
+  </div>
+
+  <%= render Ui::ButtonComponent.new(
+    form: f,
+    text: t('auth.sessions.continue'),
+    variant: :primary,
+    full_width: true
+  ) %>
+<% end %>

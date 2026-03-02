@@ -1,0 +1,51 @@
+fr:
+  auth:
+    sessions:
+      sign_in: "Se connecter"
+      or: "Ou"
+      sign_up_link: "créer un nouveau compte"
+      email: "Adresse email"
+      email_placeholder: "vous@exemple.com"
+      continue: "Continuer"
+      user_not_found: "Aucun compte trouvé avec cet email. Veuillez d'abord vous inscrire."
+
+    registrations:
+      sign_up: "S'inscrire"
+      or: "Ou"
+      sign_in_link: "se connecter à votre compte existant"
+      first_name: "Prénom"
+      last_name: "Nom"
+      email: "Adresse email"
+      continue: "Continuer"
+      signed_up: "Bienvenue ! Votre compte a été créé avec succès."
+
+    verifications:
+      title: "Entrez le code de vérification"
+      subtitle: "Nous avons envoyé un code à 6 chiffres à %{email}"
+      code_label: "Code de vérification"
+      verify: "Vérifier"
+      resend: "Renvoyer le code"
+      back: "← Retour à la connexion"
+      invalid_code: "Code de vérification invalide. Veuillez réessayer."
+      code_expired: "Votre code a expiré. Veuillez en demander un nouveau."
+      code_resent: "Un nouveau code de vérification a été envoyé à votre email."
+      session_expired: "Votre session a expiré. Veuillez vous reconnecter."
+
+    profile:
+      edit_profile: "Modifier le profil"
+      first_name: "Prénom"
+      last_name: "Nom"
+      email: "Email"
+      save: "Enregistrer"
+      updated: "Votre profil a été mis à jour avec succès."
+      destroyed: "Votre compte a été supprimé. Nous espérons vous revoir !"
+      cancel_account: "Supprimer mon compte"
+      cancel_account_confirm: "Êtes-vous sûr(e) ? Cette action est irréversible."
+
+    mailer:
+      otp:
+        subject: "Votre code de vérification Spens"
+        greeting: "Bonjour %{name},"
+        message: "Voici votre code de vérification :"
+        expires: "Ce code expire dans 10 minutes."
+        ignore: "Si vous n'avez pas demandé ce code, vous pouvez ignorer cet email."

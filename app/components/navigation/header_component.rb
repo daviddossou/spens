@@ -27,7 +27,7 @@ class Navigation::HeaderComponent < ViewComponent::Base
   end
 
   def settings_path
-    helpers.edit_user_registration_path
+    helpers.edit_profile_path
   end
 
   def logout_path

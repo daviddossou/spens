@@ -20,7 +20,8 @@ module DeviseConfiguration
   private
 
   def configure_permitted_parameters
-    devise_parameter_sanitizer.permit(:sign_up, keys: [ :first_name, :last_name, :phone_number ])
+    # Account update params are handled by Users::ProfileController directly
+    # This is kept for any remaining Devise controller compatibility
     devise_parameter_sanitizer.permit(:account_update, keys: [ :first_name, :last_name, :phone_number ])
   end
 end

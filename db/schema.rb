@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_11_19_183109) do
+ActiveRecord::Schema[8.0].define(version: 2026_03_02_120038) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -92,6 +92,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_19_183109) do
     t.string "main_income_source"
     t.jsonb "financial_goals", default: []
     t.string "onboarding_current_step"
+    t.string "otp_code"
+    t.datetime "otp_sent_at"
     t.index ["country"], name: "index_users_on_country"
     t.index ["currency"], name: "index_users_on_currency"
     t.index ["email"], name: "index_users_on_email", unique: true

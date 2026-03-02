@@ -1,0 +1,9 @@
+<%= t('auth.mailer.otp.greeting', name: @user.first_name) %>
+
+<%= t('auth.mailer.otp.message') %>
+
+<%= @otp_code %>
+
+<%= t('auth.mailer.otp.expires') %>
+
+<%= t('auth.mailer.otp.ignore') %>

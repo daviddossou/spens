@@ -1,9 +1,28 @@
 Rails.application.routes.draw do
+  # Register Devise user mapping for Warden session management (no routes generated)
+  devise_for :users, skip: :all
+
   # Locale support - wrap routes in scope for i18n
   scope "(:locale)", locale: /en|fr/ do
-    devise_for :users, controllers: {
-      registrations: "users/registrations"
-    }
+    # Passwordless auth routes (within devise_scope for Warden integration)
+    devise_scope :user do
+      get "sign_in", to: "auth/sessions#new", as: :new_user_session
+      post "sign_in", to: "auth/sessions#create", as: :user_session
+      delete "sign_out", to: "auth/sessions#destroy", as: :destroy_user_session
+
+      get "sign_up", to: "auth/registrations#new", as: :new_user_registration
+      post "sign_up", to: "auth/registrations#create", as: :user_registration
+
+      get "verify", to: "auth/verifications#show", as: :auth_verification
+      post "verify", to: "auth/verifications#create"
+      post "verify/resend", to: "auth/verifications#resend", as: :resend_otp
+    end
+
+    # Profile management
+    get "profile/edit", to: "users/profile#edit", as: :edit_profile
+    patch "profile", to: "users/profile#update", as: :profile
+    put "profile", to: "users/profile#update"
+    delete "profile", to: "users/profile#destroy"
 
     # Main application routes
     root "home#index"
@@ -38,6 +57,7 @@ Rails.application.routes.draw do
   if Rails.env.development?
     require "sidekiq/web"
     mount Sidekiq::Web => "/sidekiq"
+    mount LetterOpenerWeb::Engine, at: "/letter_opener"
   end
 
   # Health check and PWA routes (outside locale scope)

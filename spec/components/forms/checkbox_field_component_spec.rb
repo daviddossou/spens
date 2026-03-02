@@ -3,8 +3,11 @@
 require 'rails_helper'
 
 RSpec.describe Forms::CheckboxFieldComponent, type: :component do
-  let(:form) { mock_form_builder }
-  let(:field) { :remember_me }
+  let(:model) do
+    User.new.tap { |u| u.define_singleton_method(:accept_terms) { false } }
+  end
+  let(:form) { mock_form_builder(model) }
+  let(:field) { :accept_terms }
   let(:component) { described_class.new(form: form, field: field) }
 
   it_behaves_like "a rendered component" do

@@ -36,8 +36,7 @@
 class User < ApplicationRecord
   ##
   # Devise modules
-  devise :database_authenticatable, :registerable,
-         :recoverable, :rememberable, :validatable, :trackable
+  devise :database_authenticatable, :trackable
 
   ##
   # Associations
@@ -61,11 +60,12 @@ class User < ApplicationRecord
     track_spending
     budget_better
   ].freeze
+  OTP_VALIDITY = 10.minutes
 
   ##
   # Validations && Enums
-  validates :password, length: { minimum: 6, maximum: 128 }, allow_blank: true
-  validates :password, confirmation: true
+  validates :email, presence: true, uniqueness: { case_sensitive: false },
+                    format: { with: Devise.email_regexp }
   validates :first_name, :last_name, presence: true
   validates :phone_number, format: { with: /\A[\+]?[1-9]?[0-9]{7,15}\z/, message: "must be a valid phone number" }, allow_blank: true
   validates :currency, inclusion: { in: CURRENCIES }, allow_nil: true
@@ -86,7 +86,31 @@ class User < ApplicationRecord
     onboarding_current_step == "onboarding_completed"
   end
 
+  def generate_otp!
+    update!(
+      otp_code: SecureRandom.random_number(10**6).to_s.rjust(6, "0"),
+      otp_sent_at: Time.current
+    )
+  end
+
+  def verify_otp(code)
+    return false if otp_code.blank? || otp_sent_at.blank?
+    return false if otp_expired?
+    return false unless ActiveSupport::SecurityUtils.secure_compare(otp_code, code.to_s)
+
+    clear_otp!
+    true
+  end
+
+  def otp_expired?
+    otp_sent_at.nil? || otp_sent_at < OTP_VALIDITY.ago
+  end
+
   private
+
+    def clear_otp!
+      update!(otp_code: nil, otp_sent_at: nil)
+    end
 
     def requires_country?
       %w[onboarding_account_setup onboarding_completed].include?(onboarding_current_step)
