@@ -288,8 +288,8 @@ RSpec.describe DebtForm, type: :model do
     let!(:account2) { create(:account, user: user, name: 'Bank') }
 
     before do
-      allow_any_instance_of(AccountSuggestionsService).to receive(:all)
-        .and_return([ 'Cash', 'Bank', 'Mobile Money' ])
+      allow_any_instance_of(AccountSuggestionsService).to receive(:all_with_balances)
+        .and_return([ { name: 'Cash', balance: 0 }, { name: 'Bank', balance: 0 }, { name: 'Mobile Money', balance: 0 } ])
     end
 
     it 'calls AccountSuggestionsService with user' do
@@ -298,14 +298,14 @@ RSpec.describe DebtForm, type: :model do
     end
 
     it 'returns all account suggestions' do
-      expect(form.account_suggestions).to eq([ 'Cash', 'Bank', 'Mobile Money' ])
+      expect(form.account_suggestions).to eq([ { name: 'Cash', balance: 0 }, { name: 'Bank', balance: 0 }, { name: 'Mobile Money', balance: 0 } ])
     end
   end
 
   describe '#default_account_suggestions' do
     before do
-      allow_any_instance_of(AccountSuggestionsService).to receive(:defaults)
-        .and_return([ 'Cash', 'Bank Account', 'Mobile Money' ])
+      allow_any_instance_of(AccountSuggestionsService).to receive(:defaults_with_balances)
+        .and_return([ { name: 'Cash', balance: 0 }, { name: 'Bank Account', balance: 0 }, { name: 'Mobile Money', balance: 0 } ])
     end
 
     it 'calls AccountSuggestionsService with user' do
@@ -314,7 +314,7 @@ RSpec.describe DebtForm, type: :model do
     end
 
     it 'returns default account suggestions' do
-      expect(form.default_account_suggestions).to eq([ 'Cash', 'Bank Account', 'Mobile Money' ])
+      expect(form.default_account_suggestions).to eq([ { name: 'Cash', balance: 0 }, { name: 'Bank Account', balance: 0 }, { name: 'Mobile Money', balance: 0 } ])
     end
   end
 
