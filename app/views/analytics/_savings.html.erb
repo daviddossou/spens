@@ -1,0 +1,75 @@
+<!-- Stat Cards -->
+<div class="stat-cards">
+  <%= render Ui::StatCardComponent.new(
+    label: t('analytics.savings.total_balance'),
+    value: @total_balance,
+    currency: @currency
+  ) %>
+  <%= render Ui::StatCardComponent.new(
+    label: t('analytics.savings.total_saving_goal'),
+    value: @total_saving_goal,
+    currency: @currency
+  ) %>
+  <%= render Ui::StatCardComponent.new(
+    label: t('analytics.savings.total_saved'),
+    value: @total_saved,
+    currency: @currency,
+    trend: @total_saving_goal > 0 && @total_saved >= @total_saving_goal ? :positive : nil
+  ) %>
+</div>
+
+<!-- Account Balance Distribution (Doughnut) -->
+<% if @account_balances.any? %>
+  <div class="analytics-chart-card">
+    <h3 class="analytics-chart-card__title"><%= t('analytics.savings.account_distribution') %></h3>
+    <%= pie_chart @account_balances,
+        donut: true,
+        legend: "bottom",
+        library: { plugins: { legend: { position: "bottom", labels: { boxWidth: 12, padding: 8 } } } } %>
+  </div>
+<% end %>
+
+<!-- Monthly Saving Trend (Line) -->
+<% if @saving_trend.any? %>
+  <div class="analytics-chart-card">
+    <h3 class="analytics-chart-card__title"><%= t('analytics.savings.saving_trend') %></h3>
+    <%= line_chart @saving_trend,
+        colors: ["#3F51B5"],
+        library: {
+          scales: { y: { beginAtZero: true } },
+          plugins: { legend: { display: false } }
+        } %>
+  </div>
+<% end %>
+
+<!-- Saving Goals Progress -->
+<% if @goals_progress.any? %>
+  <div class="analytics-chart-card">
+    <h3 class="analytics-chart-card__title"><%= t('analytics.savings.goals_progress') %></h3>
+    <div class="analytics-goals-list">
+      <% @goals_progress.each do |goal| %>
+        <div class="analytics-goal-item">
+          <div class="analytics-goal-item__header">
+            <span class="analytics-goal-item__name"><%= goal[:name] %></span>
+            <span class="analytics-goal-item__amount">
+              <%= smart_format_money(goal[:balance], @currency) %> / <%= smart_format_money(goal[:goal], @currency) %>
+            </span>
+          </div>
+          <%= render Ui::ProgressComponent.new(
+            percentage: goal[:progress],
+            labels: false,
+            css_class: "progress-container progress-container--inline"
+          ) %>
+          <span class="analytics-goal-item__percent"><%= goal[:progress] %>%</span>
+        </div>
+      <% end %>
+    </div>
+  </div>
+<% end %>
+
+<!-- Empty State -->
+<% if @account_balances.empty? && @goals_progress.empty? %>
+  <div class="analytics-empty">
+    <p class="analytics-empty__text"><%= t('analytics.savings.empty') %></p>
+  </div>
+<% end %>

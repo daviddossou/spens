@@ -77,3 +77,5 @@ gem "money", "~> 6.16"
 gem "money-rails", "~> 1.15"
 
 gem "annot8", "~> 1.0"
+gem "chartkick", "~> 5.0"
+gem "groupdate", "~> 6.0"

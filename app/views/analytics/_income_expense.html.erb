@@ -1,0 +1,79 @@
+<!-- Stat Cards -->
+<div class="stat-cards">
+  <%= render Ui::StatCardComponent.new(
+    label: t('analytics.income_expense.total_income'),
+    value: @total_income,
+    currency: @currency,
+    trend: :positive
+  ) %>
+  <%= render Ui::StatCardComponent.new(
+    label: t('analytics.income_expense.total_expenses'),
+    value: @total_expenses,
+    currency: @currency,
+    trend: :negative
+  ) %>
+  <%= render Ui::StatCardComponent.new(
+    label: t('analytics.income_expense.net'),
+    value: @net,
+    currency: @currency,
+    trend: @net.positive? ? :positive : (@net.negative? ? :negative : nil)
+  ) %>
+</div>
+
+<!-- Income by Category (Doughnut) -->
+<% if @income_by_category.any? %>
+  <div class="analytics-chart-card">
+    <h3 class="analytics-chart-card__title"><%= t('analytics.income_expense.income_by_category') %></h3>
+    <%= pie_chart @income_by_category,
+        donut: true,
+        legend: "bottom",
+        library: { plugins: { legend: { position: "bottom", labels: { boxWidth: 12, padding: 8 } } } } %>
+  </div>
+<% end %>
+
+<!-- Expense by Category (Doughnut) -->
+<% if @expense_by_category.any? %>
+  <div class="analytics-chart-card">
+    <h3 class="analytics-chart-card__title"><%= t('analytics.income_expense.expense_by_category') %></h3>
+    <%= pie_chart @expense_by_category,
+        donut: true,
+        legend: "bottom",
+        library: { plugins: { legend: { position: "bottom", labels: { boxWidth: 12, padding: 8 } } } } %>
+  </div>
+<% end %>
+
+<!-- Net Cash Flow Trend (Line) -->
+<% if @income_trend.any? || @expense_trend.any? %>
+  <div class="analytics-chart-card">
+    <h3 class="analytics-chart-card__title"><%= t('analytics.income_expense.cash_flow_trend') %></h3>
+    <%= line_chart [
+        { name: t('analytics.income_expense.income'), data: @income_trend, color: "#4CAF50" },
+        { name: t('analytics.income_expense.expenses'), data: @expense_trend, color: "#F44336" }
+      ],
+      library: {
+        scales: { y: { beginAtZero: true } },
+        plugins: { legend: { position: "bottom", labels: { boxWidth: 12, padding: 8 } } }
+      } %>
+  </div>
+<% end %>
+
+<!-- Top Spending Categories (Bar) -->
+<% if @top_spending.any? %>
+  <div class="analytics-chart-card">
+    <h3 class="analytics-chart-card__title"><%= t('analytics.income_expense.top_spending') %></h3>
+    <%= bar_chart @top_spending,
+        colors: ["#F44336"],
+        library: {
+          indexAxis: "y",
+          scales: { x: { beginAtZero: true } },
+          plugins: { legend: { display: false } }
+        } %>
+  </div>
+<% end %>
+
+<!-- Empty State -->
+<% if @income_by_category.empty? && @expense_by_category.empty? %>
+  <div class="analytics-empty">
+    <p class="analytics-empty__text"><%= t('analytics.income_expense.empty') %></p>
+  </div>
+<% end %>

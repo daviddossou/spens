@@ -1,0 +1,83 @@
+<% content_for :page_title, t('.page_title') %>
+<% content_for :head do %>
+  <meta name="currency-symbol" content="<%= get_currency_symbol(@currency) %>">
+<% end %>
+
+<div class="page-container page-container--narrow">
+  <div class="page-content">
+
+    <!-- Period Switcher -->
+    <div class="analytics-period" data-controller="date-range">
+      <div class="analytics-period__bar">
+        <%= render Ui::SwitcherComponent.new(
+          options: [
+            { text: t('.periods.custom'),       value: "custom",        url: analytics_path(period: "custom"),        data: { action: "click->date-range#showPicker", "date-range-target": "customBtn" } },
+            { text: t('.periods.today'),         value: "today",         url: analytics_path(period: "today") },
+            { text: t('.periods.yesterday'),     value: "yesterday",     url: analytics_path(period: "yesterday") },
+            { text: t('.periods.this_week'),     value: "this_week",     url: analytics_path(period: "this_week") },
+            { text: t('.periods.this_month'),    value: "this_month",    url: analytics_path(period: "this_month") },
+            { text: t('.periods.last_3_months'), value: "last_3_months", url: analytics_path(period: "last_3_months") },
+            { text: t('.periods.last_6_months'), value: "last_6_months", url: analytics_path(period: "last_6_months") },
+            { text: t('.periods.last_12_months'), value: "last_12_months", url: analytics_path(period: "last_12_months") },
+            { text: t('.periods.all_time'),        value: "all_time",        url: analytics_path(period: "all_time") }
+          ],
+          current: @period,
+          css_class: "switcher switcher--small switcher--scroll"
+        ) %>
+      </div>
+
+      <% if @period != 'custom' %>
+        <div class="analytics-period__date-label">
+          <% if @date_range %>
+            <%= l(@date_range.first, format: :short) %> — <%= l(@date_range.last, format: :short) %>
+          <% else %>
+            <%= t('.periods.all_time') %>
+          <% end %>
+        </div>
+      <% end %>
+
+      <div class="analytics-period__custom <%= 'analytics-period__custom--visible' if @period == 'custom' %>"
+           data-date-range-target="picker">
+        <%= form_tag analytics_path, method: :get, class: "analytics-period__form" do %>
+          <input type="hidden" name="period" value="custom">
+          <div class="analytics-period__inputs">
+            <div class="analytics-period__field">
+              <label for="start_date" class="analytics-period__label"><%= t('.periods.from') %></label>
+              <input type="date" id="start_date" name="start_date"
+                     value="<%= params[:start_date] || @date_range&.first || Date.current.beginning_of_month %>"
+                     class="analytics-period__date-input"
+                     data-action="change->date-range#submit">
+            </div>
+            <div class="analytics-period__field">
+              <label for="end_date" class="analytics-period__label"><%= t('.periods.to') %></label>
+              <input type="date" id="end_date" name="end_date"
+                     value="<%= params[:end_date] || @date_range&.last || Date.current %>"
+                     class="analytics-period__date-input"
+                     data-action="change->date-range#submit">
+            </div>
+          </div>
+          <button type="submit" class="analytics-period__apply-btn"><%= t('.periods.apply') %></button>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- Income / Expense Section -->
+    <div class="analytics-section">
+      <h2 class="analytics-section__title"><%= t('.sections.income_expense') %></h2>
+      <%= render partial: "analytics/income_expense" %>
+    </div>
+
+    <!-- Debts Section -->
+    <div class="analytics-section">
+      <h2 class="analytics-section__title"><%= t('.sections.debts') %></h2>
+      <%= render partial: "analytics/debts" %>
+    </div>
+
+    <!-- Savings Section -->
+    <div class="analytics-section">
+      <h2 class="analytics-section__title"><%= t('.sections.savings') %></h2>
+      <%= render partial: "analytics/savings" %>
+    </div>
+
+  </div>
+</div>

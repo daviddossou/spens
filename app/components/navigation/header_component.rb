@@ -35,6 +35,6 @@ class Navigation::HeaderComponent < ViewComponent::Base
   end
 
   def analytics_path
-    helpers.dashboard_path
+    helpers.analytics_path
   end
 end

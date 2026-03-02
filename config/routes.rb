@@ -21,6 +21,9 @@ Rails.application.routes.draw do
     # Accounts
     resources :accounts, only: [ :index, :show, :new, :create, :edit, :update, :destroy ]
 
+    # Analytics
+    get "analytics", to: "analytics#index", as: :analytics
+
     # Onboarding routes
     get "onboarding", to: "onboarding#show"
 

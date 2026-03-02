@@ -1,0 +1,69 @@
+<!-- Stat Cards -->
+<div class="stat-cards">
+  <%= render Ui::StatCardComponent.new(
+    label: t('analytics.debts.owed_to_me'),
+    value: @total_owed_to_me,
+    currency: @currency,
+    trend: @total_owed_to_me.positive? ? :positive : nil
+  ) %>
+  <%= render Ui::StatCardComponent.new(
+    label: t('analytics.debts.i_owe'),
+    value: @total_i_owe,
+    currency: @currency,
+    trend: @total_i_owe.positive? ? :negative : nil
+  ) %>
+  <%= render Ui::StatCardComponent.new(
+    label: t('analytics.debts.ongoing_count'),
+    value: @total_debts_count,
+    trend: nil
+  ) %>
+  <%= render Ui::StatCardComponent.new(
+    label: t('analytics.debts.paid_count'),
+    value: @paid_debts_count,
+    trend: nil
+  ) %>
+</div>
+
+<!-- People Who Owe Me (Doughnut) -->
+<% if @owed_to_me_by_person.any? %>
+  <div class="analytics-chart-card">
+    <h3 class="analytics-chart-card__title"><%= t('analytics.debts.owed_to_me_by_person') %></h3>
+    <%= pie_chart @owed_to_me_by_person,
+        donut: true,
+        legend: "bottom",
+        library: { plugins: { legend: { position: "bottom", labels: { boxWidth: 12, padding: 8 } } } } %>
+  </div>
+<% end %>
+
+<!-- What I Owe (Doughnut) -->
+<% if @i_owe_by_person.any? %>
+  <div class="analytics-chart-card">
+    <h3 class="analytics-chart-card__title"><%= t('analytics.debts.i_owe_by_person') %></h3>
+    <%= pie_chart @i_owe_by_person,
+        donut: true,
+        legend: "bottom",
+        library: { plugins: { legend: { position: "bottom", labels: { boxWidth: 12, padding: 8 } } } } %>
+  </div>
+<% end %>
+
+<!-- Debt Repayment Trend (Line) -->
+<% if @debt_in_trend.any? || @debt_out_trend.any? %>
+  <div class="analytics-chart-card">
+    <h3 class="analytics-chart-card__title"><%= t('analytics.debts.repayment_trend') %></h3>
+    <%= line_chart [
+        { name: t('analytics.debts.received'), data: @debt_in_trend, color: "#4CAF50" },
+        { name: t('analytics.debts.given'), data: @debt_out_trend, color: "#F44336" }
+      ],
+      library: {
+        scales: { y: { beginAtZero: true } },
+        plugins: { legend: { position: "bottom", labels: { boxWidth: 12, padding: 8 } } }
+      } %>
+  </div>
+<% end %>
+
+<!-- Empty State -->
+<% if @owed_to_me_by_person.empty? && @i_owe_by_person.empty? %>
+  <div class="analytics-empty">
+    <p class="analytics-empty__text"><%= t('analytics.debts.empty') %></p>
+  </div>
+<% end %>
