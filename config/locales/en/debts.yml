@@ -1,12 +1,20 @@
 en:
   debts:
     index:
-      title: "Debts & Loans"
-      subtitle: "Track money you've lent to others"
+      title:
+        lent: "Money Lent"
+        borrowed: "Money Borrowed"
+      subtitle:
+        lent: "Track money others owe you"
+        borrowed: "Track money you owe others"
       i_lent: "Owed to Me"
       i_borrowed: "I Owe"
-      no_debts_title: "No debts yet"
-      no_debts_message: "Start tracking money you lend to friends and family"
+      no_debts_title:
+        lent: "No loans yet"
+        borrowed: "No debts yet"
+      no_debts_message:
+        lent: "Start tracking money you lend to friends and family"
+        borrowed: "Start tracking money you've borrowed from others"
       add_new:
         lent: "Record Money Lent"
         borrowed: "Record Money Borrowed"

@@ -16,11 +16,15 @@
 
     <%# Includes all stylesheet files in app/assets/stylesheets %>
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+
+    <%# TomSelect base CSS (vendored) %>
+    <%= stylesheet_link_tag "tom-select.bootstrap5", "data-turbo-track": "reload" %>
+
     <%= javascript_importmap_tags %>
   </head>
 
   <body style="background-color: var(--color-off-white);">
-    <main>
+    <main class="main-container">
       <%= render Ui::FlashMessageComponent.new(flash) %>
       <%= yield %>
     </main>

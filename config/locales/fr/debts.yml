@@ -1,12 +1,20 @@
 fr:
   debts:
     index:
-      title: "Dettes & Prêts"
-      subtitle: "Suivez l'argent que vous avez prêté"
+      title:
+        lent: "Argent Prêté"
+        borrowed: "Argent Emprunté"
+      subtitle:
+        lent: "Suivez l'argent que les autres vous doivent"
+        borrowed: "Suivez l'argent que vous devez aux autres"
       i_lent: "On me doit"
       i_borrowed: "Je dois"
-      no_debts_title: "Aucune dette pour le moment"
-      no_debts_message: "Commencez à suivre l'argent que vous prêtez à vos proches"
+      no_debts_title:
+        lent: "Aucun prêt pour le moment"
+        borrowed: "Aucune dette pour le moment"
+      no_debts_message:
+        lent: "Commencez à suivre l'argent que vous prêtez à vos proches"
+        borrowed: "Commencez à suivre l'argent que vous empruntez"
       add_new:
         lent: "Enregistrer de l'argent prêté"
         borrowed: "Enregistrer de l'argent emprunté"
