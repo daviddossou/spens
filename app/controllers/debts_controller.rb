@@ -5,8 +5,8 @@ class DebtsController < ApplicationController
   before_action :set_debt, only: [ :show, :edit, :update ]
 
   def index
-    @direction = params[:direction] || "lent"
-    @debts = current_space.debts.ongoing.send(@direction).order(created_at: :desc)
+    @direction = params[:direction].presence_in(%w[lent borrowed]) || "lent"
+    @debts = current_space.debts.ongoing.where(direction: @direction).order(created_at: :desc)
   end
 
   def show

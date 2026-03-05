@@ -28,10 +28,11 @@ class Navigation::LanguageSwitcherComponent < Ui::SwitcherComponent
   end
 
   def locale_url(locale)
-    if params.respond_to?(:permit!)
-      params.permit!.merge(locale: locale)
+    safe_params = if params.respond_to?(:permit)
+      params.permit(:locale, :page, :direction, :period, :start_date, :end_date, :id)
     else
-      params.merge(locale: locale)
+      params
     end
+    safe_params.merge(locale: locale)
   end
 end
