@@ -59,7 +59,8 @@ RSpec.describe Auth::RegistrationsController, type: :request do
       it "sets the onboarding step" do
         post user_registration_path, params: valid_params
         new_user = User.find_by(email: "jane@example.com")
-        expect(new_user.onboarding_current_step).to eq("onboarding_financial_goal")
+        new_space = new_user.spaces.first
+        expect(new_space.onboarding_current_step).to eq("onboarding_financial_goal")
       end
 
       it "generates an OTP code" do

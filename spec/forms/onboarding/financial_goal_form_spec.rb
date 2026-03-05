@@ -4,8 +4,9 @@ require 'rails_helper'
 
 RSpec.describe Onboarding::FinancialGoalForm, type: :model do
   let(:user) { create(:user, onboarding_current_step: :onboarding_financial_goal) }
+  let(:space) { user.spaces.first }
   let(:valid_goals) { [ 'save_for_emergency', 'save_for_retirement' ] }
-  let(:form) { described_class.new(user, { financial_goals: valid_goals }) }
+  let(:form) { described_class.new(space, { financial_goals: valid_goals }) }
 
   describe 'inheritance' do
     it 'inherits from BaseForm' do
@@ -26,15 +27,15 @@ RSpec.describe Onboarding::FinancialGoalForm, type: :model do
   describe '#initialize' do
     context 'with financial_goals in payload' do
       it 'sets financial_goals from payload' do
-        form = described_class.new(user, { financial_goals: [ 'save_for_retirement' ] })
+        form = described_class.new(space, { financial_goals: [ 'save_for_retirement' ] })
         expect(form.financial_goals).to eq([ 'save_for_retirement' ])
       end
     end
 
     context 'without financial_goals in payload' do
       it 'sets financial_goals from user' do
-        user.update!(financial_goals: [ 'save_for_house' ])
-        form = described_class.new(user, {})
+        user.spaces.first.update!(financial_goals: [ 'save_for_house' ])
+        form = described_class.new(space, {})
         expect(form.financial_goals).to eq([ 'save_for_house' ])
       end
     end
@@ -43,67 +44,67 @@ RSpec.describe Onboarding::FinancialGoalForm, type: :model do
       let(:user) { create(:user, onboarding_current_step: nil) }
 
       it 'sets onboarding_current_step to CURRENT_STEP' do
-        described_class.new(user)
-        expect(user.onboarding_current_step).to eq('onboarding_financial_goal')
+        described_class.new(space)
+        expect(space.onboarding_current_step).to eq('onboarding_financial_goal')
       end
     end
 
     context 'when user already has onboarding_current_step' do
       it 'does not change existing onboarding_current_step' do
-        user.onboarding_current_step = 'onboarding_profile_setup'
-        described_class.new(user)
-        expect(user.onboarding_current_step).to eq('onboarding_profile_setup')
+        space.onboarding_current_step = 'onboarding_profile_setup'
+        described_class.new(space)
+        expect(space.onboarding_current_step).to eq('onboarding_profile_setup')
       end
     end
 
-    it 'sets the user attribute' do
-      form = described_class.new(user)
-      expect(form.user).to eq(user)
+    it 'sets the space attribute' do
+      form = described_class.new(space)
+      expect(form.space).to eq(space)
     end
   end
 
   describe 'validations' do
     context 'financial_goals presence' do
       it 'is invalid without financial_goals' do
-        form = described_class.new(user, { financial_goals: nil })
+        form = described_class.new(space, { financial_goals: nil })
         expect(form).not_to be_valid
         expect(form.errors[:financial_goals]).to include("can't be blank")
       end
 
       it 'is invalid with empty financial_goals' do
-        form = described_class.new(user, { financial_goals: [] })
+        form = described_class.new(space, { financial_goals: [] })
         expect(form).not_to be_valid
         expect(form.errors[:financial_goals]).to include("can't be blank")
       end
 
       it 'is valid with financial_goals present' do
-        form = described_class.new(user, { financial_goals: [ 'save_for_retirement' ] })
+        form = described_class.new(space, { financial_goals: [ 'save_for_retirement' ] })
         expect(form).to be_valid
       end
     end
 
     context 'goals_are_allowed validation' do
       it 'is valid with allowed goals' do
-        User::FINANCIAL_GOALS.each do |goal|
-          form = described_class.new(user, { financial_goals: [ goal ] })
+        Space::FINANCIAL_GOALS.each do |goal|
+          form = described_class.new(space, { financial_goals: [ goal ] })
           expect(form).to be_valid
         end
       end
 
       it 'is invalid with disallowed goals' do
-        form = described_class.new(user, { financial_goals: [ 'invalid_goal' ] })
+        form = described_class.new(space, { financial_goals: [ 'invalid_goal' ] })
         expect(form).not_to be_valid
         expect(form.errors[:financial_goals]).to be_present
       end
 
       it 'is invalid with mix of valid and invalid goals' do
-        form = described_class.new(user, { financial_goals: [ 'save_for_retirement', 'invalid_goal' ] })
+        form = described_class.new(space, { financial_goals: [ 'save_for_retirement', 'invalid_goal' ] })
         expect(form).not_to be_valid
         expect(form.errors[:financial_goals]).to be_present
       end
 
       it 'adds error message with invalid goal names' do
-        form = described_class.new(user, { financial_goals: [ 'bad_goal', 'worse_goal' ] })
+        form = described_class.new(space, { financial_goals: [ 'bad_goal', 'worse_goal' ] })
         form.valid?
         error_message = form.errors[:financial_goals].first
         expect(error_message).to include('bad_goal')
@@ -114,7 +115,7 @@ RSpec.describe Onboarding::FinancialGoalForm, type: :model do
 
   describe '#submit' do
     context 'when form is valid' do
-      let(:form) { described_class.new(user, { financial_goals: [ 'save_for_retirement', 'save_for_emergency' ] }) }
+      let(:form) { described_class.new(space, { financial_goals: [ 'save_for_retirement', 'save_for_emergency' ] }) }
 
       it 'returns true' do
         expect(form.submit).to be true
@@ -122,45 +123,45 @@ RSpec.describe Onboarding::FinancialGoalForm, type: :model do
 
       it 'updates user financial_goals' do
         form.submit
-        expect(user.reload.financial_goals).to contain_exactly('save_for_retirement', 'save_for_emergency')
+        expect(space.reload.financial_goals).to contain_exactly('save_for_retirement', 'save_for_emergency')
       end
 
       it 'updates user onboarding_current_step to NEXT_STEP' do
         form.submit
-        expect(user.reload.onboarding_current_step).to eq('onboarding_profile_setup')
+        expect(space.reload.onboarding_current_step).to eq('onboarding_profile_setup')
       end
 
       it 'saves the user to the database' do
-        expect { form.submit }.to change { user.reload.updated_at }
+        expect { form.submit }.to change { space.reload.updated_at }
       end
     end
 
     context 'when form is invalid' do
-      let(:form) { described_class.new(user, { financial_goals: nil }) }
+      let(:form) { described_class.new(space, { financial_goals: nil }) }
 
       it 'returns false' do
         expect(form.submit).to be false
       end
 
       it 'does not update the user' do
-        expect { form.submit }.not_to change { user.reload.updated_at }
+        expect { form.submit }.not_to change { space.reload.updated_at }
       end
 
       it 'does not change financial_goals' do
-        original_goals = user.financial_goals
+        original_goals = space.financial_goals
         form.submit
-        expect(user.reload.financial_goals).to eq(original_goals)
+        expect(space.reload.financial_goals).to eq(original_goals)
       end
     end
 
-    context 'when user is invalid' do
+    context 'when space is invalid' do
       before do
-        # Make the user invalid after assignment (e.g., due to country requirement)
-        allow(user).to receive(:assign_attributes) do |attrs|
-          user.onboarding_current_step = attrs[:onboarding_current_step]
+        # Make the space invalid after assignment (e.g., due to country requirement)
+        allow(space).to receive(:assign_attributes) do |attrs|
+          space.instance_variable_set(:@onboarding_current_step, attrs[:onboarding_current_step])
         end
-        allow(user).to receive(:valid?).and_return(false)
-        allow(user).to receive(:errors).and_return(
+        allow(space).to receive(:invalid?).and_return(true)
+        allow(space).to receive(:errors).and_return(
           instance_double(ActiveModel::Errors, messages: { country: [ 'is required for this step' ] })
         )
       end
@@ -174,8 +175,8 @@ RSpec.describe Onboarding::FinancialGoalForm, type: :model do
         expect(form.errors[:country]).to include('is required for this step')
       end
 
-      it 'does not save the user' do
-        expect(user).not_to receive(:save!)
+      it 'does not save the space' do
+        expect(space).not_to receive(:save!)
         form.submit
       end
     end
@@ -183,9 +184,9 @@ RSpec.describe Onboarding::FinancialGoalForm, type: :model do
     context 'when save raises an error' do
       before do
         # Use a real valid form but force save! to raise an error
-        allow(user).to receive(:assign_attributes).and_call_original
-        allow(user).to receive(:valid?).and_return(true)
-        allow(user).to receive(:save!).and_raise(StandardError.new('Database error'))
+        allow(space).to receive(:assign_attributes).and_call_original
+        allow(space).to receive(:invalid?).and_return(false)
+        allow(space).to receive(:save!).and_raise(StandardError.new('Database error'))
       end
 
       it 'returns false' do
@@ -210,10 +211,10 @@ RSpec.describe Onboarding::FinancialGoalForm, type: :model do
       expect(goals.first).to be_a(Hash)
     end
 
-    it 'includes all goals from User::FINANCIAL_GOALS' do
+    it 'includes all goals from Space::FINANCIAL_GOALS' do
       goals = form.available_goals
       goal_keys = goals.map { |g| g[:key] }
-      expect(goal_keys).to match_array(User::FINANCIAL_GOALS)
+      expect(goal_keys).to match_array(Space::FINANCIAL_GOALS)
     end
 
     it 'includes key, name, and description for each goal' do
@@ -224,7 +225,7 @@ RSpec.describe Onboarding::FinancialGoalForm, type: :model do
     end
 
     it 'translates goal names using I18n' do
-      goal_key = User::FINANCIAL_GOALS.first
+      goal_key = Space::FINANCIAL_GOALS.first
       allow(I18n).to receive(:t).and_call_original
       expect(I18n).to receive(:t).with(
         "financial_goals.#{goal_key}.name",
@@ -235,7 +236,7 @@ RSpec.describe Onboarding::FinancialGoalForm, type: :model do
     end
 
     it 'translates goal descriptions using I18n' do
-      goal_key = User::FINANCIAL_GOALS.first
+      goal_key = Space::FINANCIAL_GOALS.first
       allow(I18n).to receive(:t).and_call_original
       expect(I18n).to receive(:t).with(
         "financial_goals.#{goal_key}.description",
@@ -255,21 +256,21 @@ RSpec.describe Onboarding::FinancialGoalForm, type: :model do
 
   describe 'integration with user model' do
     it 'successfully completes the onboarding step' do
-      form = described_class.new(user, { financial_goals: [ 'save_for_retirement' ] })
+      form = described_class.new(space, { financial_goals: [ 'save_for_retirement' ] })
 
       expect {
         form.submit
-      }.to change { user.reload.onboarding_current_step }
+      }.to change { space.reload.onboarding_current_step }
         .from('onboarding_financial_goal')
         .to('onboarding_profile_setup')
     end
 
     it 'persists multiple financial goals' do
       goals = [ 'save_for_retirement', 'save_for_emergency', 'save_for_house' ]
-      form = described_class.new(user, { financial_goals: goals })
+      form = described_class.new(space, { financial_goals: goals })
 
       form.submit
-      expect(user.reload.financial_goals).to match_array(goals)
+      expect(space.reload.financial_goals).to match_array(goals)
     end
   end
 end

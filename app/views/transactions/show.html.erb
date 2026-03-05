@@ -12,7 +12,7 @@
           </div>
 
           <h2 class="transaction-show__amount <%= transaction_amount_class(kind) %>">
-            <%= smart_format_money(transaction_signed_amount(@transaction), current_user.currency, sign: :always) %>
+            <%= smart_format_money(transaction_signed_amount(@transaction), current_space.currency, sign: :always) %>
           </h2>
           <p class="transaction-show__type"><%= @transaction.transaction_type.name %></p>
         </div>

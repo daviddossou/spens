@@ -4,6 +4,7 @@ require 'rails_helper'
 
 RSpec.describe AccountForm, type: :model do
   let(:user) { create(:user) }
+  let(:space) { user.spaces.first }
   let(:valid_attributes) do
     {
       account_name: 'My Savings',
@@ -11,7 +12,7 @@ RSpec.describe AccountForm, type: :model do
       saving_goal: 5000.00
     }
   end
-  let(:form) { described_class.new(user, valid_attributes) }
+  let(:form) { described_class.new(space, valid_attributes) }
 
   describe 'inheritance' do
     it 'inherits from BaseForm' do
@@ -20,8 +21,8 @@ RSpec.describe AccountForm, type: :model do
   end
 
   describe '#initialize' do
-    it 'sets the user attribute' do
-      expect(form.user).to eq(user)
+    it 'sets the space attribute' do
+      expect(form.space).to eq(space)
     end
 
     it 'sets account_name from payload' do
@@ -37,7 +38,7 @@ RSpec.describe AccountForm, type: :model do
     end
 
     context 'with empty payload' do
-      let(:form) { described_class.new(user, {}) }
+      let(:form) { described_class.new(space, {}) }
 
       it 'initializes with nil/default values' do
         expect(form.account_name).to be_nil
@@ -48,7 +49,7 @@ RSpec.describe AccountForm, type: :model do
 
     context 'with id in payload' do
       let!(:account) { create(:account, user: user, name: 'Existing') }
-      let(:form) { described_class.new(user, valid_attributes.merge(id: account.id)) }
+      let(:form) { described_class.new(space, valid_attributes.merge(id: account.id)) }
 
       it 'sets the account' do
         expect(form.account).to eq(account)
@@ -146,7 +147,7 @@ RSpec.describe AccountForm, type: :model do
 
     it 'returns true when account present' do
       account = create(:account, user: user)
-      form_with_account = described_class.new(user, valid_attributes.merge(id: account.id))
+      form_with_account = described_class.new(space, valid_attributes.merge(id: account.id))
       expect(form_with_account.persisted?).to be(true)
     end
   end
@@ -167,7 +168,7 @@ RSpec.describe AccountForm, type: :model do
     end
 
     it 'calls AccountSuggestionsService with user' do
-      expect(AccountSuggestionsService).to receive(:new).with(user).and_call_original
+      expect(AccountSuggestionsService).to receive(:new).with(space).and_call_original
       form.account_suggestions
     end
 
@@ -189,7 +190,7 @@ RSpec.describe AccountForm, type: :model do
     end
 
     it 'calls AccountSuggestionsService with user' do
-      expect(AccountSuggestionsService).to receive(:new).with(user).and_call_original
+      expect(AccountSuggestionsService).to receive(:new).with(space).and_call_original
       form.default_account_suggestions
     end
 
@@ -219,12 +220,12 @@ RSpec.describe AccountForm, type: :model do
       let(:account) { create(:account, user: user, name: 'My Savings', balance: 0) }
 
       before do
-        allow(FindOrCreateAccountService).to receive(:new).with(user, 'My Savings')
+        allow(FindOrCreateAccountService).to receive(:new).with(space, 'My Savings')
           .and_return(instance_double(FindOrCreateAccountService, call: account))
       end
 
       it 'calls FindOrCreateAccountService' do
-        expect(FindOrCreateAccountService).to receive(:new).with(user, 'My Savings').and_call_original
+        expect(FindOrCreateAccountService).to receive(:new).with(space, 'My Savings').and_call_original
         form.submit
       end
 
@@ -291,7 +292,7 @@ RSpec.describe AccountForm, type: :model do
           saving_goal: 3000.00
         }
       end
-      let(:update_form) { described_class.new(user, update_attributes) }
+      let(:update_form) { described_class.new(space, update_attributes) }
 
       it 'updates the account name' do
         update_form.submit

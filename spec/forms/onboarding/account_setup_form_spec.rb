@@ -4,7 +4,8 @@ require 'rails_helper'
 
 RSpec.describe Onboarding::AccountSetupForm, type: :model do
   let(:user) { create(:user, onboarding_current_step: nil) }
-  let(:form) { described_class.new(user) }
+  let(:space) { user.spaces.first }
+  let(:form) { described_class.new(space) }
 
   describe 'constants' do
     it 'defines CURRENT_STEP' do
@@ -24,8 +25,8 @@ RSpec.describe Onboarding::AccountSetupForm, type: :model do
 
   describe '#initialize' do
     context 'without payload' do
-      it 'assigns user' do
-        expect(form.user).to eq(user)
+      it 'assigns space' do
+        expect(form.space).to eq(space)
       end
 
       it 'creates default transaction forms' do
@@ -35,8 +36,8 @@ RSpec.describe Onboarding::AccountSetupForm, type: :model do
       end
 
       it 'sets onboarding_current_step' do
-        described_class.new(user)
-        expect(user.onboarding_current_step).to eq('onboarding_account_setup')
+        described_class.new(space)
+        expect(space.onboarding_current_step).to eq('onboarding_account_setup')
       end
 
       it 'default transaction form has nil amount' do
@@ -75,34 +76,34 @@ RSpec.describe Onboarding::AccountSetupForm, type: :model do
       end
 
       it 'builds transaction forms from payload' do
-        form = described_class.new(user, payload)
+        form = described_class.new(space, payload)
         expect(form.transactions.size).to eq(2)
       end
 
       it 'sets transaction amounts' do
-        form = described_class.new(user, payload)
+        form = described_class.new(space, payload)
         expect(form.transactions[0].amount).to eq(1000.00)
         expect(form.transactions[1].amount).to eq(500.00)
       end
 
       it 'sets account names' do
-        form = described_class.new(user, payload)
+        form = described_class.new(space, payload)
         expect(form.transactions[0].account_name).to eq('Checking')
         expect(form.transactions[1].account_name).to eq('Savings')
       end
 
       it 'sets transaction dates' do
-        form = described_class.new(user, payload)
+        form = described_class.new(space, payload)
         expect(form.transactions[0].transaction_date).to eq(Date.parse('2025-10-27'))
       end
 
       it 'uses default date when not provided' do
-        form = described_class.new(user, payload)
+        form = described_class.new(space, payload)
         expect(form.transactions[1].transaction_date).to eq(Date.current)
       end
 
       it 'uses default transaction type name when not provided' do
-        form = described_class.new(user, payload)
+        form = described_class.new(space, payload)
         expect(form.transactions[1].transaction_type_name).to eq('Transfer In')
       end
     end
@@ -138,12 +139,12 @@ RSpec.describe Onboarding::AccountSetupForm, type: :model do
         end
 
         it 'is invalid' do
-          form = described_class.new(user, payload)
+          form = described_class.new(space, payload)
           expect(form).not_to be_valid
         end
 
         it 'adds error to base' do
-          form = described_class.new(user, payload)
+          form = described_class.new(space, payload)
           form.valid?
           expect(form.errors[:base]).to be_present
         end
@@ -159,7 +160,7 @@ RSpec.describe Onboarding::AccountSetupForm, type: :model do
         end
 
         it 'is invalid' do
-          form = described_class.new(user, payload)
+          form = described_class.new(space, payload)
           expect(form).not_to be_valid
         end
       end
@@ -174,7 +175,7 @@ RSpec.describe Onboarding::AccountSetupForm, type: :model do
         end
 
         it 'is invalid' do
-          form = described_class.new(user, payload)
+          form = described_class.new(space, payload)
           expect(form).not_to be_valid
         end
       end
@@ -189,7 +190,7 @@ RSpec.describe Onboarding::AccountSetupForm, type: :model do
         end
 
         it 'is valid' do
-          form = described_class.new(user, payload)
+          form = described_class.new(space, payload)
           expect(form).to be_valid
         end
       end
@@ -205,7 +206,7 @@ RSpec.describe Onboarding::AccountSetupForm, type: :model do
         end
 
         it 'is valid when at least one is valid' do
-          form = described_class.new(user, payload)
+          form = described_class.new(space, payload)
           expect(form).to be_valid
         end
       end
@@ -225,47 +226,47 @@ RSpec.describe Onboarding::AccountSetupForm, type: :model do
           }
         }
       end
-      let(:form) { described_class.new(user, payload) }
+      let(:form) { described_class.new(space, payload) }
 
       it 'returns true' do
         expect(form.submit).to be true
       end
 
       it 'creates account' do
-        expect { form.submit }.to change { user.accounts.count }.by(1)
+        expect { form.submit }.to change { space.accounts.count }.by(1)
       end
 
       it 'creates transaction type' do
-        expect { form.submit }.to change { user.transaction_types.count }.by(1)
+        expect { form.submit }.to change { space.transaction_types.count }.by(1)
       end
 
       it 'creates transaction' do
-        expect { form.submit }.to change { user.transactions.count }.by(1)
+        expect { form.submit }.to change { space.transactions.count }.by(1)
       end
 
       it 'sets account name' do
         form.submit
-        expect(user.accounts.last.name).to eq('Checking Account')
+        expect(space.accounts.last.name).to eq('Checking Account')
       end
 
       it 'sets transaction amount' do
         form.submit
-        expect(user.transactions.last.amount).to eq(1500.00)
+        expect(space.transactions.last.amount).to eq(1500.00)
       end
 
       it 'sets transaction date' do
         form.submit
-        expect(user.transactions.last.transaction_date).to eq(Date.current)
+        expect(space.transactions.last.transaction_date).to eq(Date.current)
       end
 
       it 'updates user onboarding step' do
         form.submit
-        expect(user.reload.onboarding_current_step).to eq('onboarding_completed')
+        expect(space.reload.onboarding_current_step).to eq('onboarding_completed')
       end
 
       it 'sets account balance from transaction' do
         form.submit
-        expect(user.accounts.last.balance).to eq(1500.00)
+        expect(space.accounts.last.balance).to eq(1500.00)
       end
     end
 
@@ -279,18 +280,18 @@ RSpec.describe Onboarding::AccountSetupForm, type: :model do
           }
         }
       end
-      let(:form) { described_class.new(user, payload) }
+      let(:form) { described_class.new(space, payload) }
 
       it 'creates all accounts' do
-        expect { form.submit }.to change { user.accounts.count }.by(3)
+        expect { form.submit }.to change { space.accounts.count }.by(3)
       end
 
       it 'creates all transactions' do
-        expect { form.submit }.to change { user.transactions.count }.by(3)
+        expect { form.submit }.to change { space.transactions.count }.by(3)
       end
 
       it 'creates one transaction type' do
-        expect { form.submit }.to change { user.transaction_types.count }.by(1)
+        expect { form.submit }.to change { space.transaction_types.count }.by(1)
       end
     end
 
@@ -303,19 +304,19 @@ RSpec.describe Onboarding::AccountSetupForm, type: :model do
           }
         }
       end
-      let(:form) { described_class.new(user, payload) }
+      let(:form) { described_class.new(space, payload) }
 
       it 'reuses the same account' do
-        expect { form.submit }.to change { user.accounts.count }.by(1)
+        expect { form.submit }.to change { space.accounts.count }.by(1)
       end
 
       it 'creates both transactions' do
-        expect { form.submit }.to change { user.transactions.count }.by(2)
+        expect { form.submit }.to change { space.transactions.count }.by(2)
       end
 
       it 'both transactions reference same account' do
         form.submit
-        transactions = user.transactions.order(:created_at)
+        transactions = space.transactions.order(:created_at)
         expect(transactions.first.account_id).to eq(transactions.last.account_id)
       end
     end
@@ -330,24 +331,24 @@ RSpec.describe Onboarding::AccountSetupForm, type: :model do
       end
 
       it 'returns false' do
-        form = described_class.new(user, payload)
+        form = described_class.new(space, payload)
         expect(form.submit).to be false
       end
 
       it 'does not create account' do
-        form = described_class.new(user, payload)
-        expect { form.submit }.not_to change { user.accounts.count }
+        form = described_class.new(space, payload)
+        expect { form.submit }.not_to change { space.accounts.count }
       end
 
       it 'does not create transaction' do
-        form = described_class.new(user, payload)
-        expect { form.submit }.not_to change { user.transactions.count }
+        form = described_class.new(space, payload)
+        expect { form.submit }.not_to change { space.transactions.count }
       end
 
       it 'does not update onboarding step' do
-        form = described_class.new(user, payload)
+        form = described_class.new(space, payload)
         form.submit
-        expect(user.reload.onboarding_current_step).to be_nil
+        expect(space.reload.onboarding_current_step).to be_nil
       end
     end
 
@@ -363,10 +364,10 @@ RSpec.describe Onboarding::AccountSetupForm, type: :model do
       end
 
       it 'skips invalid transactions and creates only valid ones' do
-        form = described_class.new(user, payload)
+        form = described_class.new(space, payload)
         expect(form.submit).to be true
-        expect(user.accounts.count).to eq(1)
-        expect(user.transactions.count).to eq(1)
+        expect(space.accounts.count).to eq(1)
+        expect(space.transactions.count).to eq(1)
       end
     end
 
@@ -378,13 +379,13 @@ RSpec.describe Onboarding::AccountSetupForm, type: :model do
           }
         }
       end
-      let(:form) { described_class.new(user, payload) }
+      let(:form) { described_class.new(space, payload) }
 
       before do
         allow_any_instance_of(Onboarding::TransactionForm).to receive(:should_skip?).and_return(false)
         allow_any_instance_of(Onboarding::TransactionForm).to receive(:submit).and_return(false)
         allow_any_instance_of(Onboarding::TransactionForm).to receive(:errors).and_return(
-          double(messages: { base: ['Transaction error'] })
+          double(messages: { base: [ 'Transaction error' ] })
         )
       end
 
@@ -393,7 +394,7 @@ RSpec.describe Onboarding::AccountSetupForm, type: :model do
       end
 
       it 'does not create account' do
-        expect { form.submit }.not_to change { user.accounts.count }
+        expect { form.submit }.not_to change { space.accounts.count }
       end
 
       it 'promotes errors from transaction form' do
@@ -410,10 +411,10 @@ RSpec.describe Onboarding::AccountSetupForm, type: :model do
           }
         }
       end
-      let(:form) { described_class.new(user, payload) }
+      let(:form) { described_class.new(space, payload) }
 
       before do
-        allow(user).to receive(:save!).and_raise(ActiveRecord::ActiveRecordError, 'Database error')
+        allow(space).to receive(:save!).and_raise(ActiveRecord::ActiveRecordError, 'Database error')
       end
 
       it 'returns false' do
@@ -443,13 +444,13 @@ RSpec.describe Onboarding::AccountSetupForm, type: :model do
           }
         }
       end
-      let(:form) { described_class.new(user, payload) }
+      let(:form) { described_class.new(space, payload) }
 
       it 'successfully creates all accounts and transactions' do
         expect(form.submit).to be true
-        expect(user.accounts.count).to eq(3)
-        expect(user.transactions.count).to eq(3)
-        expect(user.onboarding_current_step).to eq('onboarding_completed')
+        expect(space.accounts.count).to eq(3)
+        expect(space.transactions.count).to eq(3)
+        expect(space.onboarding_current_step).to eq('onboarding_completed')
       end
     end
 
@@ -464,14 +465,14 @@ RSpec.describe Onboarding::AccountSetupForm, type: :model do
       end
 
       it 'does not change step on initialization' do
-        form = described_class.new(user, payload)
-        expect(user.onboarding_current_step).to eq('onboarding_profile_setup')
+        form = described_class.new(space, payload)
+        expect(space.onboarding_current_step).to eq('onboarding_profile_setup')
       end
 
       it 'updates step on successful submit' do
-        form = described_class.new(user, payload)
+        form = described_class.new(space, payload)
         form.submit
-        expect(user.reload.onboarding_current_step).to eq('onboarding_completed')
+        expect(space.reload.onboarding_current_step).to eq('onboarding_completed')
       end
     end
   end

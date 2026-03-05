@@ -4,9 +4,10 @@ require 'rails_helper'
 
 RSpec.describe Onboarding::AccountLineComponent, type: :component do
   let(:user) { create(:user) }
+  let(:space) { user.spaces.first }
   let(:transaction_form) do
     Onboarding::TransactionForm.new(
-      user: user,
+      space: space,
       amount: 50_000.00,
       transaction_date: Date.current,
       account_name: 'Cash Wallet',
@@ -233,7 +234,7 @@ RSpec.describe Onboarding::AccountLineComponent, type: :component do
     it 'renders multiple account lines with different indexes' do
       transaction_forms = 3.times.map do |i|
         Onboarding::TransactionForm.new(
-          user: user,
+          space: space,
           amount: 10_000 * (i + 1),
           transaction_date: Date.current,
           account_name: "Account #{i + 1}",

@@ -6,6 +6,7 @@ RSpec.describe 'Onboarding::ProfileSetupsController', type: :request do
   include Devise::Test::IntegrationHelpers
 
   let(:user) { create(:user, onboarding_current_step: 'onboarding_profile_setup', country: 'BJ', currency: 'XOF') }
+  let(:space) { user.spaces.first }
   let(:completed_user) { create(:user, onboarding_current_step: 'onboarding_completed', country: 'US') }
 
   describe 'GET /onboarding/profile_setups' do
@@ -23,7 +24,7 @@ RSpec.describe 'Onboarding::ProfileSetupsController', type: :request do
       end
 
       it 'displays current user country and currency' do
-        user.update!(country: 'US', currency: 'USD')
+        space.update!(country: 'US', currency: 'USD')
         get onboarding_profile_setups_path
         expect(response).to have_http_status(:success)
       end
@@ -32,7 +33,7 @@ RSpec.describe 'Onboarding::ProfileSetupsController', type: :request do
     context 'when user has completed onboarding' do
       before do
         # Ensure completed_user has all required fields
-        completed_user.update!(country: 'US', currency: 'USD')
+        completed_user.spaces.first.update!(country: 'US', currency: 'USD')
         sign_in completed_user, scope: :user
       end
 
@@ -81,18 +82,18 @@ RSpec.describe 'Onboarding::ProfileSetupsController', type: :request do
       it 'updates the user profile' do
         patch onboarding_profile_setups_path, params: valid_params
 
-        user.reload
-        expect(user.country).to eq('US')
-        expect(user.currency).to eq('USD')
-        expect(user.income_frequency).to eq('monthly')
-        expect(user.main_income_source).to eq('salary')
+        space.reload
+        expect(space.country).to eq('US')
+        expect(space.currency).to eq('USD')
+        expect(space.income_frequency).to eq('monthly')
+        expect(space.main_income_source).to eq('salary')
       end
 
       it 'advances to next onboarding step' do
         patch onboarding_profile_setups_path, params: valid_params
 
-        user.reload
-        expect(user.onboarding_current_step).to eq('onboarding_account_setup')
+        space.reload
+        expect(space.onboarding_current_step).to eq('onboarding_account_setup')
       end
 
       it 'redirects to next step path' do
@@ -108,14 +109,14 @@ RSpec.describe 'Onboarding::ProfileSetupsController', type: :request do
       it 'does not update the user' do
         expect {
           patch onboarding_profile_setups_path, params: invalid_params
-        }.not_to change { user.reload.country }
+        }.not_to change { space.reload.country }
       end
 
       it 'does not advance onboarding step' do
         patch onboarding_profile_setups_path, params: invalid_params
 
-        user.reload
-        expect(user.onboarding_current_step).to eq('onboarding_profile_setup')
+        space.reload
+        expect(space.onboarding_current_step).to eq('onboarding_profile_setup')
       end
 
       it 'renders show template with unprocessable_entity status' do
@@ -146,17 +147,17 @@ RSpec.describe 'Onboarding::ProfileSetupsController', type: :request do
       it 'successfully updates with optional fields blank' do
         patch onboarding_profile_setups_path, params: minimal_params
 
-        user.reload
-        expect(user.country).to eq('BF')
-        expect(user.currency).to eq('XOF')
-        expect(user.income_frequency).to be_blank
-        expect(user.main_income_source).to be_blank
+        space.reload
+        expect(space.country).to eq('BF')
+        expect(space.currency).to eq('XOF')
+        expect(space.income_frequency).to be_blank
+        expect(space.main_income_source).to be_blank
       end
     end
 
     context 'when user has completed onboarding' do
       before do
-        completed_user.update!(country: 'US', currency: 'USD')
+        completed_user.spaces.first.update!(country: 'US', currency: 'USD')
         sign_in completed_user, scope: :user
       end
 
@@ -199,9 +200,9 @@ RSpec.describe 'Onboarding::ProfileSetupsController', type: :request do
 
       patch onboarding_profile_setups_path, params: params_with_extra
 
-      user.reload
-      expect(user.country).to eq('US')
-      expect(user.currency).to eq('USD')
+      space.reload
+      expect(space.country).to eq('US')
+      expect(space.currency).to eq('USD')
       expect(user).not_to respond_to(:unexpected_field)
     end
   end

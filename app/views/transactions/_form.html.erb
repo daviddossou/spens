@@ -75,7 +75,7 @@
         type: :number_field,
         label: t('.amount_label'),
         required: true,
-        prepend: get_currency_symbol(current_user.currency),
+        prepend: get_currency_symbol(current_space.currency),
         step: 0.01,
         placeholder: t('.amount_placeholder'),
         autofocus: true
@@ -96,7 +96,7 @@
             default_autocomplete_options: @form.default_account_suggestions,
             allow_create: true,
             placeholder: t('.from_account_placeholder'),
-            field_data: { tom_select_currency_value: get_currency_symbol(current_user.currency) }
+            field_data: { tom_select_currency_value: get_currency_symbol(current_space.currency) }
           ) %>
         </div>
 
@@ -111,7 +111,7 @@
             default_autocomplete_options: @form.default_account_suggestions,
             allow_create: true,
             placeholder: t('.to_account_placeholder'),
-            field_data: { tom_select_currency_value: get_currency_symbol(current_user.currency) }
+            field_data: { tom_select_currency_value: get_currency_symbol(current_space.currency) }
           ) %>
         </div>
       </div>
@@ -128,7 +128,7 @@
           default_autocomplete_options: @form.default_account_suggestions,
           allow_create: true,
           placeholder: t('.account_placeholder'),
-          field_data: { tom_select_currency_value: get_currency_symbol(current_user.currency) }
+          field_data: { tom_select_currency_value: get_currency_symbol(current_space.currency) }
         ) %>
       </div>
     <% else %>
@@ -144,7 +144,7 @@
           default_autocomplete_options: @form.default_account_suggestions,
           allow_create: true,
           placeholder: t('.account_placeholder'),
-          field_data: { tom_select_currency_value: get_currency_symbol(current_user.currency) }
+          field_data: { tom_select_currency_value: get_currency_symbol(current_space.currency) }
         ) %>
       </div>
 

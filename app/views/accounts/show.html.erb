@@ -9,13 +9,13 @@
     <div class="account-detail">
       <div class="account-detail__balance">
         <span class="account-detail__balance-label"><%= t('.balance') %></span>
-        <span class="account-detail__balance-value <%= 'account-detail__balance-value--negative' if @account.balance.negative? %>"><%= smart_format_money(@account.balance, current_user.currency) %></span>
+        <span class="account-detail__balance-value <%= 'account-detail__balance-value--negative' if @account.balance.negative? %>"><%= smart_format_money(@account.balance, current_space.currency) %></span>
       </div>
 
       <% if @account.saving_goal.to_f > 0 %>
         <div class="account-detail__goal">
           <span class="account-detail__goal-label"><%= t('.saving_goal') %></span>
-          <span class="account-detail__goal-value"><%= smart_format_money(@account.saving_goal, current_user.currency) %></span>
+          <span class="account-detail__goal-value"><%= smart_format_money(@account.saving_goal, current_space.currency) %></span>
         </div>
       <% end %>
     </div>

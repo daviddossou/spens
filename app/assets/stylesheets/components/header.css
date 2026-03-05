@@ -70,6 +70,23 @@
   text-overflow: ellipsis;
 }
 
+.app-header__space-name {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-muted, #6c757d);
+  text-decoration: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.app-header__space-name:hover {
+  color: var(--text-dark, #282A33);
+}
+
 /* Right section — analytics */
 .app-header__right {
   display: flex;

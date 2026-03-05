@@ -4,6 +4,7 @@ require 'rails_helper'
 
 RSpec.describe TransactionForm, type: :model do
   let(:user) { create(:user) }
+  let(:space) { user.spaces.first }
   let(:account) { create(:account, user: user, name: 'Checking') }
   let(:valid_expense_attributes) do
     {
@@ -15,7 +16,7 @@ RSpec.describe TransactionForm, type: :model do
       note: 'Weekly shopping'
     }
   end
-  let(:form) { described_class.new(user, valid_expense_attributes) }
+  let(:form) { described_class.new(space, valid_expense_attributes) }
 
   describe 'inheritance' do
     it 'inherits from BaseForm' do
@@ -212,8 +213,8 @@ RSpec.describe TransactionForm, type: :model do
   end
 
   describe '#initialize' do
-    it 'sets the user attribute' do
-      expect(form.user).to eq(user)
+    it 'sets the space attribute' do
+      expect(form.space).to eq(space)
     end
 
     context 'with basic payload' do
@@ -232,7 +233,7 @@ RSpec.describe TransactionForm, type: :model do
     end
 
     context 'with description in payload' do
-      let(:form) { described_class.new(user, valid_expense_attributes.merge(description: 'Custom description')) }
+      let(:form) { described_class.new(space, valid_expense_attributes.merge(description: 'Custom description')) }
 
       it 'sets the description attribute' do
         expect(form.description).to eq('Custom description')
@@ -248,7 +249,7 @@ RSpec.describe TransactionForm, type: :model do
           transaction_type_name: 'Food'
         }
       end
-      let(:form) { described_class.new(user, payload) }
+      let(:form) { described_class.new(space, payload) }
 
       it 'sets account_id' do
         expect(form.account_id).to eq(account.id)
@@ -260,7 +261,7 @@ RSpec.describe TransactionForm, type: :model do
 
       it 'does not override explicit account_name' do
         payload[:account_name] = 'Savings'
-        form = described_class.new(user, payload)
+        form = described_class.new(space, payload)
         expect(form.account_name).to eq('Savings')
       end
 
@@ -268,7 +269,7 @@ RSpec.describe TransactionForm, type: :model do
         it 'sets to_account_name from the found account' do
           payload[:kind] = 'transfer'
           payload[:from_account_name] = 'Savings'
-          form = described_class.new(user, payload)
+          form = described_class.new(space, payload)
           expect(form.to_account_name).to eq('Checking')
         end
 
@@ -276,7 +277,7 @@ RSpec.describe TransactionForm, type: :model do
           payload[:kind] = 'transfer'
           payload[:from_account_name] = 'Savings'
           payload[:to_account_name] = 'Investment'
-          form = described_class.new(user, payload)
+          form = described_class.new(space, payload)
           expect(form.to_account_name).to eq('Investment')
         end
       end
@@ -287,7 +288,7 @@ RSpec.describe TransactionForm, type: :model do
 
         it 'does not set account_name' do
           payload[:account_id] = other_account.id
-          form = described_class.new(user, payload)
+          form = described_class.new(space, payload)
           expect(form.account_name).to be_nil
         end
       end
@@ -295,14 +296,14 @@ RSpec.describe TransactionForm, type: :model do
       context 'when account_id is invalid' do
         it 'does not set account_name' do
           payload[:account_id] = 'invalid-id'
-          form = described_class.new(user, payload)
+          form = described_class.new(space, payload)
           expect(form.account_name).to be_nil
         end
       end
     end
 
     context 'with empty payload' do
-      let(:form) { described_class.new(user, {}) }
+      let(:form) { described_class.new(space, {}) }
 
       it 'sets default kind to expense' do
         expect(form.kind).to eq('expense')
@@ -348,7 +349,7 @@ RSpec.describe TransactionForm, type: :model do
     end
 
     it 'calls TransactionTypeSuggestionsService with user and kind' do
-      expect(TransactionTypeSuggestionsService).to receive(:new).with(user, 'expense').and_call_original
+      expect(TransactionTypeSuggestionsService).to receive(:new).with(space, 'expense').and_call_original
       form.transaction_type_suggestions
     end
 
@@ -364,7 +365,7 @@ RSpec.describe TransactionForm, type: :model do
     end
 
     it 'calls TransactionTypeSuggestionsService with user and kind' do
-      expect(TransactionTypeSuggestionsService).to receive(:new).with(user, 'expense').and_call_original
+      expect(TransactionTypeSuggestionsService).to receive(:new).with(space, 'expense').and_call_original
       form.default_transaction_type_suggestions
     end
 
@@ -384,7 +385,7 @@ RSpec.describe TransactionForm, type: :model do
     end
 
     it 'calls AccountSuggestionsService with user' do
-      expect(AccountSuggestionsService).to receive(:new).with(user).and_call_original
+      expect(AccountSuggestionsService).to receive(:new).with(space).and_call_original
       form.account_suggestions
     end
 
@@ -407,7 +408,7 @@ RSpec.describe TransactionForm, type: :model do
     end
 
     it 'calls AccountSuggestionsService with user' do
-      expect(AccountSuggestionsService).to receive(:new).with(user).and_call_original
+      expect(AccountSuggestionsService).to receive(:new).with(space).and_call_original
       form.default_account_suggestions
     end
 
@@ -421,7 +422,7 @@ RSpec.describe TransactionForm, type: :model do
 
   describe '#kind_params' do
     context 'without account_id' do
-      let(:form) { described_class.new(user, valid_expense_attributes) }
+      let(:form) { described_class.new(space, valid_expense_attributes) }
 
       it 'returns hash with only kind' do
         expect(form.kind_params('income')).to eq({ kind: 'income' })
@@ -429,7 +430,7 @@ RSpec.describe TransactionForm, type: :model do
     end
 
     context 'with account_id' do
-      let(:form) { described_class.new(user, valid_expense_attributes.merge(account_id: account.id)) }
+      let(:form) { described_class.new(space, valid_expense_attributes.merge(account_id: account.id)) }
 
       it 'returns hash with kind and account_id' do
         expect(form.kind_params('income')).to eq({ kind: 'income', account_id: account.id })
@@ -456,28 +457,28 @@ RSpec.describe TransactionForm, type: :model do
       let(:created_transaction) { create(:transaction, user: user, account: account, transaction_type: transaction_type) }
 
       before do
-        allow(FindOrCreateAccountService).to receive(:new).with(user, 'Checking')
+        allow(FindOrCreateAccountService).to receive(:new).with(space, 'Checking')
           .and_return(instance_double(FindOrCreateAccountService, call: account))
-        allow(FindOrCreateTransactionTypeService).to receive(:new).with(user, 'Groceries', 'expense')
+        allow(FindOrCreateTransactionTypeService).to receive(:new).with(space, 'Groceries', 'expense')
           .and_return(instance_double(FindOrCreateTransactionTypeService, call: transaction_type))
         allow(CreateTransactionService).to receive(:new)
           .and_return(instance_double(CreateTransactionService, call: created_transaction))
       end
 
       it 'calls FindOrCreateAccountService' do
-        expect(FindOrCreateAccountService).to receive(:new).with(user, 'Checking').and_call_original
+        expect(FindOrCreateAccountService).to receive(:new).with(space, 'Checking').and_call_original
         form.submit
       end
 
       it 'calls FindOrCreateTransactionTypeService' do
-        expect(FindOrCreateTransactionTypeService).to receive(:new).with(user, 'Groceries', 'expense').and_call_original
+        expect(FindOrCreateTransactionTypeService).to receive(:new).with(space, 'Groceries', 'expense').and_call_original
         form.submit
       end
 
       it 'calls CreateTransactionService with correct parameters' do
         expect(CreateTransactionService).to receive(:new).with(
           hash_including(
-            user: user,
+            space: space,
             account: account,
             transaction_type: transaction_type,
             amount: 100.00,
@@ -497,7 +498,7 @@ RSpec.describe TransactionForm, type: :model do
       end
 
       context 'when custom description is provided' do
-        let(:form) { described_class.new(user, valid_expense_attributes.merge(description: 'My custom note')) }
+        let(:form) { described_class.new(space, valid_expense_attributes.merge(description: 'My custom note')) }
 
         it 'uses the custom description instead of auto-generated one' do
           expect(CreateTransactionService).to receive(:new).with(
@@ -560,18 +561,18 @@ RSpec.describe TransactionForm, type: :model do
           note: 'Savings transfer'
         }
       end
-      let(:form) { described_class.new(user, transfer_attributes) }
+      let(:form) { described_class.new(space, transfer_attributes) }
 
       before do
-        allow(FindOrCreateAccountService).to receive(:new).with(user, 'Checking')
+        allow(FindOrCreateAccountService).to receive(:new).with(space, 'Checking')
           .and_return(instance_double(FindOrCreateAccountService, call: from_account))
-        allow(FindOrCreateAccountService).to receive(:new).with(user, 'Savings')
+        allow(FindOrCreateAccountService).to receive(:new).with(space, 'Savings')
           .and_return(instance_double(FindOrCreateAccountService, call: to_account))
         allow(FindOrCreateTransactionTypeService).to receive(:new)
-          .with(user, I18n.t('transactions.transfer.type_name.transfer_out'), TransactionType::KIND_TRANSFER_OUT)
+          .with(space, I18n.t('transactions.transfer.type_name.transfer_out'), TransactionType::KIND_TRANSFER_OUT)
           .and_return(instance_double(FindOrCreateTransactionTypeService, call: transfer_type_out))
         allow(FindOrCreateTransactionTypeService).to receive(:new)
-          .with(user, I18n.t('transactions.transfer.type_name.transfer_in'), TransactionType::KIND_TRANSFER_IN)
+          .with(space, I18n.t('transactions.transfer.type_name.transfer_in'), TransactionType::KIND_TRANSFER_IN)
           .and_return(instance_double(FindOrCreateTransactionTypeService, call: transfer_type_in))
 
         allow(CreateTransactionService).to receive(:new).and_return(
@@ -581,21 +582,21 @@ RSpec.describe TransactionForm, type: :model do
       end
 
       it 'creates both from_account and to_account' do
-        expect(FindOrCreateAccountService).to receive(:new).with(user, 'Checking').and_call_original
-        expect(FindOrCreateAccountService).to receive(:new).with(user, 'Savings').and_call_original
+        expect(FindOrCreateAccountService).to receive(:new).with(space, 'Checking').and_call_original
+        expect(FindOrCreateAccountService).to receive(:new).with(space, 'Savings').and_call_original
         form.submit
       end
 
       it 'creates transfer_out transaction type' do
         expect(FindOrCreateTransactionTypeService).to receive(:new)
-          .with(user, I18n.t('transactions.transfer.type_name.transfer_out'), TransactionType::KIND_TRANSFER_OUT)
+          .with(space, I18n.t('transactions.transfer.type_name.transfer_out'), TransactionType::KIND_TRANSFER_OUT)
           .and_call_original
         form.submit
       end
 
       it 'creates transfer_in transaction type' do
         expect(FindOrCreateTransactionTypeService).to receive(:new)
-          .with(user, I18n.t('transactions.transfer.type_name.transfer_in'), TransactionType::KIND_TRANSFER_IN)
+          .with(space, I18n.t('transactions.transfer.type_name.transfer_in'), TransactionType::KIND_TRANSFER_IN)
           .and_call_original
         form.submit
       end
@@ -607,7 +608,7 @@ RSpec.describe TransactionForm, type: :model do
 
         expect(CreateTransactionService).to receive(:new).with(
           hash_including(
-            user: user,
+            space: space,
             account: from_account,
             transaction_type: transfer_type_out,
             amount: 100.00,
@@ -627,7 +628,7 @@ RSpec.describe TransactionForm, type: :model do
 
         expect(CreateTransactionService).to receive(:new).with(
           hash_including(
-            user: user,
+            space: space,
             account: to_account,
             transaction_type: transfer_type_in,
             amount: 100.00,
@@ -780,40 +781,40 @@ RSpec.describe TransactionForm, type: :model do
         amount: 100.00
       }
     end
-    let(:form) { described_class.new(user, transfer_attributes) }
+    let(:form) { described_class.new(space, transfer_attributes) }
     let(:from_account) { create(:account, user: user, name: 'Checking') }
     let(:to_account) { create(:account, user: user, name: 'Savings') }
     let(:transfer_type_out) { create(:transaction_type, user: user, kind: TransactionType::KIND_TRANSFER_OUT) }
     let(:transfer_type_in) { create(:transaction_type, user: user, kind: TransactionType::KIND_TRANSFER_IN) }
 
     before do
-      allow(FindOrCreateAccountService).to receive(:new).with(user, 'Checking')
+      allow(FindOrCreateAccountService).to receive(:new).with(space, 'Checking')
         .and_return(instance_double(FindOrCreateAccountService, call: from_account))
-      allow(FindOrCreateAccountService).to receive(:new).with(user, 'Savings')
+      allow(FindOrCreateAccountService).to receive(:new).with(space, 'Savings')
         .and_return(instance_double(FindOrCreateAccountService, call: to_account))
       allow(FindOrCreateTransactionTypeService).to receive(:new)
-        .with(user, I18n.t('transactions.transfer.type_name.transfer_out'), TransactionType::KIND_TRANSFER_OUT)
+        .with(space, I18n.t('transactions.transfer.type_name.transfer_out'), TransactionType::KIND_TRANSFER_OUT)
         .and_return(instance_double(FindOrCreateTransactionTypeService, call: transfer_type_out))
       allow(FindOrCreateTransactionTypeService).to receive(:new)
-        .with(user, I18n.t('transactions.transfer.type_name.transfer_in'), TransactionType::KIND_TRANSFER_IN)
+        .with(space, I18n.t('transactions.transfer.type_name.transfer_in'), TransactionType::KIND_TRANSFER_IN)
         .and_return(instance_double(FindOrCreateTransactionTypeService, call: transfer_type_in))
     end
 
     it 'memoizes from_account' do
-      expect(FindOrCreateAccountService).to receive(:new).with(user, 'Checking').once.and_call_original
+      expect(FindOrCreateAccountService).to receive(:new).with(space, 'Checking').once.and_call_original
       form.send(:from_account)
       form.send(:from_account)
     end
 
     it 'memoizes to_account' do
-      expect(FindOrCreateAccountService).to receive(:new).with(user, 'Savings').once.and_call_original
+      expect(FindOrCreateAccountService).to receive(:new).with(space, 'Savings').once.and_call_original
       form.send(:to_account)
       form.send(:to_account)
     end
 
     it 'memoizes transfer_type_out' do
       expect(FindOrCreateTransactionTypeService).to receive(:new)
-        .with(user, I18n.t('transactions.transfer.type_name.transfer_out'), TransactionType::KIND_TRANSFER_OUT)
+        .with(space, I18n.t('transactions.transfer.type_name.transfer_out'), TransactionType::KIND_TRANSFER_OUT)
         .once.and_call_original
       form.send(:transfer_type_out)
       form.send(:transfer_type_out)
@@ -821,7 +822,7 @@ RSpec.describe TransactionForm, type: :model do
 
     it 'memoizes transfer_type_in' do
       expect(FindOrCreateTransactionTypeService).to receive(:new)
-        .with(user, I18n.t('transactions.transfer.type_name.transfer_in'), TransactionType::KIND_TRANSFER_IN)
+        .with(space, I18n.t('transactions.transfer.type_name.transfer_in'), TransactionType::KIND_TRANSFER_IN)
         .once.and_call_original
       form.send(:transfer_type_in)
       form.send(:transfer_type_in)

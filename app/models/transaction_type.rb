@@ -8,17 +8,17 @@
 #  name        :string           not null
 #  created_at  :datetime         not null
 #  updated_at  :datetime         not null
-#  user_id     :uuid             not null, indexed
+#  space_id    :uuid             not null, indexed
 #
 # Indexes
 #
-#  index_transaction_types_on_kind                      (kind)
-#  index_transaction_types_on_lower_name_user_and_kind  (lower((name)::text), user_id, kind) UNIQUE
-#  index_transaction_types_on_user_id                   (user_id)
+#  index_transaction_types_on_kind                       (kind)
+#  index_transaction_types_on_lower_name_space_and_kind  (lower((name)::text), space_id, kind) UNIQUE
+#  index_transaction_types_on_space_id                   (space_id)
 #
 # Foreign Keys
 #
-#  fk_rails_...  (user_id => users.id)
+#  fk_rails_...  (space_id => spaces.id)
 #
 class TransactionType < ApplicationRecord
   ##
@@ -30,12 +30,12 @@ class TransactionType < ApplicationRecord
 
   ##
   # Associations
-  belongs_to :user
+  belongs_to :space
   has_many :transactions, dependent: :destroy
 
   ##
   # Validations & Enums
-  validates :name, presence: true, length: { maximum: 100 }, uniqueness: { scope: [ :user_id, :kind ], case_sensitive: false }
+  validates :name, presence: true, length: { maximum: 100 }, uniqueness: { scope: [ :space_id, :kind ], case_sensitive: false }
   validates :kind, presence: true
   validates :budget_goal, presence: true, numericality: { greater_than_or_equal_to: 0 }
 

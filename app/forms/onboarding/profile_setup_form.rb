@@ -8,7 +8,7 @@ class Onboarding::ProfileSetupForm < BaseForm
 
   ##
   # Attributes
-  attr_accessor :user
+  attr_accessor :space
 
   attribute :country, :string
   attribute :currency, :string
@@ -18,26 +18,26 @@ class Onboarding::ProfileSetupForm < BaseForm
   ##
   # Validations
   validates :country, presence: true
-  validates :currency, presence: true, inclusion: { in: User::CURRENCIES }
-  validates :income_frequency, inclusion: { in: User::INCOME_FREQUENCIES }, allow_blank: true
+  validates :currency, presence: true, inclusion: { in: Space::CURRENCIES }
+  validates :income_frequency, inclusion: { in: Space::INCOME_FREQUENCIES }, allow_blank: true
 
-  def initialize(user, payload = {})
-    @user = user
+  def initialize(space, payload = {})
+    @space = space
 
-    user.onboarding_current_step ||= CURRENT_STEP
+    space.onboarding_current_step ||= CURRENT_STEP
 
     super(
-      country: payload[:country] || user.country,
-      currency: payload[:currency] || user.currency || "XOF",
-      income_frequency: payload[:income_frequency] || user.income_frequency,
-      main_income_source: payload[:main_income_source] || user.main_income_source
+      country: payload[:country] || space.country,
+      currency: payload[:currency] || space.currency || "XOF",
+      income_frequency: payload[:income_frequency] || space.income_frequency,
+      main_income_source: payload[:main_income_source] || space.main_income_source
     )
   end
 
   def submit
     return false if invalid?
 
-    user.assign_attributes(
+    space.assign_attributes(
       country: country,
       currency: currency,
       income_frequency: income_frequency,
@@ -45,18 +45,18 @@ class Onboarding::ProfileSetupForm < BaseForm
       onboarding_current_step: NEXT_STEP
     )
 
-    if user.invalid?
-      promote_errors(user.errors.messages)
+    if space.invalid?
+      promote_errors(space.errors.messages)
 
       return false
     end
 
-    user.save!
+    space.save!
   rescue StandardError => e
     add_custom_error(:base, e.message)
 
     false
   end
 
-  attr_reader :user
+  attr_reader :space
 end

@@ -6,7 +6,7 @@ class DebtsController < ApplicationController
 
   def index
     @direction = params[:direction] || "lent"
-    @debts = current_user.debts.ongoing.send(@direction).order(created_at: :desc)
+    @debts = current_space.debts.ongoing.send(@direction).order(created_at: :desc)
   end
 
   def show
@@ -35,7 +35,7 @@ class DebtsController < ApplicationController
   end
 
   def edit
-    @form = DebtForm.new(current_user, debt_edit_payload)
+    @form = DebtForm.new(current_space, debt_edit_payload)
   end
 
   def update
@@ -55,13 +55,13 @@ class DebtsController < ApplicationController
   private
 
   def set_debt
-    @debt = current_user.debts.find(params[:id])
+    @debt = current_space.debts.find(params[:id])
   rescue ActiveRecord::RecordNotFound
     redirect_to debts_path, alert: t("debts.errors.not_found")
   end
 
   def build_form(payload = {})
-    @form = DebtForm.new(current_user, payload)
+    @form = DebtForm.new(current_space, payload)
   end
 
   def debt_edit_payload

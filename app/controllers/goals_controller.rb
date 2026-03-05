@@ -5,7 +5,7 @@ class GoalsController < ApplicationController
   before_action :set_account, only: [ :show, :edit, :update ]
 
   def index
-    @accounts_with_goals = current_user.accounts.with_saving_goals.order(created_at: :desc)
+    @accounts_with_goals = current_space.accounts.with_saving_goals.order(created_at: :desc)
   end
 
   def show
@@ -58,13 +58,13 @@ class GoalsController < ApplicationController
   private
 
   def set_account
-    @account = current_user.accounts.find(params[:id])
+    @account = current_space.accounts.find(params[:id])
   rescue ActiveRecord::RecordNotFound
     redirect_to goals_path, alert: t("goals.errors.not_found")
   end
 
   def build_form(payload = {})
-    @form = GoalForm.new(current_user, payload)
+    @form = GoalForm.new(current_space, payload)
   end
 
   def goal_params

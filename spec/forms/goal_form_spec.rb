@@ -4,6 +4,7 @@ require 'rails_helper'
 
 RSpec.describe GoalForm, type: :model do
   let(:user) { create(:user) }
+  let(:space) { user.spaces.first }
   let(:valid_attributes) do
     {
       account_name: 'Emergency Fund',
@@ -11,7 +12,7 @@ RSpec.describe GoalForm, type: :model do
       saving_goal: 5000.00
     }
   end
-  let(:form) { described_class.new(user, valid_attributes) }
+  let(:form) { described_class.new(space, valid_attributes) }
 
   describe 'inheritance' do
     it 'inherits from BaseForm' do
@@ -20,8 +21,8 @@ RSpec.describe GoalForm, type: :model do
   end
 
   describe '#initialize' do
-    it 'sets the user attribute' do
-      expect(form.user).to eq(user)
+    it 'sets the space attribute' do
+      expect(form.space).to eq(space)
     end
 
     it 'sets account_name from payload' do
@@ -37,7 +38,7 @@ RSpec.describe GoalForm, type: :model do
     end
 
     context 'with empty payload' do
-      let(:form) { described_class.new(user, {}) }
+      let(:form) { described_class.new(space, {}) }
 
       it 'initializes with nil values' do
         expect(form.account_name).to be_nil
@@ -202,7 +203,7 @@ RSpec.describe GoalForm, type: :model do
     end
 
     it 'calls AccountSuggestionsService with user' do
-      expect(AccountSuggestionsService).to receive(:new).with(user).and_call_original
+      expect(AccountSuggestionsService).to receive(:new).with(space).and_call_original
       form.account_suggestions
     end
 
@@ -224,7 +225,7 @@ RSpec.describe GoalForm, type: :model do
     end
 
     it 'calls AccountSuggestionsService with user' do
-      expect(AccountSuggestionsService).to receive(:new).with(user).and_call_original
+      expect(AccountSuggestionsService).to receive(:new).with(space).and_call_original
       form.default_account_suggestions
     end
 
@@ -254,12 +255,12 @@ RSpec.describe GoalForm, type: :model do
       let(:account) { create(:account, user: user, name: 'Emergency Fund', balance: 0) }
 
       before do
-        allow(FindOrCreateAccountService).to receive(:new).with(user, 'Emergency Fund')
+        allow(FindOrCreateAccountService).to receive(:new).with(space, 'Emergency Fund')
           .and_return(instance_double(FindOrCreateAccountService, call: account))
       end
 
       it 'calls FindOrCreateAccountService' do
-        expect(FindOrCreateAccountService).to receive(:new).with(user, 'Emergency Fund').and_call_original
+        expect(FindOrCreateAccountService).to receive(:new).with(space, 'Emergency Fund').and_call_original
         form.submit
       end
 
@@ -326,7 +327,7 @@ RSpec.describe GoalForm, type: :model do
       let(:account) { create(:account, user: user, name: 'Emergency Fund') }
 
       before do
-        allow(FindOrCreateAccountService).to receive(:new).with(user, 'Emergency Fund')
+        allow(FindOrCreateAccountService).to receive(:new).with(space, 'Emergency Fund')
           .and_return(instance_double(FindOrCreateAccountService, call: account))
         allow(account).to receive(:update!).and_raise(ActiveRecord::RecordInvalid.new(account))
       end
@@ -411,7 +412,7 @@ RSpec.describe GoalForm, type: :model do
     let(:transaction_type) { create(:transaction_type, user: user, kind: TransactionType::KIND_TRANSFER_IN) }
 
     before do
-      allow(FindOrCreateAccountService).to receive(:new).with(user, 'Emergency Fund')
+      allow(FindOrCreateAccountService).to receive(:new).with(space, 'Emergency Fund')
         .and_return(instance_double(FindOrCreateAccountService, call: account))
       allow(FindOrCreateTransactionTypeService).to receive(:new)
         .and_return(instance_double(FindOrCreateTransactionTypeService, call: transaction_type))

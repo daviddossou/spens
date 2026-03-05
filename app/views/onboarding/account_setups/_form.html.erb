@@ -4,7 +4,7 @@
               class: "onboarding-form",
               data: {
                 controller: "onboarding--account-setup",
-                onboarding__account_setup_currency_value: current_user.currency,
+                onboarding__account_setup_currency_value: current_space.currency,
                 onboarding__account_setup_account_suggestions_value: I18n.t('account_templates').values.to_json
               } do |f| %>
   <%= render 'shared/form_errors', object: @form %>
@@ -16,7 +16,7 @@
           form: transaction_form,
           index: transaction_form.index,
           transaction: transaction_form.object,
-          currency: current_user.currency,
+          currency: current_space.currency,
           can_remove: @form.transaction_forms.size > 1
         ) %>
       <% end %>
@@ -38,12 +38,12 @@
     <% end %>
 
     <template data-onboarding--account-setup-target="template">
-      <%= f.fields_for :transactions, Onboarding::TransactionForm.new(user: current_user), child_index: 'TEMPLATE_INDEX' do |transaction_form| %>
+      <%= f.fields_for :transactions, Onboarding::TransactionForm.new(space: current_space), child_index: 'TEMPLATE_INDEX' do |transaction_form| %>
         <%= render Onboarding::AccountLineComponent.new(
           form: transaction_form,
           index: 0,
           transaction: transaction_form.object,
-          currency: current_user.currency,
+          currency: current_space.currency,
           can_remove: true
         ) %>
       <% end %>

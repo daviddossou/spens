@@ -11,8 +11,10 @@ module ComponentTestHelpers
       model.valid?
     end
 
+    form_name = model.class.model_name.param_key.to_sym rescue :record
+
     action_view = ActionView::Base.new(ActionView::LookupContext.new([]), {}, nil)
-    ActionView::Helpers::FormBuilder.new(:user, model, action_view, {})
+    ActionView::Helpers::FormBuilder.new(form_name, model, action_view, {})
   end
 
   # For backward compatibility, accepts model as first argument or keyword

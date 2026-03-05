@@ -11,28 +11,28 @@
 #  updated_at          :datetime         not null
 #  account_id          :uuid             indexed
 #  debt_id             :uuid             indexed
+#  space_id            :uuid             not null, indexed
 #  transaction_type_id :uuid             not null, indexed
-#  user_id             :uuid             not null, indexed
 #
 # Indexes
 #
 #  index_transactions_on_account_id           (account_id)
 #  index_transactions_on_debt_id              (debt_id)
+#  index_transactions_on_space_id             (space_id)
 #  index_transactions_on_transaction_date     (transaction_date)
 #  index_transactions_on_transaction_type_id  (transaction_type_id)
-#  index_transactions_on_user_id              (user_id)
 #
 # Foreign Keys
 #
 #  fk_rails_...  (account_id => accounts.id)
 #  fk_rails_...  (debt_id => debts.id)
+#  fk_rails_...  (space_id => spaces.id)
 #  fk_rails_...  (transaction_type_id => transaction_types.id)
-#  fk_rails_...  (user_id => users.id)
 #
 class Transaction < ApplicationRecord
   ##
   # Associations
-  belongs_to :user
+  belongs_to :space
   belongs_to :transaction_type
   belongs_to :account, optional: true
   belongs_to :debt, optional: true

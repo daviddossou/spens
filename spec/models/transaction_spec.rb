@@ -11,23 +11,23 @@
 #  updated_at          :datetime         not null
 #  account_id          :uuid             indexed
 #  debt_id             :uuid             indexed
+#  space_id            :uuid             not null, indexed
 #  transaction_type_id :uuid             not null, indexed
-#  user_id             :uuid             not null, indexed
 #
 # Indexes
 #
 #  index_transactions_on_account_id           (account_id)
 #  index_transactions_on_debt_id              (debt_id)
+#  index_transactions_on_space_id             (space_id)
 #  index_transactions_on_transaction_date     (transaction_date)
 #  index_transactions_on_transaction_type_id  (transaction_type_id)
-#  index_transactions_on_user_id              (user_id)
 #
 # Foreign Keys
 #
 #  fk_rails_...  (account_id => accounts.id)
 #  fk_rails_...  (debt_id => debts.id)
+#  fk_rails_...  (space_id => spaces.id)
 #  fk_rails_...  (transaction_type_id => transaction_types.id)
-#  fk_rails_...  (user_id => users.id)
 #
 require 'rails_helper'
 
@@ -41,7 +41,7 @@ RSpec.describe Transaction, type: :model do
   end
 
   describe 'associations' do
-    it { is_expected.to belong_to(:user) }
+    it { is_expected.to belong_to(:space) }
     it { is_expected.to belong_to(:transaction_type) }
 
     describe 'account association' do
@@ -51,8 +51,9 @@ RSpec.describe Transaction, type: :model do
 
       it 'is required for non-debt transactions via validation' do
         user = create(:user)
-        transaction_type = create(:transaction_type, :expense, user: user)
-        transaction = build(:transaction, user: user, transaction_type: transaction_type, account: nil)
+        space = user.spaces.first
+        transaction_type = create(:transaction_type, :expense, space: space)
+        transaction = build(:transaction, space: space, transaction_type: transaction_type, account: nil)
 
         expect(transaction).not_to be_valid
         expect(transaction.errors[:account]).to be_present
@@ -62,15 +63,16 @@ RSpec.describe Transaction, type: :model do
     describe 'nested account creation' do
       it 'allows creating associated account via nested attributes' do
         user = create(:user)
-        transaction_type = create(:transaction_type, :expense, user: user)
+        space = user.spaces.first
+        transaction_type = create(:transaction_type, :expense, space: space)
 
         transaction = described_class.new(
-          user: user,
+          space: space,
           transaction_type: transaction_type,
           description: 'Test',
           amount: 100,
           transaction_date: Date.today,
-          account_attributes: { name: 'New Account', user: user }
+          account_attributes: { name: 'New Account', space: space }
         )
 
         expect { transaction.save! }.to change(Account, :count).by(1)
@@ -81,15 +83,16 @@ RSpec.describe Transaction, type: :model do
     describe 'transaction_type association' do
       it 'allows creating associated transaction_type via nested attributes' do
         user = create(:user)
-        account = create(:account, user: user)
+        space = user.spaces.first
+        account = create(:account, space: space)
 
         transaction = described_class.new(
-          user: user,
+          space: space,
           account: account,
           description: 'Test',
           amount: 100,
           transaction_date: Date.today,
-          transaction_type_attributes: { name: 'New Type', kind: 'expense', user: user }
+          transaction_type_attributes: { name: 'New Type', kind: 'expense', space: space }
         )
 
         expect { transaction.save! }.to change(TransactionType, :count).by(1)
@@ -210,14 +213,14 @@ RSpec.describe Transaction, type: :model do
   describe 'nested attributes' do
     it 'accepts nested attributes for account' do
       transaction = build(:transaction)
-      transaction.account_attributes = { name: 'Test Account', user: transaction.user }
+      transaction.account_attributes = { name: 'Test Account', space: transaction.space }
       expect(transaction.save).to be true
       expect(transaction.account.name).to eq('Test Account')
     end
 
     it 'accepts nested attributes for transaction_type' do
       transaction = build(:transaction)
-      transaction.transaction_type_attributes = { name: 'Test Type', kind: 'expense', user: transaction.user }
+      transaction.transaction_type_attributes = { name: 'Test Type', kind: 'expense', space: transaction.space }
       expect(transaction.save).to be true
       expect(transaction.transaction_type.name).to eq('Test Type')
     end
@@ -226,14 +229,15 @@ RSpec.describe Transaction, type: :model do
   describe 'callbacks' do
     describe '#update_account_balance' do
       let(:user) { create(:user) }
-      let(:account) { create(:account, user: user, balance: 1000.0) }
-      let(:transaction_type) { create(:transaction_type, :expense, user: user) }
+      let(:space) { user.spaces.first }
+      let(:account) { create(:account, space: space, balance: 1000.0) }
+      let(:transaction_type) { create(:transaction_type, :expense, space: space) }
 
       context 'after create' do
         it 'updates account balance by adding the transaction amount' do
           expect do
             create(:transaction,
-              user: user,
+              space: space,
               account: account,
               transaction_type: transaction_type,
               amount: 100.0
@@ -244,7 +248,7 @@ RSpec.describe Transaction, type: :model do
         it 'handles positive amounts (income)' do
           expect do
             create(:transaction,
-              user: user,
+              space: space,
               account: account,
               transaction_type: transaction_type,
               amount: 250.0
@@ -255,7 +259,7 @@ RSpec.describe Transaction, type: :model do
         it 'handles negative amounts (expense)' do
           expect do
             create(:transaction,
-              user: user,
+              space: space,
               account: account,
               transaction_type: transaction_type,
               amount: -150.0
@@ -267,7 +271,7 @@ RSpec.describe Transaction, type: :model do
       context 'after update' do
         let!(:transaction) do
           create(:transaction,
-            user: user,
+            space: space,
             account: account,
             transaction_type: transaction_type,
             amount: 100.0
@@ -288,7 +292,7 @@ RSpec.describe Transaction, type: :model do
         end
 
         it 'updates account balance when account changes' do
-          account2 = create(:account, user: user, balance: 500.0)
+          account2 = create(:account, space: space, balance: 500.0)
 
           # Transaction was for account1 (1100.0)
           # Move to account2 (500.0)
@@ -304,7 +308,7 @@ RSpec.describe Transaction, type: :model do
 
           expect do
             create(:transaction,
-              user: user,
+              space: space,
               account: account,
               transaction_type: transaction_type,
               amount: 50.0
@@ -317,7 +321,7 @@ RSpec.describe Transaction, type: :model do
 
           expect do
             create(:transaction,
-              user: user,
+              space: space,
               account: account,
               transaction_type: transaction_type,
               amount: 75.0
@@ -337,8 +341,8 @@ RSpec.describe Transaction, type: :model do
       expect(ActiveRecord::Base.connection.index_exists?(:transactions, :transaction_type_id)).to be true
     end
 
-    it 'has an index on user_id' do
-      expect(ActiveRecord::Base.connection.index_exists?(:transactions, :user_id)).to be true
+    it 'has an index on space_id' do
+      expect(ActiveRecord::Base.connection.index_exists?(:transactions, :space_id)).to be true
     end
 
     it 'has an index on transaction_date' do
@@ -348,12 +352,13 @@ RSpec.describe Transaction, type: :model do
 
   describe 'integration scenarios' do
     let(:user) { create(:user) }
-    let(:account) { create(:account, user: user, balance: 500.0) }
-    let(:transaction_type) { create(:transaction_type, :expense, user: user) }
+    let(:space) { user.spaces.first }
+    let(:account) { create(:account, space: space, balance: 500.0) }
+    let(:transaction_type) { create(:transaction_type, :expense, space: space) }
 
     it 'creates a complete transaction with all attributes' do
       transaction = create(:transaction,
-        user: user,
+        space: space,
         account: account,
         transaction_type: transaction_type,
         description: 'Grocery shopping',
@@ -370,9 +375,9 @@ RSpec.describe Transaction, type: :model do
     end
 
     it 'handles multiple transactions on same account' do
-      create(:transaction, user: user, account: account, transaction_type: transaction_type, amount: 100.0)
-      create(:transaction, user: user, account: account, transaction_type: transaction_type, amount: -50.0)
-      create(:transaction, user: user, account: account, transaction_type: transaction_type, amount: 25.0)
+      create(:transaction, space: space, account: account, transaction_type: transaction_type, amount: 100.0)
+      create(:transaction, space: space, account: account, transaction_type: transaction_type, amount: -50.0)
+      create(:transaction, space: space, account: account, transaction_type: transaction_type, amount: 25.0)
 
       # Initial: 500.0
       # +100.0 = 600.0

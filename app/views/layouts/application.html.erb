@@ -31,6 +31,7 @@
       <%= render Navigation::HeaderComponent.new(
         page_title: content_for(:page_title).presence || content_for(:title).presence || "Spens",
         current_user: current_user,
+        current_space: current_space,
         params: params
       ) %>
     <% end %>

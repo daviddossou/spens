@@ -8,17 +8,17 @@
 #  name        :string           not null
 #  created_at  :datetime         not null
 #  updated_at  :datetime         not null
-#  user_id     :uuid             not null, indexed
+#  space_id    :uuid             not null, indexed
 #
 # Indexes
 #
-#  index_transaction_types_on_kind                      (kind)
-#  index_transaction_types_on_lower_name_user_and_kind  (lower((name)::text), user_id, kind) UNIQUE
-#  index_transaction_types_on_user_id                   (user_id)
+#  index_transaction_types_on_kind                       (kind)
+#  index_transaction_types_on_lower_name_space_and_kind  (lower((name)::text), space_id, kind) UNIQUE
+#  index_transaction_types_on_space_id                   (space_id)
 #
 # Foreign Keys
 #
-#  fk_rails_...  (user_id => users.id)
+#  fk_rails_...  (space_id => spaces.id)
 #
 require 'rails_helper'
 
@@ -32,7 +32,7 @@ RSpec.describe TransactionType, type: :model do
   end
 
   describe 'associations' do
-    it { is_expected.to belong_to(:user) }
+    it { is_expected.to belong_to(:space) }
     it { is_expected.to have_many(:transactions).dependent(:destroy) }
   end
 
@@ -44,16 +44,16 @@ RSpec.describe TransactionType, type: :model do
       context 'uniqueness' do
         subject(:transaction_type) { create(:transaction_type) }
 
-        it { is_expected.to validate_uniqueness_of(:name).scoped_to(:user_id, :kind).case_insensitive }
+        it { is_expected.to validate_uniqueness_of(:name).scoped_to(:space_id, :kind).case_insensitive }
 
-        it 'allows same name for different users' do
-          user2 = create(:user)
-          transaction_type2 = build(:transaction_type, name: transaction_type.name, user: user2)
+        it 'allows same name for different spaces' do
+          space2 = create(:space)
+          transaction_type2 = build(:transaction_type, name: transaction_type.name, space: space2)
           expect(transaction_type2).to be_valid
         end
 
-        it 'prevents duplicate names for same user (case insensitive)' do
-          transaction_type2 = build(:transaction_type, name: transaction_type.name.upcase, user: transaction_type.user)
+        it 'prevents duplicate names for same space (case insensitive)' do
+          transaction_type2 = build(:transaction_type, name: transaction_type.name.upcase, space: transaction_type.space)
           expect(transaction_type2).not_to be_valid
           expect(transaction_type2.errors[:name]).to include('has already been taken')
         end
@@ -184,29 +184,30 @@ RSpec.describe TransactionType, type: :model do
 
     describe 'scopes' do
       let(:user) { create(:user) }
-      let!(:income_type) { create(:transaction_type, :income, user: user) }
-      let!(:expense_type) { create(:transaction_type, :expense, user: user) }
-      let!(:debt_in_type) { create(:transaction_type, user: user, kind: 'debt_in', name: 'Debt In') }
-      let!(:debt_out_type) { create(:transaction_type, user: user, kind: 'debt_out', name: 'Debt Out') }
+      let(:space) { user.spaces.first }
+      let!(:income_type) { create(:transaction_type, :income, space: space) }
+      let!(:expense_type) { create(:transaction_type, :expense, space: space) }
+      let!(:debt_in_type) { create(:transaction_type, space: space, kind: 'debt_in', name: 'Debt In') }
+      let!(:debt_out_type) { create(:transaction_type, space: space, kind: 'debt_out', name: 'Debt Out') }
 
       it 'provides income scope' do
-        expect(user.transaction_types.income.count).to eq(1)
-        expect(user.transaction_types.income.first).to eq(income_type)
+        expect(space.transaction_types.income.count).to eq(1)
+        expect(space.transaction_types.income.first).to eq(income_type)
       end
 
       it 'provides expense scope' do
-        expect(user.transaction_types.expense.count).to eq(1)
-        expect(user.transaction_types.expense.first).to eq(expense_type)
+        expect(space.transaction_types.expense.count).to eq(1)
+        expect(space.transaction_types.expense.first).to eq(expense_type)
       end
 
       it 'provides debt_in scope' do
-        expect(user.transaction_types.debt_in.count).to eq(1)
-        expect(user.transaction_types.debt_in.first).to eq(debt_in_type)
+        expect(space.transaction_types.debt_in.count).to eq(1)
+        expect(space.transaction_types.debt_in.first).to eq(debt_in_type)
       end
 
       it 'provides debt_out scope' do
-        expect(user.transaction_types.debt_out.count).to eq(1)
-        expect(user.transaction_types.debt_out.first).to eq(debt_out_type)
+        expect(space.transaction_types.debt_out.count).to eq(1)
+        expect(space.transaction_types.debt_out.first).to eq(debt_out_type)
       end
     end
   end
@@ -314,30 +315,32 @@ RSpec.describe TransactionType, type: :model do
   describe 'dependent destroy on transactions' do
     it 'destroys child transactions when deleted' do
       tt = create(:transaction_type)
-      create(:transaction, transaction_type: tt, user: tt.user, account: create(:account, user: tt.user))
+      create(:transaction, transaction_type: tt, space: tt.space, account: create(:account, space: tt.space))
       expect { tt.destroy }.to change { Transaction.count }.by(-1)
     end
 
     it 'destroys multiple child transactions when deleted' do
       user = create(:user)
-      account = create(:account, user: user)
-      tt = create(:transaction_type, user: user)
+      space = user.spaces.first
+      account = create(:account, space: space)
+      tt = create(:transaction_type, space: space)
 
-      create(:transaction, transaction_type: tt, user: user, account: account)
-      create(:transaction, transaction_type: tt, user: user, account: account)
-      create(:transaction, transaction_type: tt, user: user, account: account)
+      create(:transaction, transaction_type: tt, space: space, account: account)
+      create(:transaction, transaction_type: tt, space: space, account: account)
+      create(:transaction, transaction_type: tt, space: space, account: account)
 
       expect { tt.destroy }.to change { Transaction.count }.by(-3)
     end
 
     it 'does not affect transactions of other transaction types' do
       user = create(:user)
-      account = create(:account, user: user)
-      tt1 = create(:transaction_type, user: user)
-      tt2 = create(:transaction_type, user: user, name: 'Other Type')
+      space = user.spaces.first
+      account = create(:account, space: space)
+      tt1 = create(:transaction_type, space: space)
+      tt2 = create(:transaction_type, space: space, name: 'Other Type')
 
-      create(:transaction, transaction_type: tt1, user: user, account: account)
-      create(:transaction, transaction_type: tt2, user: user, account: account)
+      create(:transaction, transaction_type: tt1, space: space, account: account)
+      create(:transaction, transaction_type: tt2, space: space, account: account)
 
       expect { tt1.destroy }.to change { Transaction.count }.by(-1)
       expect(tt2.transactions.count).to eq(1)
@@ -346,24 +349,24 @@ RSpec.describe TransactionType, type: :model do
 
   describe 'database defaults' do
     it 'has a default budget_goal of 0.0' do
-      transaction_type = described_class.new(name: 'Test', kind: 'expense', user: create(:user))
+      transaction_type = described_class.new(name: 'Test', kind: 'expense', space: create(:space))
       transaction_type.save!
       expect(transaction_type.budget_goal).to eq(0.0)
     end
   end
 
   describe 'database indexes' do
-    it 'has an index on user_id' do
-      expect(ActiveRecord::Base.connection.index_exists?(:transaction_types, :user_id)).to be true
+    it 'has an index on space_id' do
+      expect(ActiveRecord::Base.connection.index_exists?(:transaction_types, :space_id)).to be true
     end
 
     it 'has an index on kind' do
       expect(ActiveRecord::Base.connection.index_exists?(:transaction_types, :kind)).to be true
     end
 
-    it 'has a unique compound index on lower(name), user_id and kind' do
+    it 'has a unique compound index on lower(name), space_id and kind' do
       indexes = ActiveRecord::Base.connection.indexes(:transaction_types)
-      compound_index = indexes.find { |i| i.name == 'index_transaction_types_on_lower_name_user_and_kind' }
+      compound_index = indexes.find { |i| i.name == 'index_transaction_types_on_lower_name_space_and_kind' }
 
       expect(compound_index).to be_present
       expect(compound_index.unique).to be true
@@ -372,10 +375,11 @@ RSpec.describe TransactionType, type: :model do
 
   describe 'integration scenarios' do
     let(:user) { create(:user) }
+    let(:space) { user.spaces.first }
 
     it 'creates a complete transaction type with all attributes' do
       transaction_type = create(:transaction_type,
-        user: user,
+        space: space,
         name: 'Monthly Rent',
         kind: 'expense',
         budget_goal: 1500.0
@@ -388,28 +392,28 @@ RSpec.describe TransactionType, type: :model do
       expect(transaction_type.expense?).to be true
     end
 
-    it 'supports different kinds for the same user' do
-      income_type = create(:transaction_type, :income, user: user, name: 'Salary')
-      expense_type = create(:transaction_type, :expense, user: user, name: 'Groceries')
-      debt_out_type = create(:transaction_type, user: user, name: 'Debt Payment', kind: 'debt_out')
+    it 'supports different kinds for the same space' do
+      income_type = create(:transaction_type, :income, space: space, name: 'Salary')
+      expense_type = create(:transaction_type, :expense, space: space, name: 'Groceries')
+      debt_out_type = create(:transaction_type, space: space, name: 'Debt Payment', kind: 'debt_out')
 
-      expect(user.transaction_types.count).to eq(3)
-      expect(user.transaction_types.income.count).to eq(1)
-      expect(user.transaction_types.expense.count).to eq(1)
-      expect(user.transaction_types.debt_out.count).to eq(1)
+      expect(space.transaction_types.count).to eq(3)
+      expect(space.transaction_types.income.count).to eq(1)
+      expect(space.transaction_types.expense.count).to eq(1)
+      expect(space.transaction_types.debt_out.count).to eq(1)
     end
 
     it 'handles budget tracking for expense types' do
-      groceries = create(:transaction_type, :expense, user: user, name: 'Groceries', budget_goal: 500.0)
-      transport = create(:transaction_type, :expense, user: user, name: 'Transport', budget_goal: 200.0)
+      groceries = create(:transaction_type, :expense, space: space, name: 'Groceries', budget_goal: 500.0)
+      transport = create(:transaction_type, :expense, space: space, name: 'Transport', budget_goal: 200.0)
 
       expect(groceries.budget_goal).to eq(500.0)
       expect(transport.budget_goal).to eq(200.0)
     end
 
     it 'supports transfer types for internal account transfers' do
-      transfer_in = create(:transaction_type, user: user, name: 'Transfer In', kind: 'transfer_in')
-      transfer_out = create(:transaction_type, user: user, name: 'Transfer Out', kind: 'transfer_out')
+      transfer_in = create(:transaction_type, space: space, name: 'Transfer In', kind: 'transfer_in')
+      transfer_out = create(:transaction_type, space: space, name: 'Transfer Out', kind: 'transfer_out')
 
       expect(transfer_in.kind).to eq(described_class::KIND_TRANSFER_IN)
       expect(transfer_out.kind).to eq(described_class::KIND_TRANSFER_OUT)

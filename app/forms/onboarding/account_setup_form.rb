@@ -8,7 +8,7 @@ class Onboarding::AccountSetupForm < BaseForm
 
   ##
   # Attributes
-  attr_accessor :user
+  attr_accessor :space
   attr_reader :transaction_forms
 
   ##
@@ -25,8 +25,8 @@ class Onboarding::AccountSetupForm < BaseForm
 
   ##
   # Instance Methods
-  def initialize(user, payload = {})
-    @user = user
+  def initialize(space, payload = {})
+    @space = space
 
     @transaction_forms =
       if payload[:transactions_attributes].present?
@@ -35,7 +35,7 @@ class Onboarding::AccountSetupForm < BaseForm
         initialize_transaction
       end
 
-    user.onboarding_current_step ||= CURRENT_STEP
+    space.onboarding_current_step ||= CURRENT_STEP
   end
 
   def transactions
@@ -62,8 +62,8 @@ class Onboarding::AccountSetupForm < BaseForm
         end
       end
 
-      user.onboarding_current_step = NEXT_STEP
-      user.save!
+      space.onboarding_current_step = NEXT_STEP
+      space.save!
       success = true
     end
 
@@ -80,7 +80,7 @@ class Onboarding::AccountSetupForm < BaseForm
   def build_transactions_from(transaction_attributes)
     transaction_attributes.values.map do |attrs|
       form_attrs = {
-        user: user,
+        space: space,
         account_name: attrs[:account_name],
         amount: attrs[:amount],
         transaction_type_name: attrs[:transaction_type_name] || Onboarding::TransactionForm::DEFAULT_TRANSACTION_TYPE_NAME,
@@ -97,7 +97,7 @@ class Onboarding::AccountSetupForm < BaseForm
   def initialize_transaction
     [
       Onboarding::TransactionForm.new(
-        user: user,
+        space: space,
         account_name: "",
         amount: nil,
         transaction_date: Date.current

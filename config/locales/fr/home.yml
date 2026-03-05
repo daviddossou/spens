@@ -10,7 +10,7 @@ fr:
       feature_rails: "Rails 8.0 + Tailwind CSS"
       sign_in_cta: "Se connecter"
       sign_up_cta: "S'inscrire"
-    dashboard:
+    show:
       dashboard_title: "Tableau de bord"
       your_account: "Votre compte"
       edit_profile: "Modifier le profil"

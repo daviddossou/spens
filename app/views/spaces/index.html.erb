@@ -1,0 +1,62 @@
+<% content_for :title, t('.title') %>
+
+<div class="page-container page-container--narrow">
+  <header class="page-header">
+    <p class="page-header__subtitle"><%= t('.subtitle') %></p>
+  </header>
+
+  <div class="page-content">
+    <% if @spaces.any? %>
+      <div class="spaces-list">
+        <% @spaces.each do |space| %>
+          <% is_active = current_space&.id == space.id %>
+          <% if is_active %>
+            <%= link_to edit_space_path(id: space.id), class: "space-card space-card--active", data: { turbo_frame: "modal" } do %>
+              <div class="space-card__info">
+                <h3 class="space-card__name"><%= space.name %></h3>
+                <p class="space-card__detail"><%= space.currency || "—" %><% if space.country.present? %> · <%= space.country %><% end %></p>
+              </div>
+              <div class="space-card__meta">
+                <span class="space-card__active-badge"><%= t('.active') %></span>
+                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                </svg>
+              </div>
+            <% end %>
+          <% else %>
+            <div class="space-card">
+              <%= link_to edit_space_path(id: space.id), class: "space-card__link", data: { turbo_frame: "modal" } do %>
+                <div class="space-card__info">
+                  <h3 class="space-card__name"><%= space.name %></h3>
+                  <p class="space-card__detail"><%= space.currency || "—" %><% if space.country.present? %> · <%= space.country %><% end %></p>
+                </div>
+              <% end %>
+              <div class="space-card__actions">
+                <%= render Ui::ButtonComponent.new(
+                  text: t('.switch'),
+                  url: space_selection_path(space_id: space.id),
+                  variant: :secondary,
+                  size: :xs,
+                  data: { turbo_method: :post }
+                ) %>
+                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                </svg>
+              </div>
+            </div>
+          <% end %>
+        <% end %>
+      </div>
+    <% else %>
+      <div class="empty-state">
+        <svg class="empty-state__icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+        </svg>
+        <h3><%= t('.no_spaces_title') %></h3>
+        <p><%= t('.no_spaces_message') %></p>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<%= render Ui::FabComponent.new(url: new_space_path, label: t('.add_new_space')) %>

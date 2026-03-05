@@ -6,6 +6,7 @@ RSpec.describe AccountsController, type: :request do
   include Devise::Test::IntegrationHelpers
 
   let(:user) { create(:user) }
+  let(:space) { user.spaces.first }
   let(:account) { create(:account, user: user, name: "Savings", balance: 1000.0, saving_goal: 5000.0) }
 
   before do
@@ -175,7 +176,7 @@ RSpec.describe AccountsController, type: :request do
 
       it "redirects to the account show page" do
         post accounts_path, params: { account: valid_attributes }
-        created_account = Account.find_by(name: "New Account", user: user)
+        created_account = Account.find_by(name: "New Account", space: space)
         expect(response).to redirect_to("#{account_path(id: created_account.id)}?format=html")
       end
 
@@ -186,13 +187,13 @@ RSpec.describe AccountsController, type: :request do
 
       it "sets the correct saving goal" do
         post accounts_path, params: { account: valid_attributes }
-        created_account = Account.find_by(name: "New Account", user: user)
+        created_account = Account.find_by(name: "New Account", space: space)
         expect(created_account.saving_goal).to eq(2000.00)
       end
 
       it "adjusts the balance if different from zero" do
         post accounts_path, params: { account: valid_attributes }
-        created_account = Account.find_by(name: "New Account", user: user)
+        created_account = Account.find_by(name: "New Account", space: space)
         expect(created_account.balance).to eq(500.00)
       end
 

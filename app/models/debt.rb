@@ -11,26 +11,26 @@
 #  total_reimbursed :float            default(0.0), not null
 #  created_at       :datetime         not null
 #  updated_at       :datetime         not null
-#  user_id          :uuid             not null, indexed
+#  space_id         :uuid             not null, indexed
 #
 # Indexes
 #
-#  index_debts_on_status   (status)
-#  index_debts_on_user_id  (user_id)
+#  index_debts_on_space_id  (space_id)
+#  index_debts_on_status    (status)
 #
 # Foreign Keys
 #
-#  fk_rails_...  (user_id => users.id)
+#  fk_rails_...  (space_id => spaces.id)
 #
 class Debt < ApplicationRecord
   ##
   # Associations
-  belongs_to :user
+  belongs_to :space
   has_many :transactions, dependent: :nullify
 
   ##
   # Validations & Enums
-  validates :name, presence: true, length: { maximum: 100 }, uniqueness: { scope: [ :user_id, :direction ] }
+  validates :name, presence: true, length: { maximum: 100 }, uniqueness: { scope: [ :space_id, :direction ] }
   validates :status, presence: true
   validates :direction, presence: true
 

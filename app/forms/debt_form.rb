@@ -3,7 +3,7 @@
 class DebtForm < BaseForm
   ##
   # Attributes
-  attr_accessor :user, :debt
+  attr_accessor :space, :debt
 
   attribute :contact_name, :string
   attribute :total_lent, :decimal
@@ -31,8 +31,8 @@ class DebtForm < BaseForm
 
   ##
   # Instance Methods
-  def initialize(user, payload = {})
-    @user = user
+  def initialize(space, payload = {})
+    @space = space
     @debt = Debt.find(payload[:id]) if payload[:id].present?
 
     super(
@@ -69,11 +69,11 @@ class DebtForm < BaseForm
   end
 
   def account_suggestions
-    AccountSuggestionsService.new(user).all_with_balances
+    AccountSuggestionsService.new(space).all_with_balances
   end
 
   def default_account_suggestions
-    AccountSuggestionsService.new(user).defaults_with_balances
+    AccountSuggestionsService.new(space).defaults_with_balances
   end
 
   private
@@ -105,7 +105,7 @@ class DebtForm < BaseForm
     }
 
     if @debt.nil?
-      @debt = user.debts.create!(debt_attributes)
+      @debt = space.debts.create!(debt_attributes)
     else
       @debt.update!(debt_attributes)
     end
@@ -135,7 +135,7 @@ class DebtForm < BaseForm
 
   def create_transaction(kind, amount)
     transaction_form = TransactionForm.new(
-      user,
+      space,
       amount: amount.abs,
       transaction_date: Date.current,
       kind: kind,

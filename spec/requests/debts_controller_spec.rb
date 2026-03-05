@@ -6,6 +6,7 @@ RSpec.describe DebtsController, type: :request do
   include Devise::Test::IntegrationHelpers
 
   let(:user) { create(:user) }
+  let(:space) { user.spaces.first }
   let(:other_user) { create(:user) }
   let(:debt) { create(:debt, :partially_reimbursed, user: user, name: 'John Doe') }
   let(:borrowed_debt) { create(:debt, :borrowed, :partially_reimbursed, user: user, name: 'Bank Loan') }
@@ -238,7 +239,7 @@ RSpec.describe DebtsController, type: :request do
         expect(created_debt.total_reimbursed).to eq(valid_attributes[:total_reimbursed])
         expect(created_debt.note).to eq(valid_attributes[:note])
         expect(created_debt.direction).to eq(valid_attributes[:direction])
-        expect(created_debt.user).to eq(user)
+        expect(created_debt.space).to eq(space)
       end
 
       it 'creates associated transactions' do

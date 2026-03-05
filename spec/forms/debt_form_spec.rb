@@ -4,6 +4,7 @@ require 'rails_helper'
 
 RSpec.describe DebtForm, type: :model do
   let(:user) { create(:user) }
+  let(:space) { user.spaces.first }
   let(:valid_attributes) do
     {
       contact_name: 'John Doe',
@@ -14,7 +15,7 @@ RSpec.describe DebtForm, type: :model do
       account_name: 'Cash'
     }
   end
-  let(:form) { described_class.new(user, valid_attributes) }
+  let(:form) { described_class.new(space, valid_attributes) }
 
   describe 'inheritance' do
     it 'inherits from BaseForm' do
@@ -23,8 +24,8 @@ RSpec.describe DebtForm, type: :model do
   end
 
   describe '#initialize' do
-    it 'sets the user attribute' do
-      expect(form.user).to eq(user)
+    it 'sets the space attribute' do
+      expect(form.space).to eq(space)
     end
 
     it 'sets contact_name from payload' do
@@ -52,7 +53,7 @@ RSpec.describe DebtForm, type: :model do
     end
 
     context 'with empty payload' do
-      let(:form) { described_class.new(user, {}) }
+      let(:form) { described_class.new(space, {}) }
 
       it 'initializes with default values' do
         expect(form.contact_name).to be_nil
@@ -66,7 +67,7 @@ RSpec.describe DebtForm, type: :model do
 
     context 'with existing debt id' do
       let(:existing_debt) { create(:debt, user: user, name: 'Jane Smith', direction: 'borrowed') }
-      let(:form) { described_class.new(user, { id: existing_debt.id, contact_name: 'Jane Smith' }) }
+      let(:form) { described_class.new(space, { id: existing_debt.id, contact_name: 'Jane Smith' }) }
 
       it 'loads the existing debt' do
         expect(form.debt).to eq(existing_debt)
@@ -78,7 +79,7 @@ RSpec.describe DebtForm, type: :model do
     end
 
     context 'with borrowed direction' do
-      let(:form) { described_class.new(user, valid_attributes.merge(direction: 'borrowed')) }
+      let(:form) { described_class.new(space, valid_attributes.merge(direction: 'borrowed')) }
 
       it 'sets direction to borrowed' do
         expect(form.direction).to eq('borrowed')
@@ -213,7 +214,7 @@ RSpec.describe DebtForm, type: :model do
 
     context 'total_lent_not_less_than_existing validation' do
       let(:existing_debt) { create(:debt, user: user, name: 'Jane', total_lent: 1000, direction: 'lent') }
-      let(:form) { described_class.new(user, { id: existing_debt.id, contact_name: 'Jane', total_lent: 800, direction: 'lent' }) }
+      let(:form) { described_class.new(space, { id: existing_debt.id, contact_name: 'Jane', total_lent: 800, direction: 'lent' }) }
 
       it 'is invalid when total_lent is less than existing' do
         expect(form).not_to be_valid
@@ -231,14 +232,14 @@ RSpec.describe DebtForm, type: :model do
       end
 
       it 'does not validate for new debts' do
-        new_form = described_class.new(user, valid_attributes.merge(total_lent: 100, total_reimbursed: 50))
+        new_form = described_class.new(space, valid_attributes.merge(total_lent: 100, total_reimbursed: 50))
         expect(new_form).to be_valid
       end
     end
 
     context 'total_reimbursed_not_less_than_existing validation' do
       let(:existing_debt) { create(:debt, user: user, name: 'Jane', total_lent: 1000, total_reimbursed: 500, direction: 'lent') }
-      let(:form) { described_class.new(user, { id: existing_debt.id, contact_name: 'Jane', total_lent: 1000, total_reimbursed: 300, direction: 'lent' }) }
+      let(:form) { described_class.new(space, { id: existing_debt.id, contact_name: 'Jane', total_lent: 1000, total_reimbursed: 300, direction: 'lent' }) }
 
       it 'is invalid when total_reimbursed is less than existing' do
         expect(form).not_to be_valid
@@ -272,7 +273,7 @@ RSpec.describe DebtForm, type: :model do
 
     it 'returns true when debt exists' do
       existing_debt = create(:debt, user: user, name: 'Jane', direction: 'lent')
-      form_with_debt = described_class.new(user, { id: existing_debt.id, contact_name: 'Jane' })
+      form_with_debt = described_class.new(space, { id: existing_debt.id, contact_name: 'Jane' })
       expect(form_with_debt.persisted?).to be(true)
     end
   end
@@ -293,7 +294,7 @@ RSpec.describe DebtForm, type: :model do
     end
 
     it 'calls AccountSuggestionsService with user' do
-      expect(AccountSuggestionsService).to receive(:new).with(user).and_call_original
+      expect(AccountSuggestionsService).to receive(:new).with(space).and_call_original
       form.account_suggestions
     end
 
@@ -309,7 +310,7 @@ RSpec.describe DebtForm, type: :model do
     end
 
     it 'calls AccountSuggestionsService with user' do
-      expect(AccountSuggestionsService).to receive(:new).with(user).and_call_original
+      expect(AccountSuggestionsService).to receive(:new).with(space).and_call_original
       form.default_account_suggestions
     end
 
@@ -338,36 +339,36 @@ RSpec.describe DebtForm, type: :model do
 
     context 'with valid form and new debt' do
       it 'creates a new debt' do
-        test_form = described_class.new(user, valid_attributes.merge(contact_name: 'Unique Test 1'))
+        test_form = described_class.new(space, valid_attributes.merge(contact_name: 'Unique Test 1'))
         expect { test_form.submit }.to change(Debt, :count).by(1)
       end
 
       it 'sets debt attributes correctly' do
-        test_form = described_class.new(user, valid_attributes.merge(contact_name: 'Unique Test 2'))
+        test_form = described_class.new(space, valid_attributes.merge(contact_name: 'Unique Test 2'))
         result = test_form.submit
         expect(result).to be_a(Debt)
         expect(result.name).to eq('Unique Test 2')
         expect(result.direction).to eq('lent')
         expect(result.status).to eq('ongoing')
         expect(result.note).to eq('Personal loan')
-        expect(result.user).to eq(user)
+        expect(result.space).to eq(space)
       end
 
       it 'returns the created debt' do
-        test_form = described_class.new(user, valid_attributes.merge(contact_name: 'Unique Test 3'))
+        test_form = described_class.new(space, valid_attributes.merge(contact_name: 'Unique Test 3'))
         result = test_form.submit
         expect(result).to be_a(Debt)
         expect(result.name).to eq('Unique Test 3')
       end
 
       it 'assigns the debt to the form' do
-        test_form = described_class.new(user, valid_attributes.merge(contact_name: 'Unique Test 4'))
+        test_form = described_class.new(space, valid_attributes.merge(contact_name: 'Unique Test 4'))
         test_form.submit
         expect(test_form.debt).to be_persisted
       end
 
       context 'for lent debt' do
-        let(:form) { described_class.new(user, valid_attributes.merge(direction: 'lent', contact_name: "Lent Context #{SecureRandom.uuid}")) }
+        let(:form) { described_class.new(space, valid_attributes.merge(direction: 'lent', contact_name: "Lent Context #{SecureRandom.uuid}")) }
 
         it 'creates transactions for both total_lent and total_reimbursed' do
           expect { form.submit }.to change { Transaction.count }.by(2)
@@ -384,7 +385,7 @@ RSpec.describe DebtForm, type: :model do
 
         it 'passes account_name to transaction creation' do
           expect(TransactionForm).to receive(:new).with(
-            user,
+            space,
             hash_including(account_name: 'Cash')
           ).at_least(:once).and_call_original
 
@@ -393,7 +394,7 @@ RSpec.describe DebtForm, type: :model do
       end
 
       context 'for borrowed debt' do
-        let(:form) { described_class.new(user, valid_attributes.merge(direction: 'borrowed', contact_name: 'Borrowed Context Test Person')) }
+        let(:form) { described_class.new(space, valid_attributes.merge(direction: 'borrowed', contact_name: 'Borrowed Context Test Person')) }
 
         it 'creates transactions for both total_lent and total_reimbursed' do
           expect { form.submit }.to change { Transaction.count }.by(2)
@@ -410,7 +411,7 @@ RSpec.describe DebtForm, type: :model do
       end
 
       context 'when total_reimbursed is zero' do
-        let(:form) { described_class.new(user, valid_attributes.merge(total_reimbursed: 0, contact_name: 'Zero Reimbursed Test Person')) }
+        let(:form) { described_class.new(space, valid_attributes.merge(total_reimbursed: 0, contact_name: 'Zero Reimbursed Test Person')) }
 
         it 'creates only debt_out transaction' do
           expect_any_instance_of(TransactionForm).to receive(:submit).once
@@ -425,11 +426,11 @@ RSpec.describe DebtForm, type: :model do
       end
 
       context 'without account_name' do
-        let(:form) { described_class.new(user, valid_attributes.merge(account_name: nil)) }
+        let(:form) { described_class.new(space, valid_attributes.merge(account_name: nil)) }
 
         it 'creates transactions without account' do
           expect(TransactionForm).to receive(:new).with(
-            user,
+            space,
             hash_including(account_name: nil)
           ).at_least(:once).and_call_original
 
@@ -445,7 +446,7 @@ RSpec.describe DebtForm, type: :model do
     context 'with existing debt' do
       let(:existing_debt) { create(:debt, user: user, name: 'Old Name', total_lent: 1000, total_reimbursed: 0, direction: 'lent') }
       let(:form) do
-        described_class.new(user, {
+        described_class.new(space, {
           id: existing_debt.id,
           contact_name: 'New Name',
           total_lent: 1500,
@@ -487,7 +488,7 @@ RSpec.describe DebtForm, type: :model do
 
       context 'when amounts stay the same' do
         let(:form) do
-          described_class.new(user, {
+          described_class.new(space, {
             id: existing_debt.id,
             contact_name: 'Updated Name',
             total_lent: 1000,
@@ -510,7 +511,7 @@ RSpec.describe DebtForm, type: :model do
 
     context 'when ActiveRecord transaction fails' do
       before do
-        allow(user.debts).to receive(:create!).and_raise(ActiveRecord::RecordInvalid.new(Debt.new))
+        allow(space.debts).to receive(:create!).and_raise(ActiveRecord::RecordInvalid.new(Debt.new))
       end
 
       it 'returns false' do
@@ -582,7 +583,7 @@ RSpec.describe DebtForm, type: :model do
 
       it 'handles direction switching for existing debt' do
         existing_debt = create(:debt, user: user, name: 'Test', total_lent: 1000, direction: 'lent')
-        form = described_class.new(user, {
+        form = described_class.new(space, {
           id: existing_debt.id,
           contact_name: 'Test',
           total_lent: 1000,
@@ -611,7 +612,7 @@ RSpec.describe DebtForm, type: :model do
 
     describe '#lent_difference' do
       let(:existing_debt) { create(:debt, user: user, name: 'Test', total_lent: 500, direction: 'lent') }
-      let(:form) { described_class.new(user, { id: existing_debt.id, contact_name: 'Test', total_lent: 800, direction: 'lent' }) }
+      let(:form) { described_class.new(space, { id: existing_debt.id, contact_name: 'Test', total_lent: 800, direction: 'lent' }) }
 
       it 'calculates difference correctly' do
         expect(form.send(:lent_difference)).to eq(300)
@@ -625,7 +626,7 @@ RSpec.describe DebtForm, type: :model do
 
     describe '#reimbursed_difference' do
       let(:existing_debt) { create(:debt, user: user, name: 'Test', total_reimbursed: 200, direction: 'lent') }
-      let(:form) { described_class.new(user, { id: existing_debt.id, contact_name: 'Test', total_lent: 1000, total_reimbursed: 500, direction: 'lent' }) }
+      let(:form) { described_class.new(space, { id: existing_debt.id, contact_name: 'Test', total_lent: 1000, total_reimbursed: 500, direction: 'lent' }) }
 
       it 'calculates difference correctly' do
         expect(form.send(:reimbursed_difference)).to eq(300)

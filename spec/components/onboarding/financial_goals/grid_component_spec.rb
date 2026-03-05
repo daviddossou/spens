@@ -6,8 +6,8 @@ RSpec.describe Onboarding::FinancialGoals::GridComponent, type: :component do
   let(:form) { mock_form_builder }
 
   it 'renders all goal cards' do
-    user = User.new(financial_goals: [])
-    form_object = Onboarding::FinancialGoalForm.new(user)
+    space = Space.new(financial_goals: [])
+    form_object = Onboarding::FinancialGoalForm.new(space)
 
     rendered = render_inline(described_class.new(form_builder: form, model: form_object))
 
@@ -16,8 +16,8 @@ RSpec.describe Onboarding::FinancialGoals::GridComponent, type: :component do
   end
 
   it 'marks selected goals as selected' do
-    user = User.new(financial_goals: [ 'save_for_emergency' ])
-    form_object = Onboarding::FinancialGoalForm.new(user)
+    space = Space.new(financial_goals: [ 'save_for_emergency' ])
+    form_object = Onboarding::FinancialGoalForm.new(space)
 
     rendered = render_inline(described_class.new(form_builder: form, model: form_object))
 

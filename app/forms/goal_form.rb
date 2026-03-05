@@ -3,7 +3,7 @@
 class GoalForm < BaseForm
   ##
   # Attributes
-  attr_accessor :user, :account
+  attr_accessor :space, :account
 
   attribute :account_name, :string
   attribute :current_balance, :decimal
@@ -26,8 +26,8 @@ class GoalForm < BaseForm
 
   ##
   # Instance Methods
-  def initialize(user, payload = {})
-    @user = user
+  def initialize(space, payload = {})
+    @space = space
     super(
       account_name: payload[:account_name],
       current_balance: payload[:current_balance],
@@ -59,11 +59,11 @@ class GoalForm < BaseForm
   end
 
   def account_suggestions
-    AccountSuggestionsService.new(user).all_with_balances
+    AccountSuggestionsService.new(space).all_with_balances
   end
 
   def default_account_suggestions
-    AccountSuggestionsService.new(user).defaults_with_balances
+    AccountSuggestionsService.new(space).defaults_with_balances
   end
 
   private
@@ -76,7 +76,7 @@ class GoalForm < BaseForm
   end
 
   def find_or_create_account
-    FindOrCreateAccountService.new(user, account_name).call
+    FindOrCreateAccountService.new(space, account_name).call
   end
 
   def balance_changed?(account)
@@ -100,11 +100,11 @@ class GoalForm < BaseForm
 
   def create_adjustment_transaction(account, amount, type, kind)
     type_name = I18n.t("transactions.transfer.type_name.#{kind}")
-    
+
     # For transfer_in, the money comes from an external source to this account
     # For transfer_out, the money goes from this account to an external destination
     adjustment_account_name = "Balance Adjustment"
-    
+
     params = {
       account_id: account.id,
       amount: amount,
@@ -112,7 +112,7 @@ class GoalForm < BaseForm
       transaction_type_name: type_name,
       kind: kind
     }
-    
+
     # Add the appropriate account names for the transfer direction
     if kind == TransactionType::KIND_TRANSFER_IN
       params[:to_account_name] = account.name
@@ -122,7 +122,7 @@ class GoalForm < BaseForm
       params[:to_account_name] = adjustment_account_name
     end
 
-    transaction_form = TransactionForm.new(user, params)
+    transaction_form = TransactionForm.new(space, params)
     transaction_form.submit
 
     raise StandardError, transaction_form.errors.full_messages.join(", ") unless transaction_form.errors.empty?

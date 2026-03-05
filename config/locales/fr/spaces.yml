@@ -1,0 +1,37 @@
+fr:
+  spaces:
+    default_name: "Personnel"
+    form:
+      name_label: "Nom de l'Espace"
+      name_placeholder: "ex. Business, Famille, Projet..."
+      country_label: "Pays"
+      currency_label: "Devise"
+    index:
+      title: "Espaces"
+      subtitle: "Gérez vos espaces"
+      active: "Actif"
+      switch: "Basculer"
+      no_spaces_title: "Aucun espace"
+      no_spaces_message: "Créez un espace pour commencer à suivre vos finances."
+      add_new_space: "Nouvel Espace"
+    new:
+      title: "Nouvel Espace"
+      subtitle: "Créer un nouvel espace"
+      submit: "Créer l'Espace"
+    create:
+      success: "Espace créé ! Configurons-le."
+    edit:
+      title: "Modifier l'Espace"
+      subtitle: "Modifier votre espace"
+      submit: "Enregistrer"
+      delete_space: "Supprimer cet espace"
+      confirm_delete: "Êtes-vous sûr de vouloir supprimer \"%{name}\" ? Toutes les données de cet espace seront définitivement perdues."
+    update:
+      success: "Espace mis à jour."
+    destroy:
+      success: "Espace supprimé."
+      last_space: "Vous ne pouvez pas supprimer votre dernier espace."
+    selections:
+      create:
+        success: "Basculé vers %{name}."
+        not_found: "Espace introuvable."

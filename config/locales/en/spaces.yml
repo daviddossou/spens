@@ -1,0 +1,37 @@
+en:
+  spaces:
+    default_name: "Personal"
+    form:
+      name_label: "Space Name"
+      name_placeholder: "e.g. Business, Family, Side Hustle..."
+      country_label: "Country"
+      currency_label: "Currency"
+    index:
+      title: "Spaces"
+      subtitle: "Manage your spaces"
+      active: "Active"
+      switch: "Switch"
+      no_spaces_title: "No spaces yet"
+      no_spaces_message: "Create a space to start tracking your finances."
+      add_new_space: "New Space"
+    new:
+      title: "New Space"
+      subtitle: "Create a new space"
+      submit: "Create Space"
+    create:
+      success: "Space created! Let's set it up."
+    edit:
+      title: "Edit Space"
+      subtitle: "Edit your space"
+      submit: "Save Changes"
+      delete_space: "Delete this space"
+      confirm_delete: "Are you sure you want to delete \"%{name}\"? All data in this space will be permanently lost."
+    update:
+      success: "Space updated."
+    destroy:
+      success: "Space deleted."
+      last_space: "You can't delete your last space."
+    selections:
+      create:
+        success: "Switched to %{name}."
+        not_found: "Space not found."

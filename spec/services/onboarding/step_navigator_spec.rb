@@ -4,7 +4,8 @@ require 'rails_helper'
 
 RSpec.describe Onboarding::StepNavigator do
   let(:user) { create(:user, onboarding_current_step: :onboarding_financial_goal) }
-  let(:navigator) { described_class.new(user) }
+  let(:space) { user.spaces.first }
+  let(:navigator) { described_class.new(space) }
 
   describe 'constants' do
     it 'defines STEP_PATHS' do
@@ -30,13 +31,13 @@ RSpec.describe Onboarding::StepNavigator do
   end
 
   describe '#initialize' do
-    it 'accepts a user parameter' do
-      expect { described_class.new(user) }.not_to raise_error
+    it 'accepts a space parameter' do
+      expect { described_class.new(space) }.not_to raise_error
     end
 
-    it 'sets the user instance variable' do
-      navigator = described_class.new(user)
-      expect(navigator.instance_variable_get(:@user)).to eq(user)
+    it 'sets the space instance variable' do
+      navigator = described_class.new(space)
+      expect(navigator.instance_variable_get(:@space)).to eq(space)
     end
   end
 
@@ -75,7 +76,7 @@ RSpec.describe Onboarding::StepNavigator do
 
     context 'when current step is not in STEP_PATHS' do
       before do
-        allow(user).to receive(:onboarding_current_step).and_return('unknown_step')
+        allow(space).to receive(:onboarding_current_step).and_return('unknown_step')
       end
 
       it 'returns financial goals path as fallback' do
@@ -85,7 +86,7 @@ RSpec.describe Onboarding::StepNavigator do
 
     context 'when current step is nil' do
       before do
-        allow(user).to receive(:onboarding_current_step).and_return(nil)
+        allow(space).to receive(:onboarding_current_step).and_return(nil)
       end
 
       it 'returns onboarding_financial_goals_path path as fallback' do
@@ -109,26 +110,26 @@ RSpec.describe Onboarding::StepNavigator do
 
   describe 'onboarding flow step mapping' do
     it 'maps financial goals step to financial goals path' do
-      user.update!(onboarding_current_step: :onboarding_financial_goal)
-      navigator = described_class.new(user)
+      space.update!(onboarding_current_step: :onboarding_financial_goal)
+      navigator = described_class.new(space)
       expect(navigator.current_step_path).to include('financial_goals')
     end
 
     it 'maps profile setup step to profile setup path' do
-      user.update!(onboarding_current_step: :onboarding_profile_setup)
-      navigator = described_class.new(user)
+      space.update!(onboarding_current_step: :onboarding_profile_setup)
+      navigator = described_class.new(space)
       expect(navigator.current_step_path).to include('profile_setups')
     end
 
     it 'maps account setup step to account setup path' do
-      user.update!(onboarding_current_step: :onboarding_account_setup, country: 'US')
-      navigator = described_class.new(user)
+      space.update!(onboarding_current_step: :onboarding_account_setup, country: 'US')
+      navigator = described_class.new(space)
       expect(navigator.current_step_path).to include('account_setups')
     end
 
     it 'maps completed step to dashboard path' do
-      user.update!(onboarding_current_step: :onboarding_completed, country: 'US')
-      navigator = described_class.new(user)
+      space.update!(onboarding_current_step: :onboarding_completed, country: 'US')
+      navigator = described_class.new(space)
       expect(navigator.current_step_path).to include('dashboard')
     end
   end

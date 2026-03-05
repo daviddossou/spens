@@ -9,7 +9,7 @@ module OnboardingRedirection
 
   def redirect_to_onboarding
     return unless user_signed_in?
-    return if current_user.onboarding_completed?
+    return if current_space&.onboarding_completed?
     return if onboarding_controller?
 
     redirect_to onboarding_path
@@ -22,6 +22,7 @@ module OnboardingRedirection
 
   def onboarding_controller?
     controller_name == "onboarding" || controller_name == "financial_goals" ||
-    controller_name == "profile_setups" || controller_name == "account_setups"
+    controller_name == "profile_setups" || controller_name == "account_setups" ||
+    controller_name == "spaces"
   end
 end

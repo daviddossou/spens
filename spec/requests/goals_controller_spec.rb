@@ -6,6 +6,7 @@ RSpec.describe GoalsController, type: :request do
   include Devise::Test::IntegrationHelpers
 
   let(:user) { create(:user) }
+  let(:space) { user.spaces.first }
   let(:account) { create(:account, user: user, name: "Savings", balance: 1000.0, saving_goal: 5000.0) }
 
   before do
@@ -172,7 +173,7 @@ RSpec.describe GoalsController, type: :request do
     context "with valid parameters" do
       it "creates a new account or updates existing one" do
         post goals_path, params: { goal: valid_attributes }
-        account = Account.find_by(name: 'New Savings Account', user: user)
+        account = Account.find_by(name: 'New Savings Account', space: space)
         expect(response).to redirect_to("#{goal_path(id: account.id)}?format=html")
       end
 
@@ -190,13 +191,13 @@ RSpec.describe GoalsController, type: :request do
 
         it "sets the correct saving goal" do
           post goals_path, params: { goal: valid_attributes }
-          account = Account.find_by(name: 'New Savings Account', user: user)
+          account = Account.find_by(name: 'New Savings Account', space: space)
           expect(account.saving_goal).to eq(2000.00)
         end
 
         it "adjusts the balance if different from current balance" do
           post goals_path, params: { goal: valid_attributes }
-          account = Account.find_by(name: 'New Savings Account', user: user)
+          account = Account.find_by(name: 'New Savings Account', space: space)
           expect(account.balance).to eq(500.00)
         end
 
@@ -426,7 +427,7 @@ RSpec.describe GoalsController, type: :request do
       it "handles large goal values" do
         attributes = base_attributes.merge(current_balance: 1_000_000.00, saving_goal: 999_999_999.99)
         post goals_path, params: { goal: attributes }
-        account = Account.find_by(name: 'Edge Case Account', user: user)
+        account = Account.find_by(name: 'Edge Case Account', space: space)
         expect(response).to redirect_to("#{goal_path(id: account.id)}?format=html")
         expect(flash[:notice]).to be_present
       end
@@ -436,7 +437,7 @@ RSpec.describe GoalsController, type: :request do
       it "handles special characters" do
         attributes = base_attributes.merge(account_name: "Spëçîål Sävings €$£ 🎉")
         post goals_path, params: { goal: attributes }
-        account = Account.find_by(name: "Spëçîål Sävings €$£ 🎉", user: user)
+        account = Account.find_by(name: "Spëçîål Sävings €$£ 🎉", space: space)
         expect(response).to redirect_to("#{goal_path(id: account.id)}?format=html")
         expect(flash[:notice]).to be_present
       end
@@ -446,7 +447,7 @@ RSpec.describe GoalsController, type: :request do
       it "handles many decimal places" do
         attributes = base_attributes.merge(current_balance: 100.123456, saving_goal: 500.789012)
         post goals_path, params: { goal: attributes }
-        account = Account.find_by(name: 'Edge Case Account', user: user)
+        account = Account.find_by(name: 'Edge Case Account', space: space)
         expect(response).to redirect_to("#{goal_path(id: account.id)}?format=html")
         expect(flash[:notice]).to be_present
       end

@@ -6,6 +6,7 @@ RSpec.describe 'Onboarding::FinancialGoalsController', type: :request do
   include Devise::Test::IntegrationHelpers
 
   let(:user) { create(:user, onboarding_current_step: :onboarding_financial_goal) }
+  let(:space) { user.spaces.first }
   let(:completed_user) { create(:user, onboarding_current_step: :onboarding_completed, country: 'US') }
 
   describe 'before_actions' do
@@ -19,7 +20,7 @@ RSpec.describe 'Onboarding::FinancialGoalsController', type: :request do
     context 'when user has completed onboarding' do
       before do
         # Make sure user is fully completed by setting all required fields
-        completed_user.update!(country: 'US', currency: 'USD')
+        completed_user.spaces.first.update!(country: 'US', currency: 'USD')
         sign_in completed_user, scope: :user
       end
 
@@ -65,13 +66,13 @@ RSpec.describe 'Onboarding::FinancialGoalsController', type: :request do
       it 'updates user financial goals' do
         patch onboarding_financial_goals_path, params: valid_params
 
-        expect(user.reload.financial_goals).to contain_exactly('save_for_retirement', 'save_for_emergency')
+        expect(space.reload.financial_goals).to contain_exactly('save_for_retirement', 'save_for_emergency')
       end
 
       it 'advances onboarding step' do
         patch onboarding_financial_goals_path, params: valid_params
 
-        expect(user.reload.onboarding_current_step).to eq('onboarding_profile_setup')
+        expect(space.reload.onboarding_current_step).to eq('onboarding_profile_setup')
       end
 
       it 'redirects to next onboarding step' do
@@ -91,17 +92,17 @@ RSpec.describe 'Onboarding::FinancialGoalsController', type: :request do
       end
 
       it 'does not update user financial goals' do
-        original_goals = user.financial_goals
+        original_goals = space.financial_goals
         patch onboarding_financial_goals_path, params: invalid_params
 
-        expect(user.reload.financial_goals).to eq(original_goals)
+        expect(space.reload.financial_goals).to eq(original_goals)
       end
 
       it 'does not advance onboarding step' do
-        original_step = user.onboarding_current_step
+        original_step = space.onboarding_current_step
         patch onboarding_financial_goals_path, params: invalid_params
 
-        expect(user.reload.onboarding_current_step).to eq(original_step)
+        expect(space.reload.onboarding_current_step).to eq(original_step)
       end
 
       it 'renders the form again with errors' do
@@ -122,10 +123,10 @@ RSpec.describe 'Onboarding::FinancialGoalsController', type: :request do
       end
 
       it 'does not update user financial goals' do
-        original_goals = user.financial_goals
+        original_goals = space.financial_goals
         patch onboarding_financial_goals_path, params: disallowed_params
 
-        expect(user.reload.financial_goals).to eq(original_goals)
+        expect(space.reload.financial_goals).to eq(original_goals)
       end
 
       it 'renders the form again with errors' do
@@ -163,10 +164,10 @@ RSpec.describe 'Onboarding::FinancialGoalsController', type: :request do
       end
 
       it 'does not update user data' do
-        original_goals = user.financial_goals
+        original_goals = space.financial_goals
         patch onboarding_financial_goals_path, params: valid_params
 
-        expect(user.reload.financial_goals).to eq(original_goals)
+        expect(space.reload.financial_goals).to eq(original_goals)
       end
     end
   end

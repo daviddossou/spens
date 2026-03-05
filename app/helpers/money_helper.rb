@@ -3,7 +3,7 @@ module MoneyHelper
   def format_money(amount, currency_code = nil)
     return "0" if amount.nil? || amount.zero?
 
-    currency_code ||= current_user&.currency || "XOF"
+    currency_code ||= current_space&.currency || "XOF"
     formatted_number = number_with_delimiter(amount.abs.round(2), delimiter: ",", precision: 0)
     currency_symbol = get_currency_symbol(currency_code)
 
@@ -17,7 +17,7 @@ module MoneyHelper
   def smart_format_money(amount, currency_code = nil, threshold: 1_000, sign: :auto)
     return format_money(0, currency_code) if amount.nil? || amount.zero?
 
-    currency_code ||= current_user&.currency || "XOF"
+    currency_code ||= current_space&.currency || "XOF"
     negative = amount.negative?
     abs_amount = amount.abs.round(2)
     currency_symbol = get_currency_symbol(currency_code)

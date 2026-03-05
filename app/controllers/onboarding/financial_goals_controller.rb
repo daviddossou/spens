@@ -21,7 +21,7 @@ class Onboarding::FinancialGoalsController < OnboardingController
   private
 
   def build_form(payload = {})
-    @form ||= Onboarding::FinancialGoalForm.new(current_user, payload)
+    @form ||= Onboarding::FinancialGoalForm.new(current_space, payload)
   end
 
   def financial_goals_params
@@ -31,7 +31,7 @@ class Onboarding::FinancialGoalsController < OnboardingController
   end
 
   def next_step_path
-    current_user.reload
-    Onboarding::StepNavigator.new(current_user).current_step_path
+    current_space.reload
+    Onboarding::StepNavigator.new(current_space).current_step_path
   end
 end

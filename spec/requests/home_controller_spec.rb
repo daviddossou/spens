@@ -6,6 +6,7 @@ RSpec.describe HomeController, type: :request do
   include Devise::Test::IntegrationHelpers
 
   let(:user) { create(:user) }
+  let(:space) { user.spaces.first }
 
   before do
     sign_in user, scope: :user
@@ -158,7 +159,7 @@ RSpec.describe HomeController, type: :request do
       context "currency" do
         it "assigns the user currency" do
           get dashboard_path
-          expect(assigns(:currency)).to eq(user.currency)
+          expect(assigns(:currency)).to eq(space.currency)
         end
       end
     end
@@ -171,10 +172,10 @@ RSpec.describe HomeController, type: :request do
 
       it "renders all four stat card labels" do
         get dashboard_path
-        expect(response.body).to include(I18n.t("home.dashboard.stats.total_balance"))
-        expect(response.body).to include(I18n.t("home.dashboard.stats.saved_this_month"))
-        expect(response.body).to include(I18n.t("home.dashboard.stats.owed_to_me"))
-        expect(response.body).to include(I18n.t("home.dashboard.stats.i_owe"))
+        expect(response.body).to include(I18n.t("home.show.stats.total_balance"))
+        expect(response.body).to include(I18n.t("home.show.stats.saved_this_month"))
+        expect(response.body).to include(I18n.t("home.show.stats.owed_to_me"))
+        expect(response.body).to include(I18n.t("home.show.stats.i_owe"))
       end
 
       it "does not render the old transactions title header" do

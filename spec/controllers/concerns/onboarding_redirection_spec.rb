@@ -24,6 +24,7 @@ RSpec.describe OnboardingRedirection, type: :controller do
   end
 
   let(:user) { create(:user) }
+  let(:space) { user.spaces.first }
 
   describe '#redirect_to_onboarding' do
     context 'when user is not signed in' do
@@ -41,7 +42,7 @@ RSpec.describe OnboardingRedirection, type: :controller do
       end
 
       context 'when onboarding is completed' do
-        before { allow(user).to receive(:onboarding_completed?).and_return(true) }
+        before { allow(controller).to receive(:current_space).and_return(space) }
 
         it 'does not redirect to onboarding' do
           get :index
@@ -51,7 +52,8 @@ RSpec.describe OnboardingRedirection, type: :controller do
       end
 
       context 'when onboarding is not completed' do
-        before { allow(user).to receive(:onboarding_completed?).and_return(false) }
+        let(:incomplete_space) { create(:space, user: user, name: 'Incomplete', onboarding_current_step: :onboarding_financial_goal) }
+        before { allow(controller).to receive(:current_space).and_return(incomplete_space) }
 
         it 'redirects to onboarding path' do
           get :index

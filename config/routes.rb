@@ -26,7 +26,7 @@ Rails.application.routes.draw do
 
     # Main application routes
     root "home#index"
-    get "dashboard", to: "home#dashboard"
+    get "dashboard", to: "home#show"
 
     # Transactions
     resources :transactions, only: [ :new, :create, :show ]
@@ -39,6 +39,11 @@ Rails.application.routes.draw do
 
     # Accounts
     resources :accounts, only: [ :index, :show, :new, :create, :edit, :update, :destroy ]
+
+    # Spaces
+    resources :spaces, only: [ :index, :new, :create, :edit, :update, :destroy ] do
+      resource :selection, only: :create, module: :spaces
+    end
 
     # Analytics
     get "analytics", to: "analytics#index", as: :analytics

@@ -8,16 +8,16 @@
 #  saving_goal :float            default(0.0)
 #  created_at  :datetime         not null
 #  updated_at  :datetime         not null
-#  user_id     :uuid             not null, indexed
+#  space_id    :uuid             not null, indexed
 #
 # Indexes
 #
-#  index_accounts_on_lower_name_and_user_id  (lower((name)::text), user_id) UNIQUE
-#  index_accounts_on_user_id                 (user_id)
+#  index_accounts_on_lower_name_and_space_id  (lower((name)::text), space_id) UNIQUE
+#  index_accounts_on_space_id                 (space_id)
 #
 # Foreign Keys
 #
-#  fk_rails_...  (user_id => users.id)
+#  fk_rails_...  (space_id => spaces.id)
 #
 require 'rails_helper'
 
@@ -31,7 +31,7 @@ RSpec.describe Account, type: :model do
   end
 
   describe 'associations' do
-    it { is_expected.to belong_to(:user) }
+    it { is_expected.to belong_to(:space) }
     it { is_expected.to have_many(:transactions).dependent(:destroy) }
   end
 
@@ -42,16 +42,16 @@ RSpec.describe Account, type: :model do
     describe 'name uniqueness' do
       subject(:account) { create(:account) }
 
-      it { is_expected.to validate_uniqueness_of(:name).scoped_to(:user_id).case_insensitive }
+      it { is_expected.to validate_uniqueness_of(:name).scoped_to(:space_id).case_insensitive }
 
-      it 'allows same name for different users' do
-        user2 = create(:user)
-        account2 = build(:account, name: account.name, user: user2)
+      it 'allows same name for different spaces' do
+        space2 = create(:space)
+        account2 = build(:account, name: account.name, space: space2)
         expect(account2).to be_valid
       end
 
-      it 'prevents duplicate names for same user (case insensitive)' do
-        account2 = build(:account, name: account.name.upcase, user: account.user)
+      it 'prevents duplicate names for same space (case insensitive)' do
+        account2 = build(:account, name: account.name.upcase, space: account.space)
         expect(account2).not_to be_valid
         expect(account2.errors[:name]).to include('has already been taken')
       end
@@ -107,13 +107,13 @@ RSpec.describe Account, type: :model do
 
   describe 'database constraints' do
     it 'has a default balance of 0.0' do
-      account = described_class.new(name: 'Test', user: create(:user))
+      account = described_class.new(name: 'Test', space: create(:space))
       account.save!
       expect(account.balance).to eq(0.0)
     end
 
     it 'has a default saving_goal of 0.0' do
-      account = described_class.new(name: 'Test', user: create(:user))
+      account = described_class.new(name: 'Test', space: create(:space))
       account.save!
       expect(account.saving_goal).to eq(0.0)
     end
@@ -122,9 +122,10 @@ RSpec.describe Account, type: :model do
   describe 'scopes' do
     describe '.with_saving_goals' do
       let(:user) { create(:user) }
-      let!(:account_with_goal) { create(:account, user: user, saving_goal: 5000.0) }
-      let!(:account_without_goal) { create(:account, user: user, saving_goal: 0.0) }
-      let!(:another_account_with_goal) { create(:account, user: user, saving_goal: 1000.0) }
+      let(:space) { user.spaces.first }
+      let!(:account_with_goal) { create(:account, space: space, saving_goal: 5000.0) }
+      let!(:account_without_goal) { create(:account, space: space, saving_goal: 0.0) }
+      let!(:another_account_with_goal) { create(:account, space: space, saving_goal: 1000.0) }
 
       it 'returns accounts with non-zero saving goals' do
         expect(described_class.with_saving_goals).to include(account_with_goal, another_account_with_goal)

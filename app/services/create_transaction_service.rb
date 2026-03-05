@@ -1,13 +1,13 @@
 # frozen_string_literal: true
 
 class CreateTransactionService
-  def initialize(user:, **attributes)
-    @user = user
+  def initialize(space:, **attributes)
+    @space = space
     @attributes = attributes
   end
 
   def call
-    transaction = @user.transactions.new(
+    transaction = @space.transactions.new(
       account: @attributes[:account],
       transaction_type: @attributes[:transaction_type],
       amount: normalized_amount,

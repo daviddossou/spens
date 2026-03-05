@@ -12,10 +12,10 @@ class OnboardingController < ApplicationController
   private
 
   def redirect_if_completed
-    redirect_to dashboard_path if current_user.onboarding_completed?
+    redirect_to dashboard_path if current_space&.onboarding_completed?
   end
 
   def current_onboarding_step_path
-    Onboarding::StepNavigator.new(current_user).current_step_path
+    Onboarding::StepNavigator.new(current_space).current_step_path
   end
 end

@@ -3,7 +3,7 @@
 require 'rails_helper'
 
 RSpec.describe Onboarding::ProfileSetups::SelectFieldComponent, type: :component do
-  let(:form) { mock_form_builder }
+  let(:form) { mock_form_builder(Space.new) }
 
   describe 'country field' do
     it 'renders country select with searchable option' do

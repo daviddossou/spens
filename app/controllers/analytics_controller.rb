@@ -4,7 +4,7 @@ class AnalyticsController < ApplicationController
   PERIODS = %w[custom today yesterday this_week this_month last_3_months last_6_months last_12_months all_time].freeze
 
   def index
-    @currency = current_user.currency
+    @currency = current_space.currency
     @period = params[:period].presence_in(PERIODS) || "this_month"
     @date_range = compute_date_range
 
@@ -45,7 +45,9 @@ class AnalyticsController < ApplicationController
   # ─── Income / Expense tab ───────────────────────────────────────────
 
   def load_income_expense_data
-    transactions = scoped_transactions
+    # Only consider transactions linked to an account (actual money movement)
+    # and exclude internal transfers which are not income or expense
+    transactions = scoped_transactions.where.not(account_id: nil)
 
     # Include debt_in (repayment received) as income, debt_out (repayment given) as expense
     income_tx = transactions.joins(:transaction_type).where(transaction_types: { kind: %w[income debt_in] })
@@ -82,8 +84,8 @@ class AnalyticsController < ApplicationController
   # ─── Debts tab ──────────────────────────────────────────────────────
 
   def load_debts_data
-    @debts_lent = current_user.debts.lent
-    @debts_borrowed = current_user.debts.borrowed
+    @debts_lent = current_space.debts.lent
+    @debts_borrowed = current_space.debts.borrowed
 
     @total_owed_to_me = @debts_lent.ongoing.sum("total_lent - total_reimbursed")
     @total_i_owe = @debts_borrowed.ongoing.sum("total_lent - total_reimbursed")
@@ -109,14 +111,14 @@ class AnalyticsController < ApplicationController
     @debt_in_trend = group_by_period(debt_in_tx).transform_values(&:abs)
     @debt_out_trend = group_by_period(debt_out_tx).transform_values(&:abs)
 
-    @total_debts_count = current_user.debts.ongoing.count
-    @paid_debts_count = current_user.debts.paid.count
+    @total_debts_count = current_space.debts.ongoing.count
+    @paid_debts_count = current_space.debts.paid.count
   end
 
   # ─── Savings tab ────────────────────────────────────────────────────
 
   def load_savings_data
-    @accounts = current_user.accounts
+    @accounts = current_space.accounts
     @total_balance = @accounts.sum(:balance)
 
     # Account balance distribution (doughnut)
@@ -148,7 +150,7 @@ class AnalyticsController < ApplicationController
   # ─── Shared helpers ─────────────────────────────────────────────────
 
   def scoped_transactions
-    base = current_user.transactions
+    base = current_space.transactions
     @date_range ? base.where(transaction_date: @date_range) : base
   end
 

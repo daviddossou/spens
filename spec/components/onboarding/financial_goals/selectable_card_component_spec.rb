@@ -7,26 +7,26 @@ RSpec.describe Onboarding::FinancialGoals::SelectableCardComponent, type: :compo
   let(:form) { mock_form_builder }
 
   it 'marks card selected when goal included' do
-    model = User.new(financial_goals: [ 'build_wealth' ])
+    model = Space.new(financial_goals: [ 'build_wealth' ])
     rendered = render_inline(described_class.new(item: goal, form: form, model: model))
     expect(rendered.css('.card.selected')).to be_present
   end
 
   it 'is not selected when goal absent' do
-    model = User.new(financial_goals: [])
+    model = Space.new(financial_goals: [])
     rendered = render_inline(described_class.new(item: goal, form: form, model: model))
     expect(rendered.css('.card.selected')).to be_empty
   end
 
   it 'renders goal name & description' do
-    model = User.new(financial_goals: [])
+    model = Space.new(financial_goals: [])
     rendered = render_inline(described_class.new(item: goal, form: form, model: model))
     expect(rendered.to_html).to include('Build Wealth')
     expect(rendered.to_html).to include('Increase net worth')
   end
 
   it 'inherits Stimulus controller from parent component' do
-    model = User.new(financial_goals: [])
+    model = Space.new(financial_goals: [])
     rendered = render_inline(described_class.new(item: goal, form: form, model: model))
 
     root_element = rendered.css('div').first
@@ -35,7 +35,7 @@ RSpec.describe Onboarding::FinancialGoals::SelectableCardComponent, type: :compo
   end
 
   it 'adds checkbox target to form checkbox' do
-    model = User.new(financial_goals: [])
+    model = Space.new(financial_goals: [])
     rendered = render_inline(described_class.new(item: goal, form: form, model: model))
 
     checkbox = rendered.css('input[type="checkbox"]').first

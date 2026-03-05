@@ -6,6 +6,7 @@ RSpec.describe 'Onboarding::AccountSetupsController', type: :request do
   include Devise::Test::IntegrationHelpers
 
   let(:user) { create(:user, onboarding_current_step: 'onboarding_account_setup', country: 'US', currency: 'USD') }
+  let(:space) { user.spaces.first }
   let(:completed_user) { create(:user, onboarding_current_step: 'onboarding_completed', country: 'US', currency: 'USD') }
 
   describe 'GET /onboarding/account_setups' do
@@ -103,8 +104,7 @@ RSpec.describe 'Onboarding::AccountSetupsController', type: :request do
       it 'completes the onboarding process' do
         patch onboarding_account_setups_path, params: valid_params
 
-        user.reload
-        expect(user.onboarding_current_step).to eq('onboarding_completed')
+        expect(space.reload.onboarding_current_step).to eq('onboarding_completed')
       end
 
       it 'redirects to the dashboard or home' do
@@ -117,8 +117,8 @@ RSpec.describe 'Onboarding::AccountSetupsController', type: :request do
       it 'creates accounts with correct balances' do
         patch onboarding_account_setups_path, params: valid_params
 
-        checking = Account.find_by(name: 'Checking Account', user: user)
-        savings = Account.find_by(name: 'Savings Account', user: user)
+        checking = Account.find_by(name: 'Checking Account', space: space)
+        savings = Account.find_by(name: 'Savings Account', space: space)
 
         expect(checking.balance).to eq(1000.00)
         expect(savings.balance).to eq(5000.00)
@@ -152,7 +152,7 @@ RSpec.describe 'Onboarding::AccountSetupsController', type: :request do
       it 'completes onboarding with single account' do
         patch onboarding_account_setups_path, params: single_transaction_params
 
-        expect(user.reload.onboarding_current_step).to eq('onboarding_completed')
+        expect(space.reload.onboarding_current_step).to eq('onboarding_completed')
       end
     end
 
@@ -172,8 +172,7 @@ RSpec.describe 'Onboarding::AccountSetupsController', type: :request do
       it 'does not advance onboarding step' do
         patch onboarding_account_setups_path, params: invalid_params
 
-        user.reload
-        expect(user.onboarding_current_step).to eq('onboarding_account_setup')
+        expect(space.reload.onboarding_current_step).to eq('onboarding_account_setup')
       end
 
       it 'renders show template with unprocessable_entity status' do
@@ -213,7 +212,7 @@ RSpec.describe 'Onboarding::AccountSetupsController', type: :request do
       it 'does not advance onboarding' do
         patch onboarding_account_setups_path, params: empty_params
 
-        expect(user.reload.onboarding_current_step).to eq('onboarding_account_setup')
+        expect(space.reload.onboarding_current_step).to eq('onboarding_account_setup')
       end
     end
 

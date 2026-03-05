@@ -3,11 +3,12 @@
 class Navigation::HeaderComponent < ViewComponent::Base
   include UserHelper
 
-  attr_reader :page_title, :current_user, :params
+  attr_reader :page_title, :current_user, :current_space, :params
 
-  def initialize(page_title: nil, current_user:, params: {})
+  def initialize(page_title: nil, current_user:, current_space: nil, params: {})
     @page_title = page_title
     @current_user = current_user
+    @current_space = current_space
     @params = params
   end
 
@@ -36,5 +37,13 @@ class Navigation::HeaderComponent < ViewComponent::Base
 
   def analytics_path
     helpers.analytics_path
+  end
+
+  def spaces_path
+    helpers.spaces_path
+  end
+
+  def space_name
+    current_space&.name
   end
 end

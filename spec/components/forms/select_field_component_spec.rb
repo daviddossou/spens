@@ -3,7 +3,7 @@
 require 'rails_helper'
 
 RSpec.describe Forms::SelectFieldComponent, type: :component do
-  let(:form) { mock_form_builder }
+  let(:form) { mock_form_builder(Space.new) }
   let(:field) { :country }
   let(:options) { { 'US' => 'United States', 'CA' => 'Canada', 'MX' => 'Mexico' } }
   let(:component) { described_class.new(form: form, field: field, options: options) }

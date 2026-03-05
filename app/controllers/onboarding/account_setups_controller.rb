@@ -25,7 +25,7 @@ class Onboarding::AccountSetupsController < OnboardingController
   private
 
   def build_form(payload = {})
-    @form ||= Onboarding::AccountSetupForm.new(current_user, payload)
+    @form ||= Onboarding::AccountSetupForm.new(current_space, payload)
   end
 
   def account_setup_params
@@ -41,7 +41,7 @@ class Onboarding::AccountSetupsController < OnboardingController
   end
 
   def next_step_path
-    current_user.reload
-    Onboarding::StepNavigator.new(current_user).current_step_path
+    current_space.reload
+    Onboarding::StepNavigator.new(current_space).current_step_path
   end
 end

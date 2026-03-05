@@ -11,26 +11,37 @@
 #  total_reimbursed :float            default(0.0), not null
 #  created_at       :datetime         not null
 #  updated_at       :datetime         not null
-#  user_id          :uuid             not null, indexed
+#  space_id         :uuid             not null, indexed
 #
 # Indexes
 #
-#  index_debts_on_status   (status)
-#  index_debts_on_user_id  (user_id)
+#  index_debts_on_space_id  (space_id)
+#  index_debts_on_status    (status)
 #
 # Foreign Keys
 #
-#  fk_rails_...  (user_id => users.id)
+#  fk_rails_...  (space_id => spaces.id)
 #
 FactoryBot.define do
   factory :debt do
-    association :user
+    transient do
+      user { nil }
+    end
+
     sequence(:name) { |n| "Contact #{n}" }
     note { "Test note" }
     status { "ongoing" }
     direction { "lent" }
     total_lent { 1000.0 }
     total_reimbursed { 0.0 }
+
+    space do
+      if user
+        user.spaces.first || association(:space, user: user)
+      else
+        association(:space)
+      end
+    end
 
     trait :borrowed do
       direction { "borrowed" }

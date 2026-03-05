@@ -2,36 +2,29 @@
 #
 # Table name: users
 #
-#  id                      :uuid             not null, primary key
-#  country                 :string           indexed
-#  currency                :string           default("XOF"), indexed
-#  current_sign_in_at      :datetime
-#  current_sign_in_ip      :string
-#  email                   :string           default(""), not null, indexed
-#  encrypted_password      :string           default(""), not null
-#  financial_goals         :jsonb
-#  first_name              :string
-#  income_frequency        :string
-#  last_name               :string
-#  last_sign_in_at         :datetime
-#  last_sign_in_ip         :string
-#  main_income_source      :string
-#  onboarding_current_step :string           indexed
-#  phone_number            :string
-#  remember_created_at     :datetime
-#  reset_password_sent_at  :datetime
-#  reset_password_token    :string           indexed
-#  sign_in_count           :integer          default(0), not null
-#  created_at              :datetime         not null
-#  updated_at              :datetime         not null
+#  id                     :uuid             not null, primary key
+#  current_sign_in_at     :datetime
+#  current_sign_in_ip     :string
+#  email                  :string           default(""), not null, indexed
+#  encrypted_password     :string           default(""), not null
+#  first_name             :string
+#  last_name              :string
+#  last_sign_in_at        :datetime
+#  last_sign_in_ip        :string
+#  otp_code               :string
+#  otp_sent_at            :datetime
+#  phone_number           :string
+#  remember_created_at    :datetime
+#  reset_password_sent_at :datetime
+#  reset_password_token   :string           indexed
+#  sign_in_count          :integer          default(0), not null
+#  created_at             :datetime         not null
+#  updated_at             :datetime         not null
 #
 # Indexes
 #
-#  index_users_on_country                  (country)
-#  index_users_on_currency                 (currency)
-#  index_users_on_email                    (email) UNIQUE
-#  index_users_on_onboarding_current_step  (onboarding_current_step)
-#  index_users_on_reset_password_token     (reset_password_token) UNIQUE
+#  index_users_on_email                 (email) UNIQUE
+#  index_users_on_reset_password_token  (reset_password_token) UNIQUE
 #
 require 'rails_helper'
 
@@ -158,53 +151,24 @@ RSpec.describe User, type: :model do
     end
 
     describe "currency validation" do
-      it "allows a permitted currency" do
-        user.currency = User::CURRENCIES.first
-        expect(user).to be_valid
-      end
-
-      it "rejects an unsupported currency" do
-        user.currency = "ZZZ"
-        expect(user).not_to be_valid
-        expect(user.errors[:currency]).to include("is not included in the list")
-      end
+      # currency has moved to Space model
     end
 
     describe "income_frequency validation" do
-      it "allows blank" do
-        user.income_frequency = nil
-        expect(user).to be_valid
-      end
-
-      it "allows a permitted value" do
-        user.income_frequency = User::INCOME_FREQUENCIES.sample
-        expect(user).to be_valid
-      end
-
-      it "rejects an unsupported value" do
-        user.income_frequency = "bi-monthly"
-        expect(user).not_to be_valid
-        expect(user.errors[:income_frequency]).to include("is not included in the list")
-      end
+      # income_frequency has moved to Space model
     end
 
     describe "country conditional validation" do
-      context "when onboarding step does not require country" do
-        it "does not require country at financial goals step" do
-          user.onboarding_current_step = "onboarding_financial_goal"
-          user.country = nil
-          expect(user).to be_valid
-        end
-      end
-
-      context "when onboarding step requires country" do
-        it "requires country on onboarding profile setup step" do
-          user.onboarding_current_step = "onboarding_profile_setup"
-          user.country = nil
-          expect(user).to be_valid
-        end
-      end
+      # country validations have moved to Space model
     end
+  end
+
+  describe "associations" do
+    it { is_expected.to have_many(:spaces).dependent(:destroy) }
+    it { is_expected.to have_many(:accounts).through(:spaces) }
+    it { is_expected.to have_many(:transaction_types).through(:spaces) }
+    it { is_expected.to have_many(:transactions).through(:spaces) }
+    it { is_expected.to have_many(:debts).through(:spaces) }
   end
 
   describe "OTP validity configuration" do
@@ -240,37 +204,10 @@ RSpec.describe User, type: :model do
   end
 
   describe "onboarding_current_step enum" do
-    it "defines expected enum values" do
-      expect(User.onboarding_current_steps.keys).to contain_exactly(
-        "onboarding_financial_goal",
-        "onboarding_profile_setup",
-        "onboarding_account_setup",
-        "onboarding_completed"
-      )
-    end
+    # onboarding_current_step has moved to Space model
   end
 
   describe "requires_country? predicate" do
-    let(:user) { build(:user) }
-
-    it "returns false for financial goal step" do
-      user.onboarding_current_step = "onboarding_financial_goal"
-      expect(user.send(:requires_country?)).to be false
-    end
-
-    it "returns true for profile setup step" do
-      user.onboarding_current_step = "onboarding_profile_setup"
-      expect(user.send(:requires_country?)).to be false
-    end
-
-    it "returns true for account setup step" do
-      user.onboarding_current_step = "onboarding_account_setup"
-      expect(user.send(:requires_country?)).to be true
-    end
-
-    it "returns true for completed step" do
-      user.onboarding_current_step = "onboarding_completed"
-      expect(user.send(:requires_country?)).to be true
-    end
+    # requires_country? has moved to Space model
   end
 end

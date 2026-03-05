@@ -4,9 +4,12 @@ require "rails_helper"
 
 RSpec.describe MoneyHelper, type: :helper do
   let(:user) { create(:user, currency: "USD") }
+  let(:space) { user.spaces.first }
 
   before do
     allow(helper).to receive(:current_user).and_return(user)
+    helper.define_singleton_method(:current_space) { nil }
+    allow(helper).to receive(:current_space).and_return(space)
   end
 
   describe "#format_money" do

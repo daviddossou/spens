@@ -11,15 +11,21 @@ class Auth::RegistrationsController < ApplicationController
   def create
     @user = User.new(registration_params)
     @user.password = SecureRandom.hex(32)
-    @user.onboarding_current_step = "onboarding_financial_goal"
 
     if @user.save
+      # Create default space with onboarding
+      space = @user.spaces.create!(
+        name: I18n.t("spaces.default_name", default: "Personal"),
+        onboarding_current_step: "onboarding_financial_goal"
+      )
+
       @user.generate_otp!
       OtpMailer.send_otp(@user).deliver_later
       log_otp(@user) if Rails.env.development?
 
       session[:otp_user_id] = @user.id
       session[:otp_context] = "sign_up"
+      session[:current_space_id] = space.id
       redirect_to auth_verification_path
     else
       render :new, status: :unprocessable_entity

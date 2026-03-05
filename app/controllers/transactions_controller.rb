@@ -22,7 +22,7 @@ class TransactionsController < ApplicationController
   end
 
   def show
-    @transaction = current_user.transactions.includes(:transaction_type, :account, :debt).find(params[:id])
+    @transaction = current_space.transactions.includes(:transaction_type, :account, :debt).find(params[:id])
   end
 
   private
@@ -33,7 +33,7 @@ class TransactionsController < ApplicationController
     debt_id = params[:debt_id] || payload[:debt_id]
 
     @form = TransactionForm.new(
-      current_user,
+      current_space,
       payload.merge(kind: kind, account_id: account_id, debt_id: debt_id)
     )
   end

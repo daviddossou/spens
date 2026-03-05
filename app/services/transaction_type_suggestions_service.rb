@@ -1,13 +1,13 @@
 # frozen_string_literal: true
 
 class TransactionTypeSuggestionsService
-  def initialize(user, kind)
-    @user = user
+  def initialize(space, kind)
+    @space = space
     @kind = kind
   end
 
   def all
-    user_types = @user.transaction_types.where(kind: @kind).order(updated_at: :desc).pluck(:name)
+    user_types = @space.transaction_types.where(kind: @kind).order(updated_at: :desc).pluck(:name)
     templates = TransactionType.templates(I18n.locale)
     template_suggestions = templates.select { |_k, attrs| attrs[:kind] == @kind }.map { |_k, attrs| attrs[:name] }
 
@@ -15,7 +15,7 @@ class TransactionTypeSuggestionsService
   end
 
   def defaults
-    user_types = @user.transaction_types.where(kind: @kind).order(updated_at: :desc).pluck(:name)
+    user_types = @space.transaction_types.where(kind: @kind).order(updated_at: :desc).pluck(:name)
 
     return user_types if user_types.length >= 15
 

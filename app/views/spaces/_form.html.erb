@@ -1,0 +1,37 @@
+<%= render 'shared/form_errors', object: form.object %>
+
+<div class="space-form__container">
+  <div class="space-form__field">
+    <%= render Forms::InputFieldComponent.new(
+      form: form,
+      field: :name,
+      label: t('spaces.form.name_label'),
+      required: true,
+      placeholder: t('spaces.form.name_placeholder')
+    ) %>
+  </div>
+
+  <div class="space-form__field">
+    <%= render Forms::SelectFieldComponent.new(
+      form: form,
+      field: :country,
+      options: CountryService.all,
+      priority_options: CountryService.priority,
+      searchable: true,
+      label: t('spaces.form.country_label'),
+      include_blank: true
+    ) %>
+  </div>
+
+  <div class="space-form__field">
+    <%= render Forms::SelectFieldComponent.new(
+      form: form,
+      field: :currency,
+      options: CurrencyService.all,
+      priority_options: CurrencyService.priority,
+      searchable: true,
+      label: t('spaces.form.currency_label'),
+      include_blank: true
+    ) %>
+  </div>
+</div>

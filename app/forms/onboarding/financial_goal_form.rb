@@ -6,19 +6,19 @@ class Onboarding::FinancialGoalForm < BaseForm
 
   ##
   # Attributes
-  attr_accessor :user, :financial_goals
+  attr_accessor :space, :financial_goals
 
   ##
   # Validations
   validates :financial_goals, presence: true
   validate :goals_are_allowed
 
-  def initialize(user, payload = {})
-    self.user = user
+  def initialize(space, payload = {})
+    self.space = space
 
-    self.financial_goals = payload.key?(:financial_goals) ? payload[:financial_goals] : user.financial_goals
+    self.financial_goals = payload.key?(:financial_goals) ? payload[:financial_goals] : space.financial_goals
 
-    user.onboarding_current_step ||= CURRENT_STEP
+    space.onboarding_current_step ||= CURRENT_STEP
 
     super()
   end
@@ -26,15 +26,15 @@ class Onboarding::FinancialGoalForm < BaseForm
   def submit
     return false if invalid?
 
-    user.assign_attributes(financial_goals: financial_goals, onboarding_current_step: NEXT_STEP)
+    space.assign_attributes(financial_goals: financial_goals, onboarding_current_step: NEXT_STEP)
 
-    if user.invalid?
-      promote_errors(user.errors.messages)
+    if space.invalid?
+      promote_errors(space.errors.messages)
 
       return false
     end
 
-    user.save!
+    space.save!
   rescue => e
     add_custom_error(:base, e.message)
 
@@ -42,7 +42,7 @@ class Onboarding::FinancialGoalForm < BaseForm
   end
 
   def available_goals
-    User::FINANCIAL_GOALS.map do |goal|
+    Space::FINANCIAL_GOALS.map do |goal|
       {
         key: goal,
         name: I18n.t("financial_goals.#{goal}.name", default: goal.humanize),
@@ -55,7 +55,7 @@ class Onboarding::FinancialGoalForm < BaseForm
 
   def goals_are_allowed
     return if financial_goals.blank?
-    invalid = financial_goals - User::FINANCIAL_GOALS
+    invalid = financial_goals - Space::FINANCIAL_GOALS
     return if invalid.empty?
     add_custom_error(:financial_goals, I18n.t("onboarding.validations.invalid_goal", goals: invalid.join(", ")))
   end

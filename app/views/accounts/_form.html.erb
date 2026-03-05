@@ -19,7 +19,7 @@
         placeholder: t('.account_placeholder'),
         help_text: t('.account_help'),
         disabled: (disable_account_field || false),
-        field_data: { tom_select_currency_value: get_currency_symbol(current_user.currency) }
+        field_data: { tom_select_currency_value: get_currency_symbol(current_space.currency) }
       ) %>
     </div>
 
@@ -31,7 +31,7 @@
         type: :number_field,
         label: t('.current_balance_label'),
         required: true,
-        prepend: get_currency_symbol(current_user.currency),
+        prepend: get_currency_symbol(current_space.currency),
         step: 0.01,
         placeholder: "0.00",
         help_text: t('.current_balance_help')
@@ -46,7 +46,7 @@
         type: :number_field,
         label: t('.saving_goal_label'),
         required: false,
-        prepend: get_currency_symbol(current_user.currency),
+        prepend: get_currency_symbol(current_space.currency),
         step: 0.01,
         placeholder: "0.00",
         help_text: t('.saving_goal_help')

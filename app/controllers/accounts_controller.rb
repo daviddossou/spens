@@ -5,7 +5,7 @@ class AccountsController < ApplicationController
   before_action :set_account, only: [ :show, :edit, :update, :destroy ]
 
   def index
-    @accounts = current_user.accounts.order(created_at: :desc)
+    @accounts = current_space.accounts.order(created_at: :desc)
   end
 
   def show
@@ -34,7 +34,7 @@ class AccountsController < ApplicationController
   end
 
   def edit
-    @form = AccountForm.new(current_user, account_edit_payload)
+    @form = AccountForm.new(current_space, account_edit_payload)
   end
 
   def update
@@ -67,13 +67,13 @@ class AccountsController < ApplicationController
   private
 
   def set_account
-    @account = current_user.accounts.find(params[:id])
+    @account = current_space.accounts.find(params[:id])
   rescue ActiveRecord::RecordNotFound
     redirect_to accounts_path, alert: t("accounts.errors.not_found")
   end
 
   def build_form(payload = {})
-    @form = AccountForm.new(current_user, payload)
+    @form = AccountForm.new(current_space, payload)
   end
 
   def account_edit_payload

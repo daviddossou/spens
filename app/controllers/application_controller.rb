@@ -6,6 +6,7 @@ class ApplicationController < ActionController::Base
   include DeviseConfiguration
   include InternationalizationSupport
   include DeviseLayoutConcern
+  include SpaceScoping
   include OnboardingRedirection
 
   protected
@@ -19,12 +20,12 @@ class ApplicationController < ActionController::Base
     # Force format to HTML to prevent Turbo from maintaining TURBO_STREAM through redirect
     url = if options.is_a?(String)
             # If it's already a path string, append format parameter
-            separator = options.include?('?') ? '&' : '?'
+            separator = options.include?("?") ? "&" : "?"
             "#{options}#{separator}format=html"
-          else
+    else
             # If it's a hash of URL options, merge format
             url_for(options.merge(format: :html, only_path: true))
-          end
+    end
 
     redirect_to(url, response_options)
   end

@@ -3,7 +3,7 @@
 class AccountForm < BaseForm
   ##
   # Attributes
-  attr_accessor :user, :account
+  attr_accessor :space, :account
 
   attribute :account_name, :string
   attribute :current_balance, :decimal
@@ -25,8 +25,8 @@ class AccountForm < BaseForm
 
   ##
   # Instance Methods
-  def initialize(user, payload = {})
-    @user = user
+  def initialize(space, payload = {})
+    @space = space
     @account = Account.find(payload[:id]) if payload[:id].present?
 
     super(
@@ -62,11 +62,11 @@ class AccountForm < BaseForm
   end
 
   def account_suggestions
-    AccountSuggestionsService.new(user).all_with_balances
+    AccountSuggestionsService.new(space).all_with_balances
   end
 
   def default_account_suggestions
-    AccountSuggestionsService.new(user).defaults_with_balances
+    AccountSuggestionsService.new(space).defaults_with_balances
   end
 
   private
@@ -83,7 +83,7 @@ class AccountForm < BaseForm
   end
 
   def find_or_create_account
-    FindOrCreateAccountService.new(user, account_name).call
+    FindOrCreateAccountService.new(space, account_name).call
   end
 
   def balance_changed?(account)
@@ -126,7 +126,7 @@ class AccountForm < BaseForm
       params[:to_account_name] = adjustment_account_name
     end
 
-    transaction_form = TransactionForm.new(user, params)
+    transaction_form = TransactionForm.new(space, params)
     transaction_form.submit
 
     raise StandardError, transaction_form.errors.full_messages.join(", ") unless transaction_form.errors.empty?

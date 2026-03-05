@@ -3,7 +3,7 @@
 class TransactionForm < BaseForm
   ##
   # Attributes
-  attr_accessor :user, :transaction, :debt
+  attr_accessor :space, :transaction, :debt
   attr_reader :account_id, :debt_id
 
   attribute :kind, :string, default: "expense"
@@ -39,17 +39,17 @@ class TransactionForm < BaseForm
 
   ##
   # Instance Methods
-  def initialize(user, payload = {})
-    @user = user
+  def initialize(space, payload = {})
+    @space = space
     @account_id = payload[:account_id]
     @debt_id = payload[:debt_id]
 
     if @debt_id.present?
-      @debt = user.debts.find_by(id: @debt_id)
+      @debt = space.debts.find_by(id: @debt_id)
     end
 
     if @account_id.present?
-      account = user.accounts.find_by(id: @account_id)
+      account = space.accounts.find_by(id: @account_id)
       if account
         payload[:account_name] ||= account.name
         payload[:to_account_name] ||= account.name if payload[:kind] == "transfer"
@@ -98,19 +98,19 @@ class TransactionForm < BaseForm
   end
 
   def transaction_type_suggestions
-    TransactionTypeSuggestionsService.new(user, kind).all
+    TransactionTypeSuggestionsService.new(space, kind).all
   end
 
   def default_transaction_type_suggestions
-    TransactionTypeSuggestionsService.new(user, kind).defaults
+    TransactionTypeSuggestionsService.new(space, kind).defaults
   end
 
   def account_suggestions
-    AccountSuggestionsService.new(user).all_with_balances
+    AccountSuggestionsService.new(space).all_with_balances
   end
 
   def default_account_suggestions
-    AccountSuggestionsService.new(user).defaults_with_balances
+    AccountSuggestionsService.new(space).defaults_with_balances
   end
 
   def kind_params(target_kind)
@@ -196,7 +196,7 @@ class TransactionForm < BaseForm
 
   def create_and_validate_transaction(account:, transaction_type:, amount:, description:, debt: nil)
     transaction = CreateTransactionService.new(
-      user: user,
+      space: space,
       account: account,
       transaction_type: transaction_type,
       amount: amount.abs,
@@ -217,19 +217,19 @@ class TransactionForm < BaseForm
   def find_or_create_account
     return nil if debt_transaction? && account_name.blank?
 
-    FindOrCreateAccountService.new(user, account_name).call
+    FindOrCreateAccountService.new(space, account_name).call
   end
 
   def find_or_create_transaction_type(type_name = transaction_type_name, kind_name = kind)
-    FindOrCreateTransactionTypeService.new(user, type_name, kind_name).call
+    FindOrCreateTransactionTypeService.new(space, type_name, kind_name).call
   end
 
   def from_account
-    @from_account ||= FindOrCreateAccountService.new(user, (from_account_name || account_name)).call
+    @from_account ||= FindOrCreateAccountService.new(space, (from_account_name || account_name)).call
   end
 
   def to_account
-    @to_account ||= FindOrCreateAccountService.new(user, (to_account_name || account_name)).call
+    @to_account ||= FindOrCreateAccountService.new(space, (to_account_name || account_name)).call
   end
 
   def transfer_type_out

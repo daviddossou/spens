@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_03_02_120038) do
+ActiveRecord::Schema[8.0].define(version: 2026_03_02_142605) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -19,15 +19,14 @@ ActiveRecord::Schema[8.0].define(version: 2026_03_02_120038) do
     t.string "name", null: false
     t.float "saving_goal", default: 0.0
     t.float "balance", default: 0.0, null: false
-    t.uuid "user_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index "lower((name)::text), user_id", name: "index_accounts_on_lower_name_and_user_id", unique: true
-    t.index ["user_id"], name: "index_accounts_on_user_id"
+    t.uuid "space_id", null: false
+    t.index "lower((name)::text), space_id", name: "index_accounts_on_lower_name_and_space_id", unique: true
+    t.index ["space_id"], name: "index_accounts_on_space_id"
   end
 
   create_table "debts", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.uuid "user_id", null: false
     t.string "name", null: false
     t.float "total_lent", default: 0.0, null: false
     t.float "total_reimbursed", default: 0.0, null: false
@@ -36,20 +35,36 @@ ActiveRecord::Schema[8.0].define(version: 2026_03_02_120038) do
     t.string "direction", default: "lent", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.uuid "space_id", null: false
+    t.index ["space_id"], name: "index_debts_on_space_id"
     t.index ["status"], name: "index_debts_on_status"
-    t.index ["user_id"], name: "index_debts_on_user_id"
+  end
+
+  create_table "spaces", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "name", null: false
+    t.string "currency", default: "XOF"
+    t.string "country"
+    t.string "income_frequency"
+    t.string "main_income_source"
+    t.jsonb "financial_goals", default: []
+    t.string "onboarding_current_step"
+    t.uuid "user_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index "user_id, lower((name)::text)", name: "index_spaces_on_user_id_and_lower_name", unique: true
+    t.index ["user_id"], name: "index_spaces_on_user_id"
   end
 
   create_table "transaction_types", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "name", null: false
     t.string "kind", null: false
     t.float "budget_goal", default: 0.0
-    t.uuid "user_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index "lower((name)::text), user_id, kind", name: "index_transaction_types_on_lower_name_user_and_kind", unique: true
+    t.uuid "space_id", null: false
+    t.index "lower((name)::text), space_id, kind", name: "index_transaction_types_on_lower_name_space_and_kind", unique: true
     t.index ["kind"], name: "index_transaction_types_on_kind"
-    t.index ["user_id"], name: "index_transaction_types_on_user_id"
+    t.index ["space_id"], name: "index_transaction_types_on_space_id"
   end
 
   create_table "transactions", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -57,17 +72,17 @@ ActiveRecord::Schema[8.0].define(version: 2026_03_02_120038) do
     t.text "note"
     t.float "amount", null: false
     t.date "transaction_date", null: false
-    t.uuid "user_id", null: false
     t.uuid "transaction_type_id", null: false
     t.uuid "account_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.uuid "debt_id"
+    t.uuid "space_id", null: false
     t.index ["account_id"], name: "index_transactions_on_account_id"
     t.index ["debt_id"], name: "index_transactions_on_debt_id"
+    t.index ["space_id"], name: "index_transactions_on_space_id"
     t.index ["transaction_date"], name: "index_transactions_on_transaction_date"
     t.index ["transaction_type_id"], name: "index_transactions_on_transaction_type_id"
-    t.index ["user_id"], name: "index_transactions_on_user_id"
   end
 
   create_table "users", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -86,26 +101,18 @@ ActiveRecord::Schema[8.0].define(version: 2026_03_02_120038) do
     t.string "phone_number"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.string "currency", default: "XOF"
-    t.string "country"
-    t.string "income_frequency"
-    t.string "main_income_source"
-    t.jsonb "financial_goals", default: []
-    t.string "onboarding_current_step"
     t.string "otp_code"
     t.datetime "otp_sent_at"
-    t.index ["country"], name: "index_users_on_country"
-    t.index ["currency"], name: "index_users_on_currency"
     t.index ["email"], name: "index_users_on_email", unique: true
-    t.index ["onboarding_current_step"], name: "index_users_on_onboarding_current_step"
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
-  add_foreign_key "accounts", "users"
-  add_foreign_key "debts", "users"
-  add_foreign_key "transaction_types", "users"
+  add_foreign_key "accounts", "spaces"
+  add_foreign_key "debts", "spaces"
+  add_foreign_key "spaces", "users"
+  add_foreign_key "transaction_types", "spaces"
   add_foreign_key "transactions", "accounts"
   add_foreign_key "transactions", "debts"
+  add_foreign_key "transactions", "spaces"
   add_foreign_key "transactions", "transaction_types"
-  add_foreign_key "transactions", "users"
 end

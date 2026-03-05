@@ -14,7 +14,7 @@ class Onboarding::TransactionForm < BaseForm
   attribute :transaction_type_name, :string, default: DEFAULT_TRANSACTION_TYPE_NAME
   attribute :transaction_type_kind, :string, default: DEFAULT_TRANSACTION_TYPE_KIND
 
-  attr_accessor :user
+  attr_accessor :space
 
   ##
   # Validations
@@ -34,8 +34,8 @@ class Onboarding::TransactionForm < BaseForm
 
   ##
   # Instance Methods
-  def initialize(user:, **attributes)
-    @user = user
+  def initialize(space:, **attributes)
+    @space = space
     super(**attributes)
   end
 
@@ -70,18 +70,18 @@ class Onboarding::TransactionForm < BaseForm
   private
 
   def find_or_create_account
-    FindOrCreateAccountService.new(user, account_name).call
+    FindOrCreateAccountService.new(space, account_name).call
   end
 
   def find_or_create_transaction_type
-    FindOrCreateTransactionTypeService.new(user, transaction_type_name, transaction_type_kind).call
+    FindOrCreateTransactionTypeService.new(space, transaction_type_name, transaction_type_kind).call
   end
 
   def create_transaction(account, transaction_type)
     description = I18n.t("onboarding.account_setups.initial_balance_description", account_name: account.name)
 
     transaction = CreateTransactionService.new(
-      user: user,
+      space: space,
       account: account,
       transaction_type: transaction_type,
       amount: amount,
