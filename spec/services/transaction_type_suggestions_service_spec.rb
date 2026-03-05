@@ -238,8 +238,8 @@ RSpec.describe TransactionTypeSuggestionsService do
         expense_default_keys = TransactionType.default_template_keys('expense')
         income_default_keys = TransactionType.default_template_keys('income')
 
-        expect(expense_results.size).to eq([expense_default_keys&.size || 0, 15].min)
-        expect(income_results.size).to eq([income_default_keys&.size || 0, 15].min)
+        expect(expense_results.size).to eq([ expense_default_keys&.size || 0, 15 ].min)
+        expect(income_results.size).to eq([ income_default_keys&.size || 0, 15 ].min)
       end
     end
   end

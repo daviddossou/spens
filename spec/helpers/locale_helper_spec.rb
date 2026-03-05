@@ -34,7 +34,7 @@ RSpec.describe LocaleHelper, type: :helper do
 
   describe "#language_links" do
     before do
-      I18n.available_locales = [:en, :fr]
+      I18n.available_locales = [ :en, :fr ]
       I18n.locale = :en
       allow(helper).to receive(:params).and_return(ActionController::Parameters.new(controller: "home", action: "index"))
     end
