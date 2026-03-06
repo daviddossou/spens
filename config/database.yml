@@ -84,6 +84,7 @@ production:
     database: spens_production
     username: spens
     password: <%= ENV["SPENS_DATABASE_PASSWORD"] %>
+    host: <%= ENV.fetch("DB_HOST", "localhost") %>
   cache:
     <<: *primary_production
     database: spens_production_cache

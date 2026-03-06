@@ -57,7 +57,7 @@ Rails.application.configure do
   config.action_mailer.raise_delivery_errors = true
 
   # Set host to be used by links generated in mailer templates.
-  config.action_mailer.default_url_options = { host: "example.com" }
+  config.action_mailer.default_url_options = { host: "spens.me", protocol: "https" }
 
   # Brevo (Sendinblue) SMTP for transactional emails
   # Add credentials via: rails credentials:edit
