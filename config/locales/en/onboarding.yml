@@ -1,96 +1,101 @@
 en:
   financial_goals:
     save_for_emergency:
-      name: "Build Emergency Fund"
-      description: "Save money for unexpected expenses and emergencies"
+      name: "Emergency Fund"
+      description: "I want a safety net for unexpected expenses"
     pay_off_debt:
       name: "Pay Off Debt"
-      description: "Eliminate existing debts and become debt-free"
+      description: "I want to clear what I owe and be debt-free"
     save_for_house:
-      name: "Save for House"
-      description: "Build funds for a home down payment or purchase"
-    save_for_retirement:
-      name: "Save for Retirement"
-      description: "Plan and save for your golden years"
+      name: "Save for a Home"
+      description: "I want to save up for a house or a big purchase"
     save_for_vacation:
-      name: "Save for Vacation"
-      description: "Set aside money for travel and leisure"
+      name: "Vacation"
+      description: "I want to reward myself with travel and experiences"
     build_wealth:
       name: "Build Wealth"
-      description: "Grow your net worth through investments and savings"
+      description: "I want to grow my money and achieve financial freedom"
     track_spending:
       name: "Track Spending"
-      description: "Monitor and understand your spending habits"
+      description: "I want to see where my money goes"
     budget_better:
       name: "Budget Better"
-      description: "Create and stick to a monthly budget"
+      description: "I want to stop overspending and save more"
+    separate_finances:
+      name: "Separate My Finances"
+      description: "I want to keep personal, business and family money apart"
 
   validations:
-    invalid_goal: "is not a valid financial goal"
+    invalid_goal: "is not a valid goal"
 
   onboarding:
     validations:
-      invalid_goal: "%{goals} is not a valid financial goal"
+      invalid_goal: "%{goals} is not a valid goal"
     errors:
       generic: "Something went wrong. Please try again."
     financial_goals:
       show:
-        title: "What are your main financial goals?"
-        subtitle: "Select the goals that matter most to you. You can always change these later."
+        title: "What are your money goals?"
+        subtitle: "Pick the ones that matter most. You can change these later."
       form:
         continue: "Continue"
     profile_setups:
       show:
         title: "Set up your profile"
-        subtitle: "Tell us a bit about yourself to personalize your experience"
+        subtitle: "A few details to personalize your experience"
       form:
         back: "Back"
         continue: "Continue"
       select_field_component:
         country_label: "Where do you live?"
-        country_help: "This helps us provide region-specific features"
+        country_help: "Helps us show the right options for your region"
         currency_label: "What currency do you use?"
-        currency_help: "All amounts will be displayed in this currency"
-        income_frequency_label: "How often do you receive income?"
-        income_frequency_help: "This helps us plan your budget cycles"
-        main_income_source_label: "What is your main source of income?"
-        main_income_source_help: "Understanding your income helps us provide better financial advice"
+        currency_help: "All amounts will show in this currency"
+        income_frequency_label: "How often do you get paid?"
+        income_frequency_help: "Helps us plan your budget cycles"
+        main_income_source_label: "What is your main income?"
+        main_income_source_help: "Helps us give you better tips"
     account_setups:
       show:
-        title: "Set up your accounts"
-        subtitle: "Add your accounts and their current balances. Don't worry, you can add more later."
+        title: "Add your accounts"
+        subtitle: "Enter your accounts and their balances. You can add more later."
       form:
         back: "Back"
-        continue: "Complete Setup"
+        continue: "Finish Setup"
         add_account: "Add another account"
         remove_account: "Remove"
       errors:
-        at_least_one_transaction: "You must add at least one account with an amount"
-      initial_balance_description: "Initial balance for %{account_name}"
+        at_least_one_transaction: "Add at least one account with an amount"
+      initial_balance_description: "Opening balance for %{account_name}"
     progress_component:
-      financial_goal: "Financial Goals"
-      profile_setup: "Profile Setup"
-      account_setup: "Account Setup"
+      financial_goal: "Goals"
+      profile_setup: "Profile"
+      account_setup: "Accounts"
     account_line_component:
       account_name: "Account name"
-      account_name_placeholder: "e.g., Checking account"
-      account_help: "Select from suggestions or enter your own"
-      initial_amount: "Initial balance"
-      amount_help: "How much is currently in this account?"
+      account_name_placeholder: "e.g. Checking account"
+      account_help: "Pick from suggestions or type your own"
+      initial_amount: "Balance"
+      amount_help: "How much is in this account?"
       remove: "Remove"
 
     income_frequencies:
+      daily: "Daily"
       weekly: "Weekly"
       biweekly: "Every two weeks"
       monthly: "Monthly"
       quarterly: "Every three months"
       yearly: "Yearly"
+      irregular: "Irregular"
 
     income_sources:
-      salary: "Salary / Wages"
-      freelance: "Freelance / Contract work"
-      business: "Business income"
-      investments: "Investments / Dividends"
-      pension: "Pension / Retirement income"
+      salary: "Salary"
+      business: "Business"
+      freelance: "Freelance"
+      investments: "Investments"
+      pension: "Pension"
       rental: "Rental income"
-      other: "Other sources"
+      government: "Government aid"
+      gifts: "Gifts & remittances"
+      side_hustle: "Side hustle"
+      other: "Other"

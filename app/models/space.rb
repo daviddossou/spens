@@ -43,11 +43,11 @@ class Space < ApplicationRecord
     save_for_emergency
     pay_off_debt
     save_for_house
-    save_for_retirement
     save_for_vacation
     build_wealth
     track_spending
     budget_better
+    separate_finances
   ].freeze
 
   ##

@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 class Onboarding::IncomeService
-  FREQUENCIES = %w[weekly biweekly monthly quarterly yearly].freeze
-  SOURCES = %w[salary business freelance investments pension other].freeze
+  FREQUENCIES = %w[daily weekly biweekly monthly quarterly yearly irregular].freeze
+  SOURCES = %w[salary business freelance investments pension rental government gifts side_hustle other].freeze
 
   class << self
     def frequency_options

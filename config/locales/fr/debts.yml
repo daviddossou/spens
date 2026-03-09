@@ -2,110 +2,110 @@ fr:
   debts:
     index:
       title:
-        lent: "Argent Prêté"
-        borrowed: "Argent Emprunté"
+        lent: "Argent prêté"
+        borrowed: "Argent emprunté"
       subtitle:
-        lent: "Suivez l'argent que les autres vous doivent"
-        borrowed: "Suivez l'argent que vous devez aux autres"
+        lent: "Suis ce qu'on te doit"
+        borrowed: "Suis ce que tu dois"
       i_lent: "On me doit"
       i_borrowed: "Je dois"
       no_debts_title:
-        lent: "Aucun prêt pour le moment"
-        borrowed: "Aucune dette pour le moment"
+        lent: "Aucun prêt"
+        borrowed: "Aucune dette"
       no_debts_message:
-        lent: "Commencez à suivre l'argent que vous prêtez à vos proches"
-        borrowed: "Commencez à suivre l'argent que vous empruntez"
+        lent: "Note l'argent que tu prêtes"
+        borrowed: "Note l'argent que tu empruntes"
       add_new:
-        lent: "Enregistrer de l'argent prêté"
-        borrowed: "Enregistrer de l'argent emprunté"
+        lent: "Ajouter un prêt"
+        borrowed: "Ajouter une dette"
     new:
       title:
-        lent: "Enregistrer de l'argent prêté"
-        borrowed: "Enregistrer de l'argent emprunté"
+        lent: "Nouveau prêt"
+        borrowed: "Nouvelle dette"
       subtitle:
-        lent: "Suivez l'argent que vous prêtez à quelqu'un"
-        borrowed: "Suivez l'argent que vous empruntez à quelqu'un"
+        lent: "À qui as-tu prêté ?"
+        borrowed: "À qui as-tu emprunté ?"
       save_debt:
-        lent: "Enregistrer le prêt"
-        borrowed: "Enregistrer le prêt"
+        lent: "Enregistrer"
+        borrowed: "Enregistrer"
       cancel: "Annuler"
     edit:
       title:
-        lent: "Modifier l'argent prêté"
-        borrowed: "Modifier l'argent emprunté"
+        lent: "Modifier le prêt"
+        borrowed: "Modifier la dette"
       subtitle:
-        lent: "Mettre à jour les détails de l'argent prêté"
-        borrowed: "Mettre à jour les détails de l'argent emprunté "
-      back_to_debt: "Retour au prêt"
+        lent: "Modifier les détails du prêt"
+        borrowed: "Modifier les détails de la dette"
+      back_to_debt: "Retour"
       update_debt:
-        lent: "Mettre à jour le prêt"
-        borrowed: "Mettre à jour le prêt"
+        lent: "Enregistrer"
+        borrowed: "Enregistrer"
       cancel: "Annuler"
     form:
       contact_name_label:
-        lent: "Nom du contact"
-        borrowed: "Nom du contact"
+        lent: "Qui ?"
+        borrowed: "Qui ?"
       contact_name_placeholder:
-        lent: "À qui avez-vous prêté de l'argent ?"
-        borrowed: "De qui avez-vous emprunté de l'argent ?"
+        lent: "À qui as-tu prêté ?"
+        borrowed: "À qui as-tu emprunté ?"
       contact_name_help:
-        lent: "Nom de la personne ou de l'entité"
-        borrowed: "Nom de la personne ou de l'entité"
+        lent: "Nom de la personne"
+        borrowed: "Nom de la personne"
       total_amount_label:
-        lent: "Montant total prêté"
-        borrowed: "Montant total emprunté"
+        lent: "Montant prêté"
+        borrowed: "Montant emprunté"
       total_amount_help:
-        lent: "Combien avez-vous prêté ?"
-        borrowed: "Combien avez-vous emprunté ?"
+        lent: "Combien as-tu prêté ?"
+        borrowed: "Combien as-tu emprunté ?"
       show_more_details: "Plus de détails"
       hide_more_details: "Masquer les détails"
       account_label:
-        lent: "Compte utilisé"
-        borrowed: "Compte crédité"
+        lent: "Depuis quel compte ?"
+        borrowed: "Vers quel compte ?"
       account_placeholder:
-        lent: "Ex: Espèces, Compte bancaire, Mobile Money..."
-        borrowed: "Ex: Espèces, Compte bancaire, Mobile Money..."
+        lent: "ex. Espèces, Banque, Mobile Money..."
+        borrowed: "ex. Espèces, Banque, Mobile Money..."
       account_help:
-        lent: "D'où vient l'argent ? (laisser vide si déjà débité)"
-        borrowed: "D'où vient l'argent ? (laisser vide si déjà crédité)"
+        lent: "Laisse vide si déjà débité"
+        borrowed: "Laisse vide si déjà crédité"
       amount_reimbursed_label:
-        lent: "Montant déjà remboursé"
-        borrowed: "Montant déjà remboursé"
+        lent: "Déjà remboursé"
+        borrowed: "Déjà remboursé"
       amount_reimbursed_help:
-        lent: "Entre combien a déjà été remboursé (laisser vide si rien)"
-        borrowed: "Entre combien a déjà été remboursé (laisser vide si rien)"
+        lent: "Combien a déjà été remboursé ?"
+        borrowed: "Combien as-tu déjà remboursé ?"
       note_label: "Note"
-      note_placeholder: "Ajouter des détails sur ce prêt..."
-      note_help: "Raison, conditions ou autres détails"
+      note_placeholder: "Ajoute des détails..."
+      note_help: "Raison, conditions ou autres infos"
     show:
-      back_to_debts: "Retour aux dettes"
+      back_to_debts: "Retour"
       subtitle:
-        lent: "Suivez combien vous avez prêté et les détails"
-        borrowed: "Suivez combien vous avez emprunté et les détails"
+        lent: "Suis ce prêt et les paiements"
+        borrowed: "Suis cette dette et les paiements"
       actions_title: "Actions"
       add_transaction: "Ajouter une transaction"
-      edit_debt: "Modifier le prêt"
+      edit_debt: "Modifier"
       note_title: "Note"
       recent_transactions: "Transactions récentes"
-      no_transactions: "Aucune transaction pour cette dette"
+      no_transactions: "Aucune transaction"
     create:
-      success: "Prêt enregistré avec succès"
-      error: "Une erreur s'est produite lors de l'enregistrement du prêt"
+      success: "Enregistré !"
+      error: "Impossible d'enregistrer"
     update:
-      success: "Prêt mis à jour avec succès"
-      error: "Une erreur s'est produite lors de la mise à jour du prêt"
+      success: "Mis à jour !"
+      error: "Impossible de modifier"
     errors:
-      not_found: "Dette introuvable"
-      reimbursed_exceeds_lent: "Le montant remboursé ne peut pas dépasser le montant total prêté"
-      total_lent_cannot_be_less: "ne peut pas être inférieur au montant prêté existant"
-      total_reimbursed_cannot_be_less: "ne peut pas être inférieur au montant remboursé existant"
+      not_found: "Introuvable"
+      reimbursed_exceeds_lent: "Le montant remboursé ne peut pas dépasser le total"
+      total_lent_cannot_be_less: "ne peut pas être inférieur au montant actuel"
+      total_reimbursed_cannot_be_less: "ne peut pas être inférieur au montant actuel"
     transaction_type:
       debt_in:
         lent: "Remboursement reçu"
         borrowed: "Argent emprunté"
       debt_out:
         lent: "Argent prêté"
-        borrowed: "Dette remboursée"
+        borrowed: "Remboursement de dette"
     transaction_description:
       debt_in:
         lent: "Remboursé par %{contact_name}"

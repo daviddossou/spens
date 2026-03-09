@@ -2,7 +2,7 @@ en:
   spaces:
     default_name: "Personal"
     form:
-      name_label: "Space Name"
+      name_label: "Name"
       name_placeholder: "e.g. Business, Family, Side Hustle..."
       country_label: "Country"
       currency_label: "Currency"
@@ -12,20 +12,20 @@ en:
       active: "Active"
       switch: "Switch"
       no_spaces_title: "No spaces yet"
-      no_spaces_message: "Create a space to start tracking your finances."
+      no_spaces_message: "Create a space to start tracking your money."
       add_new_space: "New Space"
     new:
       title: "New Space"
       subtitle: "Create a new space"
-      submit: "Create Space"
+      submit: "Create"
     create:
       success: "Space created! Let's set it up."
     edit:
       title: "Edit Space"
       subtitle: "Edit your space"
-      submit: "Save Changes"
+      submit: "Save"
       delete_space: "Delete this space"
-      confirm_delete: "Are you sure you want to delete \"%{name}\"? All data in this space will be permanently lost."
+      confirm_delete: "Delete \"%{name}\"? All data in this space will be lost forever."
     update:
       success: "Space updated."
     destroy:

@@ -5,52 +5,52 @@ en:
         lent: "Money Lent"
         borrowed: "Money Borrowed"
       subtitle:
-        lent: "Track money others owe you"
-        borrowed: "Track money you owe others"
+        lent: "Track what others owe you"
+        borrowed: "Track what you owe others"
       i_lent: "Owed to Me"
       i_borrowed: "I Owe"
       no_debts_title:
         lent: "No loans yet"
         borrowed: "No debts yet"
       no_debts_message:
-        lent: "Start tracking money you lend to friends and family"
-        borrowed: "Start tracking money you've borrowed from others"
+        lent: "Record money you lend to people"
+        borrowed: "Record money you borrow from people"
       add_new:
-        lent: "Record Money Lent"
-        borrowed: "Record Money Borrowed"
+        lent: "Add a Loan"
+        borrowed: "Add a Debt"
     new:
       title:
-        lent: "Record Money Lent"
-        borrowed: "Record Money Borrowed"
+        lent: "New Loan"
+        borrowed: "New Debt"
       subtitle:
-        lent: "Track money you've lent to someone"
-        borrowed: "Track money you've borrowed from someone"
+        lent: "Record money you lent"
+        borrowed: "Record money you borrowed"
       save_debt:
-        lent: "Record Loan"
-        borrowed: "Record Loan"
+        lent: "Save"
+        borrowed: "Save"
       cancel: "Cancel"
     edit:
       title:
-        lent: "Edit Lent Money"
-        borrowed: "Edit Borrowed Money"
+        lent: "Edit Loan"
+        borrowed: "Edit Debt"
       subtitle:
-        lent: "Update lent money details"
-        borrowed: "Update borrowed money details"
-      back_to_debt: "Back to Debt"
+        lent: "Update loan details"
+        borrowed: "Update debt details"
+      back_to_debt: "Back"
       update_debt:
-        lent: "Update Loan"
-        borrowed: "Update Loan"
+        lent: "Save"
+        borrowed: "Save"
       cancel: "Cancel"
     form:
       contact_name_label:
-        lent: "Contact Name"
-        borrowed: "Contact Name"
+        lent: "Who?"
+        borrowed: "Who?"
       contact_name_placeholder:
         lent: "Who did you lend to?"
         borrowed: "Who did you borrow from?"
       contact_name_help:
-        lent: "Name of the person or entity"
-        borrowed: "Name of the person or entity"
+        lent: "Name of the person"
+        borrowed: "Name of the person"
       total_amount_label:
         lent: "Amount Lent"
         borrowed: "Amount Borrowed"
@@ -58,57 +58,57 @@ en:
         lent: "How much did you lend?"
         borrowed: "How much did you borrow?"
       account_label:
-        lent: "Account Used"
-        borrowed: "Account Credited"
+        lent: "From which account?"
+        borrowed: "Into which account?"
       account_placeholder:
-        lent: "E.g., Cash, Bank Account, Mobile Money..."
-        borrowed: "E.g., Cash, Bank Account, Mobile Money..."
+        lent: "e.g. Cash, Bank, Mobile Money..."
+        borrowed: "e.g. Cash, Bank, Mobile Money..."
       account_help:
-        lent: "Where did the money come from? (leave empty if already debited)"
-        borrowed: "Where did the money come from? (leave empty if already credited)"
+        lent: "Leave empty if already taken out"
+        borrowed: "Leave empty if already added"
       show_more_details: "More details"
       hide_more_details: "Hide details"
       amount_reimbursed_label:
-        lent: "Amount Already Reimbursed"
-        borrowed: "Amount Already Paid Back"
+        lent: "Already Paid Back"
+        borrowed: "Already Paid Back"
       amount_reimbursed_help:
-        lent: "Enter how much has already been paid back (leave empty if none)"
-        borrowed: "Enter how much has already been paid back (leave empty if none)"
+        lent: "How much has been repaid so far?"
+        borrowed: "How much have you repaid so far?"
       note_label: "Note"
-      note_placeholder: "Add any details about this loan..."
-      note_help: "Reason, terms, or any other details"
+      note_placeholder: "Add details about this loan..."
+      note_help: "Reason, terms, or other info"
     show:
-      back_to_debts: "Back to Debts"
+      back_to_debts: "Back"
       subtitle:
-        lent: "Track how much you've lent and details"
-        borrowed: "Track how much you've borrowed and details"
+        lent: "Track this loan and payments"
+        borrowed: "Track this debt and payments"
       actions_title: "Actions"
       add_transaction: "Add Transaction"
-      edit_debt: "Edit Debt"
+      edit_debt: "Edit"
       note_title: "Note"
       recent_transactions: "Recent Transactions"
-      no_transactions: "No transactions yet for this debt"
+      no_transactions: "No transactions yet"
     create:
-      success: "Loan recorded successfully"
-      error: "An error occurred while recording the loan"
+      success: "Saved!"
+      error: "Could not save this loan"
     update:
-      success: "Loan updated successfully"
-      error: "An error occurred while updating the loan"
+      success: "Updated!"
+      error: "Could not update this loan"
     errors:
-      not_found: "Debt not found"
-      reimbursed_exceeds_lent: "Amount reimbursed cannot exceed total amount lent"
-      total_lent_cannot_be_less: "cannot be less than the existing amount"
-      total_reimbursed_cannot_be_less: "cannot be less than the existing amount"
+      not_found: "Not found"
+      reimbursed_exceeds_lent: "Repaid amount can't be more than the total"
+      total_lent_cannot_be_less: "can't be less than the current amount"
+      total_reimbursed_cannot_be_less: "can't be less than the current amount"
     transaction_type:
       debt_in:
-        lent: "Debt reimbursement"
+        lent: "Repayment received"
         borrowed: "Money borrowed"
       debt_out:
         lent: "Money lent"
-        borrowed: "Debt payment"
+        borrowed: "Loan repayment"
     transaction_description:
       debt_in:
-        lent: "Reimbursed by %{contact_name}"
+        lent: "Repaid by %{contact_name}"
         borrowed: "Borrowed from %{contact_name}"
       debt_out:
         lent: "Lent to %{contact_name}"

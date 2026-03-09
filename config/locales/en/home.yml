@@ -1,13 +1,6 @@
 en:
   home:
     index:
-      welcome_title: "Welcome to Spens"
-      welcome_description: "A modern Rails application with authentication"
-      features: "Features"
-      feature_auth: "User Authentication with Devise"
-      feature_jobs: "Background Jobs with Sidekiq"
-      feature_docker: "Docker Development Environment"
-      feature_rails: "Rails 8.0 + Tailwind CSS"
       sign_in_cta: "Sign In"
       sign_up_cta: "Sign Up"
     show:
@@ -36,5 +29,5 @@ en:
         i_owe: "I Owe"
     empty_state:
       no_transactions: "No transactions yet"
-      no_transactions_description: "Start tracking your finances by adding your first transaction"
-      add_first_transaction: "Add Your First Transaction"
+      no_transactions_description: "Add your first transaction to start tracking your money"
+      add_first_transaction: "Add a Transaction"

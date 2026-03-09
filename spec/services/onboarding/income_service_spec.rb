@@ -9,7 +9,7 @@ RSpec.describe Onboarding::IncomeService do
     end
 
     it 'contains all expected frequency values' do
-      expect(described_class::FREQUENCIES).to eq(%w[weekly biweekly monthly quarterly yearly])
+      expect(described_class::FREQUENCIES).to eq(%w[daily weekly biweekly monthly quarterly yearly irregular])
     end
   end
 
@@ -19,7 +19,7 @@ RSpec.describe Onboarding::IncomeService do
     end
 
     it 'contains all expected source values' do
-      expect(described_class::SOURCES).to eq(%w[salary business freelance investments pension other])
+      expect(described_class::SOURCES).to eq(%w[salary business freelance investments pension rental government gifts side_hustle other])
     end
   end
 
@@ -72,7 +72,7 @@ RSpec.describe Onboarding::IncomeService do
       options = described_class.source_options
       values = options.map(&:last)
 
-      expect(values).to include('salary', 'business', 'freelance', 'investments', 'pension', 'other')
+      expect(values).to include('salary', 'business', 'freelance', 'investments', 'pension', 'rental', 'government', 'gifts', 'side_hustle', 'other')
     end
 
     it 'uses I18n for labels' do
@@ -97,8 +97,13 @@ RSpec.describe Onboarding::IncomeService do
       expect(described_class.valid_frequency?('yearly')).to be true
     end
 
+    it 'returns true for new frequencies' do
+      expect(described_class.valid_frequency?('daily')).to be true
+      expect(described_class.valid_frequency?('irregular')).to be true
+    end
+
     it 'returns false for invalid frequencies' do
-      expect(described_class.valid_frequency?('daily')).to be false
+      expect(described_class.valid_frequency?('hourly')).to be false
       expect(described_class.valid_frequency?('invalid')).to be false
     end
 
@@ -128,9 +133,16 @@ RSpec.describe Onboarding::IncomeService do
       expect(described_class.valid_source?('pension')).to be true
     end
 
+    it 'returns true for new sources' do
+      expect(described_class.valid_source?('rental')).to be true
+      expect(described_class.valid_source?('government')).to be true
+      expect(described_class.valid_source?('gifts')).to be true
+      expect(described_class.valid_source?('side_hustle')).to be true
+    end
+
     it 'returns false for invalid sources' do
       expect(described_class.valid_source?('invalid')).to be false
-      expect(described_class.valid_source?('rental')).to be false
+      expect(described_class.valid_source?('unknown')).to be false
     end
 
     it 'handles symbol input' do
@@ -157,7 +169,7 @@ RSpec.describe Onboarding::IncomeService do
       frequencies = described_class.all_frequencies
 
       expect(frequencies).to be_an(Array)
-      expect(frequencies).to eq(%w[weekly biweekly monthly quarterly yearly])
+      expect(frequencies).to eq(%w[daily weekly biweekly monthly quarterly yearly irregular])
     end
 
     it 'returns frozen array' do
@@ -174,7 +186,7 @@ RSpec.describe Onboarding::IncomeService do
       sources = described_class.all_sources
 
       expect(sources).to be_an(Array)
-      expect(sources).to eq(%w[salary business freelance investments pension other])
+      expect(sources).to eq(%w[salary business freelance investments pension rental government gifts side_hustle other])
     end
 
     it 'returns frozen array' do

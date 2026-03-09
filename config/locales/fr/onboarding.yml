@@ -1,29 +1,29 @@
 fr:
   financial_goals:
     save_for_emergency:
-      name: "Constituer un Fonds d'Urgence"
-      description: "Économiser pour les dépenses imprévues et les urgences"
+      name: "Fonds d'urgence"
+      description: "Je veux un filet de sécurité pour les imprévus"
     pay_off_debt:
-      name: "Rembourser les Dettes"
-      description: "Éliminer les dettes existantes et devenir libre de dettes"
+      name: "Rembourser mes dettes"
+      description: "Je veux me libérer de mes dettes"
     save_for_house:
-      name: "Économiser pour une Maison"
-      description: "Constituer des fonds pour un acompte ou achat immobilier"
-    save_for_retirement:
-      name: "Épargner pour la Retraite"
-      description: "Planifier et épargner pour vos années dorées"
+      name: "Acheter un logement"
+      description: "Je veux épargner pour une maison ou un gros achat"
     save_for_vacation:
-      name: "Économiser pour les Vacances"
-      description: "Mettre de l'argent de côté pour les voyages et loisirs"
+      name: "Vacances"
+      description: "Je veux mettre de côté pour voyager"
     build_wealth:
-      name: "Construire sa Richesse"
-      description: "Augmenter votre patrimoine via investissements et épargne"
+      name: "Faire fructifier mon argent"
+      description: "Je veux faire grandir mon épargne et investir"
     track_spending:
-      name: "Suivre les Dépenses"
-      description: "Surveiller et comprendre vos habitudes de dépense"
+      name: "Suivre mes dépenses"
+      description: "Je veux savoir où va mon argent"
     budget_better:
-      name: "Mieux Budgéter"
-      description: "Créer et respecter un budget mensuel"
+      name: "Mieux budgéter"
+      description: "Je veux arrêter de trop dépenser et épargner plus"
+    separate_finances:
+      name: "Séparer mes finances"
+      description: "Je veux distinguer perso, business et famille"
 
   validations:
     invalid_goal: "n'est pas un objectif financier valide"
@@ -41,56 +41,61 @@ fr:
         continue: "Continuer"
     profile_setups:
       show:
-        title: "Configure ton profil"
-        subtitle: "Parle-nous un peu de toi pour personnaliser ton expérience"
+        title: "Ton profil"
+        subtitle: "Dis-nous en un peu plus sur toi"
       form:
         back: "Retour"
         continue: "Continuer"
       select_field_component:
         country_label: "Où habites-tu ?"
-        country_help: "Cela nous aide à fournir des fonctionnalités spécifiques à ta région"
-        currency_label: "Quelle devise utilises-tu ?"
-        currency_help: "Tous les montants seront affichés dans cette devise"
-        income_frequency_label: "À quelle fréquence reçois-tu des revenus ?"
-        income_frequency_help: "Cela nous aide à planifier tes cycles budgétaires"
-        main_income_source_label: "Quelle est ta principale source de revenus ?"
-        main_income_source_help: "Comprendre tes revenus nous aide à fournir de meilleurs conseils financiers"
+        country_help: "Pour adapter l'appli à ta région"
+        currency_label: "Quelle devise ?"
+        currency_help: "Les montants seront affichés dans cette devise"
+        income_frequency_label: "Tu reçois des revenus tous les..."
+        income_frequency_help: "Pour planifier tes cycles budgétaires"
+        main_income_source_label: "Principale source de revenus ?"
+        main_income_source_help: "Pour mieux comprendre tes finances"
     account_setups:
       show:
-        title: "Configure tes comptes"
-        subtitle: "Ajoute tes comptes et leurs soldes actuels. Ne t'inquiète pas, tu pourras en ajouter d'autres plus tard."
+        title: "Tes comptes"
+        subtitle: "Ajoute tes comptes et leurs soldes. Tu pourras en ajouter d'autres plus tard."
       form:
         back: "Retour"
-        continue: "Terminer la Configuration"
-        add_account: "Ajouter un autre compte"
+        continue: "Terminer"
+        add_account: "Ajouter un compte"
         remove_account: "Supprimer"
       errors:
         at_least_one_transaction: "Tu dois ajouter au moins un compte avec un montant"
       initial_balance_description: "Solde initial pour %{account_name}"
     progress_component:
-      financial_goal: "Objectifs Financiers"
-      profile_setup: "Configuration du Profil"
-      account_setup: "Configuration des Comptes"
+      financial_goal: "Objectifs"
+      profile_setup: "Profil"
+      account_setup: "Comptes"
     account_line_component:
         account_name: "Nom du compte"
-        account_name_placeholder: "ex., Compte courant"
-        account_help: "Sélectionne parmi les suggestions ou entre ton propre nom"
+        account_name_placeholder: "ex. Compte courant"
+        account_help: "Choisis une suggestion ou entre un nom"
         initial_amount: "Solde initial"
-        amount_help: "Combien y a-t-il actuellement dans ce compte ?"
+        amount_help: "Combien y a-t-il dans ce compte ?"
         remove: "Retirer"
 
     income_frequencies:
+      daily: "Quotidien"
       weekly: "Hebdomadaire"
       biweekly: "Toutes les deux semaines"
       monthly: "Mensuel"
       quarterly: "Trimestriel"
       yearly: "Annuel"
+      irregular: "Irrégulier"
 
     income_sources:
       salary: "Salaire"
-      freelance: "Freelance / Travail indépendant"
-      business: "Revenus d'entreprise"
-      investments: "Investissements / Dividendes"
+      business: "Entreprise"
+      freelance: "Freelance"
+      investments: "Investissements"
       pension: "Pension / Retraite"
       rental: "Revenus locatifs"
-      other: "Autres sources"
+      government: "Aide publique"
+      gifts: "Dons & transferts"
+      side_hustle: "Activité secondaire"
+      other: "Autre"

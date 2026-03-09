@@ -2,35 +2,35 @@ fr:
   spaces:
     default_name: "Personnel"
     form:
-      name_label: "Nom de l'Espace"
+      name_label: "Nom"
       name_placeholder: "ex. Business, Famille, Projet..."
       country_label: "Pays"
       currency_label: "Devise"
     index:
       title: "Espaces"
-      subtitle: "Gérez vos espaces"
+      subtitle: "Gère tes espaces"
       active: "Actif"
       switch: "Basculer"
       no_spaces_title: "Aucun espace"
-      no_spaces_message: "Créez un espace pour commencer à suivre vos finances."
-      add_new_space: "Nouvel Espace"
+      no_spaces_message: "Crée un espace pour suivre tes finances."
+      add_new_space: "Nouvel espace"
     new:
-      title: "Nouvel Espace"
-      subtitle: "Créer un nouvel espace"
-      submit: "Créer l'Espace"
+      title: "Nouvel espace"
+      subtitle: "Crée un espace"
+      submit: "Créer"
     create:
       success: "Espace créé ! Configurons-le."
     edit:
-      title: "Modifier l'Espace"
-      subtitle: "Modifier votre espace"
+      title: "Modifier l'espace"
+      subtitle: "Modifie ton espace"
       submit: "Enregistrer"
       delete_space: "Supprimer cet espace"
-      confirm_delete: "Êtes-vous sûr de vouloir supprimer \"%{name}\" ? Toutes les données de cet espace seront définitivement perdues."
+      confirm_delete: "Tu es sûr(e) de vouloir supprimer \"%{name}\" ? Toutes les données seront perdues."
     update:
       success: "Espace mis à jour."
     destroy:
       success: "Espace supprimé."
-      last_space: "Vous ne pouvez pas supprimer votre dernier espace."
+      last_space: "Tu ne peux pas supprimer ton dernier espace."
     selections:
       create:
         success: "Basculé vers %{name}."

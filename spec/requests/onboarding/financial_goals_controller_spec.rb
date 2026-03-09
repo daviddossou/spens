@@ -58,7 +58,7 @@ RSpec.describe 'Onboarding::FinancialGoalsController', type: :request do
       let(:valid_params) do
         {
           onboarding_financial_goal_form: {
-            financial_goals: [ 'save_for_retirement', 'save_for_emergency' ]
+            financial_goals: [ 'separate_finances', 'save_for_emergency' ]
           }
         }
       end
@@ -66,7 +66,7 @@ RSpec.describe 'Onboarding::FinancialGoalsController', type: :request do
       it 'updates user financial goals' do
         patch onboarding_financial_goals_path, params: valid_params
 
-        expect(space.reload.financial_goals).to contain_exactly('save_for_retirement', 'save_for_emergency')
+        expect(space.reload.financial_goals).to contain_exactly('separate_finances', 'save_for_emergency')
       end
 
       it 'advances onboarding step' do
@@ -152,7 +152,7 @@ RSpec.describe 'Onboarding::FinancialGoalsController', type: :request do
       let(:valid_params) do
         {
           onboarding_financial_goal_form: {
-            financial_goals: [ 'save_for_retirement' ]
+            financial_goals: [ 'separate_finances' ]
           }
         }
       end

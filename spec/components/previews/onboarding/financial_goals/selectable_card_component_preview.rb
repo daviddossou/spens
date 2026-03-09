@@ -58,7 +58,7 @@ class Onboarding::FinancialGoals::SelectableCardComponentPreview < ViewComponent
       { key: 'save_for_emergency', name: 'Build Emergency Fund', description: 'Save money for unexpected expenses and emergencies' },
       { key: 'pay_off_debt', name: 'Pay Off Debt', description: 'Eliminate existing debts and become debt-free' },
       { key: 'save_for_house', name: 'Save for House', description: 'Build funds for a home down payment or purchase' },
-      { key: 'save_for_retirement', name: 'Save for Retirement', description: 'Plan and save for your golden years' },
+      { key: 'separate_finances', name: 'Separate Finances', description: 'Keep personal and business finances separate for better organization' },
       { key: 'build_wealth', name: 'Build Wealth', description: 'Grow your net worth through investments and savings' },
       { key: 'track_spending', name: 'Track Spending', description: 'Monitor and understand your spending habits' }
     ]
