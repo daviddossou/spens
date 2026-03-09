@@ -1,6 +1,6 @@
 service: spens
 
-image: ghcr.io/daviddossou/spens
+image: daviddossou/spens
 
 servers:
   web:
