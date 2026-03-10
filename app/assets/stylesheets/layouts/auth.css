@@ -13,6 +13,16 @@
   max-width: 28rem;
 }
 
+.auth-layout__logo {
+  text-align: center;
+  margin: 0.5rem auto 0.5rem;
+}
+
+.auth-layout__logo-img {
+  height: 72px;
+  width: auto;
+}
+
 .auth-layout__header {
   margin: 0 auto;
   width: 100%;

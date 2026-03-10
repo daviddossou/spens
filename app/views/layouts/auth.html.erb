@@ -5,14 +5,27 @@
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Spens">
+    <meta name="description" content="Track your money simply">
+    <meta property="og:title" content="Spens">
+    <meta property="og:description" content="Track your money simply">
+    <meta property="og:image" content="/icon-512.png">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Spens">
+    <meta name="twitter:description" content="Track your money simply">
+    <meta name="twitter:image" content="/icon-512.png">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
     <%= yield :head %>
 
-    <link rel="icon" href="/icon.png" type="image/png">
-    <link rel="icon" href="/icon.svg" type="image/svg+xml">
-    <link rel="apple-touch-icon" href="/icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#3F51B5">
 
     <%# Includes all stylesheet files in app/assets/stylesheets %>
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
@@ -24,6 +37,11 @@
       <!-- Language switcher at top -->
       <div class="auth-layout__language-switcher">
         <%= render Navigation::LanguageSwitcherComponent.new(params: params) %>
+      </div>
+
+      <!-- Logo -->
+      <div class="auth-layout__logo">
+        <%= image_tag 'spens-logo.png', alt: 'Spens', class: 'auth-layout__logo-img' %>
       </div>
 
       <!-- Page title and subtitle -->
