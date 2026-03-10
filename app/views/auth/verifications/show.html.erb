@@ -1,6 +1,12 @@
 <% content_for :title, t('auth.verifications.title') %>
 <% content_for :subtitle, t('auth.verifications.subtitle', email: @email) %>
 
+<% if turbo_native_app? %>
+  <div style="margin-bottom: 1rem; padding: 0.75rem 1rem; background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 0.5rem; font-size: 0.875rem; color: #0369a1;">
+    📧 Open your email app, copy the 6-digit code, and return here to paste it.
+  </div>
+<% end %>
+
 <%= form_with url: auth_verification_path, method: :post, class: "space-y-6", data: { controller: "otp-input" } do |f| %>
   <div class="form-group">
     <label for="otp_code" class="form-label"><%= t('auth.verifications.code_label') %></label>

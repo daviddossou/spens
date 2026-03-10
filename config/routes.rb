@@ -67,6 +67,12 @@ Rails.application.routes.draw do
 
   # Health check and PWA routes (outside locale scope)
   get "up" => "rails/health#show", as: :rails_health_check
+
+  # Turbo Native path configuration — fetched by the Android/iOS app at boot
+  get ".well-known/turbo/native-path-configuration",
+      to: "path_configuration#show",
+      defaults: { format: :json },
+      as: :turbo_native_path_configuration
   # get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
   # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
 end

@@ -3,6 +3,7 @@ class ApplicationController < ActionController::Base
   allow_browser versions: :modern
 
   # Include concerns for better organization
+  include TurboNative
   include DeviseConfiguration
   include InternationalizationSupport
   include DeviseLayoutConcern
