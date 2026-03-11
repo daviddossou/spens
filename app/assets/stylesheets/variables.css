@@ -1,5 +1,8 @@
 /* Spens Application Color Palette - CSS Custom Properties */
 :root {
+  /* Font — SF Pro on Apple, Segoe UI on Windows, Roboto on Android */
+  --font-family-base: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+
   /* Primary Colors */
   --color-primary: #3F51B5;
   --color-primary-50: #7885cb;
