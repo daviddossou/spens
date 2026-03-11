@@ -11,7 +11,7 @@
 
 /* When the app shell is present (authenticated), add spacing for fixed header + bottom nav */
 .main-container--with-shell {
-  padding-top: 56px;
+  padding-top: calc(56px + env(safe-area-inset-top, 0px));
   padding-bottom: calc(64px + env(safe-area-inset-bottom, 0px));
 }
 
