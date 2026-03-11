@@ -14,15 +14,24 @@
   border-bottom: 1px solid var(--color-light-gray);
 }
 
-/* Period switcher */
+/* Period switcher — sticky so it stays visible when scrolling down */
 .analytics-period {
-  margin-bottom: 1.5rem;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--bg-default, #f5f6fb);
+  margin: 0 -1rem 1.25rem;
+  padding: 0.625rem 1rem 0;
+  border-bottom: 1px solid var(--border-default);
 }
 
 .analytics-period__bar {
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
+  /* Fade the right edge to hint more items are available */
+  -webkit-mask-image: linear-gradient(to right, black calc(100% - 2rem), transparent 100%);
+  mask-image: linear-gradient(to right, black calc(100% - 2rem), transparent 100%);
 }
 
 .analytics-period__bar::-webkit-scrollbar {
@@ -34,6 +43,7 @@
   font-size: 0.75rem;
   color: var(--color-gray);
   margin-top: 0.5rem;
+  padding-bottom: 0.5rem;
 }
 
 .switcher--scroll {
