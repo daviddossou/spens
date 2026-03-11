@@ -17,7 +17,7 @@
 /* Period switcher — sticky so it stays visible when scrolling down */
 .analytics-period {
   position: sticky;
-  top: 0;
+  top: 56px;
   z-index: 10;
   background: var(--bg-default, #f5f6fb);
   margin: 0 -1rem 1.25rem;
