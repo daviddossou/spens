@@ -8,7 +8,9 @@ servers:
 
 proxy:
   ssl: true
-  host: spens.me
+  hosts:
+    - spens.me
+    - www.spens.me
 
 registry:
   server: ghcr.io
