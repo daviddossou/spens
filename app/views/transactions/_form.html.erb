@@ -76,7 +76,8 @@
         label: t('.amount_label'),
         required: true,
         prepend: get_currency_symbol(current_space.currency),
-        step: 0.01,
+        step: "0.01",
+        min: "0",
         placeholder: t('.amount_placeholder'),
         autofocus: true
       ) %>

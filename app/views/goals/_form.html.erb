@@ -35,7 +35,8 @@
         label: t('.current_balance_label'),
         required: true,
         prepend: get_currency_symbol(current_space.currency),
-        step: 0.01,
+        step: "0.01",
+        min: "0",
         placeholder: "0.00",
         help_text: t('.current_balance_help'),
         field_data: {
@@ -53,7 +54,8 @@
         label: t('.saving_goal_label'),
         required: true,
         prepend: get_currency_symbol(current_space.currency),
-        step: 0.01,
+        step: "0.01",
+        min: "0",
         placeholder: "0.00",
         help_text: t('.saving_goal_help')
       ) %>
