@@ -6,6 +6,7 @@
   flex-direction: column;
   justify-content: center;
   padding: 3rem 1rem;
+  padding-top: calc(3rem + env(safe-area-inset-top, 0px));
 }
 
 .auth-layout__language-switcher {
