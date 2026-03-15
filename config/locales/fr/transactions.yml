@@ -57,6 +57,8 @@ fr:
       description_placeholder: "ex. Déjeuner au bureau..."
       category_label: "Catégorie"
       category_placeholder: "ex. Courses, Salaire, Loyer..."
+      account_label: "Compte"
+      account_placeholder: "ex. Espèces, Banque, Mobile Money..."
       date_label: "Date"
       update_transaction: "Modifier"
     update:

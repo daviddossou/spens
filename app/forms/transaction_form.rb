@@ -270,6 +270,7 @@ class TransactionForm < BaseForm
         description: description,
         transaction_date: transaction_date,
         transaction_type_name: transaction_type_name,
+        account_name: account_name,
         amount: amount
       }
     ).call

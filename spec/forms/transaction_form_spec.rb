@@ -908,6 +908,75 @@ RSpec.describe TransactionForm, type: :model do
       end
     end
 
+    context 'updating account' do
+      let(:new_account) { create(:account, user: user, name: 'Bank') }
+
+      it 'changes the account' do
+        new_account # ensure created
+        edit_form = described_class.new(space, transaction: existing_transaction, account_name: 'Bank')
+        edit_form.submit
+        expect(existing_transaction.reload.account).to eq(new_account)
+      end
+
+      it 'reverses balance from old account and applies to new account' do
+        existing_transaction
+        new_account # ensure created
+        old_balance = account.reload.balance
+        new_balance = new_account.reload.balance
+
+        edit_form = described_class.new(space, transaction: existing_transaction, account_name: 'Bank')
+        edit_form.submit
+
+        expect(account.reload.balance).to eq(old_balance - existing_transaction.amount)
+        expect(new_account.reload.balance).to eq(new_balance + existing_transaction.amount)
+      end
+    end
+
+    context 'account unchanged' do
+      it 'keeps the same account when same name is submitted' do
+        edit_form = described_class.new(space, transaction: existing_transaction, account_name: 'Cash')
+        edit_form.submit
+        expect(existing_transaction.reload.account).to eq(account)
+      end
+
+      it 'does not change the account balance' do
+        existing_transaction
+        original_balance = account.reload.balance
+        edit_form = described_class.new(space, transaction: existing_transaction, account_name: 'Cash')
+        edit_form.submit
+        expect(account.reload.balance).to eq(original_balance)
+      end
+    end
+
+    context 'account not provided in params' do
+      it 'keeps the existing account' do
+        original_account = existing_transaction.account
+        edit_form = described_class.new(space, transaction: existing_transaction, description: 'Updated')
+        edit_form.submit
+        expect(existing_transaction.reload.account).to eq(original_account)
+      end
+    end
+
+    context 'account and amount changed simultaneously' do
+      let(:new_account) { create(:account, user: user, name: 'Bank') }
+
+      it 'reverses old amount from old account and applies new amount to new account' do
+        existing_transaction
+        new_account
+        old_amount = existing_transaction.amount # -50
+        old_balance = account.reload.balance     # -50 (after_create applied -50)
+        new_acct_balance = new_account.reload.balance
+
+        edit_form = described_class.new(space, transaction: existing_transaction, account_name: 'Bank', amount: 100.00)
+        edit_form.submit
+
+        # Old account: reversed the old amount (-50), so balance += 50 → 0
+        expect(account.reload.balance).to eq(old_balance - old_amount)
+        # New account: applied new normalized amount (-100 for expense)
+        expect(new_account.reload.balance).to eq(new_acct_balance + existing_transaction.reload.amount)
+      end
+    end
+
     context 'does not require account_name' do
       it 'is valid without account_name' do
         edit_form = described_class.new(space, transaction: existing_transaction)

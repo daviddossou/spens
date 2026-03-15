@@ -19,6 +19,12 @@ class UpdateTransactionService
       ).call
     end
 
+    if @attributes[:account_name].present?
+      updates[:account] = FindOrCreateAccountService.new(
+        @transaction.space, @attributes[:account_name]
+      ).call
+    end
+
     if @attributes[:amount].present? && @attributes[:amount].to_d > 0
       tt = updates[:transaction_type] || @transaction.transaction_type
       updates[:amount] = NormalizeAmountService.new(amount: @attributes[:amount], transaction_type: tt).call

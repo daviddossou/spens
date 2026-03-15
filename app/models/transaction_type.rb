@@ -95,6 +95,8 @@ class TransactionType < ApplicationRecord
           loan_repayment
           general_income
         ]
+      else
+        []
       end
     end
   end

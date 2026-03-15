@@ -57,6 +57,8 @@ en:
       description_placeholder: "e.g. Lunch at the office..."
       category_label: "Category"
       category_placeholder: "e.g. Groceries, Salary, Rent..."
+      account_label: "Account"
+      account_placeholder: "e.g. Cash, Bank, Mobile Money..."
       date_label: "Date"
       update_transaction: "Update"
     update:

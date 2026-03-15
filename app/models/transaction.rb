@@ -53,7 +53,7 @@ class Transaction < ApplicationRecord
   # Callbacks
   after_create :apply_account_balance
   after_create :apply_debt_totals
-  after_update :adjust_account_balance, if: :saved_change_to_amount?
+  after_update :adjust_account_balance, if: -> { saved_change_to_amount? || saved_change_to_account_id? }
   after_update :adjust_debt_totals, if: :saved_change_to_amount?
 
   private
@@ -80,12 +80,28 @@ class Transaction < ApplicationRecord
   end
 
   def adjust_account_balance
-    return unless account
+    if saved_change_to_account_id?
+      old_account_id, _new_account_id = saved_change_to_account_id
+      old_amount = saved_change_to_amount? ? saved_change_to_amount[0] : amount
 
-    old_amount, new_amount = saved_change_to_amount
-    difference = new_amount - old_amount
-    account.balance = (account.balance || 0.0) + difference
-    account.save!
+      if old_account_id.present?
+        old_account = Account.find(old_account_id)
+        old_account.balance = (old_account.balance || 0.0) - old_amount
+        old_account.save!
+      end
+
+      if account.present?
+        account.balance = (account.balance || 0.0) + amount
+        account.save!
+      end
+    elsif saved_change_to_amount?
+      return unless account
+
+      old_amount, new_amount = saved_change_to_amount
+      difference = new_amount - old_amount
+      account.balance = (account.balance || 0.0) + difference
+      account.save!
+    end
   end
 
   def adjust_debt_totals

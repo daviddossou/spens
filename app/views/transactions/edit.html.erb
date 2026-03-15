@@ -39,6 +39,22 @@
           ) %>
         </div>
 
+        <!-- Account -->
+        <div class="transaction-form__account">
+          <%= render Forms::InputFieldComponent.new(
+            form: f,
+            field: :account_name,
+            label: t('.account_label'),
+            required: true,
+            autocomplete: true,
+            autocomplete_options: @form.account_suggestions,
+            default_autocomplete_options: @form.default_account_suggestions,
+            allow_create: true,
+            placeholder: t('.account_placeholder'),
+            field_data: { tom_select_currency_value: get_currency_symbol(current_space.currency) }
+          ) %>
+        </div>
+
         <!-- Category -->
         <div class="transaction-form__transaction-type">
           <%= render Forms::InputFieldComponent.new(

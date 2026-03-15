@@ -394,6 +394,28 @@ RSpec.describe TransactionsController, type: :request do
         expect(transaction.reload.transaction_type.name).to eq("Dining")
       end
 
+      it "updates the transaction account" do
+        new_account = create(:account, user: user, name: "Bank")
+        patch transaction_path(id: transaction.id), params: {
+          transaction: { account_name: "Bank" }
+        }
+        expect(transaction.reload.account).to eq(new_account)
+      end
+
+      it "keeps the same account when account_name matches current" do
+        patch transaction_path(id: transaction.id), params: {
+          transaction: { account_name: "Cash" }
+        }
+        expect(transaction.reload.account).to eq(account)
+      end
+
+      it "keeps the existing account when account_name is not submitted" do
+        patch transaction_path(id: transaction.id), params: {
+          transaction: { description: "Just a desc change" }
+        }
+        expect(transaction.reload.account).to eq(account)
+      end
+
       it "updates the transaction date" do
         new_date = 3.days.ago.to_date
         patch transaction_path(id: transaction.id), params: {
