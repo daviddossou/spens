@@ -176,12 +176,12 @@ RSpec.describe TransactionsController, type: :request do
           }.not_to change(Transaction, :count)
         end
 
-        it "fails without account_name for expense" do
+        it "succeeds without account_name for expense" do
           attributes = valid_attributes.merge(account_name: '')
 
           expect {
             post transactions_path, params: { transaction: attributes }
-          }.not_to change(Transaction, :count)
+          }.to change(Transaction, :count).by(1)
         end
 
         it "fails without transaction_type_name for expense" do

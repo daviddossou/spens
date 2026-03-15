@@ -23,7 +23,6 @@ class TransactionForm < BaseForm
   validates :transaction_date, presence: true
 
   # Conditional validations based on kind
-  validates :account_name, presence: true, unless: -> { transfer? || debt_transaction? || editing? }
   validates :transaction_type_name, presence: true, unless: -> { transfer? || debt_transaction? }
   validates :from_account_name, presence: true, if: :double_transfer?
   validates :to_account_name, presence: true, if: :double_transfer?
@@ -236,7 +235,7 @@ class TransactionForm < BaseForm
   end
 
   def find_or_create_account
-    return nil if debt_transaction? && account_name.blank?
+    return nil if account_name.blank?
 
     FindOrCreateAccountService.new(space, account_name).call
   end

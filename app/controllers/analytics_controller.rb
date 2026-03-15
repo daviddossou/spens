@@ -45,9 +45,8 @@ class AnalyticsController < ApplicationController
   # ─── Income / Expense tab ───────────────────────────────────────────
 
   def load_income_expense_data
-    # Only consider transactions linked to an account (actual money movement)
-    # and exclude internal transfers which are not income or expense
-    transactions = scoped_transactions.where.not(account_id: nil)
+    # Exclude internal transfers which are not income or expense
+    transactions = scoped_transactions
 
     # Include debt_in (repayment received) as income, debt_out (repayment given) as expense
     income_tx = transactions.joins(:transaction_type).where(transaction_types: { kind: %w[income debt_in] })

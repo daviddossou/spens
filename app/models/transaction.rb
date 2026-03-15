@@ -47,7 +47,6 @@ class Transaction < ApplicationRecord
   validates :description, presence: true, length: { maximum: 255 }
   validates :amount, presence: true, numericality: { other_than: 0 }
   validates :transaction_date, presence: true
-  validate :account_presence_based_on_type
 
   ##
   # Callbacks
@@ -119,12 +118,5 @@ class Transaction < ApplicationRecord
     else
       debt.increment!(:total_reimbursed, difference)
     end
-  end
-
-  def account_presence_based_on_type
-    return unless transaction_type.present?
-    return if [ TransactionType::KIND_DEBT_IN, TransactionType::KIND_DEBT_OUT ].include?(transaction_type.kind)
-
-    errors.add(:account, :blank) if account.nil?
   end
 end

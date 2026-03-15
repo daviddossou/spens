@@ -113,10 +113,9 @@ RSpec.describe TransactionForm, type: :model do
             form.transaction_type_name = 'Test Category'
           end
 
-          it 'requires account_name' do
+          it 'does not require account_name' do
             form.account_name = nil
-            expect(form).not_to be_valid
-            expect(form.errors[:account_name]).to include("can't be blank")
+            expect(form).to be_valid
           end
 
           it 'requires transaction_type_name' do

@@ -49,14 +49,13 @@ RSpec.describe Transaction, type: :model do
         expect(Transaction.reflect_on_association(:account).options[:optional]).to be true
       end
 
-      it 'is required for non-debt transactions via validation' do
+      it 'is optional for all transaction types' do
         user = create(:user)
         space = user.spaces.first
         transaction_type = create(:transaction_type, :expense, space: space)
         transaction = build(:transaction, space: space, transaction_type: transaction_type, account: nil)
 
-        expect(transaction).not_to be_valid
-        expect(transaction.errors[:account]).to be_present
+        expect(transaction).to be_valid
       end
     end
 
@@ -284,11 +283,10 @@ RSpec.describe Transaction, type: :model do
           # Initial: 1000.0 + 100.0 = 1100.0
           expect(account.balance).to eq(1100.0)
 
-          # Update amount from 100.0 to 200.0
-          # This adds another 200.0 (new total calculation)
+          # Update amount from 100.0 to 200.0, difference +100
           expect do
             transaction.update!(amount: 200.0)
-          end.to change { account.reload.balance }.from(1100.0).to(1300.0)
+          end.to change { account.reload.balance }.from(1100.0).to(1200.0)
         end
 
         it 'updates account balance when account changes' do
