@@ -28,13 +28,6 @@ class CreateTransactionService
   private
 
   def normalized_amount
-    case @attributes[:transaction_type].kind
-    when "expense", "transfer_out", "debt_out"
-      -@attributes[:amount].abs
-    when "income", "transfer_in", "debt_in"
-      @attributes[:amount].abs
-    else
-      @attributes[:amount]
-    end
+    NormalizeAmountService.new(amount: @attributes[:amount], transaction_type: @attributes[:transaction_type]).call
   end
 end

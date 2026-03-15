@@ -49,7 +49,20 @@ en:
         transfer_in: "📥 Transfer in"
       description_out: "%{from_account_name} ➡️ %{to_account_name}"
       description_in: "%{to_account_name} ⬅️ %{from_account_name}"
+    edit:
+      title: "Edit Transaction"
+      subtitle: "Update your transaction details"
+      amount_label: "Amount"
+      description_label: "Description"
+      description_placeholder: "e.g. Lunch at the office..."
+      category_label: "Category"
+      category_placeholder: "e.g. Groceries, Salary, Rent..."
+      date_label: "Date"
+      update_transaction: "Update"
+    update:
+      success: "Transaction updated!"
     show:
+      edit: "Edit"
       transaction_details: "Transaction Details"
       description: "Description"
       date: "Date"

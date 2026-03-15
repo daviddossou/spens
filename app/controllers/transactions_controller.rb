@@ -3,6 +3,7 @@
 class TransactionsController < ApplicationController
   before_action :authenticate_user!
   before_action :build_form, only: [ :new ]
+  before_action :set_transaction, only: [ :show, :edit, :update ]
 
   def new
     respond_to do |format|
@@ -22,10 +23,27 @@ class TransactionsController < ApplicationController
   end
 
   def show
-    @transaction = current_space.transactions.includes(:transaction_type, :account, :debt).find(params[:id])
+  end
+
+  def edit
+    build_form_for_edit
+  end
+
+  def update
+    build_form_for_edit(update_params.to_h.symbolize_keys)
+
+    if @form.submit
+      redirect_with_reload_to transaction_path(id: @transaction.id), notice: t(".success"), status: :see_other
+    else
+      render :edit, status: :unprocessable_entity
+    end
   end
 
   private
+
+  def set_transaction
+    @transaction = current_space.transactions.includes(:transaction_type, :account, :debt).find(params[:id])
+  end
 
   def build_form(payload = {})
     kind = params[:kind] || payload[:kind] || "expense"
@@ -51,5 +69,13 @@ class TransactionsController < ApplicationController
       :debt_id,
       :description
     )
+  end
+
+  def update_params
+    params.require(:transaction).permit(:amount, :description, :transaction_type_name, :transaction_date)
+  end
+
+  def build_form_for_edit(payload = {})
+    @form = TransactionForm.new(current_space, payload.merge(transaction: @transaction))
   end
 end

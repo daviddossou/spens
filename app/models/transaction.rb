@@ -51,19 +51,21 @@ class Transaction < ApplicationRecord
 
   ##
   # Callbacks
-  after_save :update_account_balance
-  after_save :update_debt_totals
+  after_create :apply_account_balance
+  after_create :apply_debt_totals
+  after_update :adjust_account_balance, if: :saved_change_to_amount?
+  after_update :adjust_debt_totals, if: :saved_change_to_amount?
 
   private
 
-  def update_account_balance
+  def apply_account_balance
     return unless account
 
     account.balance = (account.balance || 0.0) + amount
     account.save!
   end
 
-  def update_debt_totals
+  def apply_debt_totals
     return unless debt
     return unless transaction_type
 
@@ -74,6 +76,32 @@ class Transaction < ApplicationRecord
       debt.increment!(:total_lent, amount.abs)
     else
       debt.increment!(:total_reimbursed, amount.abs)
+    end
+  end
+
+  def adjust_account_balance
+    return unless account
+
+    old_amount, new_amount = saved_change_to_amount
+    difference = new_amount - old_amount
+    account.balance = (account.balance || 0.0) + difference
+    account.save!
+  end
+
+  def adjust_debt_totals
+    return unless debt
+    return unless transaction_type
+
+    old_amount, new_amount = saved_change_to_amount
+    difference = new_amount.abs - old_amount.abs
+
+    is_debt_increase = (debt.lent? && transaction_type.debt_out?) ||
+                       (debt.borrowed? && transaction_type.debt_in?)
+
+    if is_debt_increase
+      debt.increment!(:total_lent, difference)
+    else
+      debt.increment!(:total_reimbursed, difference)
     end
   end
 

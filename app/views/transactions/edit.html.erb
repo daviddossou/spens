@@ -1,0 +1,81 @@
+<% content_for :title, t('.title') %>
+
+<%= turbo_frame_tag "modal" do %>
+  <div class="page-container page-container--narrow">
+    <header class="page-header">
+      <p class="page-header__subtitle"><%= t('.subtitle') %></p>
+    </header>
+
+    <div class="page-content">
+      <%= form_with model: @form,
+                    url: transaction_path(id: @form.transaction.id),
+                    method: :patch,
+                    class: "transaction-form" do |f| %>
+        <%= render 'shared/form_errors', object: @form %>
+
+        <!-- Amount -->
+        <div class="transaction-form__amount">
+          <%= render Forms::InputFieldComponent.new(
+            form: f,
+            field: :amount,
+            type: :number_field,
+            label: t('.amount_label'),
+            required: true,
+            prepend: get_currency_symbol(current_space.currency),
+            step: "0.01",
+            min: "0",
+            placeholder: "0.00"
+          ) %>
+        </div>
+
+        <!-- Description -->
+        <div class="transaction-form__description">
+          <%= render Forms::InputFieldComponent.new(
+            form: f,
+            field: :description,
+            label: t('.description_label'),
+            required: true,
+            placeholder: t('.description_placeholder')
+          ) %>
+        </div>
+
+        <!-- Category -->
+        <div class="transaction-form__transaction-type">
+          <%= render Forms::InputFieldComponent.new(
+            form: f,
+            field: :transaction_type_name,
+            label: t('.category_label'),
+            required: true,
+            autocomplete: true,
+            autocomplete_options: @form.transaction_type_suggestions,
+            default_autocomplete_options: @form.default_transaction_type_suggestions,
+            allow_create: true,
+            placeholder: t('.category_placeholder')
+          ) %>
+        </div>
+
+        <!-- Date -->
+        <div class="transaction-form__date">
+          <%= render Forms::InputFieldComponent.new(
+            form: f,
+            field: :transaction_date,
+            type: :date_field,
+            label: t('.date_label'),
+            required: true
+          ) %>
+        </div>
+
+        <!-- Actions -->
+        <div class="transaction-form__actions">
+          <%= render Ui::ButtonComponent.new(
+            text: t('.update_transaction'),
+            type: :submit,
+            variant: :primary,
+            size: :lg,
+            full_width: true
+          ) %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+<% end %>

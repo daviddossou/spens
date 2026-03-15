@@ -326,4 +326,92 @@ RSpec.describe TransactionsController, type: :request do
       end
     end
   end
+
+  describe "GET #edit" do
+    let(:account) { create(:account, user: user, name: "Cash") }
+    let(:transaction_type) { create(:transaction_type, user: user, kind: :expense, name: "Groceries") }
+    let(:transaction) do
+      create(:transaction, user: user, account: account, transaction_type: transaction_type,
+                           amount: -42.50, description: "Lunch")
+    end
+
+    it "returns a successful response" do
+      get edit_transaction_path(id: transaction.id)
+      expect(response).to have_http_status(:success)
+    end
+
+    context "when not authenticated" do
+      before { sign_out user }
+
+      it "redirects to sign in page" do
+        get edit_transaction_path(id: transaction.id)
+        expect(response).to redirect_to(new_user_session_path)
+      end
+    end
+  end
+
+  describe "PATCH #update" do
+    let(:account) { create(:account, user: user, name: "Cash") }
+    let(:transaction_type) { create(:transaction_type, user: user, kind: :expense, name: "Groceries") }
+    let(:transaction) do
+      create(:transaction, user: user, account: account, transaction_type: transaction_type,
+                           amount: -42.50, description: "Lunch")
+    end
+
+    context "with valid parameters" do
+      it "updates the transaction description" do
+        patch transaction_path(id: transaction.id), params: {
+          transaction: { description: "Updated lunch", amount: "42.50" }
+        }
+        expect(transaction.reload.description).to eq("Updated lunch")
+      end
+
+      it "redirects to the transaction show page" do
+        patch transaction_path(id: transaction.id), params: {
+          transaction: { amount: "50.00" }
+        }
+        expect(response).to redirect_to("#{transaction_path(id: transaction.id)}?format=html")
+      end
+
+      it "sets a success flash" do
+        patch transaction_path(id: transaction.id), params: {
+          transaction: { amount: "50.00" }
+        }
+        expect(flash[:notice]).to eq(I18n.t('transactions.update.success'))
+      end
+
+      it "updates the transaction amount" do
+        patch transaction_path(id: transaction.id), params: {
+          transaction: { amount: "75.00" }
+        }
+        expect(transaction.reload.amount).to eq(-75.00)
+      end
+
+      it "updates the transaction category" do
+        patch transaction_path(id: transaction.id), params: {
+          transaction: { transaction_type_name: "Dining", amount: "42.50" }
+        }
+        expect(transaction.reload.transaction_type.name).to eq("Dining")
+      end
+
+      it "updates the transaction date" do
+        new_date = 3.days.ago.to_date
+        patch transaction_path(id: transaction.id), params: {
+          transaction: { transaction_date: new_date }
+        }
+        expect(transaction.reload.transaction_date).to eq(new_date)
+      end
+    end
+
+    context "when not authenticated" do
+      before { sign_out user }
+
+      it "redirects to sign in page" do
+        patch transaction_path(id: transaction.id), params: {
+          transaction: { description: "Nope" }
+        }
+        expect(response).to redirect_to(new_user_session_path)
+      end
+    end
+  end
 end

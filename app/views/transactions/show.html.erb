@@ -86,6 +86,14 @@
       <!-- Actions -->
       <div class="transaction-show__actions">
         <%= render Ui::ButtonComponent.new(
+          text: t('.edit'),
+          url: edit_transaction_path(id: @transaction.id),
+          variant: :primary,
+          size: :md,
+          data: { turbo_frame: "modal" }
+        ) %>
+
+        <%= render Ui::ButtonComponent.new(
           text: t('.back_to_dashboard'),
           url: dashboard_path,
           variant: :secondary,

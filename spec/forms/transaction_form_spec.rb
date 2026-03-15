@@ -331,8 +331,38 @@ RSpec.describe TransactionForm, type: :model do
   end
 
   describe '#persisted?' do
-    it 'always returns false' do
+    it 'returns false for new transactions' do
       expect(form.persisted?).to be(false)
+    end
+
+    it 'returns true when editing an existing transaction' do
+      existing = create(:transaction, user: user)
+      edit_form = described_class.new(space, transaction: existing)
+      expect(edit_form.persisted?).to be(true)
+    end
+  end
+
+  describe '#editing?' do
+    it 'returns false for new transactions' do
+      expect(form.editing?).to be(false)
+    end
+
+    it 'returns true when initialized with an existing transaction' do
+      existing = create(:transaction, user: user)
+      edit_form = described_class.new(space, transaction: existing)
+      expect(edit_form.editing?).to be(true)
+    end
+  end
+
+  describe '#to_key' do
+    it 'returns nil for new transactions' do
+      expect(form.to_key).to be_nil
+    end
+
+    it 'returns the transaction id when editing' do
+      existing = create(:transaction, user: user)
+      edit_form = described_class.new(space, transaction: existing)
+      expect(edit_form.to_key).to eq([ existing.id ])
     end
   end
 
@@ -826,6 +856,74 @@ RSpec.describe TransactionForm, type: :model do
         .once.and_call_original
       form.send(:transfer_type_in)
       form.send(:transfer_type_in)
+    end
+  end
+
+  describe '#submit for editing' do
+    let(:account) { create(:account, user: user, name: 'Cash') }
+    let(:transaction_type) { create(:transaction_type, user: user, kind: :expense, name: 'Groceries') }
+    let(:existing_transaction) do
+      create(:transaction, user: user, account: account, transaction_type: transaction_type,
+                           amount: -50.00, description: 'Weekly groceries', transaction_date: Date.current)
+    end
+
+    context 'updating description' do
+      it 'updates the description' do
+        edit_form = described_class.new(space, transaction: existing_transaction, description: 'New desc')
+        expect(edit_form.submit).to be(true)
+        expect(existing_transaction.reload.description).to eq('New desc')
+      end
+    end
+
+    context 'updating amount' do
+      it 'normalizes expense amount to negative' do
+        edit_form = described_class.new(space, transaction: existing_transaction, amount: 75.00)
+        edit_form.submit
+        expect(existing_transaction.reload.amount).to eq(-75.00)
+      end
+
+      it 'adjusts account balance by the difference' do
+        existing_transaction
+        original_balance = account.reload.balance
+        edit_form = described_class.new(space, transaction: existing_transaction, amount: 75.00)
+        edit_form.submit
+        expect(account.reload.balance).to eq(original_balance - 25.00)
+      end
+    end
+
+    context 'updating transaction_type_name' do
+      it 'finds or creates the transaction type' do
+        edit_form = described_class.new(space, transaction: existing_transaction, transaction_type_name: 'Dining')
+        edit_form.submit
+        expect(existing_transaction.reload.transaction_type.name).to eq('Dining')
+      end
+    end
+
+    context 'updating transaction_date' do
+      it 'updates the date' do
+        new_date = 3.days.ago.to_date
+        edit_form = described_class.new(space, transaction: existing_transaction, transaction_date: new_date)
+        edit_form.submit
+        expect(existing_transaction.reload.transaction_date).to eq(new_date)
+      end
+    end
+
+    context 'does not require account_name' do
+      it 'is valid without account_name' do
+        edit_form = described_class.new(space, transaction: existing_transaction)
+        expect(edit_form).to be_valid
+      end
+    end
+
+    context 'populates defaults from existing transaction' do
+      it 'populates all attributes' do
+        edit_form = described_class.new(space, transaction: existing_transaction)
+        expect(edit_form.kind).to eq('expense')
+        expect(edit_form.amount).to eq(50.00)
+        expect(edit_form.description).to eq('Weekly groceries')
+        expect(edit_form.transaction_type_name).to eq('Groceries')
+        expect(edit_form.account_name).to eq('Cash')
+      end
     end
   end
 end

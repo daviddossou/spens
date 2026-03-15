@@ -23,7 +23,7 @@ class TransactionForm < BaseForm
   validates :transaction_date, presence: true
 
   # Conditional validations based on kind
-  validates :account_name, presence: true, unless: -> { transfer? || debt_transaction? }
+  validates :account_name, presence: true, unless: -> { transfer? || debt_transaction? || editing? }
   validates :transaction_type_name, presence: true, unless: -> { transfer? || debt_transaction? }
   validates :from_account_name, presence: true, if: :double_transfer?
   validates :to_account_name, presence: true, if: :double_transfer?
@@ -41,6 +41,7 @@ class TransactionForm < BaseForm
   # Instance Methods
   def initialize(space, payload = {})
     @space = space
+    @transaction = payload.delete(:transaction)
     @account_id = payload[:account_id]
     @debt_id = payload[:debt_id]
 
@@ -48,7 +49,17 @@ class TransactionForm < BaseForm
       @debt = space.debts.find_by(id: @debt_id)
     end
 
-    if @account_id.present?
+    if editing?
+      payload[:kind] ||= @transaction.transaction_type.kind
+      payload[:amount] ||= @transaction.amount.abs
+      payload[:description] ||= @transaction.description
+      payload[:transaction_date] ||= @transaction.transaction_date
+      payload[:transaction_type_name] ||= @transaction.transaction_type.name
+      payload[:note] ||= @transaction.note
+      payload[:account_name] ||= @transaction.account&.name
+    end
+
+    if @account_id.present? && !editing?
       account = space.accounts.find_by(id: @account_id)
       if account
         payload[:account_name] ||= account.name
@@ -69,8 +80,16 @@ class TransactionForm < BaseForm
     )
   end
 
+  def editing?
+    @transaction&.persisted? || false
+  end
+
   def persisted?
-    false
+    editing?
+  end
+
+  def to_key
+    editing? ? [ @transaction.id ] : nil
   end
 
   def to_model
@@ -81,7 +100,9 @@ class TransactionForm < BaseForm
     return false if invalid?
 
     ActiveRecord::Base.transaction do
-      if transfer?
+      if editing?
+        update_existing_transaction
+      elsif transfer?
         create_transfer_transactions
       elsif debt_transaction?
         create_debt_transaction
@@ -240,5 +261,17 @@ class TransactionForm < BaseForm
   def transfer_type_in
     type_name = I18n.t("transactions.transfer.type_name.#{TransactionType::KIND_TRANSFER_IN}")
     @transfer_type_in ||= find_or_create_transaction_type(type_name, TransactionType::KIND_TRANSFER_IN)
+  end
+
+  def update_existing_transaction
+    self.transaction = UpdateTransactionService.new(
+      transaction: @transaction,
+      attributes: {
+        description: description,
+        transaction_date: transaction_date,
+        transaction_type_name: transaction_type_name,
+        amount: amount
+      }
+    ).call
   end
 end

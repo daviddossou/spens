@@ -29,7 +29,7 @@ Rails.application.routes.draw do
     get "dashboard", to: "home#show"
 
     # Transactions
-    resources :transactions, only: [ :new, :create, :show ]
+    resources :transactions, only: [ :new, :create, :show, :edit, :update ]
 
     # Goals
     resources :goals, only: [ :index, :show, :new, :create, :edit, :update, :destroy ]
