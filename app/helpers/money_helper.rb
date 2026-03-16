@@ -39,11 +39,11 @@ module MoneyHelper
 
     # Calculate abbreviated value
     abbreviated, suffix = if abs_amount >= 1_000_000_000
-      [ (abs_amount / 1_000_000_000.0).round(1), "B" ]
+      [ (abs_amount / 1_000_000_000.0).round(2), "B" ]
     elsif abs_amount >= 1_000_000
-      [ (abs_amount / 1_000_000.0).round(1), "M" ]
+      [ (abs_amount / 1_000_000.0).round(2), "M" ]
     else
-      [ (abs_amount / 1_000.0).round(1), "K" ]
+      [ (abs_amount / 1_000.0).round(2), "K" ]
     end
 
     # Format abbreviated number (remove .0 if whole number)
