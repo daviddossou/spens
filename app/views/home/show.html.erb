@@ -48,7 +48,9 @@
 
     <!-- Load More Trigger (Invisible) -->
     <% if @has_more %>
-      <div data-infinite-scroll-target="trigger" class="dashboard__load-trigger"></div>
+      <div id="infinite-scroll-trigger"
+           data-infinite-scroll-target="trigger"
+           class="dashboard__load-trigger"></div>
     <% end %>
 
     <!-- Empty State -->

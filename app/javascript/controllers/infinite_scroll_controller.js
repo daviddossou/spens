@@ -9,20 +9,23 @@ export default class extends Controller {
   }
 
   connect() {
-    this.observer = new IntersectionObserver(
-      (entries) => this.handleIntersection(entries),
-      { rootMargin: '100px' }
-    )
-
-    if (this.hasTriggerTarget) {
-      this.observer.observe(this.triggerTarget)
-    }
+    this.observeTrigger()
   }
 
   disconnect() {
     if (this.observer) {
       this.observer.disconnect()
     }
+  }
+
+  // Stimulus calls this automatically when a new trigger target appears in the DOM
+  triggerTargetConnected(element) {
+    this.ensureObserver()
+    this.observer.observe(element)
+  }
+
+  triggerTargetDisconnected(element) {
+    this.observer.unobserve(element)
   }
 
   handleIntersection(entries) {
@@ -35,10 +38,9 @@ export default class extends Controller {
 
   async loadMore() {
     if (this.loading) return
-    
+
     this.loading = true
     this.showSpinner()
-    this.hideTrigger()
 
     try {
       const response = await fetch(`${this.urlValue}?page=${this.pageValue}`, {
@@ -49,6 +51,7 @@ export default class extends Controller {
 
       if (response.ok) {
         const html = await response.text()
+        this.pageValue++
         Turbo.renderStreamMessage(html)
       }
     } catch (error) {
@@ -71,9 +74,19 @@ export default class extends Controller {
     }
   }
 
-  hideTrigger() {
+  observeTrigger() {
     if (this.hasTriggerTarget) {
-      this.triggerTarget.style.display = 'none'
+      this.ensureObserver()
+      this.observer.observe(this.triggerTarget)
+    }
+  }
+
+  ensureObserver() {
+    if (!this.observer) {
+      this.observer = new IntersectionObserver(
+        (entries) => this.handleIntersection(entries),
+        { rootMargin: '200px' }
+      )
     }
   }
 }

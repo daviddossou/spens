@@ -5,8 +5,8 @@
 <% if @has_more %>
   <%= turbo_stream.replace "infinite-scroll-trigger" do %>
     <div id="infinite-scroll-trigger"
-         data-next-page="<%= @page + 1 %>"
-         class="h-20">
+         data-infinite-scroll-target="trigger"
+         class="dashboard__load-trigger">
     </div>
   <% end %>
 <% else %>
