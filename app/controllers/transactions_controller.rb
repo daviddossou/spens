@@ -3,7 +3,7 @@
 class TransactionsController < ApplicationController
   before_action :authenticate_user!
   before_action :build_form, only: [ :new ]
-  before_action :set_transaction, only: [ :show, :edit, :update ]
+  before_action :set_transaction, only: [ :show, :edit, :update, :destroy ]
 
   def new
     respond_to do |format|
@@ -39,6 +39,11 @@ class TransactionsController < ApplicationController
     end
   end
 
+  def destroy
+    @transaction.destroy!
+    redirect_to dashboard_path, notice: t(".success"), status: :see_other
+  end
+
   private
 
   def set_transaction
@@ -72,7 +77,7 @@ class TransactionsController < ApplicationController
   end
 
   def update_params
-    params.require(:transaction).permit(:amount, :description, :transaction_type_name, :transaction_date, :account_name)
+    params.require(:transaction).permit(:kind, :amount, :description, :transaction_type_name, :transaction_date, :account_name)
   end
 
   def build_form_for_edit(payload = {})

@@ -53,7 +53,9 @@ class Transaction < ApplicationRecord
   after_create :apply_account_balance
   after_create :apply_debt_totals
   after_update :adjust_account_balance, if: -> { saved_change_to_amount? || saved_change_to_account_id? }
-  after_update :adjust_debt_totals, if: :saved_change_to_amount?
+  after_update :adjust_debt_totals, if: -> { saved_change_to_amount? || saved_change_to_transaction_type_id? }
+  after_destroy :reverse_account_balance
+  after_destroy :reverse_debt_totals
 
   private
 
@@ -107,16 +109,61 @@ class Transaction < ApplicationRecord
     return unless debt
     return unless transaction_type
 
-    old_amount, new_amount = saved_change_to_amount
-    difference = new_amount.abs - old_amount.abs
+    if saved_change_to_transaction_type_id?
+      old_type_id = saved_change_to_transaction_type_id[0]
+      old_type = TransactionType.find(old_type_id)
+      old_amount = saved_change_to_amount? ? saved_change_to_amount[0] : amount
+
+      # Reverse old contribution
+      old_is_increase = (debt.lent? && old_type.debt_out?) ||
+                        (debt.borrowed? && old_type.debt_in?)
+      if old_is_increase
+        debt.decrement!(:total_lent, old_amount.abs)
+      else
+        debt.decrement!(:total_reimbursed, old_amount.abs)
+      end
+
+      # Apply new contribution
+      new_is_increase = (debt.lent? && transaction_type.debt_out?) ||
+                        (debt.borrowed? && transaction_type.debt_in?)
+      if new_is_increase
+        debt.increment!(:total_lent, amount.abs)
+      else
+        debt.increment!(:total_reimbursed, amount.abs)
+      end
+    elsif saved_change_to_amount?
+      old_amount, new_amount = saved_change_to_amount
+      difference = new_amount.abs - old_amount.abs
+
+      is_debt_increase = (debt.lent? && transaction_type.debt_out?) ||
+                         (debt.borrowed? && transaction_type.debt_in?)
+
+      if is_debt_increase
+        debt.increment!(:total_lent, difference)
+      else
+        debt.increment!(:total_reimbursed, difference)
+      end
+    end
+  end
+
+  def reverse_account_balance
+    return unless account
+
+    account.balance = (account.balance || 0.0) - amount
+    account.save!
+  end
+
+  def reverse_debt_totals
+    return unless debt
+    return unless transaction_type
 
     is_debt_increase = (debt.lent? && transaction_type.debt_out?) ||
                        (debt.borrowed? && transaction_type.debt_in?)
 
     if is_debt_increase
-      debt.increment!(:total_lent, difference)
+      debt.decrement!(:total_lent, amount.abs)
     else
-      debt.increment!(:total_reimbursed, difference)
+      debt.decrement!(:total_reimbursed, amount.abs)
     end
   end
 end

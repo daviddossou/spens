@@ -271,6 +271,7 @@ class TransactionForm < BaseForm
     self.transaction = UpdateTransactionService.new(
       transaction: @transaction,
       attributes: {
+        kind: kind,
         description: description,
         transaction_date: transaction_date,
         transaction_type_name: transaction_type_name,

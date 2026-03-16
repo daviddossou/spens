@@ -61,11 +61,22 @@ fr:
       account_placeholder: "ex. Espèces, Banque, Mobile Money..."
       date_label: "Date"
       update_transaction: "Modifier"
+      kind_label: "Type de transaction"
+      kind_debt_in:
+        lent: "Remboursement reçu"
+        borrowed: "Argent emprunté"
+      kind_debt_out:
+        lent: "Argent prêté"
+        borrowed: "Remboursement de dette"
     update:
       success: "Transaction modifiée !"
+    destroy:
+      success: "Transaction supprimée !"
     show:
       add_transaction: "Ajouter une transaction"
       edit: "Modifier"
+      delete: "Supprimer"
+      delete_confirmation: "Es-tu sûr de vouloir supprimer cette transaction ? Les soldes seront ajustés."
       transaction_details: "Détails"
       description: "Description"
       date: "Date"

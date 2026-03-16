@@ -12,10 +12,12 @@ class UpdateTransactionService
     updates[:description] = @attributes[:description] if @attributes[:description].present?
     updates[:transaction_date] = @attributes[:transaction_date] if @attributes[:transaction_date].present?
 
-    if @attributes[:transaction_type_name].present?
-      kind = @transaction.transaction_type.kind
+    kind = @attributes[:kind].presence || @transaction.transaction_type.kind
+
+    if @attributes[:transaction_type_name].present? || @attributes[:kind].present?
+      type_name = @attributes[:transaction_type_name].presence || @transaction.transaction_type.name
       updates[:transaction_type] = FindOrCreateTransactionTypeService.new(
-        @transaction.space, @attributes[:transaction_type_name], kind
+        @transaction.space, type_name, kind
       ).call
     end
 
@@ -28,6 +30,10 @@ class UpdateTransactionService
     if @attributes[:amount].present? && @attributes[:amount].to_d > 0
       tt = updates[:transaction_type] || @transaction.transaction_type
       updates[:amount] = NormalizeAmountService.new(amount: @attributes[:amount], transaction_type: tt).call
+    elsif @attributes[:kind].present? && @attributes[:kind] != @transaction.transaction_type.kind
+      # Kind changed but amount unchanged — re-normalize with new sign
+      tt = updates[:transaction_type] || @transaction.transaction_type
+      updates[:amount] = NormalizeAmountService.new(amount: @transaction.amount, transaction_type: tt).call
     end
 
     @transaction.update!(updates)

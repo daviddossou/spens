@@ -61,11 +61,22 @@ en:
       account_placeholder: "e.g. Cash, Bank, Mobile Money..."
       date_label: "Date"
       update_transaction: "Update"
+      kind_label: "Transaction Type"
+      kind_debt_in:
+        lent: "Repayment Received"
+        borrowed: "Money Borrowed"
+      kind_debt_out:
+        lent: "Money Lent"
+        borrowed: "Loan Repayment"
     update:
       success: "Transaction updated!"
+    destroy:
+      success: "Transaction deleted!"
     show:
       add_transaction: "Add Transaction"
       edit: "Edit"
+      delete: "Delete"
+      delete_confirmation: "Are you sure you want to delete this transaction? This will reverse any balance changes."
       transaction_details: "Transaction Details"
       description: "Description"
       date: "Date"

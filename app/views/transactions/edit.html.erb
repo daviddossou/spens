@@ -28,6 +28,23 @@
           ) %>
         </div>
 
+        <!-- Kind (debt transactions only) -->
+        <% if %w[debt_in debt_out].include?(@form.kind) && @form.transaction.debt.present? %>
+          <% debt = @form.transaction.debt %>
+          <div class="transaction-form__kind">
+            <%= render Forms::SelectFieldComponent.new(
+              form: f,
+              field: :kind,
+              label: t('.kind_label'),
+              options: [
+                [t(".kind_debt_in.#{debt.direction}"), "debt_in"],
+                [t(".kind_debt_out.#{debt.direction}"), "debt_out"]
+              ],
+              selected: @form.kind
+            ) %>
+          </div>
+        <% end %>
+
         <!-- Description -->
         <div class="transaction-form__description">
           <%= render Forms::InputFieldComponent.new(

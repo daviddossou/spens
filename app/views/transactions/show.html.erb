@@ -89,13 +89,24 @@
 
       <!-- Actions -->
       <div class="transaction-show__actions">
-        <%= render Ui::ButtonComponent.new(
-          text: t('.edit'),
-          url: edit_transaction_path(id: @transaction.id),
-          variant: :primary,
-          size: :md,
-          data: { turbo_frame: "modal" }
-        ) %>
+        <div class="transaction-show__actions-right">
+          <%= render Ui::ButtonComponent.new(
+            text: t('.edit'),
+            url: edit_transaction_path(id: @transaction.id),
+            variant: :primary,
+            size: :md,
+            data: { turbo_frame: "modal" }
+          ) %>
+
+          <%= render Ui::ButtonComponent.new(
+            text: t('.delete'),
+            url: transaction_path(id: @transaction.id),
+            variant: :danger,
+            size: :md,
+            method: :delete,
+            data: { "turbo-confirm" => t('.delete_confirmation') }
+          ) %>
+        </div>
 
         <%= render Ui::ButtonComponent.new(
           text: t('.back_to_dashboard'),
