@@ -33,6 +33,7 @@ fr:
       success: "Objectif mis à jour !"
       error: "Impossible de modifier cet objectif"
     show:
+      add_goal: "Ajouter un objectif"
       back_to_goals: "Retour"
       subtitle: "Gère ton objectif d'épargne"
       actions_title: "Actions"

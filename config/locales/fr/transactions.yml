@@ -64,6 +64,7 @@ fr:
     update:
       success: "Transaction modifiée !"
     show:
+      add_transaction: "Ajouter une transaction"
       edit: "Modifier"
       transaction_details: "Détails"
       description: "Description"

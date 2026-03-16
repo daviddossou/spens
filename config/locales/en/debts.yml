@@ -78,6 +78,7 @@ en:
       note_placeholder: "Add details about this loan..."
       note_help: "Reason, terms, or other info"
     show:
+      add_debt: "Add Debt"
       back_to_debts: "Back"
       subtitle:
         lent: "Track this loan and payments"

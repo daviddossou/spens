@@ -33,6 +33,7 @@ en:
       success: "Goal updated!"
       error: "Could not update this goal"
     show:
+      add_goal: "Add Goal"
       back_to_goals: "Back"
       subtitle: "Manage your savings goal"
       actions_title: "Actions"

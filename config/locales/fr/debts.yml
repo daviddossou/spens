@@ -78,6 +78,7 @@ fr:
       note_placeholder: "Ajoute des détails..."
       note_help: "Raison, conditions ou autres infos"
     show:
+      add_debt: "Ajouter une dette"
       back_to_debts: "Retour"
       subtitle:
         lent: "Suis ce prêt et les paiements"
