@@ -4,6 +4,11 @@ import "controllers"
 import "chartkick"
 import "Chart.bundle"
 
+// Clean up body scroll lock before Turbo caches the page
+document.addEventListener("turbo:before-cache", () => {
+  document.body.classList.remove("bottom-sheet-open")
+})
+
 // Format chart values with K/M/B abbreviations + currency symbol
 function formatAmount(value) {
   const meta = document.querySelector('meta[name="currency-symbol"]');
