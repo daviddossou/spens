@@ -79,8 +79,12 @@ en:
 
       kind_income: "Income"
       kind_expense: "Expense"
-      kind_debt_in: "Debt Received"
-      kind_debt_out: "Debt Payment"
+      kind_debt_in:
+        lent: "Repayment Received"
+        borrowed: "Money Borrowed"
+      kind_debt_out:
+        lent: "Money Lent"
+        borrowed: "Loan Repayment"
       kind_transfer: "Transfer"
       kind_transfer_in: "Transfer In"
       kind_transfer_out: "Transfer Out"

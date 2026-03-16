@@ -52,7 +52,11 @@
         <div class="transaction-show__field">
           <label class="transaction-show__label"><%= t('.category') %></label>
           <div class="transaction-show__badge <%= transaction_badge_class(kind) %>">
-            <%= t(".kind_#{kind}") %>
+            <% if @transaction.debt.present? && %w[debt_in debt_out].include?(kind) %>
+              <%= t(".kind_#{kind}.#{@transaction.debt.direction}") %>
+            <% else %>
+              <%= t(".kind_#{kind}") %>
+            <% end %>
           </div>
         </div>
 

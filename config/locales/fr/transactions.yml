@@ -79,8 +79,12 @@ fr:
 
       kind_income: "Revenu"
       kind_expense: "Dépense"
-      kind_debt_in: "Remboursement reçu"
-      kind_debt_out: "Remboursement payé"
+      kind_debt_in:
+        lent: "Remboursement reçu"
+        borrowed: "Argent emprunté"
+      kind_debt_out:
+        lent: "Argent prêté"
+        borrowed: "Remboursement de dette"
       kind_transfer: "Transfert"
       kind_transfer_in: "Transfert entrant"
       kind_transfer_out: "Transfert sortant"

@@ -24,8 +24,7 @@ class TransactionForm < BaseForm
 
   # Conditional validations based on kind
   validates :transaction_type_name, presence: true, unless: -> { transfer? || debt_transaction? }
-  validates :from_account_name, presence: true, if: :double_transfer?
-  validates :to_account_name, presence: true, if: :double_transfer?
+  validate :at_least_one_transfer_account, if: :double_transfer?
   validate :different_accounts_for_transfer, if: :double_transfer?
 
   ##
@@ -159,6 +158,12 @@ class TransactionForm < BaseForm
                   from_account_name.strip.downcase == to_account_name.strip.downcase
 
     errors.add(:to_account_name, I18n.t("errors.messages.different_account"))
+  end
+
+  def at_least_one_transfer_account
+    return if from_account_name.present? || to_account_name.present?
+
+    errors.add(:from_account_name, :blank)
   end
 
   def create_regular_transaction
