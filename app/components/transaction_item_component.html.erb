@@ -24,6 +24,11 @@
               <%= transaction.account.name %>
             </p>
           <% end %>
+          <% if transaction.debt.present? %>
+            <p class="transaction-item__account">
+              <%= transaction.debt.name %>
+            </p>
+          <% end %>
         </div>
       </div>
     </div>
