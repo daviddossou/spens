@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class Auth::RegistrationsController < ApplicationController
+  include InvitationAcceptance
+
   layout "auth"
   before_action :redirect_if_signed_in, only: [ :new, :create ]
 
@@ -45,17 +47,6 @@ class Auth::RegistrationsController < ApplicationController
 
   def redirect_if_signed_in
     redirect_to dashboard_path if user_signed_in?
-  end
-
-  def accept_pending_invitation(user)
-    token = session.delete(:pending_invitation_token)
-    return unless token
-
-    invitation = Invitation.pending.find_by(token: token)
-    return unless invitation
-
-    invitation.accept!(user)
-    invitation.space
   end
 
   def log_otp(user)
