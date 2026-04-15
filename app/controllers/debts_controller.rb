@@ -36,6 +36,7 @@ class DebtsController < ApplicationController
 
   def edit
     @form = DebtForm.new(current_space, debt_edit_payload)
+    @form.user = current_user
   end
 
   def update
@@ -62,6 +63,7 @@ class DebtsController < ApplicationController
 
   def build_form(payload = {})
     @form = DebtForm.new(current_space, payload)
+    @form.user = current_user
   end
 
   def debt_edit_payload

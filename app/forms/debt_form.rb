@@ -3,7 +3,7 @@
 class DebtForm < BaseForm
   ##
   # Attributes
-  attr_accessor :space, :debt
+  attr_accessor :space, :debt, :user
 
   attribute :contact_name, :string
   attribute :total_lent, :decimal
@@ -105,7 +105,7 @@ class DebtForm < BaseForm
     }
 
     if @debt.nil?
-      @debt = space.debts.create!(debt_attributes)
+      @debt = space.debts.create!(debt_attributes.merge(user: user))
     else
       @debt.update!(debt_attributes)
     end
@@ -142,6 +142,7 @@ class DebtForm < BaseForm
       debt_id: debt.id,
       account_name: account_name
     )
+    transaction_form.user = user
 
     transaction_form.submit
 

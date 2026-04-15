@@ -1,0 +1,7 @@
+<%= t('invitations.mailer.greeting') %>
+
+<%= t('invitations.mailer.message', name: @invited_by.first_name, space_name: @space.name) %>
+
+<%= t('invitations.mailer.accept_button') %>: <%= @accept_url %>
+
+<%= t('invitations.mailer.ignore') %>

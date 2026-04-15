@@ -1,0 +1,21 @@
+<div style="text-align: center; margin-bottom: 24px;">
+  <img src="<%= message.attachments['spens-logo.png'].try(:url) || image_url('spens-logo.png') %>" alt="Spens" style="height: 40px; width: auto;">
+</div>
+
+<h2 style="color: #333; font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; margin-bottom: 16px;">
+  <%= t('invitations.mailer.greeting') %>
+</h2>
+
+<p style="color: #555; font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 16px; line-height: 1.5;">
+  <%= t('invitations.mailer.message', name: @invited_by.first_name, space_name: @space.name) %>
+</p>
+
+<div style="text-align: center; margin: 24px 0;">
+  <a href="<%= @accept_url %>" style="background-color: #111; color: #fff; padding: 12px 32px; text-decoration: none; border-radius: 8px; font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 16px; font-weight: 600;">
+    <%= t('invitations.mailer.accept_button') %>
+  </a>
+</div>
+
+<p style="color: #888; font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 14px; line-height: 1.5;">
+  <%= t('invitations.mailer.ignore') %>
+</p>

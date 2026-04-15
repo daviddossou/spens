@@ -164,7 +164,9 @@ RSpec.describe User, type: :model do
   end
 
   describe "associations" do
-    it { is_expected.to have_many(:spaces).dependent(:destroy) }
+    it { is_expected.to have_many(:owned_spaces).class_name("Space").dependent(:destroy) }
+    it { is_expected.to have_many(:memberships).dependent(:destroy) }
+    it { is_expected.to have_many(:spaces).through(:memberships) }
     it { is_expected.to have_many(:accounts).through(:spaces) }
     it { is_expected.to have_many(:transaction_types).through(:spaces) }
     it { is_expected.to have_many(:transactions).through(:spaces) }

@@ -1,0 +1,26 @@
+fr:
+  invitations:
+    create:
+      success: "Invitation envoyée !"
+    show:
+      title: "Tu es invité(e)"
+      message: "%{name} t'a invité(e) à rejoindre l'espace « %{space_name} »."
+      accept_button: "Accepter l'invitation"
+      invalid_or_expired: "Cette invitation est invalide ou a déjà été acceptée."
+    update:
+      success: "Tu as rejoint l'espace !"
+      invalid_or_expired: "Cette invitation est invalide ou a déjà été acceptée."
+    mailer:
+      subject: "%{inviter_name} t'invite sur %{space_name} — Spens"
+      greeting: "Tu es invité(e) !"
+      message: "%{name} t'a invité(e) à rejoindre l'espace « %{space_name} » sur Spens."
+      accept_button: "Accepter l'invitation"
+      ignore: "Si tu n'attendais pas cette invitation, tu peux ignorer cet e-mail."
+  activerecord:
+    errors:
+      models:
+        invitation:
+          attributes:
+            email:
+              already_invited: "a déjà été invité(e) dans cet espace"
+              already_member: "est déjà membre de cet espace"

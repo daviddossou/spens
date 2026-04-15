@@ -29,10 +29,25 @@ class Space < ApplicationRecord
   ##
   # Associations
   belongs_to :user
+  has_many :memberships, dependent: :destroy
+  has_many :members, through: :memberships, source: :user
+  has_many :invitations, dependent: :destroy
   has_many :accounts, dependent: :destroy
   has_many :transaction_types, dependent: :destroy
   has_many :transactions, dependent: :destroy
   has_many :debts, dependent: :destroy
+
+  ##
+  # Callbacks
+  after_create :create_creator_membership
+
+  private
+
+  def create_creator_membership
+    memberships.create!(user: user)
+  end
+
+  public
 
   ##
   # Constants

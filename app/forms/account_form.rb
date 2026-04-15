@@ -3,7 +3,7 @@
 class AccountForm < BaseForm
   ##
   # Attributes
-  attr_accessor :space, :account
+  attr_accessor :space, :account, :user
 
   attribute :account_name, :string
   attribute :current_balance, :decimal
@@ -73,7 +73,7 @@ class AccountForm < BaseForm
 
   def create_account
     @account = find_or_create_account
-    account.update!(saving_goal: saving_goal || 0.0)
+    @account.update!(saving_goal: saving_goal || 0.0, user: user || @account.user)
     adjust_account_balance(account) if balance_changed?(account)
   end
 
@@ -127,6 +127,7 @@ class AccountForm < BaseForm
     end
 
     transaction_form = TransactionForm.new(space, params)
+    transaction_form.user = user
     transaction_form.submit
 
     raise StandardError, transaction_form.errors.full_messages.join(", ") unless transaction_form.errors.empty?

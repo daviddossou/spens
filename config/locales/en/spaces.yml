@@ -31,6 +31,7 @@ en:
     destroy:
       success: "Space deleted."
       last_space: "You can't delete your last space."
+      not_owner: "Only the space owner can delete it."
     selections:
       create:
         success: "Switched to %{name}."

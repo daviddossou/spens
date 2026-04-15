@@ -1,0 +1,19 @@
+fr:
+  spaces:
+    members:
+      index:
+        title: "Membres"
+        subtitle: "Membres de %{space_name}"
+        owner: "Propriétaire"
+        pending_title: "Invitations en attente"
+        pending: "En attente"
+        invited_on: "Invité(e) le %{date}"
+        invite_member: "Inviter"
+      new:
+        title: "Inviter un membre"
+        subtitle: "Envoie une invitation par e-mail"
+        email_label: "Adresse e-mail"
+        email_placeholder: "ex. nom@exemple.com"
+        submit: "Envoyer l'invitation"
+      create:
+        success: "Invitation envoyée !"
