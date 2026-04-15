@@ -1,0 +1,48 @@
+<% content_for :title, t('.title') %>
+
+<div class="page-container page-container--narrow">
+  <header class="page-header">
+    <p class="page-header__subtitle"><%= t('.subtitle', space_name: @space.name) %></p>
+  </header>
+
+  <div class="page-content">
+    <% if @members.any? %>
+      <div class="accounts-list">
+        <% @members.each do |member| %>
+          <div class="account-card">
+            <div class="account-card__info">
+              <h3 class="account-card__name"><%= member.first_name %> <%= member.last_name %></h3>
+              <p class="account-card__balance"><%= member.email %></p>
+            </div>
+            <div class="account-card__meta">
+              <% if member.id == @space.user_id %>
+                <span class="account-card__goal-badge"><%= t('.owner') %></span>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+
+    <% if @pending_invitations.any? %>
+      <h3 class="page-section-title" style="margin-top: 8px; margin-bottom: 8px; font-size: 14px; color: var(--color-text-secondary, #888); text-transform: uppercase; letter-spacing: 0.5px;">
+        <%= t('.pending_title') %>
+      </h3>
+      <div class="accounts-list">
+        <% @pending_invitations.each do |invitation| %>
+          <div class="account-card" style="opacity: 0.6;">
+            <div class="account-card__info">
+              <h3 class="account-card__name"><%= invitation.email %></h3>
+              <p class="account-card__balance"><%= t('.invited_on', date: l(invitation.created_at.to_date, format: :short)) %></p>
+            </div>
+            <div class="account-card__meta">
+              <span class="account-card__goal-badge"><%= t('.pending') %></span>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<%= render Ui::FabComponent.new(url: new_space_member_path(space_id: @space.id), label: t('.invite_member')) %>

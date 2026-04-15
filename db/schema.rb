@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_03_02_142605) do
+ActiveRecord::Schema[8.0].define(version: 2026_04_15_100002) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -22,8 +22,10 @@ ActiveRecord::Schema[8.0].define(version: 2026_03_02_142605) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.uuid "space_id", null: false
+    t.uuid "user_id"
     t.index "lower((name)::text), space_id", name: "index_accounts_on_lower_name_and_space_id", unique: true
     t.index ["space_id"], name: "index_accounts_on_space_id"
+    t.index ["user_id"], name: "index_accounts_on_user_id"
   end
 
   create_table "debts", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -36,8 +38,34 @@ ActiveRecord::Schema[8.0].define(version: 2026_03_02_142605) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.uuid "space_id", null: false
+    t.uuid "user_id"
     t.index ["space_id"], name: "index_debts_on_space_id"
     t.index ["status"], name: "index_debts_on_status"
+    t.index ["user_id"], name: "index_debts_on_user_id"
+  end
+
+  create_table "invitations", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "space_id", null: false
+    t.uuid "invited_by_id", null: false
+    t.string "email", null: false
+    t.string "token", null: false
+    t.datetime "accepted_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["invited_by_id"], name: "index_invitations_on_invited_by_id"
+    t.index ["space_id", "email"], name: "index_invitations_on_space_id_and_email", unique: true
+    t.index ["space_id"], name: "index_invitations_on_space_id"
+    t.index ["token"], name: "index_invitations_on_token", unique: true
+  end
+
+  create_table "memberships", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "user_id", null: false
+    t.uuid "space_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["space_id"], name: "index_memberships_on_space_id"
+    t.index ["user_id", "space_id"], name: "index_memberships_on_user_id_and_space_id", unique: true
+    t.index ["user_id"], name: "index_memberships_on_user_id"
   end
 
   create_table "spaces", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -78,11 +106,13 @@ ActiveRecord::Schema[8.0].define(version: 2026_03_02_142605) do
     t.datetime "updated_at", null: false
     t.uuid "debt_id"
     t.uuid "space_id", null: false
+    t.uuid "user_id"
     t.index ["account_id"], name: "index_transactions_on_account_id"
     t.index ["debt_id"], name: "index_transactions_on_debt_id"
     t.index ["space_id"], name: "index_transactions_on_space_id"
     t.index ["transaction_date"], name: "index_transactions_on_transaction_date"
     t.index ["transaction_type_id"], name: "index_transactions_on_transaction_type_id"
+    t.index ["user_id"], name: "index_transactions_on_user_id"
   end
 
   create_table "users", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -108,11 +138,18 @@ ActiveRecord::Schema[8.0].define(version: 2026_03_02_142605) do
   end
 
   add_foreign_key "accounts", "spaces"
+  add_foreign_key "accounts", "users"
   add_foreign_key "debts", "spaces"
+  add_foreign_key "debts", "users"
+  add_foreign_key "invitations", "spaces"
+  add_foreign_key "invitations", "users", column: "invited_by_id"
+  add_foreign_key "memberships", "spaces"
+  add_foreign_key "memberships", "users"
   add_foreign_key "spaces", "users"
   add_foreign_key "transaction_types", "spaces"
   add_foreign_key "transactions", "accounts"
   add_foreign_key "transactions", "debts"
   add_foreign_key "transactions", "spaces"
   add_foreign_key "transactions", "transaction_types"
+  add_foreign_key "transactions", "users"
 end

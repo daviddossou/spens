@@ -59,6 +59,7 @@ class TransactionsController < ApplicationController
       current_space,
       payload.merge(kind: kind, account_id: account_id, debt_id: debt_id)
     )
+    @form.user = current_user
   end
 
   def transaction_params
@@ -82,5 +83,6 @@ class TransactionsController < ApplicationController
 
   def build_form_for_edit(payload = {})
     @form = TransactionForm.new(current_space, payload.merge(transaction: @transaction))
+    @form.user = current_user
   end
 end

@@ -33,11 +33,14 @@ class User < ApplicationRecord
 
   ##
   # Associations
-  has_many :spaces, dependent: :destroy
+  has_many :owned_spaces, class_name: "Space", dependent: :destroy
+  has_many :memberships, dependent: :destroy
+  has_many :spaces, through: :memberships
   has_many :accounts, through: :spaces
   has_many :transaction_types, through: :spaces
   has_many :transactions, through: :spaces
   has_many :debts, through: :spaces
+  has_many :invitations, foreign_key: :invited_by_id, dependent: :destroy
 
   ##
   # Constants

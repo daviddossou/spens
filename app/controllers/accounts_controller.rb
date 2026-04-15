@@ -35,6 +35,7 @@ class AccountsController < ApplicationController
 
   def edit
     @form = AccountForm.new(current_space, account_edit_payload)
+    @form.user = current_user
   end
 
   def update
@@ -74,6 +75,7 @@ class AccountsController < ApplicationController
 
   def build_form(payload = {})
     @form = AccountForm.new(current_space, payload)
+    @form.user = current_user
   end
 
   def account_edit_payload

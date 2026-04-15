@@ -8,6 +8,7 @@ class CreateTransactionService
 
   def call
     transaction = @space.transactions.new(
+      user: @attributes[:user],
       account: @attributes[:account],
       transaction_type: @attributes[:transaction_type],
       amount: normalized_amount,

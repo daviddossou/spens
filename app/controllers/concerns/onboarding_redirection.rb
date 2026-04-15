@@ -17,6 +17,7 @@ module OnboardingRedirection
 
   def onboarding_redirection_exempt?
     devise_controller? || controller_name == "rails/health" ||
+    controller_name == "invitations" ||
     action_name == "destroy" # Allow sign out
   end
 

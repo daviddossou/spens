@@ -11,18 +11,25 @@
         <% @spaces.each do |space| %>
           <% is_active = current_space&.id == space.id %>
           <% if is_active %>
-            <%= link_to edit_space_path(id: space.id), class: "space-card space-card--active", data: { turbo_frame: "modal" } do %>
-              <div class="space-card__info">
-                <h3 class="space-card__name"><%= space.name %></h3>
-                <p class="space-card__detail"><%= space.currency || "—" %><% if space.country.present? %> · <%= space.country %><% end %></p>
-              </div>
-              <div class="space-card__meta">
+            <div class="space-card space-card--active">
+              <%= link_to edit_space_path(id: space.id), class: "space-card__link", data: { turbo_frame: "modal" } do %>
+                <div class="space-card__info">
+                  <h3 class="space-card__name"><%= space.name %></h3>
+                  <p class="space-card__detail"><%= space.currency || "—" %><% if space.country.present? %> · <%= space.country %><% end %></p>
+                </div>
+              <% end %>
+              <div class="space-card__actions">
                 <span class="space-card__active-badge"><%= t('.active') %></span>
+                <%= link_to space_members_path(space_id: space.id), class: "space-card__members-link" do %>
+                  <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+                  </svg>
+                <% end %>
                 <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
                 </svg>
               </div>
-            <% end %>
+            </div>
           <% else %>
             <div class="space-card">
               <%= link_to edit_space_path(id: space.id), class: "space-card__link", data: { turbo_frame: "modal" } do %>
@@ -39,6 +46,11 @@
                   size: :xs,
                   data: { turbo_method: :post }
                 ) %>
+                <%= link_to space_members_path(space_id: space.id), class: "space-card__members-link" do %>
+                  <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+                  </svg>
+                <% end %>
                 <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
                 </svg>

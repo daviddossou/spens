@@ -1,0 +1,37 @@
+<% content_for :title, t('.title') %>
+
+<%= turbo_frame_tag "modal" do %>
+  <div class="page-container page-container--narrow">
+    <header class="page-header">
+      <p class="page-header__subtitle"><%= t('.subtitle') %></p>
+    </header>
+
+    <div class="page-content">
+      <%= form_with url: space_members_path(space_id: @space.id), method: :post, class: "space-form" do |f| %>
+        <%= render 'shared/form_errors', object: f.object if f.object.respond_to?(:errors) %>
+
+        <div class="space-form__container">
+          <%= render Forms::InputFieldComponent.new(
+            form: f,
+            field: :email,
+            type: :email_field,
+            label: t('.email_label'),
+            placeholder: t('.email_placeholder'),
+            required: true,
+            autocomplete: "email"
+          ) %>
+        </div>
+
+        <div class="space-form__actions">
+          <%= render Ui::ButtonComponent.new(
+            text: t('.submit'),
+            type: :submit,
+            variant: :primary,
+            size: :lg,
+            full_width: true
+          ) %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+<% end %>

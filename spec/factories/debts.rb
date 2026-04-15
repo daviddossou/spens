@@ -12,15 +12,18 @@
 #  created_at       :datetime         not null
 #  updated_at       :datetime         not null
 #  space_id         :uuid             not null, indexed
+#  user_id          :uuid             indexed
 #
 # Indexes
 #
 #  index_debts_on_space_id  (space_id)
 #  index_debts_on_status    (status)
+#  index_debts_on_user_id   (user_id)
 #
 # Foreign Keys
 #
 #  fk_rails_...  (space_id => spaces.id)
+#  fk_rails_...  (user_id => users.id)
 #
 FactoryBot.define do
   factory :debt do

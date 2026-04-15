@@ -8,11 +8,11 @@ class SpacesController < ApplicationController
   end
 
   def new
-    @space = current_user.spaces.new
+    @space = Space.new
   end
 
   def create
-    @space = current_user.spaces.new(space_params)
+    @space = Space.new(space_params.merge(user: current_user))
     @space.onboarding_current_step = "onboarding_financial_goal"
 
     if @space.save
@@ -40,6 +40,11 @@ class SpacesController < ApplicationController
 
   def destroy
     @space = current_user.spaces.find(params[:id])
+
+    unless @space.user == current_user
+      redirect_to spaces_path, alert: t(".not_owner"), status: :see_other
+      return
+    end
 
     if current_user.spaces.count <= 1
       redirect_to spaces_path, alert: t(".last_space"), status: :see_other

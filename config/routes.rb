@@ -43,7 +43,12 @@ Rails.application.routes.draw do
     # Spaces
     resources :spaces, only: [ :index, :new, :create, :edit, :update, :destroy ] do
       resource :selection, only: :create, module: :spaces
+      resources :members, only: [ :index, :new, :create ], module: :spaces
     end
+
+    # Invitations (accept flow only — creating invitations goes through spaces/members)
+    resources :invitations, only: []
+    get "invitations/:token/accept", to: "invitations#show", as: :accept_invitation
 
     # Analytics
     get "analytics", to: "analytics#index", as: :analytics

@@ -3,7 +3,7 @@
 class TransactionForm < BaseForm
   ##
   # Attributes
-  attr_accessor :space, :transaction, :debt
+  attr_accessor :space, :transaction, :debt, :user
   attr_reader :account_id, :debt_id
 
   attribute :kind, :string, default: "expense"
@@ -222,6 +222,7 @@ class TransactionForm < BaseForm
   def create_and_validate_transaction(account:, transaction_type:, amount:, description:, debt: nil)
     transaction = CreateTransactionService.new(
       space: space,
+      user: user,
       account: account,
       transaction_type: transaction_type,
       amount: amount.abs,
