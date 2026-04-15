@@ -7,6 +7,8 @@ fr:
       message: "%{name} t'a invité(e) à rejoindre l'espace « %{space_name} »."
       accept_button: "Accepter l'invitation"
       invalid_or_expired: "Cette invitation est invalide ou a déjà été acceptée."
+      sign_in_to_accept: "Connecte-toi pour accepter l'invitation."
+      success: "Tu as rejoint l'espace !"
     update:
       success: "Tu as rejoint l'espace !"
       invalid_or_expired: "Cette invitation est invalide ou a déjà été acceptée."

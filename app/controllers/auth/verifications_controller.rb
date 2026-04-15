@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class Auth::VerificationsController < ApplicationController
+  include InvitationAcceptance
+
   layout "auth"
   before_action :ensure_otp_session
 
@@ -16,7 +18,12 @@ class Auth::VerificationsController < ApplicationController
       clear_otp_session
       sign_in(user)
 
-      if context == "sign_up"
+      accepted_space = accept_pending_invitation(user)
+
+      if accepted_space
+        set_current_space(accepted_space)
+        redirect_to dashboard_path, notice: t("invitations.show.success")
+      elsif context == "sign_up"
         redirect_to onboarding_path, notice: t("auth.registrations.signed_up")
       else
         redirect_to after_sign_in_path_for(user)

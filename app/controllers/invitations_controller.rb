@@ -3,15 +3,12 @@
 class InvitationsController < ApplicationController
   def show
     @invitation = Invitation.pending.find_by!(token: params[:token])
+    session[:pending_invitation_token] = @invitation.token
     user = User.find_by("LOWER(email) = ?", @invitation.email.downcase)
 
     if user
-      @invitation.accept!(user)
-      sign_in(user)
-      set_current_space(@invitation.space)
-      redirect_to dashboard_path, notice: t(".success")
+      redirect_to new_user_session_path, notice: t(".sign_in_to_accept")
     else
-      session[:pending_invitation_token] = @invitation.token
       redirect_to new_user_registration_path(email: @invitation.email)
     end
   rescue ActiveRecord::RecordNotFound

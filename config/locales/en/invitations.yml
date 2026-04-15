@@ -7,6 +7,8 @@ en:
       message: "%{name} invited you to join the space \"%{space_name}\"."
       accept_button: "Accept invitation"
       invalid_or_expired: "This invitation is invalid or has already been accepted."
+      sign_in_to_accept: "Please sign in to accept the invitation."
+      success: "You've joined the space!"
     update:
       success: "You've joined the space!"
       invalid_or_expired: "This invitation is invalid or has already been accepted."
