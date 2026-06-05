@@ -136,4 +136,8 @@ jobs:
           echo "$SSH_PRIVATE_KEY" | ssh-add -
           mkdir -p ~/.ssh
           ssh-keyscan -H 46.62.157.51 >> ~/.ssh/known_hosts 2>/dev/null
+          # Materialize the gitignored production key file from the secret so
+          # .kamal/secrets can read it (no trailing newline).
+          mkdir -p config/credentials
+          printf '%s' "$RAILS_MASTER_KEY" > config/credentials/production.key
           bin/kamal deploy
