@@ -26,6 +26,8 @@
 #  fk_rails_...  (user_id => users.id)
 #
 class Debt < ApplicationRecord
+  rounds_money :total_lent, :total_reimbursed
+
   ##
   # Associations
   belongs_to :space

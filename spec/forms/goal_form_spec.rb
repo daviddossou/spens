@@ -376,12 +376,12 @@ RSpec.describe GoalForm, type: :model do
         expect(result.saving_goal).to eq(1_000_000_000.00)
       end
 
-      it 'handles decimal precision correctly' do
+      it 'rounds amounts to two decimal places' do
         form.current_balance = 100.12345
         form.saving_goal = 200.67890
         result = form.submit
         expect(result).to be_an(Account)
-        expect(result.saving_goal).to eq(200.67890)
+        expect(result.saving_goal).to eq(200.68)
       end
 
       it 'handles account names with special characters' do
