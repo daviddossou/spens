@@ -10,10 +10,33 @@
       <%= form_with model: @form,
                     url: transaction_path(id: @form.transaction.id),
                     method: :patch,
-                    class: "transaction-form" do |f| %>
+                    class: "transaction-form",
+                    data: { controller: "transaction-form" } do |f| %>
         <%= render 'shared/form_errors', object: @form %>
 
-        <!-- Amount -->
+        <!-- Kind selector (icon cards, matching the create form). Debt
+             transactions only: switching regular kinds isn't supported on edit. -->
+        <% if %w[debt_in debt_out].include?(@form.kind) && (@form.debt || @form.transaction&.debt).present? %>
+          <div class="transaction-form__kind">
+            <div class="kind-selector" role="radiogroup" aria-label="<%= t('.kind_label', default: 'Type') %>">
+              <% transaction_kind_options(@form).each do |opt| %>
+                <% is_selected = @form.kind == opt[:value] %>
+                <%= f.radio_button :kind, opt[:value],
+                      id: "kind_#{opt[:value]}",
+                      checked: is_selected,
+                      class: "kind-option__input" %>
+                <label for="kind_<%= opt[:value] %>" class="kind-option">
+                  <span class="kind-option__icon kind-option__icon--<%= opt[:value] %>" aria-hidden="true">
+                    <%= transaction_icon_svg(opt[:value]) %>
+                  </span>
+                  <span class="kind-option__label"><%= opt[:label] %></span>
+                </label>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+
+        <!-- Amount (required) -->
         <div class="transaction-form__amount">
           <%= render Forms::InputFieldComponent.new(
             form: f,
@@ -24,35 +47,7 @@
             prepend: get_currency_symbol(current_space.currency),
             step: "0.01",
             min: "0",
-            placeholder: "0.00"
-          ) %>
-        </div>
-
-        <!-- Kind (debt transactions only) -->
-        <% if %w[debt_in debt_out].include?(@form.kind) && @form.transaction.debt.present? %>
-          <% debt = @form.transaction.debt %>
-          <div class="transaction-form__kind">
-            <%= render Forms::SelectFieldComponent.new(
-              form: f,
-              field: :kind,
-              label: t('.kind_label'),
-              options: [
-                [t(".kind_debt_in.#{debt.direction}"), "debt_in"],
-                [t(".kind_debt_out.#{debt.direction}"), "debt_out"]
-              ],
-              selected: @form.kind
-            ) %>
-          </div>
-        <% end %>
-
-        <!-- Description -->
-        <div class="transaction-form__description">
-          <%= render Forms::InputFieldComponent.new(
-            form: f,
-            field: :description,
-            label: t('.description_label'),
-            required: true,
-            placeholder: t('.description_placeholder')
+            placeholder: t('transactions.form.amount_placeholder')
           ) %>
         </div>
 
@@ -71,30 +66,70 @@
           ) %>
         </div>
 
-        <!-- Category -->
-        <div class="transaction-form__transaction-type">
-          <%= render Forms::InputFieldComponent.new(
-            form: f,
-            field: :transaction_type_name,
-            label: t('.category_label'),
-            required: true,
-            autocomplete: true,
-            autocomplete_options: @form.transaction_type_suggestions,
-            default_autocomplete_options: @form.default_transaction_type_suggestions,
-            allow_create: true,
-            placeholder: t('.category_placeholder')
-          ) %>
+        <!-- Category (regular transactions only; debt/transfer derive their type) -->
+        <% unless @form.debt_transaction? || @form.transfer? %>
+          <div class="transaction-form__transaction-type">
+            <%= render Forms::InputFieldComponent.new(
+              form: f,
+              field: :transaction_type_name,
+              label: t('.category_label'),
+              required: true,
+              autocomplete: true,
+              autocomplete_options: @form.transaction_type_suggestions,
+              default_autocomplete_options: @form.default_transaction_type_suggestions,
+              allow_create: true,
+              placeholder: t('.category_placeholder')
+            ) %>
+          </div>
+        <% end %>
+
+        <!-- More Details Toggle -->
+        <div class="transaction-form__toggle">
+          <button
+            type="button"
+            class="link-button"
+            data-action="click->transaction-form#toggleDetails"
+            data-transaction-form-target="toggleButton"
+            data-show-text="<%= t('transactions.form.show_more_details') %>"
+            data-hide-text="<%= t('transactions.form.hide_more_details') %>">
+            <%= t('transactions.form.show_more_details') %>
+          </button>
         </div>
 
-        <!-- Date -->
-        <div class="transaction-form__date">
-          <%= render Forms::InputFieldComponent.new(
-            form: f,
-            field: :transaction_date,
-            type: :date_field,
-            label: t('.date_label'),
-            required: true
-          ) %>
+        <!-- Optional Fields (Initially Hidden) -->
+        <div class="transaction-form__optional-fields hidden" data-transaction-form-target="optionalFields">
+          <div class="transaction-form__description">
+            <%= render Forms::InputFieldComponent.new(
+              form: f,
+              field: :description,
+              label: t('.description_label'),
+              help_text: t('transactions.form.description_help'),
+              placeholder: t('.description_placeholder'),
+              required: false
+            ) %>
+          </div>
+
+          <div class="transaction-form__date">
+            <%= render Forms::InputFieldComponent.new(
+              form: f,
+              field: :transaction_date,
+              type: :date_field,
+              label: t('.date_label'),
+              required: false
+            ) %>
+          </div>
+
+          <div class="transaction-form__note">
+            <%= render Forms::InputFieldComponent.new(
+              form: f,
+              field: :note,
+              type: :text_area,
+              label: t('transactions.form.note_label'),
+              help_text: t('transactions.form.note_help'),
+              rows: 3,
+              placeholder: t('transactions.form.note_placeholder')
+            ) %>
+          </div>
         </div>
 
         <!-- Actions -->

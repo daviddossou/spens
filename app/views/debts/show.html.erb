@@ -6,17 +6,18 @@
   </header>
 
   <div class="page-content">
-    <div class="commitment-card-wrapper">
-      <%= render Ui::CommitmentCardComponent.new(
-        title: @debt.name,
-        current_value: @debt.total_reimbursed,
-        target_value: @debt.total_lent,
-        currency: current_space.currency
-      ) %>
-    </div>
+    <%= render Ui::CommitmentCardComponent.new(
+      title: @debt.name,
+      current_value: @debt.total_reimbursed,
+      target_value: @debt.total_lent,
+      currency: current_space.currency,
+      accent: "warning",
+      progress_label: t('debts.index.repaid_label'),
+      complete_label: t('debts.index.settled_label'),
+      remaining_label: t('debts.index.remaining_label')
+    ) %>
 
     <div class="commitment-actions">
-      <h2 class="commitment-section-title"><%= t('.actions_title') %></h2>
       <div class="action-buttons">
         <%= render Ui::ButtonComponent.new(
           text: t('.add_transaction'),
@@ -30,7 +31,7 @@
         <%= render Ui::ButtonComponent.new(
           text: t('.edit_debt'),
           url: edit_debt_path(id: @debt.id),
-          variant: :secondary,
+          variant: :"outline-secondary",
           size: :lg,
           full_width: true,
           data: { turbo_frame: "modal" }

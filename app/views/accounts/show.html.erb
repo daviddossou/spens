@@ -7,10 +7,8 @@
 
   <div class="page-content">
     <div class="account-detail">
-      <div class="account-detail__balance">
-        <span class="account-detail__balance-label"><%= t('.balance') %></span>
-        <span class="account-detail__balance-value <%= 'account-detail__balance-value--negative' if @account.balance.negative? %>"><%= smart_format_money(@account.balance, current_space.currency) %></span>
-      </div>
+      <span class="account-detail__balance-label"><%= t('.balance') %></span>
+      <span class="account-detail__balance-value <%= 'account-detail__balance-value--negative' if @account.balance.negative? %>"><%= smart_format_money(@account.balance, current_space.currency) %></span>
 
       <% if @account.saving_goal.to_f > 0 %>
         <div class="account-detail__goal">
@@ -21,7 +19,6 @@
     </div>
 
     <div class="commitment-actions">
-      <h2 class="commitment-section-title"><%= t('.actions_title') %></h2>
       <div class="action-buttons">
         <%= render Ui::ButtonComponent.new(
           text: t('.add_transaction'),
@@ -35,7 +32,7 @@
         <%= render Ui::ButtonComponent.new(
           text: t('.edit_account'),
           url: edit_account_path(id: @account.id),
-          variant: :secondary,
+          variant: :"outline-secondary",
           size: :lg,
           full_width: true,
           data: { turbo_frame: "modal" }

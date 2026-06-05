@@ -4,19 +4,22 @@
     label: t('analytics.income_expense.total_income'),
     value: @total_income,
     currency: @currency,
-    trend: :positive
+    trend: :positive,
+    variant: :compact
   ) %>
   <%= render Ui::StatCardComponent.new(
     label: t('analytics.income_expense.total_expenses'),
     value: @total_expenses,
     currency: @currency,
-    trend: :negative
+    trend: :negative,
+    variant: :compact
   ) %>
   <%= render Ui::StatCardComponent.new(
     label: t('analytics.income_expense.net'),
     value: @net,
     currency: @currency,
-    trend: @net.positive? ? :positive : (@net.negative? ? :negative : nil)
+    trend: @net.positive? ? :positive : (@net.negative? ? :negative : nil),
+    variant: :compact
   ) %>
 </div>
 
@@ -26,8 +29,9 @@
     <h3 class="analytics-chart-card__title"><%= t('analytics.income_expense.income_by_category') %></h3>
     <%= pie_chart @income_by_category,
         donut: true,
-        legend: "bottom",
-        library: { plugins: { legend: { position: "bottom", labels: { boxWidth: 12, padding: 8 } } } } %>
+        colors: chart_palette,
+        height: "260px",
+        library: { cutout: "62%", plugins: { legend: { position: "bottom", labels: { boxWidth: 12, padding: 8, usePointStyle: true } } } } %>
   </div>
 <% end %>
 
@@ -37,8 +41,9 @@
     <h3 class="analytics-chart-card__title"><%= t('analytics.income_expense.expense_by_category') %></h3>
     <%= pie_chart @expense_by_category,
         donut: true,
-        legend: "bottom",
-        library: { plugins: { legend: { position: "bottom", labels: { boxWidth: 12, padding: 8 } } } } %>
+        colors: chart_palette,
+        height: "260px",
+        library: { cutout: "62%", plugins: { legend: { position: "bottom", labels: { boxWidth: 12, padding: 8, usePointStyle: true } } } } %>
   </div>
 <% end %>
 
@@ -47,12 +52,15 @@
   <div class="analytics-chart-card">
     <h3 class="analytics-chart-card__title"><%= t('analytics.income_expense.cash_flow_trend') %></h3>
     <%= line_chart [
-        { name: t('analytics.income_expense.income'), data: @income_trend, color: "#4CAF50" },
-        { name: t('analytics.income_expense.expenses'), data: @expense_trend, color: "#F44336" }
+        { name: t('analytics.income_expense.income'), data: @income_trend, color: chart_income_color },
+        { name: t('analytics.income_expense.expenses'), data: @expense_trend, color: chart_expense_color }
       ],
+      height: "240px",
+      curve: true,
+      points: false,
       library: {
         scales: { y: { beginAtZero: true } },
-        plugins: { legend: { position: "bottom", labels: { boxWidth: 12, padding: 8 } } }
+        plugins: { legend: { position: "bottom", labels: { boxWidth: 12, padding: 8, usePointStyle: true } } }
       } %>
   </div>
 <% end %>
@@ -62,7 +70,9 @@
   <div class="analytics-chart-card">
     <h3 class="analytics-chart-card__title"><%= t('analytics.income_expense.top_spending') %></h3>
     <%= bar_chart @top_spending,
-        colors: ["#F44336"],
+        colors: [ chart_expense_color ],
+        height: "220px",
+        dataset: { borderWidth: 0, borderRadius: 6, maxBarThickness: 26 },
         library: {
           indexAxis: "y",
           scales: { x: { beginAtZero: true } },

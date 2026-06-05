@@ -42,7 +42,7 @@
                 <%= render Ui::ButtonComponent.new(
                   text: t('.switch'),
                   url: space_selection_path(space_id: space.id),
-                  variant: :secondary,
+                  variant: :"outline-primary",
                   size: :xs,
                   data: { turbo_method: :post }
                 ) %>

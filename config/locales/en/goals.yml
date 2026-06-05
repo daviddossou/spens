@@ -8,6 +8,9 @@ en:
       no_goals_title: "No goals yet"
       no_goals_message: "Set a savings goal to start tracking your progress"
       add_new_goal: "Add a Goal"
+      saved_label: "saved"
+      to_go_label: "to go"
+      reached_label: "Reached"
     new:
       title: "New Savings Goal"
       subtitle: "Set a target for your account"

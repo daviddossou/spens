@@ -3,18 +3,21 @@
   <%= render Ui::StatCardComponent.new(
     label: t('analytics.savings.total_balance'),
     value: @total_balance,
-    currency: @currency
+    currency: @currency,
+    variant: :compact
   ) %>
   <%= render Ui::StatCardComponent.new(
     label: t('analytics.savings.total_saving_goal'),
     value: @total_saving_goal,
-    currency: @currency
+    currency: @currency,
+    variant: :compact
   ) %>
   <%= render Ui::StatCardComponent.new(
     label: t('analytics.savings.total_saved'),
     value: @total_saved,
     currency: @currency,
-    trend: @total_saving_goal > 0 && @total_saved >= @total_saving_goal ? :positive : nil
+    trend: @total_saving_goal > 0 && @total_saved >= @total_saving_goal ? :positive : nil,
+    variant: :compact
   ) %>
 </div>
 
@@ -24,8 +27,9 @@
     <h3 class="analytics-chart-card__title"><%= t('analytics.savings.account_distribution') %></h3>
     <%= pie_chart @account_balances,
         donut: true,
-        legend: "bottom",
-        library: { plugins: { legend: { position: "bottom", labels: { boxWidth: 12, padding: 8 } } } } %>
+        colors: chart_palette,
+        height: "260px",
+        library: { cutout: "62%", plugins: { legend: { position: "bottom", labels: { boxWidth: 12, padding: 8, usePointStyle: true } } } } %>
   </div>
 <% end %>
 
@@ -34,7 +38,10 @@
   <div class="analytics-chart-card">
     <h3 class="analytics-chart-card__title"><%= t('analytics.savings.saving_trend') %></h3>
     <%= line_chart @saving_trend,
-        colors: ["#3F51B5"],
+        colors: [ chart_primary_color ],
+        height: "240px",
+        curve: true,
+        points: false,
         library: {
           scales: { y: { beginAtZero: true } },
           plugins: { legend: { display: false } }

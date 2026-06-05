@@ -1,116 +1,192 @@
-/* Commitment Card Styles */
+/* Commitment Card — a compact progress card shared by debts and goals.
+   Two layouts: --row (clickable list item) and --summary (detail hero).
+   Accent modifier sets the progress-bar color. */
 
 .commitment-card {
   background: var(--bg-surface);
-  border: 1px solid var(--border-light);
-  border-radius: 0.75rem;
-  padding: 2rem 1.5rem;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
+  border-radius: 0.875rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
   text-decoration: none;
   color: inherit;
 }
 
-.commitment-card:hover {
-  border-color: var(--border-light);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+/* ── Row variant (lists) ───────────────────────────────────────── */
+.commitment-card--row {
+  display: block;
+  padding: 1rem 1.125rem;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
 }
 
-.commitment-card--clickable {
-  cursor: pointer;
+.commitment-card--row:hover {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  transform: translateY(-1px);
 }
 
-.commitment-card--clickable:hover {
-  border-color: var(--border-light);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-}
-
-.commitment-card__progress-circle {
-  position: relative;
-  width: 120px;
-  height: 120px;
-  margin-bottom: 1.5rem;
-}
-
-.commitment-card .progress-ring {
-  width: 100%;
-  height: 100%;
-  transform: rotate(-90deg);
-}
-
-.commitment-card .progress-ring__circle-bg {
-  stroke: #e5e7eb;
-}
-
-.commitment-card .progress-ring__circle {
-  stroke: var(--color-primary);
-  stroke-linecap: round;
-  transition: stroke-dashoffset 0.5s ease;
-}
-
-.commitment-card__percentage {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  font-size: 1.75rem;
-  font-weight: 700;
-  color: var(--text-default);
+.commitment-card__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.625rem;
 }
 
 .commitment-card__name {
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: var(--text-default);
-  margin: 0 0 1rem 0;
-}
-
-.commitment-card__amounts {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
   font-size: 1rem;
-}
-
-.commitment-card .amount-value {
   font-weight: 600;
-  color: var(--text-default);
+  color: var(--text-dark);
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.commitment-card .amount-separator {
-  color: var(--text-muted);
+.commitment-card__remaining {
+  flex-shrink: 0;
+  font-size: 1.0625rem;
+  font-weight: 700;
+  color: var(--text-dark);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
 }
 
-.commitment-card .amount-goal {
+.commitment-card__remaining-label {
+  margin-left: 0.3rem;
+  font-size: 0.75rem;
   font-weight: 500;
   color: var(--text-muted);
 }
 
-/* Responsive - Mobile */
-@media (max-width: 640px) {
-  .commitment-card {
-    padding: 1.5rem 1rem;
-  }
+/* ── Summary variant (detail) ──────────────────────────────────── */
+.commitment-card--summary {
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+  border-radius: 1rem;
+  padding: 1.5rem 1.25rem;
+  margin-bottom: 1.5rem;
+}
 
-  .commitment-card__progress-circle {
-    width: 100px;
-    height: 100px;
-    margin-bottom: 1rem;
-  }
+/* Hero: the remaining amount with its label kept inline so it never
+   reads as an orphaned word above the number. */
+.commitment-card__hero {
+  display: flex;
+  align-items: baseline;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
 
-  .commitment-card__percentage {
-    font-size: 1.25rem;
-  }
+.commitment-card__amount {
+  font-size: 1.875rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  color: var(--text-dark);
+  font-variant-numeric: tabular-nums;
+}
 
-  .commitment-card__name {
-    font-size: 1.125rem;
-  }
+.commitment-card--summary .commitment-card__remaining-label {
+  margin-left: 0;
+  font-size: 0.9375rem;
+}
 
-  .commitment-card__amounts {
-    font-size: 0.875rem;
-  }
+/* Bar + percentage on one line */
+.commitment-card__bar-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.commitment-card__bar-row .commitment-card__bar {
+  flex: 1;
+}
+
+.commitment-card__pct {
+  flex-shrink: 0;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: var(--text-dark);
+  font-variant-numeric: tabular-nums;
+}
+
+.commitment-card__progress {
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Settled / reached badge (always positive → green) ─────────── */
+.commitment-card__badge {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  padding: 0.1875rem 0.625rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-success-dark);
+  background: var(--color-success-20);
+}
+
+.commitment-card--summary .commitment-card__badge {
+  padding: 0.25rem 0.75rem;
+  font-size: 0.875rem;
+}
+
+/* ── Progress bar ──────────────────────────────────────────────── */
+/* Track = a light tint of the accent; fill = the full accent. Both are
+   design-system tokens, so the bar stays on-palette. */
+.commitment-card__bar {
+  height: 6px;
+  border-radius: 9999px;
+  overflow: hidden;
+}
+
+.commitment-card--summary .commitment-card__bar {
+  height: 8px;
+}
+
+.commitment-card__bar-fill {
+  height: 100%;
+  border-radius: 9999px;
+  transition: width 0.3s ease;
+}
+
+.commitment-card--accent-warning .commitment-card__bar {
+  background: var(--color-warning-20);
+}
+.commitment-card--accent-warning .commitment-card__bar-fill {
+  background: var(--color-warning);
+}
+
+.commitment-card--accent-primary .commitment-card__bar {
+  background: var(--color-primary-20);
+}
+.commitment-card--accent-primary .commitment-card__bar-fill {
+  background: var(--color-primary);
+}
+
+.commitment-card--accent-success .commitment-card__bar {
+  background: var(--color-success-20);
+}
+.commitment-card--accent-success .commitment-card__bar-fill {
+  background: var(--color-success);
+}
+
+.commitment-card__bar-fill--settled {
+  background: var(--color-success);
+}
+
+/* ── Caption ───────────────────────────────────────────────────── */
+.commitment-card__meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 0.5rem;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.commitment-card--summary .commitment-card__meta {
+  font-size: 0.8125rem;
 }

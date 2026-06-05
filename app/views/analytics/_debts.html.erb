@@ -4,23 +4,27 @@
     label: t('analytics.debts.owed_to_me'),
     value: @total_owed_to_me,
     currency: @currency,
-    trend: @total_owed_to_me.positive? ? :positive : nil
+    trend: @total_owed_to_me.positive? ? :positive : nil,
+    variant: :compact
   ) %>
   <%= render Ui::StatCardComponent.new(
     label: t('analytics.debts.i_owe'),
     value: @total_i_owe,
     currency: @currency,
-    trend: @total_i_owe.positive? ? :negative : nil
+    trend: @total_i_owe.positive? ? :negative : nil,
+    variant: :compact
   ) %>
   <%= render Ui::StatCardComponent.new(
     label: t('analytics.debts.ongoing_count'),
     value: @total_debts_count,
-    trend: nil
+    trend: nil,
+    variant: :compact
   ) %>
   <%= render Ui::StatCardComponent.new(
     label: t('analytics.debts.paid_count'),
     value: @paid_debts_count,
-    trend: nil
+    trend: nil,
+    variant: :compact
   ) %>
 </div>
 
@@ -30,8 +34,9 @@
     <h3 class="analytics-chart-card__title"><%= t('analytics.debts.owed_to_me_by_person') %></h3>
     <%= pie_chart @owed_to_me_by_person,
         donut: true,
-        legend: "bottom",
-        library: { plugins: { legend: { position: "bottom", labels: { boxWidth: 12, padding: 8 } } } } %>
+        colors: chart_palette,
+        height: "260px",
+        library: { cutout: "62%", plugins: { legend: { position: "bottom", labels: { boxWidth: 12, padding: 8, usePointStyle: true } } } } %>
   </div>
 <% end %>
 
@@ -41,8 +46,9 @@
     <h3 class="analytics-chart-card__title"><%= t('analytics.debts.i_owe_by_person') %></h3>
     <%= pie_chart @i_owe_by_person,
         donut: true,
-        legend: "bottom",
-        library: { plugins: { legend: { position: "bottom", labels: { boxWidth: 12, padding: 8 } } } } %>
+        colors: chart_palette,
+        height: "260px",
+        library: { cutout: "62%", plugins: { legend: { position: "bottom", labels: { boxWidth: 12, padding: 8, usePointStyle: true } } } } %>
   </div>
 <% end %>
 
@@ -51,12 +57,15 @@
   <div class="analytics-chart-card">
     <h3 class="analytics-chart-card__title"><%= t('analytics.debts.repayment_trend') %></h3>
     <%= line_chart [
-        { name: t('analytics.debts.received'), data: @debt_in_trend, color: "#4CAF50" },
-        { name: t('analytics.debts.given'), data: @debt_out_trend, color: "#F44336" }
+        { name: t('analytics.debts.received'), data: @debt_in_trend, color: chart_income_color },
+        { name: t('analytics.debts.given'), data: @debt_out_trend, color: chart_expense_color }
       ],
+      height: "240px",
+      curve: true,
+      points: false,
       library: {
         scales: { y: { beginAtZero: true } },
-        plugins: { legend: { position: "bottom", labels: { boxWidth: 12, padding: 8 } } }
+        plugins: { legend: { position: "bottom", labels: { boxWidth: 12, padding: 8, usePointStyle: true } } }
       } %>
   </div>
 <% end %>

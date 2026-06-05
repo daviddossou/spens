@@ -3,7 +3,7 @@ fr:
     index:
       title: "Mes Comptes"
       subtitle: "Gère tes comptes"
-      has_goal: "Objectif d'épargne"
+      has_goal: "Objectif"
       no_accounts_title: "Aucun compte"
       no_accounts_message: "Ajoute ton premier compte pour commencer"
       add_new_account: "Ajouter un compte"

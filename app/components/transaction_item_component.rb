@@ -15,6 +15,14 @@ class TransactionItemComponent < ViewComponent::Base
     @kind ||= transaction.transaction_type.kind
   end
 
+  def description
+    text = transaction.description.to_s.strip
+    return if text.blank?
+    return if text.casecmp?(transaction.transaction_type.name.to_s.strip)
+
+    text
+  end
+
   def icon_class
     TransactionIconService.icon_class(kind)
   end

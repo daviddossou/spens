@@ -163,6 +163,7 @@
   display: flex;
   align-items: stretch;
   width: 100%;
+  border-radius: 6px;
 }
 
 .form-input-group .form-input {
@@ -170,9 +171,21 @@
   border-radius: 0;
 }
 
+/* The whole group reads as one field: a single focus ring wraps addon +
+   input, and both borders turn indigo together (no seam between them). */
+.form-input-group:focus-within {
+  box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.2);
+}
+
+.form-input-group:focus-within .form-input,
+.form-input-group:focus-within .form-input-addon {
+  border-color: var(--color-primary);
+}
+
 .form-input-group .form-input:focus {
   position: relative;
   z-index: 1;
+  box-shadow: none;
 }
 
 .form-input-addon {
@@ -183,7 +196,7 @@
   font-weight: 500;
   line-height: 1.5;
   color: var(--text-muted);
-  background-color: var(--color-gray-50);
+  background-color: var(--color-off-white);
   border: 1px solid var(--border-default);
   white-space: nowrap;
 }

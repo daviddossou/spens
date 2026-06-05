@@ -1,39 +1,42 @@
-/* Selectable Card Component */
+/* Selectable Card Component
+   NOTE: base .card rules are kept in sync with components/card.css. Both files
+   are served and this one cascades last, so they must match to avoid conflicts.
+   Only the .compact variant and the .hidden helper are unique to this file. */
 
 .card {
   position: relative;
-  padding: 1.5rem;
-  border: 2px solid var(--border-default);
-  border-radius: 0.5rem;
-  background-color: #ffffff;
+  display: block;
+  padding: 1.25rem;
+  border: 1.5px solid var(--border-light);
+  border-radius: 0.875rem;
+  background: var(--bg-surface);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
   cursor: pointer;
-  transition: all 0.2s ease;
-  min-height: 120px;
-  display: flex;
-  flex-direction: column;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease,
+    transform 0.2s ease, background-color 0.2s ease;
 }
 
 .card:hover {
-  border-color: var(--color-primary);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-color: var(--color-primary-20);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  transform: translateY(-1px);
 }
 
 .card.selected {
   border-color: var(--color-primary);
-  background-color: rgba(var(--color-primary-rgb), 0.05);
+  background: rgba(var(--color-primary-rgb), 0.05);
 }
 
 .card-content {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
+  position: relative;
 }
 
 .card-content h4 {
   font-size: 1rem;
   font-weight: 600;
-  color: var(--text-default);
-  margin: 0 0 0.5rem 0;
+  color: var(--text-dark);
+  margin: 0 0 0.375rem;
+  padding-right: 2rem;
   line-height: 1.4;
 }
 
@@ -41,20 +44,23 @@
   font-size: 0.875rem;
   color: var(--text-muted);
   margin: 0;
+  padding-right: 2rem;
   line-height: 1.5;
-  flex: 1;
 }
 
 .card-checkbox {
   position: absolute;
-  width: 24px;
-  height: 24px;
-  border: 2px solid var(--border-default);
-  background-color: #ffffff;
+  top: 0;
+  right: 0;
+  width: 22px;
+  height: 22px;
+  border: 2px solid var(--color-secondary-20);
+  border-radius: 999px;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s ease;
+  background: transparent;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
 }
 
 .card.selected .card-checkbox {
@@ -63,9 +69,9 @@
 }
 
 .card-checkbox .checkmark {
-  width: 16px;
-  height: 16px;
-  fill: #ffffff;
+  width: 14px;
+  height: 14px;
+  fill: #fff;
   opacity: 0;
   transition: opacity 0.2s ease;
 }
@@ -98,6 +104,7 @@
 .card.compact:hover {
   background-color: var(--primary-light, rgba(79, 70, 229, 0.1));
   border-color: var(--color-primary);
+  transform: none;
 }
 
 .card.compact.selected {
@@ -114,6 +121,7 @@
 
 .card.compact .card-content h4 {
   margin: 0;
+  padding: 0;
   font-size: 0.875rem;
   font-weight: 500;
   line-height: 1.25rem;
@@ -132,7 +140,7 @@
   /* Hide descriptions in compact mode */
 }
 
-/* Compact mode responsive - smaller text on mobile */
+/* Compact mode responsive */
 @media (max-width: 640px) {
   .card.compact {
     padding: 0.25rem 0.25rem;
@@ -153,79 +161,18 @@
   }
 }
 
-/* Responsive adjustments for tablets */
-@media (max-width: 768px) {
+/* Responsive */
+@media (max-width: 640px) {
   .card {
-    padding: 1.25rem;
-    min-height: 100px;
+    padding: 1.125rem;
   }
 
   .card-content h4 {
     font-size: 0.9375rem;
   }
-
-  .card-content p {
-    font-size: 0.8125rem;
-  }
-
-  .card-checkbox {
-    width: 22px;
-    height: 22px;
-  }
-
-  .card-checkbox .checkmark {
-    width: 14px;
-    height: 14px;
-  }
 }
 
-/* Responsive adjustments for mobile */
-@media (max-width: 640px) {
-  .card {
-    padding: 1rem;
-    min-height: 90px;
-  }
-
-  .card-content h4 {
-    font-size: 0.875rem;
-    margin-bottom: 0.375rem;
-  }
-
-  .card-content p {
-    font-size: 0.75rem;
-  }
-
-  .card-checkbox {
-    width: 20px;
-    height: 20px;
-  }
-
-  .card-checkbox .checkmark {
-    width: 12px;
-    height: 12px;
-  }
-}
-
-/* Responsive adjustments for small mobile */
-@media (max-width: 480px) {
-  .card {
-    padding: 0.875rem;
-    min-height: 80px;
-  }
-
-  .card-content h4 {
-    font-size: 0.8125rem;
-    padding-right: 1.5rem;
-    /* Ensure text doesn't overlap checkbox */
-  }
-
-  .card-content p {
-    font-size: 0.6875rem;
-    line-height: 1.4;
-  }
-}
-
-/* Touch feedback for mobile */
+/* Touch feedback */
 @media (hover: none) and (pointer: coarse) {
   .card:active {
     transform: scale(0.98);

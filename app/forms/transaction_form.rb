@@ -143,11 +143,11 @@ class TransactionForm < BaseForm
     debt_id.present? || %w[debt_in debt_out].include?(kind)
   end
 
-  private
-
   def transfer?
     [ "transfer", "transfer_in", "transfer_out" ].include?(kind)
   end
+
+  private
 
   def double_transfer?
     kind == "transfer"
@@ -269,15 +269,28 @@ class TransactionForm < BaseForm
   end
 
   def update_existing_transaction
+    # For debt transactions, only re-derive the type when the kind actually
+    # changes (debt_in <-> debt_out) so it relabels correctly
+    # (e.g. "Repayment Received" -> "Money Lent"). When unchanged, keep the
+    # existing name verbatim to avoid case drift against the stored type.
+    debt = @transaction.debt
+    type_name =
+      if debt_transaction? && debt && kind != @transaction.transaction_type.kind
+        I18n.t("debts.transaction_type.#{kind}.#{debt.direction}")
+      else
+        transaction_type_name
+      end
+
     self.transaction = UpdateTransactionService.new(
       transaction: @transaction,
       attributes: {
         kind: kind,
         description: description,
         transaction_date: transaction_date,
-        transaction_type_name: transaction_type_name,
+        transaction_type_name: type_name,
         account_name: account_name,
-        amount: amount
+        amount: amount,
+        note: note
       }
     ).call
   end

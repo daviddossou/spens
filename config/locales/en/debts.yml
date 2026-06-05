@@ -18,6 +18,9 @@ en:
       add_new:
         lent: "Add a Loan"
         borrowed: "Add a Debt"
+      remaining_label: "left"
+      repaid_label: "repaid"
+      settled_label: "Settled"
     new:
       title:
         lent: "New Loan"

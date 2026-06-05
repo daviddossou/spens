@@ -4,7 +4,6 @@
 .cursor-help {
   cursor: help;
   position: relative;
-  border-bottom: 1px dotted currentColor;
 }
 
 /* Native tooltip enhancement - works on hover (desktop) and tap (mobile) */

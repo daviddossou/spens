@@ -18,6 +18,9 @@ fr:
       add_new:
         lent: "Ajouter un prêt"
         borrowed: "Ajouter une dette"
+      remaining_label: "restant"
+      repaid_label: "remboursé"
+      settled_label: "Soldé"
     new:
       title:
         lent: "Nouveau prêt"
