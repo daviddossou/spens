@@ -100,17 +100,20 @@ RSpec.describe Ui::FlashMessageComponent, type: :component do
   end
 
   describe "icon assignment" do
-    it "assigns correct icons for each message type" do
-      expect(component.send(:icon_for_type, :notice)).to eq("✅")
-      expect(component.send(:icon_for_type, :success)).to eq("✅")
-      expect(component.send(:icon_for_type, :alert)).to eq("❌")
-      expect(component.send(:icon_for_type, :error)).to eq("❌")
-      expect(component.send(:icon_for_type, :warning)).to eq("⚠️")
-      expect(component.send(:icon_for_type, :info)).to eq("ℹ️")
+    it "assigns an inline SVG icon for each known message type" do
+      %i[notice success alert error warning info].each do |type|
+        icon = component.send(:icon_for_type, type).to_s
+        expect(icon).to include("<svg").and include("<path")
+      end
     end
 
-    it "returns empty string for unknown types" do
-      expect(component.send(:icon_for_type, :unknown)).to eq("")
+    it "uses the same icon for aliased types" do
+      expect(component.send(:icon_for_type, :notice)).to eq(component.send(:icon_for_type, :success))
+      expect(component.send(:icon_for_type, :alert)).to eq(component.send(:icon_for_type, :error))
+    end
+
+    it "returns nil for unknown types" do
+      expect(component.send(:icon_for_type, :unknown)).to be_nil
     end
   end
 
@@ -135,11 +138,11 @@ RSpec.describe Ui::FlashMessageComponent, type: :component do
       end
 
       it "includes the icon" do
-        expect(rendered.to_html).to include("✅")
+        expect(rendered.css('.flash-message-icon svg')).to be_present
       end
 
       it "includes dismiss button" do
-        expect(rendered.to_html).to include('×')
+        expect(rendered.css('.flash-message-dismiss svg')).to be_present
         expect(rendered.css('button')).to be_present
       end
 

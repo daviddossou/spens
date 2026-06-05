@@ -27,6 +27,6 @@ RSpec.describe Onboarding::ProgressComponent, type: :component do
   it 'applies active class to current step' do
     rendered = render_inline(described_class.new(current_step: :profile_setup))
     active = rendered.css('.step.active').text
-    expect(active).to match(/Profile Setup/i)
+    expect(active).to include(I18n.t('onboarding.progress_component.profile_setup'))
   end
 end

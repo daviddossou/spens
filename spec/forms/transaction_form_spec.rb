@@ -144,16 +144,21 @@ RSpec.describe TransactionForm, type: :model do
         form.to_account_name = 'Savings'
       end
 
-      it 'requires from_account_name' do
+      it 'is valid with only to_account_name (from defaults to account_name)' do
         form.from_account_name = nil
-        expect(form).not_to be_valid
-        expect(form.errors[:from_account_name]).to include("can't be blank")
+        expect(form).to be_valid
       end
 
-      it 'requires to_account_name' do
+      it 'is valid with only from_account_name (to defaults to account_name)' do
+        form.to_account_name = nil
+        expect(form).to be_valid
+      end
+
+      it 'requires at least one transfer account' do
+        form.from_account_name = nil
         form.to_account_name = nil
         expect(form).not_to be_valid
-        expect(form.errors[:to_account_name]).to include("can't be blank")
+        expect(form.errors[:from_account_name]).to include("can't be blank")
       end
 
       it 'does not require account_name' do
@@ -194,17 +199,17 @@ RSpec.describe TransactionForm, type: :model do
           expect(form.errors[:to_account_name]).to include(I18n.t('errors.messages.different_account'))
         end
 
-        it 'does not validate when from_account_name is missing' do
+        it 'skips the different-accounts check when from_account_name is missing' do
           form.from_account_name = nil
           form.to_account_name = 'Savings'
-          expect(form).not_to be_valid
+          expect(form).to be_valid
           expect(form.errors[:to_account_name]).not_to include(I18n.t('errors.messages.different_account'))
         end
 
-        it 'does not validate when to_account_name is missing' do
+        it 'skips the different-accounts check when to_account_name is missing' do
           form.from_account_name = 'Checking'
           form.to_account_name = nil
-          expect(form).not_to be_valid
+          expect(form).to be_valid
           expect(form.errors[:to_account_name]).not_to include(I18n.t('errors.messages.different_account'))
         end
       end

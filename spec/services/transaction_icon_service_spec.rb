@@ -120,8 +120,13 @@ RSpec.describe TransactionIconService do
       expect(described_class.header_class("expense")).to eq("transaction-show__header--expense")
     end
 
+    it "returns debt class for debt kinds" do
+      expect(described_class.header_class("debt_in")).to eq("transaction-show__header--debt")
+      expect(described_class.header_class("debt_out")).to eq("transaction-show__header--debt")
+    end
+
     it "returns neutral class for others" do
-      expect(described_class.header_class("debt_in")).to eq("transaction-show__header--neutral")
+      expect(described_class.header_class("transfer_in")).to eq("transaction-show__header--neutral")
     end
   end
 
