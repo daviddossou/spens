@@ -9,7 +9,7 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
     ports:
-      - "5432:5432"
+      - "5433:5432"  # host 5433 -> container 5432 (leaves host 5432 free for anka_postgres)
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -22,7 +22,7 @@ services:
     container_name: spens_redis
     image: redis:7-alpine
     ports:
-      - "6379:6379"
+      - "6380:6379"  # host 6380 -> container 6379 (leaves host 6379 free for anka_redis)
     volumes:
       - redis_data:/data
     healthcheck:
@@ -37,7 +37,7 @@ services:
       context: .
       dockerfile: Dockerfile.dev
     ports:
-      - "3000:3000"
+      - "3001:3000"  # host 3001 -> container 3000 (leaves host 3000 free for anka_app)
     volumes:
       - .:/rails
       - bundle_cache:/usr/local/bundle
