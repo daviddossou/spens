@@ -39,7 +39,10 @@ module Ui
     end
 
     def settled?
-      target_value.positive? && current_value >= target_value
+      # Treat as settled once the remaining rounds to zero at currency precision,
+      # so sub-cent float drift (e.g. reimbursed 0.004 short of lent) still reads
+      # as "Soldé" instead of "0.0 € restant".
+      target_value.positive? && remaining_value.round(2).zero?
     end
 
     def root_class
