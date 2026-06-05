@@ -171,7 +171,12 @@ RSpec.describe SpacesController, type: :request do
         expect(session[:current_space_id]).to eq(space.id)
 
         delete space_path(id: space.id)
-        expect(session[:current_space_id]).to eq(other_space.id)
+
+        # Switches to one of the remaining spaces (which one is arbitrary), not
+        # the deleted one. Asserting a specific space is flaky: `space` is
+        # ordered by UUID and can coincide with other_space.
+        expect(session[:current_space_id]).not_to eq(space.id)
+        expect(user.spaces.reload.pluck(:id)).to include(session[:current_space_id])
       end
     end
 
