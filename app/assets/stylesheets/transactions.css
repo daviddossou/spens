@@ -35,39 +35,65 @@
   pointer-events: none;
 }
 
-.kind-option__input:checked + .kind-option {
-  border-color: var(--color-primary);
-  background: var(--color-primary-20);
-  color: var(--color-primary-dark);
-}
-
-.kind-option__input:focus-visible + .kind-option {
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.2);
-}
-
+/* Each card carries its kind's semantic color (matching the transaction
+   palette: expense=danger, income=success, transfer=info, debt=warning) via
+   --kind-accent, so background, border and selected/focus states all derive
+   from one hue. Defaults to the brand color (e.g. the lent/borrowed choice). */
 .kind-option {
+  --kind-accent: var(--color-primary);
+  --kind-accent-rgb: var(--color-primary-rgb);
+
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 0.5rem;
   padding: 0.875rem 0.5rem;
-  background: var(--bg-surface);
-  border: 1.5px solid var(--color-light-gray);
+  background: rgba(var(--kind-accent-rgb), 0.07);
+  border: 1.5px solid rgba(var(--kind-accent-rgb), 0.4);
   border-radius: 0.875rem;
   text-decoration: none;
-  color: var(--text-muted);
-  transition: border-color 0.2s ease, background-color 0.2s ease, color 0.2s ease;
+  color: var(--text-dark);
+  transition: border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.kind-option--expense {
+  --kind-accent: var(--color-danger);
+  --kind-accent-rgb: var(--color-danger-rgb);
+}
+
+.kind-option--income {
+  --kind-accent: var(--color-success);
+  --kind-accent-rgb: var(--color-success-rgb);
+}
+
+.kind-option--transfer {
+  --kind-accent: var(--color-info);
+  --kind-accent-rgb: var(--color-info-rgb);
+}
+
+.kind-option--debt,
+.kind-option--debt_in,
+.kind-option--debt_out {
+  --kind-accent: var(--color-warning);
+  --kind-accent-rgb: var(--color-warning-rgb);
 }
 
 .kind-option:hover {
-  border-color: var(--color-primary-50);
+  border-color: rgba(var(--kind-accent-rgb), 0.7);
 }
 
-.kind-option--selected {
-  border-color: var(--color-primary);
-  background: var(--color-primary-20);
-  color: var(--color-primary-dark);
+.kind-option--selected,
+.kind-option__input:checked + .kind-option {
+  background: rgba(var(--kind-accent-rgb), 0.16);
+  border-color: var(--kind-accent);
+  box-shadow: 0 0 0 3px rgba(var(--kind-accent-rgb), 0.18);
+}
+
+.kind-option:focus-visible,
+.kind-option__input:focus-visible + .kind-option {
+  outline: none;
+  border-color: var(--kind-accent);
+  box-shadow: 0 0 0 3px rgba(var(--kind-accent-rgb), 0.3);
 }
 
 .kind-option__icon {
@@ -107,6 +133,7 @@
   color: var(--color-info);
 }
 
+.kind-option__icon--debt,
 .kind-option__icon--debt_in,
 .kind-option__icon--debt_out {
   background: var(--color-warning-20);
@@ -130,6 +157,13 @@
 }
 
 .transaction-form__optional-fields.hidden {
+  display: none;
+}
+
+/* Debt sub-sections are revealed by the debt-fields controller as the user
+   picks a person and a direction. */
+.transaction-form__debt-direction.hidden,
+.transaction-form__debt-intents.hidden {
   display: none;
 }
 
