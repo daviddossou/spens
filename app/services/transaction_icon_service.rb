@@ -48,6 +48,8 @@ class TransactionIconService
         "transaction-show__header--income"
       elsif kind == "expense"
         "transaction-show__header--expense"
+      elsif kind.include?("debt")
+        "transaction-show__header--debt"
       else
         "transaction-show__header--neutral"
       end

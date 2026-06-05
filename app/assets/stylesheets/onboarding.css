@@ -3,6 +3,7 @@
   max-width: 800px;
   margin: 0 auto;
   padding: 2rem 1rem;
+  padding-top: calc(1.5rem + env(safe-area-inset-top, 0));
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -14,9 +15,9 @@
 }
 
 .onboarding-language-switcher {
-  margin-bottom: 0.75rem;
-  text-align: right;
+  margin-bottom: 1.5rem;
   display: flex;
+  justify-content: flex-end;
 }
 
 .onboarding-content {
@@ -41,6 +42,18 @@
   max-width: 600px;
   margin: 0 auto;
   line-height: 1.5;
+}
+
+/* Profile step: keep the field rhythm tight and even instead of relying on the
+   default per-field margins (which stacked into excess whitespace). */
+.onboarding-form .form-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.onboarding-form .form-grid .form-field {
+  margin-bottom: 0 !important;
 }
 
 .onboarding-form .form-actions {
@@ -79,7 +92,8 @@
 /* Responsive Design - Mobile */
 @media (max-width: 640px) {
   .onboarding-container {
-    padding: 1rem 0.75rem;
+    padding: 1.5rem 1rem;
+    padding-top: calc(1.25rem + env(safe-area-inset-top, 0));
   }
 
   .onboarding-progress {
@@ -108,7 +122,9 @@
 /* Responsive Design - Small Mobile */
 @media (max-width: 480px) {
   .onboarding-container {
-    padding: 0.75rem 0.5rem;
+    padding: 1.5rem 1rem;
+    padding-top: calc(1.25rem + env(safe-area-inset-top, 0));
+    width: 100%;
   }
 
   .onboarding-header h1 {

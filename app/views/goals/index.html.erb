@@ -14,7 +14,11 @@
             current_value: account.balance,
             target_value: account.saving_goal,
             currency: current_space.currency,
-            url: goal_path(id: account.id)
+            url: goal_path(id: account.id),
+            accent: "primary",
+            progress_label: t('.saved_label'),
+            complete_label: t('.reached_label'),
+            remaining_label: t('.to_go_label')
           ) %>
         <% end %>
       </div>

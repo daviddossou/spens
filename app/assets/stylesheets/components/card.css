@@ -1,24 +1,27 @@
-/* Selectable Card Component */
+/* Selectable Card Component (onboarding goal picker) */
 
 .card {
   position: relative;
   display: block;
-  padding: 1.5rem;
-  border: 2px solid var(--border-default);
-  border-radius: 12px;
+  padding: 1.25rem;
+  border: 1.5px solid var(--border-light);
+  border-radius: 0.875rem;
+  background: var(--bg-surface);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
   cursor: pointer;
-  transition: all 0.2s ease;
-  background-color: white;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease,
+    transform 0.2s ease, background-color 0.2s ease;
 }
 
 .card:hover {
-  border-color: var(--color-primary);
+  border-color: var(--color-primary-20);
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  transform: translateY(-1px);
 }
 
 .card.selected {
   border-color: var(--color-primary);
-  background-color: var(--color-primary-20);
+  background: rgba(var(--color-primary-rgb), 0.05);
 }
 
 .card input[type="checkbox"] {
@@ -34,44 +37,46 @@
 .card-content h4 {
   font-size: 1rem;
   font-weight: 600;
-  margin-bottom: 0.5rem;
-  padding-right: 2rem;
-  /* Space for checkbox */
+  color: var(--text-dark);
+  margin: 0 0 0.375rem;
+  padding-right: 2rem; /* clear the check indicator */
+  line-height: 1.4;
 }
 
 .card-content p {
   color: var(--text-muted);
   font-size: 0.875rem;
   line-height: 1.5;
-  margin-top: 0.5rem;
+  margin: 0;
+  padding-right: 2rem;
 }
 
+/* Always-visible circular indicator so cards read as selectable; it fills
+   indigo with a check once chosen. */
 .card-checkbox {
   position: absolute;
   top: 0;
   right: 0;
-  width: 24px;
-  height: 24px;
-  border: 2px solid var(--border-default);
-  border-radius: 4px;
+  width: 22px;
+  height: 22px;
+  border: 2px solid var(--color-secondary-20);
+  border-radius: 999px;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s ease;
-  background-color: white;
-  visibility: hidden;
+  background: transparent;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
 }
 
 .card.selected .card-checkbox {
   background-color: var(--color-primary);
   border-color: var(--color-primary);
-  visibility: visible;
 }
 
 .card-checkbox .checkmark {
-  width: 16px;
-  height: 16px;
-  fill: white;
+  width: 14px;
+  height: 14px;
+  fill: #fff;
   opacity: 0;
   transition: opacity 0.2s ease;
 }
@@ -81,7 +86,11 @@
 }
 
 @media (max-width: 640px) {
+  .card {
+    padding: 1.125rem 3rem 1.125rem 1.125rem;
+  }
+
   .card-content h4 {
-    font-size: 0.9rem;
+    font-size: 0.9375rem;
   }
 }

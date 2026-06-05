@@ -24,7 +24,11 @@
             current_value: debt.total_reimbursed,
             target_value: debt.total_lent,
             currency: current_space.currency,
-            url: debt_path(id: debt.id)
+            url: debt_path(id: debt.id),
+            accent: "warning",
+            progress_label: t('.repaid_label'),
+            complete_label: t('.settled_label'),
+            remaining_label: t('.remaining_label')
           ) %>
         <% end %>
       </div>

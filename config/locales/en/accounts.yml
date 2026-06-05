@@ -3,7 +3,7 @@ en:
     index:
       title: "My Accounts"
       subtitle: "Manage your accounts"
-      has_goal: "Savings Goal"
+      has_goal: "Goal"
       no_accounts_title: "No accounts yet"
       no_accounts_message: "Add your first account to start tracking your money"
       add_new_account: "Add an Account"

@@ -1,49 +1,29 @@
 <% if url.present? %>
-  <%= link_to url, class: "commitment-card commitment-card--clickable" do %>
-    <div class="commitment-card__progress-circle">
-      <svg class="progress-ring" viewBox="0 0 120 120">
-        <circle class="progress-ring__circle-bg" stroke="#e5e7eb" stroke-width="8" fill="transparent" r="52" cx="60" cy="60"/>
-        <circle class="progress-ring__circle" stroke="currentColor" stroke-width="8" fill="transparent" r="52" cx="60" cy="60"
-                style="stroke-dasharray: <%= circumference %>; stroke-dashoffset: <%= stroke_dashoffset %>;"
-                transform="rotate(-90 60 60)"/>
-      </svg>
-      <div class="commitment-card__percentage">
-        <%= percentage %>%
-      </div>
+  <%= link_to url, class: root_class do %>
+    <div class="commitment-card__head">
+      <span class="commitment-card__name"><%= title %></span>
+      <% if settled? %>
+        <span class="commitment-card__badge"><%= complete_label %></span>
+      <% else %>
+        <span class="commitment-card__remaining"><%= formatted_remaining %><span class="commitment-card__remaining-label"><%= remaining_label %></span></span>
+      <% end %>
     </div>
-
-    <h3 class="commitment-card__name">
-      <%= title %>
-    </h3>
-
-    <div class="commitment-card__amounts">
-      <span class="amount-value"><%= formatted_current_value %></span>
-      <span class="amount-separator">/</span>
-      <span class="amount-goal"><%= formatted_target_value %></span>
-    </div>
+    <%= bar %>
+    <%= meta %>
   <% end %>
 <% else %>
-  <div class="commitment-card">
-    <div class="commitment-card__progress-circle">
-      <svg class="progress-ring" viewBox="0 0 120 120">
-        <circle class="progress-ring__circle-bg" stroke="#e5e7eb" stroke-width="8" fill="transparent" r="52" cx="60" cy="60"/>
-        <circle class="progress-ring__circle" stroke="currentColor" stroke-width="8" fill="transparent" r="52" cx="60" cy="60"
-                style="stroke-dasharray: <%= circumference %>; stroke-dashoffset: <%= stroke_dashoffset %>;"
-                transform="rotate(-90 60 60)"/>
-      </svg>
-      <div class="commitment-card__percentage">
-        <%= percentage %>%
+  <div class="<%= root_class %>">
+    <% if settled? %>
+      <span class="commitment-card__badge"><%= complete_label %></span>
+    <% else %>
+      <div class="commitment-card__hero">
+        <span class="commitment-card__amount"><%= formatted_remaining %></span><span class="commitment-card__remaining-label"><%= remaining_label %></span>
       </div>
+    <% end %>
+    <div class="commitment-card__bar-row">
+      <%= bar %>
+      <span class="commitment-card__pct"><%= percentage %>%</span>
     </div>
-
-    <h3 class="commitment-card__name">
-      <%= title %>
-    </h3>
-
-    <div class="commitment-card__amounts">
-      <span class="amount-value"><%= formatted_current_value %></span>
-      <span class="amount-separator">/</span>
-      <span class="amount-goal"><%= formatted_target_value %></span>
-    </div>
+    <div class="commitment-card__progress"><%= progress_summary %></div>
   </div>
 <% end %>

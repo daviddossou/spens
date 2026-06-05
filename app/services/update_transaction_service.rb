@@ -11,6 +11,7 @@ class UpdateTransactionService
 
     updates[:description] = @attributes[:description] if @attributes[:description].present?
     updates[:transaction_date] = @attributes[:transaction_date] if @attributes[:transaction_date].present?
+    updates[:note] = @attributes[:note] if @attributes.key?(:note)
 
     kind = @attributes[:kind].presence || @transaction.transaction_type.kind
 

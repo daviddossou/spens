@@ -78,7 +78,7 @@ class TransactionsController < ApplicationController
   end
 
   def update_params
-    params.require(:transaction).permit(:kind, :amount, :description, :transaction_type_name, :transaction_date, :account_name)
+    params.require(:transaction).permit(:kind, :amount, :description, :transaction_type_name, :transaction_date, :account_name, :note)
   end
 
   def build_form_for_edit(payload = {})

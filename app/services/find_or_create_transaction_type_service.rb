@@ -8,8 +8,14 @@ class FindOrCreateTransactionTypeService
   end
 
   def call
-    @space.transaction_types.find_or_create_by!(kind: @kind, name: @transaction_type_name.strip) do |transaction_type|
-      transaction_type.budget_goal = 0.0
-    end
+    name = @transaction_type_name.strip
+
+    existing = @space.transaction_types
+                     .where(kind: @kind)
+                     .where("lower(name) = ?", name.downcase)
+                     .first
+    return existing if existing
+
+    @space.transaction_types.create!(kind: @kind, name: name, budget_goal: 0.0)
   end
 end

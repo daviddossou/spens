@@ -38,7 +38,7 @@ fr:
       note_label: "Note"
       note_help: "Ajoute des détails si besoin"
       note_placeholder: "Ajouter une note..."
-      save_transaction: "Enregistrer"
+      save_transaction: "Enregistrer la transaction"
       cancel: "Annuler"
     create:
       success: "Transaction enregistrée !"

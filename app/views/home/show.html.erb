@@ -6,29 +6,39 @@
        data-infinite-scroll-url-value="<%= dashboard_path %>"
        data-infinite-scroll-page-value="<%= @has_more ? @page + 1 : 0 %>">
 
-    <!-- Analytics Cards -->
+    <!-- Hero: the one glanceable number -->
+    <%= render Ui::StatCardComponent.new(
+      label: t('.stats.total_balance'),
+      value: @total_balance,
+      currency: @currency,
+      variant: :hero,
+      icon: tag.svg(fill: "none", stroke: "currentColor", viewBox: "0 0 24 24") do
+        tag.path(stroke_linecap: "round", stroke_linejoin: "round", "stroke-width": "1.8",
+                 d: "M3 7a2 2 0 012-2h12a2 2 0 012 2v1h1a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2V7zm15 5h-3a1.5 1.5 0 100 3h3")
+      end
+    ) %>
+
+    <!-- Secondary stats -->
     <div class="stat-cards">
-      <%= render Ui::StatCardComponent.new(
-        label: t('.stats.total_balance'),
-        value: @total_balance,
-        currency: @currency
-      ) %>
       <%= render Ui::StatCardComponent.new(
         label: t('.stats.saved_this_month'),
         value: @saved_this_month,
         currency: @currency,
+        variant: :compact,
         trend: @saved_this_month.positive? ? :positive : (@saved_this_month.negative? ? :negative : nil)
       ) %>
       <%= render Ui::StatCardComponent.new(
         label: t('.stats.owed_to_me'),
         value: @owed_to_me,
         currency: @currency,
+        variant: :compact,
         trend: @owed_to_me.positive? ? :positive : nil
       ) %>
       <%= render Ui::StatCardComponent.new(
         label: t('.stats.i_owe'),
         value: @i_owe,
         currency: @currency,
+        variant: :compact,
         trend: @i_owe.positive? ? :negative : nil
       ) %>
     </div>

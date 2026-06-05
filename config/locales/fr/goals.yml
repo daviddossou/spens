@@ -8,6 +8,9 @@ fr:
       no_goals_title: "Aucun objectif"
       no_goals_message: "Fixe un objectif d'épargne pour suivre ta progression"
       add_new_goal: "Ajouter un objectif"
+      saved_label: "épargné"
+      to_go_label: "restant"
+      reached_label: "Atteint"
     new:
       title: "Nouvel objectif"
       subtitle: "Fixe un montant cible pour ton compte"

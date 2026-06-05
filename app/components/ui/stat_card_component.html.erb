@@ -1,10 +1,20 @@
-<div class="stat-card">
-  <span class="stat-card__label"><%= label %></span>
-  <span class="stat-card__value <%= "stat-card__value--positive" if trend == :positive %><%= "stat-card__value--negative" if trend == :negative %>">
-    <% if currency %>
-      <%= helpers.smart_format_money(value, currency) %>
-    <% else %>
-      <%= value %>
+<div class="<%= root_class %>">
+  <span class="stat-card__label">
+    <% if icon %>
+      <span class="stat-card__icon" aria-hidden="true"><%= icon %></span>
     <% end %>
+    <%= label %>
+  </span>
+  <span class="stat-card__value <%= "stat-card__value--positive" if trend == :positive %><%= "stat-card__value--negative" if trend == :negative %>">
+    <% if trend_glyph %>
+      <span class="stat-card__trend" aria-hidden="true"><%= trend_glyph %></span>
+    <% end %>
+    <span class="stat-card__amount">
+      <% if currency %>
+        <%= helpers.smart_format_money(value, currency) %>
+      <% else %>
+        <%= value %>
+      <% end %>
+    </span>
   </span>
 </div>

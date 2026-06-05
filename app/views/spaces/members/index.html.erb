@@ -7,37 +7,36 @@
 
   <div class="page-content">
     <% if @members.any? %>
-      <div class="accounts-list">
+      <div class="member-list">
         <% @members.each do |member| %>
-          <div class="account-card">
-            <div class="account-card__info">
-              <h3 class="account-card__name"><%= member.first_name %> <%= member.last_name %></h3>
-              <p class="account-card__balance"><%= member.email %></p>
-            </div>
-            <div class="account-card__meta">
-              <% if member.id == @space.user_id %>
-                <span class="account-card__goal-badge"><%= t('.owner') %></span>
+          <% full_name = "#{member.first_name} #{member.last_name}".strip %>
+          <div class="member-card">
+            <span class="member-card__avatar" aria-hidden="true"><%= (full_name.presence || member.email).first.upcase %></span>
+            <div class="member-card__info">
+              <p class="member-card__name"><%= full_name.presence || member.email %></p>
+              <% if full_name.present? %>
+                <p class="member-card__email"><%= member.email %></p>
               <% end %>
             </div>
+            <% if member.id == @space.user_id %>
+              <span class="member-card__badge member-card__badge--owner"><%= t('.owner') %></span>
+            <% end %>
           </div>
         <% end %>
       </div>
     <% end %>
 
     <% if @pending_invitations.any? %>
-      <h3 class="page-section-title" style="margin-top: 8px; margin-bottom: 8px; font-size: 14px; color: var(--color-text-secondary, #888); text-transform: uppercase; letter-spacing: 0.5px;">
-        <%= t('.pending_title') %>
-      </h3>
-      <div class="accounts-list">
+      <h3 class="member-list__section-title"><%= t('.pending_title') %></h3>
+      <div class="member-list">
         <% @pending_invitations.each do |invitation| %>
-          <div class="account-card" style="opacity: 0.6;">
-            <div class="account-card__info">
-              <h3 class="account-card__name"><%= invitation.email %></h3>
-              <p class="account-card__balance"><%= t('.invited_on', date: l(invitation.created_at.to_date, format: :short)) %></p>
+          <div class="member-card member-card--pending">
+            <span class="member-card__avatar member-card__avatar--pending" aria-hidden="true"><%= invitation.email.first.upcase %></span>
+            <div class="member-card__info">
+              <p class="member-card__name"><%= invitation.email %></p>
+              <p class="member-card__email"><%= t('.invited_on', date: l(invitation.created_at.to_date, format: :short)) %></p>
             </div>
-            <div class="account-card__meta">
-              <span class="account-card__goal-badge"><%= t('.pending') %></span>
-            </div>
+            <span class="member-card__badge member-card__badge--pending"><%= t('.pending') %></span>
           </div>
         <% end %>
       </div>

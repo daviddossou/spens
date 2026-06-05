@@ -35,4 +35,22 @@ module TransactionHelper
     income_kinds = %w[income debt_in transfer_in]
     income_kinds.include?(kind) ? transaction.amount.abs : -transaction.amount.abs
   end
+
+  # Kind options for the add/edit transaction picker.
+  def transaction_kind_options(form)
+    if form.debt_transaction?
+      debt = form.debt || form.transaction&.debt
+      direction = debt&.direction
+      [
+        { value: "debt_in",  label: t("transactions.form.kind_debt_in.#{direction}") },
+        { value: "debt_out", label: t("transactions.form.kind_debt_out.#{direction}") }
+      ]
+    else
+      [
+        { value: "expense",  label: t("transactions.form.kind_expense") },
+        { value: "income",   label: t("transactions.form.kind_income") },
+        { value: "transfer", label: t("transactions.form.kind_transfer") }
+      ]
+    end
+  end
 end

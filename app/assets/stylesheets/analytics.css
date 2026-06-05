@@ -2,6 +2,8 @@
 
 /* Section headers */
 .analytics-section {
+  display: grid;
+  gap: 1rem;
   margin-bottom: 2rem;
 }
 
@@ -57,7 +59,9 @@
 /* Custom date picker row */
 .analytics-period__custom {
   display: none;
-  margin-top: 0.75rem;
+  margin-bottom: 0.75rem;
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
 }
 
 .analytics-period__custom--visible {
@@ -140,7 +144,6 @@
   background: var(--bg-surface);
   border-radius: 0.75rem;
   padding: 1rem;
-  margin-bottom: 1rem;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
 }
 
@@ -210,9 +213,10 @@
   color: var(--color-gray);
 }
 
-/* Chart.js canvas responsive override */
+/* Chart heights are set per-chart via the `height:` option, so let the
+   canvas follow its container instead of capping it (which left empty space). */
 .analytics-chart-card canvas {
-  max-height: 260px;
+  max-height: 280px;
 }
 
 /* Mobile responsive */
@@ -226,6 +230,6 @@
   }
 
   .analytics-chart-card canvas {
-    max-height: 220px;
+    max-height: 280px;
   }
 }

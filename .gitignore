@@ -45,3 +45,12 @@
 .DS_Store
 
 /config/credentials/development.key
+
+# Impeccable design tooling and generated files
+.impeccable/
+.claude/
+DESIGN.md
+PRODUCT.md
+
+# VS Code workspace file
+*.code-workspace

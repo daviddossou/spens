@@ -16,30 +16,101 @@
   margin-bottom: 1.5rem;
 }
 
+/* Kind selector: a scalable icon grid. auto-fit makes 2 options fill the
+   row (debt edit), 3 fit a row (create), and more wrap to new rows as kinds
+   are added (e.g. loan / debt payment) — never overflowing on mobile. */
 .kind-selector {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
   gap: 0.5rem;
-  flex-wrap: nowrap;
 }
 
-.kind-link {
+/* Radio-driven variant (edit form): the input is visually hidden; the
+   adjacent card carries the selected state. */
+.kind-option__input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.kind-option__input:checked + .kind-option {
+  border-color: var(--color-primary);
+  background: var(--color-primary-20);
+  color: var(--color-primary-dark);
+}
+
+.kind-option__input:focus-visible + .kind-option {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.2);
+}
+
+.kind-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.875rem 0.5rem;
+  background: var(--bg-surface);
+  border: 1.5px solid var(--color-light-gray);
+  border-radius: 0.875rem;
   text-decoration: none;
-  color: inherit;
-  display: block;
-  flex: 1;
+  color: var(--text-muted);
+  transition: border-color 0.2s ease, background-color 0.2s ease, color 0.2s ease;
 }
 
-.kind-link:hover {
-  text-decoration: none;
+.kind-option:hover {
+  border-color: var(--color-primary-50);
 }
 
-.kind-card {
-  min-width: 100px;
+.kind-option--selected {
+  border-color: var(--color-primary);
+  background: var(--color-primary-20);
+  color: var(--color-primary-dark);
+}
 
-  h4 {
-    padding-left: 1px;
-    padding-right: 1px;
-  }
+.kind-option__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 9999px;
+}
+
+.kind-option__icon svg {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.kind-option__label {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  line-height: 1.2;
+  text-align: center;
+}
+
+/* Per-kind semantic icon colors (icons use stroke: currentColor). */
+.kind-option__icon--expense {
+  background: var(--color-danger-20);
+  color: var(--color-danger);
+}
+
+.kind-option__icon--income {
+  background: var(--color-success-20);
+  color: var(--color-success);
+}
+
+.kind-option__icon--transfer {
+  background: var(--color-info-20);
+  color: var(--color-info);
+}
+
+.kind-option__icon--debt_in,
+.kind-option__icon--debt_out {
+  background: var(--color-warning-20);
+  color: var(--color-warning);
 }
 
 /* Toggle Button for More Details */

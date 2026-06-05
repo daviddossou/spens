@@ -1,9 +1,10 @@
 /* Account Line Component */
 .account-line {
-  padding: 1rem;
-  background-color: white;
-  border: 1px solid var(--border-default);
-  border-radius: 0.5rem;
+  padding: 1.25rem;
+  background: var(--bg-surface);
+  border: 1.5px solid var(--border-light);
+  border-radius: 0.875rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
 .account-line__fields {

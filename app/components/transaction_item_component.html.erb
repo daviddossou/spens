@@ -16,9 +16,11 @@
           <p class="transaction-item__type">
             <%= transaction.transaction_type.name %>
           </p>
-          <p class="transaction-item__description">
-            <%= transaction.description %>
-          </p>
+          <% if description.present? %>
+            <p class="transaction-item__description">
+              <%= description %>
+            </p>
+          <% end %>
           <% if transaction.account.present? %>
             <p class="transaction-item__account">
               <%= transaction.account.name %>
