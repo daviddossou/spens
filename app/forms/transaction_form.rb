@@ -3,7 +3,8 @@
 class TransactionForm < BaseForm
   ##
   # Attributes
-  attr_accessor :space, :transaction, :debt, :user
+  attr_accessor :space, :transaction, :user
+  attr_writer :debt
   attr_reader :account_id, :debt_id
 
   attribute :kind, :string, default: "expense"
@@ -15,6 +16,8 @@ class TransactionForm < BaseForm
   attribute :transaction_type_name, :string
   attribute :note, :string
   attribute :description, :string
+  attribute :contact_name, :string
+  attribute :direction, :string
 
   ##
   # Validations
@@ -26,6 +29,11 @@ class TransactionForm < BaseForm
   validates :transaction_type_name, presence: true, unless: -> { transfer? || debt_transaction? }
   validate :at_least_one_transfer_account, if: :double_transfer?
   validate :different_accounts_for_transfer, if: :double_transfer?
+
+  # Debt entry from the main form: a person and a direction are required when no
+  # existing debt was pre-selected (i.e. not launched from a debt's detail page).
+  validates :contact_name, presence: true, if: -> { debt_transaction? && @debt_id.blank? }
+  validates :direction, presence: true, inclusion: { in: %w[lent borrowed] }, if: -> { debt_transaction? && @debt_id.blank? }
 
   ##
   # Class Methods
@@ -45,6 +53,10 @@ class TransactionForm < BaseForm
 
     if @debt_id.present?
       @debt = space.debts.find_by(id: @debt_id)
+      if @debt
+        payload[:direction] ||= @debt.direction
+        payload[:contact_name] ||= @debt.name
+      end
     end
 
     if editing?
@@ -55,6 +67,8 @@ class TransactionForm < BaseForm
       payload[:transaction_type_name] ||= @transaction.transaction_type.name
       payload[:note] ||= @transaction.note
       payload[:account_name] ||= @transaction.account&.name
+      payload[:contact_name] ||= @transaction.debt&.name
+      payload[:direction] ||= @transaction.debt&.direction
     end
 
     if @account_id.present? && !editing?
@@ -74,7 +88,9 @@ class TransactionForm < BaseForm
       transaction_date: payload[:transaction_date] || Date.current,
       transaction_type_name: payload[:transaction_type_name],
       note: payload[:note],
-      description: payload[:description]
+      description: payload[:description],
+      contact_name: payload[:contact_name],
+      direction: payload[:direction]
     )
   end
 
@@ -135,12 +151,44 @@ class TransactionForm < BaseForm
   def kind_params(target_kind)
     params = { kind: target_kind }
     params[:account_id] = account_id if account_id.present?
-    params[:debt_id] = debt_id if debt_id.present?
+    # Only carry the debt context onto debt-kind targets, so switching to
+    # expense/income/transfer cleanly drops it.
+    if %w[debt_in debt_out].include?(target_kind)
+      params[:debt_id] = debt_id if debt_id.present?
+      params[:direction] = direction if direction.present?
+      params[:contact_name] = contact_name if contact_name.present?
+    end
     params
   end
 
   def debt_transaction?
     debt_id.present? || %w[debt_in debt_out].include?(kind)
+  end
+
+  # Resolves the debt for this transaction. When launched from a debt's detail
+  # page, @debt is set from @debt_id. From the main form, the debt is found (or
+  # created) from the typed person name + chosen direction.
+  def debt
+    @debt ||= if @debt_id.present?
+                space.debts.find_by(id: @debt_id)
+              elsif contact_name.present? && direction.present?
+                FindOrCreateDebtService.new(space, contact_name, direction, user).call
+              end
+  end
+
+  # Person options for the "Who?" autocomplete: distinct ongoing-debt names.
+  def debt_person_suggestions
+    space.debts.ongoing.order(updated_at: :desc).pluck(:name).uniq
+  end
+
+  # Map of lowercased person name => [directions], so the client can infer a
+  # direction for an existing person (and disambiguate a name used both ways).
+  def debts_by_name
+    space.debts.ongoing.each_with_object({}) do |debt, acc|
+      key = debt.name.to_s.strip.downcase
+      (acc[key] ||= []) << debt.direction
+      acc[key].uniq!
+    end
   end
 
   def transfer?

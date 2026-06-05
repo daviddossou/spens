@@ -54,10 +54,12 @@ class TransactionsController < ApplicationController
     kind = params[:kind] || payload[:kind] || "expense"
     account_id = params[:account_id] || payload[:account_id]
     debt_id = params[:debt_id] || payload[:debt_id]
+    direction = params[:direction] || payload[:direction]
+    contact_name = params[:contact_name] || payload[:contact_name]
 
     @form = TransactionForm.new(
       current_space,
-      payload.merge(kind: kind, account_id: account_id, debt_id: debt_id)
+      payload.merge(kind: kind, account_id: account_id, debt_id: debt_id, direction: direction, contact_name: contact_name)
     )
     @form.user = current_user
   end
@@ -73,7 +75,9 @@ class TransactionsController < ApplicationController
       :transaction_type_name,
       :note,
       :debt_id,
-      :description
+      :description,
+      :contact_name,
+      :direction
     )
   end
 
