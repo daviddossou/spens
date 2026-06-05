@@ -170,10 +170,10 @@ class TransactionForm < BaseForm
   # created) from the typed person name + chosen direction.
   def debt
     @debt ||= if @debt_id.present?
-                space.debts.find_by(id: @debt_id)
-              elsif contact_name.present? && direction.present?
-                FindOrCreateDebtService.new(space, contact_name, direction, user).call
-              end
+      space.debts.find_by(id: @debt_id)
+    elsif contact_name.present? && direction.present?
+      FindOrCreateDebtService.new(space, contact_name, direction, user).call
+    end
   end
 
   # Person options for the "Who?" autocomplete: distinct ongoing-debt names.
