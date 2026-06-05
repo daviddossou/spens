@@ -16,18 +16,19 @@
 
         <!-- Kind selector (icon cards, matching the create form). Debt
              transactions only: switching regular kinds isn't supported on edit. -->
-        <% if %w[debt_in debt_out].include?(@form.kind) && (@form.debt || @form.transaction&.debt).present? %>
+        <% debt_for_edit = @form.transaction&.debt || @form.debt %>
+        <% if %w[debt_in debt_out].include?(@form.kind) && debt_for_edit.present? %>
           <div class="transaction-form__kind">
             <div class="kind-selector" role="radiogroup" aria-label="<%= t('.kind_label', default: 'Type') %>">
-              <% transaction_kind_options(@form).each do |opt| %>
-                <% is_selected = @form.kind == opt[:value] %>
-                <%= f.radio_button :kind, opt[:value],
-                      id: "kind_#{opt[:value]}",
+              <% debt_direction_intent_options(debt_for_edit.direction).each do |opt| %>
+                <% is_selected = @form.kind == opt[:kind] %>
+                <%= f.radio_button :kind, opt[:kind],
+                      id: "kind_#{opt[:kind]}",
                       checked: is_selected,
                       class: "kind-option__input" %>
-                <label for="kind_<%= opt[:value] %>" class="kind-option">
-                  <span class="kind-option__icon kind-option__icon--<%= opt[:value] %>" aria-hidden="true">
-                    <%= transaction_icon_svg(opt[:value]) %>
+                <label for="kind_<%= opt[:kind] %>" class="kind-option kind-option--<%= opt[:kind] %>">
+                  <span class="kind-option__icon kind-option__icon--<%= opt[:kind] %>" aria-hidden="true">
+                    <%= transaction_icon_svg(opt[:kind]) %>
                   </span>
                   <span class="kind-option__label"><%= opt[:label] %></span>
                 </label>

@@ -56,6 +56,12 @@ export default class extends Controller {
           } else {
             delete element.dataset.balance
           }
+
+          // Notify any interested controller (e.g. debt-fields) of the selection.
+          element.dispatchEvent(new CustomEvent("tom-select:change", {
+            bubbles: true,
+            detail: { value }
+          }))
         })
 
         this.on('dropdown_open', function () {

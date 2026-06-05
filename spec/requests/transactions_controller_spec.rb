@@ -28,6 +28,14 @@ RSpec.describe TransactionsController, type: :request do
         get new_transaction_path(account_id: account.id)
         expect(response).to have_http_status(:success)
       end
+
+      it "renders the person-first debt category" do
+        create(:debt, user: user, name: "Alice", direction: "lent")
+        get new_transaction_path(kind: 'debt_out')
+        expect(response).to have_http_status(:success)
+        expect(response.body).to include('debt-fields')
+        expect(response.body).to include(I18n.t('transactions.form.contact_name_label'))
+      end
     end
 
     context "when requesting turbo_stream format" do
@@ -115,6 +123,62 @@ RSpec.describe TransactionsController, type: :request do
           post transactions_path, params: { transaction: transfer_attributes }
           expect(response.location).to match(%r{/transactions/[^?]+\?format=html})
           expect(flash[:notice]).to be_present
+        end
+      end
+
+      context "with debt kind from the main form" do
+        let(:space) { user.spaces.first }
+
+        it "creates a debt and a debt_out transaction for a brand-new lent person" do
+          expect {
+            post transactions_path, params: { transaction: {
+              kind: 'debt_out', contact_name: 'Carol', direction: 'lent',
+              amount: 75, transaction_date: Date.current
+            } }
+          }.to change(Transaction, :count).by(1).and change(Debt, :count).by(1)
+
+          debt = space.debts.find_by(name: 'Carol')
+          expect(debt.direction).to eq('lent')
+          expect(debt.total_lent).to eq(75)
+        end
+
+        it "creates a debt_in transaction for a brand-new borrowed person" do
+          post transactions_path, params: { transaction: {
+            kind: 'debt_in', contact_name: 'Dan', direction: 'borrowed',
+            amount: 200, transaction_date: Date.current
+          } }
+
+          debt = space.debts.find_by(name: 'Dan', direction: 'borrowed')
+          expect(debt.total_lent).to eq(200)
+        end
+
+        it "reuses an existing debt for the same person and direction" do
+          existing = create(:debt, user: user, name: 'Alice', direction: 'lent')
+
+          expect {
+            post transactions_path, params: { transaction: {
+              kind: 'debt_in', contact_name: 'Alice', direction: 'lent',
+              amount: 20, transaction_date: Date.current
+            } }
+          }.to change(Transaction, :count).by(1).and change(Debt, :count).by(0)
+
+          expect(existing.reload.total_reimbursed).to eq(20)
+        end
+
+        it "fails without a person" do
+          expect {
+            post transactions_path, params: { transaction: {
+              kind: 'debt_out', contact_name: '', direction: 'lent', amount: 50
+            } }
+          }.not_to change(Transaction, :count)
+        end
+
+        it "fails without a direction for a new person" do
+          expect {
+            post transactions_path, params: { transaction: {
+              kind: 'debt_out', contact_name: 'Eve', direction: '', amount: 50
+            } }
+          }.not_to change(Transaction, :count)
         end
       end
 

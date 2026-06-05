@@ -97,6 +97,10 @@ RSpec.describe TransactionIconService do
       expect(svg_content).to include("svg")
     end
 
+    it "handles the generic debt category by defaulting to debt_out" do
+      expect(described_class.icon_svg("debt")).to eq(described_class.icon_svg("debt_out"))
+    end
+
     it "caches icon content" do
       # First call reads from file
       described_class.icon_svg("income")

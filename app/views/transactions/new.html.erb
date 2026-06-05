@@ -4,7 +4,14 @@
   <div class="page-container page-container--narrow">
     <%= turbo_frame_tag "transaction_form" do %>
       <header class="page-header">
-        <p class="page-header__subtitle"><%= t(".subtitle.#{@form.kind}") %></p>
+        <% if @form.debt_id.present? %>
+          <%# Opened from a specific debt: both actions are shown, so the prompt stays generic. %>
+          <p class="page-header__subtitle"><%= t(".subtitle.from_debt") %></p>
+        <% elsif @form.debt_transaction? && @form.contact_name.blank? %>
+          <p class="page-header__subtitle"><%= t(".subtitle.debt") %></p>
+        <% else %>
+          <p class="page-header__subtitle"><%= t(".subtitle.#{@form.kind}") %></p>
+        <% end %>
       </header>
 
       <div class="page-content">

@@ -999,4 +999,161 @@ RSpec.describe TransactionForm, type: :model do
       end
     end
   end
+
+  describe 'debt transactions' do
+    describe 'validations' do
+      context 'from the main form (no debt_id)' do
+        let(:attrs) do
+          { kind: 'debt_out', direction: 'lent', contact_name: 'Alice', amount: 50, transaction_date: Date.current }
+        end
+
+        it 'is valid with a contact and a direction' do
+          expect(described_class.new(space, attrs)).to be_valid
+        end
+
+        it 'does not require a transaction_type_name' do
+          form = described_class.new(space, attrs)
+          form.valid?
+          expect(form.errors[:transaction_type_name]).to be_empty
+        end
+
+        it 'requires a contact_name' do
+          form = described_class.new(space, attrs.merge(contact_name: ''))
+          expect(form).to be_invalid
+          expect(form.errors[:contact_name]).to be_present
+        end
+
+        it 'requires a direction' do
+          form = described_class.new(space, attrs.merge(direction: ''))
+          expect(form).to be_invalid
+          expect(form.errors[:direction]).to be_present
+        end
+
+        it 'rejects an unknown direction' do
+          expect(described_class.new(space, attrs.merge(direction: 'sideways'))).to be_invalid
+        end
+      end
+
+      context 'opened from an existing debt (debt_id present)' do
+        let(:debt) { create(:debt, user: user, name: 'Bob', direction: 'lent') }
+
+        it 'is valid without an explicit contact_name or direction' do
+          form = described_class.new(space, kind: 'debt_in', debt_id: debt.id, amount: 20, transaction_date: Date.current)
+          expect(form).to be_valid
+        end
+      end
+    end
+
+    describe '#debt' do
+      it 'returns the debt referenced by debt_id' do
+        debt = create(:debt, user: user, name: 'Bob', direction: 'lent')
+        form = described_class.new(space, kind: 'debt_in', debt_id: debt.id, amount: 10, transaction_date: Date.current)
+        expect(form.debt).to eq(debt)
+      end
+
+      it 'finds an existing debt by name and direction' do
+        debt = create(:debt, user: user, name: 'Alice', direction: 'lent')
+        form = described_class.new(space, kind: 'debt_out', contact_name: 'Alice', direction: 'lent', amount: 10, transaction_date: Date.current)
+        expect(form.debt).to eq(debt)
+      end
+
+      it 'creates a new debt when none matches the name and direction' do
+        form = described_class.new(space, kind: 'debt_out', contact_name: 'Carol', direction: 'lent', amount: 10, transaction_date: Date.current)
+        form.user = user
+        expect { form.debt }.to change { space.debts.count }.by(1)
+        expect(form.debt).to have_attributes(name: 'Carol', direction: 'lent')
+      end
+    end
+
+    describe '#kind_params' do
+      let(:form) do
+        described_class.new(space, kind: 'debt_out', direction: 'lent', contact_name: 'Alice', amount: 10, transaction_date: Date.current)
+      end
+
+      it 'carries direction and contact_name onto debt-kind targets' do
+        expect(form.kind_params('debt_in')).to eq(kind: 'debt_in', direction: 'lent', contact_name: 'Alice')
+      end
+
+      it 'drops the debt context for non-debt targets' do
+        expect(form.kind_params('expense')).to eq(kind: 'expense')
+      end
+    end
+
+    describe '#debt_person_suggestions' do
+      it 'returns the names of ongoing debts' do
+        create(:debt, user: user, name: 'Alice', direction: 'lent')
+        create(:debt, :borrowed, user: user, name: 'Bob')
+        suggestions = described_class.new(space, valid_expense_attributes).debt_person_suggestions
+        expect(suggestions).to match_array(%w[Alice Bob])
+      end
+    end
+
+    describe '#debts_by_name' do
+      it 'maps lowercased names to their existing directions' do
+        create(:debt, user: user, name: 'Eve', direction: 'lent')
+        create(:debt, :borrowed, user: user, name: 'Eve')
+        map = described_class.new(space, valid_expense_attributes).debts_by_name
+        expect(map['eve']).to match_array(%w[lent borrowed])
+      end
+    end
+
+    describe '#submit' do
+      context 'with a brand-new lent person' do
+        let(:form) do
+          described_class.new(space, kind: 'debt_out', contact_name: 'Carol', direction: 'lent',
+                                     amount: 75, transaction_date: Date.current, account_name: 'Cash')
+        end
+
+        before { form.user = user }
+
+        it 'creates the debt and one transaction' do
+          expect { form.submit }.to change { space.debts.count }.by(1).and change { Transaction.count }.by(1)
+        end
+
+        it 'opens the lent total and records a Money lent transaction' do
+          form.submit
+          debt = space.debts.find_by(name: 'Carol', direction: 'lent')
+          expect(debt.total_lent).to eq(75)
+          transaction = debt.transactions.last
+          expect(transaction.transaction_type.kind).to eq('debt_out')
+          expect(transaction.description).to eq('Lent to Carol')
+        end
+      end
+
+      context 'with a brand-new borrowed person' do
+        let(:form) do
+          described_class.new(space, kind: 'debt_in', contact_name: 'Dan', direction: 'borrowed',
+                                     amount: 200, transaction_date: Date.current)
+        end
+
+        before { form.user = user }
+
+        it 'opens the borrowed total via a debt_in transaction' do
+          form.submit
+          debt = space.debts.find_by(name: 'Dan', direction: 'borrowed')
+          expect(debt.total_lent).to eq(200)
+          expect(debt.transactions.last.transaction_type.kind).to eq('debt_in')
+        end
+      end
+
+      context 'with an existing debt' do
+        let!(:debt) { create(:debt, user: user, name: 'Alice', direction: 'lent', total_lent: 100, total_reimbursed: 0) }
+        let(:form) do
+          described_class.new(space, kind: 'debt_in', contact_name: 'Alice', direction: 'lent',
+                                     amount: 30, transaction_date: Date.current)
+        end
+
+        before { form.user = user }
+
+        it 'reuses the debt instead of creating a new one' do
+          expect { form.submit }.not_to change { space.debts.count }
+        end
+
+        it 'records the repayment against the existing debt' do
+          form.submit
+          expect(debt.reload.total_reimbursed).to eq(30)
+        end
+      end
+    end
+  end
 end
