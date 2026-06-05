@@ -33,6 +33,8 @@
 #  fk_rails_...  (user_id => users.id)
 #
 class Transaction < ApplicationRecord
+  rounds_money :amount
+
   ##
   # Associations
   belongs_to :space
@@ -78,9 +80,9 @@ class Transaction < ApplicationRecord
                        (debt.borrowed? && transaction_type.debt_in?)
 
     if is_debt_increase
-      debt.increment!(:total_lent, amount.abs)
+      adjust_debt_total(debt, :total_lent, amount.abs)
     else
-      debt.increment!(:total_reimbursed, amount.abs)
+      adjust_debt_total(debt, :total_reimbursed, amount.abs)
     end
   end
 
@@ -122,18 +124,18 @@ class Transaction < ApplicationRecord
       old_is_increase = (debt.lent? && old_type.debt_out?) ||
                         (debt.borrowed? && old_type.debt_in?)
       if old_is_increase
-        debt.decrement!(:total_lent, old_amount.abs)
+        adjust_debt_total(debt, :total_lent, -old_amount.abs)
       else
-        debt.decrement!(:total_reimbursed, old_amount.abs)
+        adjust_debt_total(debt, :total_reimbursed, -old_amount.abs)
       end
 
       # Apply new contribution
       new_is_increase = (debt.lent? && transaction_type.debt_out?) ||
                         (debt.borrowed? && transaction_type.debt_in?)
       if new_is_increase
-        debt.increment!(:total_lent, amount.abs)
+        adjust_debt_total(debt, :total_lent, amount.abs)
       else
-        debt.increment!(:total_reimbursed, amount.abs)
+        adjust_debt_total(debt, :total_reimbursed, amount.abs)
       end
     elsif saved_change_to_amount?
       old_amount, new_amount = saved_change_to_amount
@@ -143,9 +145,9 @@ class Transaction < ApplicationRecord
                          (debt.borrowed? && transaction_type.debt_in?)
 
       if is_debt_increase
-        debt.increment!(:total_lent, difference)
+        adjust_debt_total(debt, :total_lent, difference)
       else
-        debt.increment!(:total_reimbursed, difference)
+        adjust_debt_total(debt, :total_reimbursed, difference)
       end
     end
   end
@@ -165,9 +167,17 @@ class Transaction < ApplicationRecord
                        (debt.borrowed? && transaction_type.debt_in?)
 
     if is_debt_increase
-      debt.decrement!(:total_lent, amount.abs)
+      adjust_debt_total(debt, :total_lent, -amount.abs)
     else
-      debt.decrement!(:total_reimbursed, amount.abs)
+      adjust_debt_total(debt, :total_reimbursed, -amount.abs)
     end
+  end
+
+  # Apply a signed delta to a debt total via assignment + save so the
+  # RoundsMoney before_save callback fires (increment!/decrement! write raw
+  # SQL and would bypass it, letting float drift accumulate).
+  def adjust_debt_total(debt, attribute, delta)
+    debt[attribute] = (debt[attribute] || 0.0) + delta
+    debt.save!
   end
 end

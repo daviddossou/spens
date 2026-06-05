@@ -13,9 +13,9 @@ RSpec.describe MoneyHelper, type: :helper do
   end
 
   describe "#format_money" do
-    it "formats zero amount" do
-      expect(helper.format_money(0)).to eq("0")
-      expect(helper.format_money(nil)).to eq("0")
+    it "formats zero amount with the currency symbol" do
+      expect(helper.format_money(0)).to eq("0 $")
+      expect(helper.format_money(nil)).to eq("0 $")
     end
 
     it "formats positive amount with currency symbol" do
@@ -98,6 +98,22 @@ RSpec.describe MoneyHelper, type: :helper do
       result = helper.smart_format_money(2000, "USD")
       expect(result).to include("2K")
       expect(result).not_to include("2.0K")
+    end
+
+    it "drops decimals on whole sub-threshold amounts" do
+      expect(helper.smart_format_money(60, "USD")).to eq("60 $")
+    end
+
+    it "keeps two decimals on sub-threshold amounts with cents" do
+      expect(helper.smart_format_money(218.37, "USD")).to eq("218.37 $")
+      expect(helper.smart_format_money(0.5, "USD")).to eq("0.50 $")
+    end
+
+    # Regression: a sub-cent magnitude that rounds to zero must not render
+    # as "-0.0" (negative zero) — it reads as a clean "0".
+    it "renders sub-cent magnitudes that round to zero as plain zero" do
+      expect(helper.smart_format_money(-0.004, "USD")).to eq("0 $")
+      expect(helper.smart_format_money(0, "USD")).to eq("0 $")
     end
   end
 

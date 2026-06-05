@@ -51,10 +51,14 @@ class SpacesController < ApplicationController
       return
     end
 
+    was_active = session[:current_space_id] == @space.id
+
     @space.destroy!
 
-    # Switch to another space if the deleted one was active
-    if current_space&.id == @space.id || current_space.nil?
+    # If the deleted space was the active one, switch to a remaining space.
+    # Compare against the stored session id rather than current_space, which
+    # silently falls back to another space and would mask the deletion.
+    if was_active
       set_current_space(current_user.spaces.reload.first)
     end
 

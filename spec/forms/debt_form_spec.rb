@@ -559,13 +559,13 @@ RSpec.describe DebtForm, type: :model do
         expect { form.submit }.to change(Debt, :count).by(1)
       end
 
-      it 'handles decimal precision correctly' do
+      it 'rounds amounts to two decimal places' do
         form.total_lent = 1000.123
         form.total_reimbursed = 250.456
         result = form.submit
         result.reload
-        expect(result.total_lent).to be_within(0.001).of(1000.123)
-        expect(result.total_reimbursed).to be_within(0.001).of(250.456)
+        expect(result.total_lent).to eq(1000.12)
+        expect(result.total_reimbursed).to eq(250.46)
       end
 
       it 'handles contact names with special characters' do

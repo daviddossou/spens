@@ -1,13 +1,8 @@
 module MoneyHelper
   # Format currency with proper symbol placement and formatting
   def format_money(amount, currency_code = nil)
-    return "0" if amount.nil? || amount.zero?
-
     currency_code ||= current_space&.currency || "XOF"
-    formatted_number = number_with_delimiter(amount.abs.round(2), delimiter: ",", precision: 0)
-    currency_symbol = get_currency_symbol(currency_code)
-
-    "#{formatted_number} #{currency_symbol}"
+    "#{format_money_number((amount || 0).abs.round(2))} #{get_currency_symbol(currency_code)}"
   end
 
   # Smart number formatting with abbreviations (K, M, B) and hover for full value
@@ -15,16 +10,14 @@ module MoneyHelper
   # sign: :always shows '+' or '-'
   # sign: :never shows no sign
   def smart_format_money(amount, currency_code = nil, threshold: 1_000, sign: :auto)
-    return format_money(0, currency_code) if amount.nil? || amount.zero?
-
     currency_code ||= current_space&.currency || "XOF"
-    negative = amount.negative?
-    abs_amount = amount.abs.round(2)
     currency_symbol = get_currency_symbol(currency_code)
+    abs_amount = (amount || 0).abs.round(2)
+    negative = (amount || 0).negative? && abs_amount.positive?
 
     prefix = case sign
     when :always
-      negative ? "- " : "+ "
+      abs_amount.zero? ? "" : (negative ? "- " : "+ ")
     when :never
       ""
     else # :auto
@@ -33,8 +26,7 @@ module MoneyHelper
 
     # If below threshold, show full number
     if abs_amount < threshold
-      formatted = number_with_delimiter(abs_amount, delimiter: ",", precision: 0)
-      return "#{prefix}#{formatted} #{currency_symbol}"
+      return "#{prefix}#{format_money_number(abs_amount)} #{currency_symbol}"
     end
 
     # Calculate abbreviated value
@@ -46,9 +38,10 @@ module MoneyHelper
       [ (abs_amount / 1_000.0).round(2), "K" ]
     end
 
-    # Format abbreviated number (remove .0 if whole number)
-    abbreviated_str = abbreviated % 1 == 0 ? abbreviated.to_i.to_s : abbreviated.to_s
-    full_amount = number_with_delimiter(abs_amount, delimiter: ",", precision: 0)
+    # Abbreviated values stay terse: drop a trailing ".0" on whole multiples
+    # (5K, not 5.0K) but keep meaningful decimals (2.21K).
+    abbreviated_str = (abbreviated % 1).zero? ? abbreviated.to_i.to_s : abbreviated.to_s
+    full_amount = format_money_number(abs_amount)
 
     content_tag :span,
                 "#{prefix}#{abbreviated_str}#{suffix} #{currency_symbol}",
@@ -58,6 +51,17 @@ module MoneyHelper
                 role: "button",
                 "aria-label": "#{prefix}#{full_amount} #{currency_symbol}",
                 data: { toggle: "tooltip" }
+  end
+
+  # Render a money magnitude with a thousands delimiter, showing 2 decimals
+  # only when the value has cents — whole amounts drop the trailing ".00"
+  # (60 -> "60", 218.37 -> "218.37", 0.5 -> "0.50", 2.21 -> "2.21").
+  def format_money_number(abs_amount)
+    if (abs_amount % 1).zero?
+      number_with_delimiter(abs_amount.to_i, delimiter: ",")
+    else
+      number_with_precision(abs_amount, precision: 2, delimiter: ",")
+    end
   end
 
   # Get currency symbol or code for display

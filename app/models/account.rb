@@ -23,6 +23,8 @@
 #  fk_rails_...  (user_id => users.id)
 #
 class Account < ApplicationRecord
+  rounds_money :balance, :saving_goal
+
   ##
   # Associations
   belongs_to :space
