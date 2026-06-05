@@ -7,11 +7,14 @@ en:
         income: "Where did this money come from?"
         debt_in: "How much were you repaid?"
         debt_out: "How much did you lend?"
+        debt: "Who's this debt with?"
+        from_debt: "What happened?"
         transfer: "Move money between accounts"
     form:
       kind_label: "Type"
       kind_expense: "Expense"
       kind_income: "Income"
+      kind_debt: "Debt"
       kind_debt_in:
         lent: Repayment Received
         borrowed: Money Borrowed
@@ -19,6 +22,11 @@ en:
         lent: Money Lent
         borrowed: Loan Repayment
       kind_transfer: "Transfer"
+      contact_name_label: "Who?"
+      contact_name_placeholder: "Search or add a person..."
+      direction_label: "What kind of debt?"
+      direction_lent: "They owe me"
+      direction_borrowed: "I owe them"
       amount_label: "Amount"
       amount_placeholder: "0.00"
       account_label: "Account"

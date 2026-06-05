@@ -1,28 +1,35 @@
-<%= form_with model: @form, url: transactions_path, method: :post, class: "transaction-form", data: { controller: "transaction-form" } do |f| %>
+<%= form_with model: @form, url: transactions_path, method: :post, class: "transaction-form",
+      data: {
+        controller: "transaction-form debt-fields",
+        debt_fields_intent_labels_value: debt_intent_label_map.to_json,
+        debt_fields_debts_by_name_value: @form.debts_by_name.to_json,
+        debt_fields_contact_name_value: @form.contact_name,
+        debt_fields_locked_value: @form.debt_id.present?
+      } do |f| %>
     <%= render "shared/form_errors", object: @form %>
 
     <!-- Hidden field to store the selected kind -->
-    <%= f.hidden_field :kind %>
+    <%= f.hidden_field :kind, data: { debt_fields_target: "kindInput" } %>
 
-    <!-- Kind Selector -->
-    <div class="transaction-form__kind">
-      <% if @form.debt_transaction? %><%= f.hidden_field :debt_id %><% end %>
-      <div class="kind-selector" role="radiogroup" aria-label="<%= t('.kind_label', default: 'Type') %>">
-        <% transaction_kind_options(@form).each do |opt| %>
-          <% is_selected = @form.kind == opt[:value] %>
-          <%= link_to new_transaction_path(@form.kind_params(opt[:value])),
-                      data: { turbo_frame: "transaction_form" },
-                      role: "radio",
-                      "aria-checked": is_selected.to_s,
-                      class: "kind-option#{' kind-option--selected' if is_selected}" do %>
-            <span class="kind-option__icon kind-option__icon--<%= opt[:value] %>" aria-hidden="true">
-              <%= transaction_icon_svg(opt[:value]) %>
-            </span>
-            <span class="kind-option__label"><%= opt[:label] %></span>
+    <!-- Kind Selector (hidden when opened from a specific debt — the kind is fixed) -->
+    <% unless @form.debt_id.present? %>
+      <div class="transaction-form__kind">
+        <div class="kind-selector" role="radiogroup" aria-label="<%= t('.kind_label', default: 'Type') %>">
+          <% transaction_top_level_options(@form).each do |opt| %>
+            <%= link_to new_transaction_path(@form.kind_params(opt[:kind])),
+                        data: { turbo_frame: "transaction_form" },
+                        role: "radio",
+                        "aria-checked": opt[:selected].to_s,
+                        class: "kind-option kind-option--#{opt[:value]}#{' kind-option--selected' if opt[:selected]}" do %>
+              <span class="kind-option__icon kind-option__icon--<%= opt[:value] %>" aria-hidden="true">
+                <%= transaction_icon_svg(opt[:value]) %>
+              </span>
+              <span class="kind-option__label"><%= opt[:label] %></span>
+            <% end %>
           <% end %>
-        <% end %>
+        </div>
       </div>
-    </div>
+    <% end %>
 
     <!-- Amount Field (Required) -->
     <div class="transaction-form__amount">
@@ -74,7 +81,57 @@
         </div>
       </div>
     <% elsif @form.debt_transaction? %>
-      <!-- Debt Mode: Only Account (contact name and transaction type are handled by debt) -->
+      <!-- Debt Mode: person-first. Pick who, infer/choose direction, pick intent. -->
+      <%= f.hidden_field :debt_id %>
+      <%= f.hidden_field :direction, data: { debt_fields_target: "directionInput" } %>
+
+      <!-- Who? (hidden when opened from a specific debt — the person is fixed) -->
+      <% unless @form.debt_id.present? %>
+        <div class="transaction-form__contact">
+          <%= render Forms::InputFieldComponent.new(
+            form: f,
+            field: :contact_name,
+            label: t('.contact_name_label'),
+            autocomplete: true,
+            autocomplete_options: @form.debt_person_suggestions,
+            allow_create: true,
+            placeholder: t('.contact_name_placeholder'),
+            field_data: { action: "tom-select:change->debt-fields#onPersonChange change->debt-fields#onPersonChange" }
+          ) %>
+        </div>
+      <% end %>
+
+      <!-- Direction picker (shown only for a new or both-directions person) -->
+      <div class="transaction-form__debt-direction kind-selector hidden"
+           data-debt-fields-target="directionPicker" role="radiogroup"
+           aria-label="<%= t('.direction_label') %>">
+        <% [["lent", t('.direction_lent')], ["borrowed", t('.direction_borrowed')]].each do |dir, label| %>
+          <button type="button" class="kind-option kind-option--choice"
+                  data-debt-fields-target="directionOption"
+                  data-direction="<%= dir %>"
+                  data-action="click->debt-fields#selectDirection">
+            <span class="kind-option__label"><%= label %></span>
+          </button>
+        <% end %>
+      </div>
+
+      <!-- Intent cards (the 2 actions for the resolved direction) -->
+      <% intent_direction = @form.direction.presence || "lent" %>
+      <div class="transaction-form__debt-intents kind-selector<%= ' hidden' unless @form.direction.present? || @form.debt_id.present? %>"
+           data-debt-fields-target="intents" role="radiogroup"
+           aria-label="<%= t('.kind_label', default: 'Type') %>">
+        <% debt_direction_intent_options(intent_direction).each do |io| %>
+          <button type="button"
+                  class="kind-option kind-option--<%= io[:kind] %> <%= 'kind-option--selected' if @form.kind == io[:kind] %>"
+                  data-debt-fields-target="intentOption"
+                  data-kind="<%= io[:kind] %>"
+                  data-action="click->debt-fields#selectIntent">
+            <span class="kind-option__label" data-label><%= io[:label] %></span>
+          </button>
+        <% end %>
+      </div>
+
+      <!-- Account (optional) -->
       <div class="transaction-form__account">
         <%= render Forms::InputFieldComponent.new(
           form: f,

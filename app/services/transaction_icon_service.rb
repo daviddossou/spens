@@ -20,8 +20,12 @@ class TransactionIconService
     def icon_svg(kind)
       @icon_cache ||= {}
 
-      # Handle generic "transfer" by defaulting to "transfer_in"
-      icon_kind = kind == "transfer" ? "transfer_in" : kind
+      # Handle generic "transfer"/"debt" categories by defaulting to a concrete icon
+      icon_kind = case kind
+      when "transfer" then "transfer_in"
+      when "debt" then "debt_out"
+      else kind
+      end
 
       @icon_cache[icon_kind] ||= read_icon_file(icon_kind)
     end
