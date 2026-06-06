@@ -135,7 +135,12 @@ jobs:
           eval "$(ssh-agent -s)"
           echo "$SSH_PRIVATE_KEY" | ssh-add -
           mkdir -p ~/.ssh
-          ssh-keyscan -H 46.62.157.51 >> ~/.ssh/known_hosts 2>/dev/null
+          # Refresh the server's host key on every deploy: it changes when the
+          # box is reprovisioned, which otherwise wedges net-ssh with a
+          # HostKeyMismatch. Drop any stale entry, then pin the ed25519 key so a
+          # single, verifiable host-key algorithm is negotiated.
+          ssh-keygen -R 46.62.157.51 2>/dev/null || true
+          ssh-keyscan -t ed25519 46.62.157.51 >> ~/.ssh/known_hosts 2>/dev/null
           # Materialize the gitignored production key file from the secret so
           # .kamal/secrets can read it (no trailing newline).
           mkdir -p config/credentials
