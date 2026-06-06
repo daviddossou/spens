@@ -14,7 +14,7 @@
     <!-- Kind Selector (hidden when opened from a specific debt — the kind is fixed) -->
     <% unless @form.debt_id.present? %>
       <div class="transaction-form__kind">
-        <div class="kind-selector" role="radiogroup" aria-label="<%= t('.kind_label', default: 'Type') %>">
+        <div class="kind-selector kind-selector--quad" role="radiogroup" aria-label="<%= t('.kind_label', default: 'Type') %>">
           <% transaction_top_level_options(@form).each do |opt| %>
             <%= link_to new_transaction_path(@form.kind_params(opt[:kind])),
                         data: { turbo_frame: "transaction_form" },
