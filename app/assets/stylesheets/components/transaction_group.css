@@ -1,0 +1,33 @@
+/* Date-grouped transactions timeline */
+/* Shared by the dashboard and the account / debt / goal detail pages. */
+
+.transactions-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.transaction-group__header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.transaction-group__date {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.transaction-group__divider {
+  flex: 1;
+  margin-left: 1rem;
+  height: 1px;
+  background-color: #e5e7eb;
+}
+
+.transaction-group__items {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
