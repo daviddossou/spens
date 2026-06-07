@@ -116,12 +116,6 @@
   }
 }
 
-.dashboard__transactions {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
 .dashboard__spinner {
   text-align: center;
   padding: 2rem 0;

@@ -13,9 +13,6 @@ class HomeController < ApplicationController
   end
 
   def show
-    @page = params[:page]&.to_i || 1
-    @per_page = 20
-
     # Analytics
     @currency = current_space.currency
     @total_balance = current_space.accounts.sum(:balance)
@@ -28,18 +25,8 @@ class HomeController < ApplicationController
     @owed_to_me = current_space.debts.ongoing.lent.sum("total_lent - total_reimbursed")
     @i_owe = current_space.debts.ongoing.borrowed.sum("total_lent - total_reimbursed")
 
-    # Get transactions ordered by date (most recent first)
-    @transactions = current_space.transactions
-      .includes(:transaction_type, :account, :debt)
-      .order(transaction_date: :desc, created_at: :desc)
-      .offset((@page - 1) * @per_page)
-      .limit(@per_page)
-
-    # Group transactions by date for display
-    @grouped_transactions = @transactions.group_by(&:transaction_date)
-
-    # Check if there are more transactions
-    @has_more = current_space.transactions.count > (@page * @per_page)
+    # Transactions timeline (paginated + date-grouped for infinite scroll)
+    load_transactions_timeline(current_space.transactions)
 
     respond_to do |format|
       format.html

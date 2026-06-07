@@ -30,4 +30,23 @@ class ApplicationController < ActionController::Base
 
     redirect_to(url, response_options)
   end
+
+  # Paginates a transactions scope for the infinite-scroll timeline shared by
+  # the dashboard and the account/debt/goal detail pages. Sets @page,
+  # @per_page, @transactions, @grouped_transactions and @has_more, mirroring the
+  # contract expected by the shared "shared/transactions_list" partial and the
+  # infinite-scroll Stimulus controller.
+  def load_transactions_timeline(scope, per_page: 20)
+    @page = params[:page]&.to_i || 1
+    @per_page = per_page
+
+    @transactions = scope
+      .includes(:transaction_type, :account, :debt)
+      .order(transaction_date: :desc, created_at: :desc)
+      .offset((@page - 1) * @per_page)
+      .limit(@per_page)
+
+    @grouped_transactions = @transactions.group_by(&:transaction_date)
+    @has_more = scope.count > (@page * @per_page)
+  end
 end

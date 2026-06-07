@@ -5,7 +5,10 @@
     <p class="page-header__subtitle"><%= t(".subtitle.#{ @debt.direction }") %></p>
   </header>
 
-  <div class="page-content">
+  <div class="page-content"
+       data-controller="infinite-scroll"
+       data-infinite-scroll-url-value="<%= debt_path(id: @debt.id) %>"
+       data-infinite-scroll-page-value="<%= @has_more ? @page + 1 : 0 %>">
     <%= render Ui::CommitmentCardComponent.new(
       title: @debt.name,
       current_value: @debt.total_reimbursed,
@@ -48,10 +51,23 @@
 
     <div class="commitment-transactions">
       <h2 class="commitment-section-title"><%= t('.recent_transactions') %></h2>
-      <% if @latest_transactions.any? %>
-        <div class="transactions-list">
-          <%= render TransactionItemComponent.with_collection(@latest_transactions, transaction: :itself) %>
+      <% if @transactions.any? %>
+        <div id="transactions-container" class="transactions-timeline">
+          <%= render partial: "shared/transactions_list", locals: { grouped_transactions: @grouped_transactions } %>
         </div>
+
+        <div id="loading-spinner"
+             data-infinite-scroll-target="spinner"
+             class="dashboard__spinner hidden">
+          <div class="dashboard__spinner-icon"></div>
+          <p class="dashboard__spinner-text"><%= t('home.show.loading') %></p>
+        </div>
+
+        <% if @has_more %>
+          <div id="infinite-scroll-trigger"
+               data-infinite-scroll-target="trigger"
+               class="dashboard__load-trigger"></div>
+        <% end %>
       <% else %>
         <div class="empty-state">
           <p><%= t('.no_transactions') %></p>

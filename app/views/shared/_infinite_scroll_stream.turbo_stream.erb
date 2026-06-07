@@ -1,0 +1,16 @@
+<%# Appends the next page of date-grouped transactions and refreshes the load trigger. %>
+<%# Locals: grouped_transactions, has_more %>
+<%= turbo_stream.append "transactions-container" do %>
+  <%= render partial: "shared/transactions_list", locals: { grouped_transactions: grouped_transactions } %>
+<% end %>
+
+<% if has_more %>
+  <%= turbo_stream.replace "infinite-scroll-trigger" do %>
+    <div id="infinite-scroll-trigger"
+         data-infinite-scroll-target="trigger"
+         class="dashboard__load-trigger">
+    </div>
+  <% end %>
+<% else %>
+  <%= turbo_stream.remove "infinite-scroll-trigger" %>
+<% end %>

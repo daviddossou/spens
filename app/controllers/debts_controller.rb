@@ -10,10 +10,12 @@ class DebtsController < ApplicationController
   end
 
   def show
-    @latest_transactions = @debt.transactions
-      .includes(:transaction_type, :account, :debt)
-      .order(transaction_date: :desc)
-      .limit(10)
+    load_transactions_timeline(@debt.transactions)
+
+    respond_to do |format|
+      format.html
+      format.turbo_stream if @page > 1
+    end
   end
 
   def new

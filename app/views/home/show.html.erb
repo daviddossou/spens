@@ -44,8 +44,8 @@
     </div>
 
     <!-- Transactions List -->
-    <div id="transactions-container" class="dashboard__transactions">
-      <%= render partial: "transactions_list", locals: { grouped_transactions: @grouped_transactions } %>
+    <div id="transactions-container" class="transactions-timeline">
+      <%= render partial: "shared/transactions_list", locals: { grouped_transactions: @grouped_transactions } %>
     </div>
 
     <!-- Loading Spinner -->
