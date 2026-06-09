@@ -2,22 +2,27 @@
 #
 # Table name: transaction_types
 #
-#  id          :uuid             not null, primary key
-#  budget_goal :float            default(0.0)
-#  kind        :string           not null, indexed
-#  name        :string           not null
-#  created_at  :datetime         not null
-#  updated_at  :datetime         not null
-#  space_id    :uuid             not null, indexed
+#  id           :uuid             not null, primary key
+#  budget_goal  :float            default(0.0)
+#  kind         :string           not null, indexed
+#  name         :string           not null
+#  template_key :string           indexed => [space_id]
+#  created_at   :datetime         not null
+#  updated_at   :datetime         not null
+#  parent_id    :uuid             indexed
+#  space_id     :uuid             not null, indexed => [template_key], indexed
 #
 # Indexes
 #
 #  index_transaction_types_on_kind                       (kind)
 #  index_transaction_types_on_lower_name_space_and_kind  (lower((name)::text), space_id, kind) UNIQUE
+#  index_transaction_types_on_parent_id                  (parent_id)
+#  index_transaction_types_on_space_and_template_key     (space_id,template_key) UNIQUE WHERE (template_key IS NOT NULL)
 #  index_transaction_types_on_space_id                   (space_id)
 #
 # Foreign Keys
 #
+#  fk_rails_...  (parent_id => transaction_types.id)
 #  fk_rails_...  (space_id => spaces.id)
 #
 class TransactionType < ApplicationRecord
@@ -31,7 +36,14 @@ class TransactionType < ApplicationRecord
   ##
   # Associations
   belongs_to :space
+  belongs_to :parent, class_name: "TransactionType", optional: true
+  has_many :children, class_name: "TransactionType", foreign_key: :parent_id,
+                      inverse_of: :parent, dependent: :nullify
   has_many :transactions, dependent: :destroy
+
+  ##
+  # Scopes
+  scope :roots, -> { where(parent_id: nil) }
 
   ##
   # Validations & Enums
@@ -50,50 +62,45 @@ class TransactionType < ApplicationRecord
   }
 
   ##
+  # Instance Methods
+  def root?
+    parent_id.nil?
+  end
+
+  # Ids of this node plus its direct children — used to roll spend up to a parent category.
+  def subtree_ids
+    [ id, *children.ids ]
+  end
+
+  ##
   # Class Methods
   class << self
+    # Built from the category taxonomy (config/transaction_taxonomy.yml) so suggestions
+    # use the real Parent + Subcategory set. Shape kept compatible with callers:
+    # { key.to_sym => { name:, kind: } } for every node (parents and subcategories).
     def templates(locale = I18n.locale)
-      I18n.t("transaction_type_templates", locale: locale)
+      TransactionTaxonomy.nodes.each_with_object({}) do |(key, node), hash|
+        hash[key.to_sym] = { name: node[locale.to_s] || node["en"], kind: node["kind"] }
+      end
     end
 
-    # Default template keys to suggest for each kind (most commonly used)
+    # The 20 subcategories suggested by default (before the user has recorded their
+    # own), most-common-first. Keys must exist in the taxonomy.
     def default_template_keys(kind)
-      case kind
+      case kind.to_s
       when "expense"
         %w[
-          groceries
-          dining_out
-          fuel_transport
-          public_transport
-          rent
-          electricity_water
-          telecommunication_internet
-          insurance
-          medical_care_pharmacy
-          education_tuition
-          entertainment
-          clothing_shopping
-          subscriptions_memberships
-          maintenance_repairs
-          gifts_expense
+          groceries restaurant_maquis moto_taxi public_transport fuel
+          rent electricity water airtime cooking_gas
+          pharmacy school_fees clothing_shoes household_items outings
+          mobile_data ride_hailing street_food salon_beauty cafe_snacks
         ]
       when "income"
         %w[
-          salary
-          side_hustle
-          business_income
-          allowance
-          commission_income
-          investment_return
-          interest_credit_bank
-          grant_scholarship
-          gifts_income
-          financial_support_income
-          refund_reimbursement
-          rewards_cashback
-          sports_betting_winnings
-          loan_repayment
-          general_income
+          salary sales side_hustle commission_income remittance
+          bonus rental_income investment_return interest allowance_perdiem
+          business_income refund cashback_rewards gift_received grant_scholarship
+          dividends family_support_received social_support loan_repayment_received bank_cashback
         ]
       else
         []

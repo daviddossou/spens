@@ -376,35 +376,35 @@ RSpec.describe TransactionForm, type: :model do
     end
   end
 
-  describe '#transaction_type_suggestions' do
+  describe '#transaction_type_options' do
     before do
-      allow_any_instance_of(TransactionTypeSuggestionsService).to receive(:all)
-        .and_return([ 'Groceries', 'Rent', 'Utilities' ])
+      allow_any_instance_of(TransactionTypeSuggestionsService).to receive(:options)
+        .and_return([ { value: 'Groceries', text: 'Groceries', aliases: 'carrefour' } ])
     end
 
-    it 'calls TransactionTypeSuggestionsService with user and kind' do
+    it 'calls TransactionTypeSuggestionsService with the space and kind' do
       expect(TransactionTypeSuggestionsService).to receive(:new).with(space, 'expense').and_call_original
-      form.transaction_type_suggestions
+      form.transaction_type_options
     end
 
-    it 'returns all transaction type suggestions' do
-      expect(form.transaction_type_suggestions).to eq([ 'Groceries', 'Rent', 'Utilities' ])
+    it 'returns the flat, alias-aware search options' do
+      expect(form.transaction_type_options).to eq([ { value: 'Groceries', text: 'Groceries', aliases: 'carrefour' } ])
     end
   end
 
-  describe '#default_transaction_type_suggestions' do
+  describe '#default_transaction_type_options' do
     before do
-      allow_any_instance_of(TransactionTypeSuggestionsService).to receive(:defaults)
-        .and_return([ 'Food', 'Transport', 'Entertainment' ])
+      allow_any_instance_of(TransactionTypeSuggestionsService).to receive(:default_options)
+        .and_return([ { value: 'Food', text: 'Food', aliases: '' } ])
     end
 
-    it 'calls TransactionTypeSuggestionsService with user and kind' do
+    it 'calls TransactionTypeSuggestionsService with the space and kind' do
       expect(TransactionTypeSuggestionsService).to receive(:new).with(space, 'expense').and_call_original
-      form.default_transaction_type_suggestions
+      form.default_transaction_type_options
     end
 
-    it 'returns default transaction type suggestions' do
-      expect(form.default_transaction_type_suggestions).to eq([ 'Food', 'Transport', 'Entertainment' ])
+    it 'returns the focus-view options' do
+      expect(form.default_transaction_type_options).to eq([ { value: 'Food', text: 'Food', aliases: '' } ])
     end
   end
 
