@@ -141,12 +141,19 @@ export default class extends Controller {
             return
           }
 
-          // Filter through all suggestions when typing
+          // Filter through all suggestions when typing — match the label OR the hidden
+          // alias phrases (so typing "Carrefour" / "Zem" surfaces the right category).
+          const q = query.toLowerCase()
           const filtered = allOptions.filter(option =>
-            option.text.toLowerCase().includes(query.toLowerCase())
+            (option.text && option.text.toLowerCase().includes(q)) ||
+            (option.aliases && option.aliases.toLowerCase().includes(q))
           )
           callback(filtered)
         }
+
+        // Local dataset: resolve instantly with no remote-loading spinner.
+        config.loadThrottle = 0
+        config.render = { ...(config.render || {}), loading: () => "" }
       } else {
         // No default suggestions, use all suggestions
         config.options = allOptions
@@ -154,7 +161,8 @@ export default class extends Controller {
 
       config.labelField = 'text'
       config.valueField = 'value'
-      config.searchField = ['text']
+      // Include hidden alias phrases so the post-filter keeps alias-matched options.
+      config.searchField = ['text', 'aliases']
     }
 
     // If URL is provided, load options from remote source

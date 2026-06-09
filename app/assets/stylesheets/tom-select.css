@@ -114,6 +114,14 @@
   max-height: 280px !important;
   overflow-y: auto !important;
   background: white !important;
+  /* Column flow lets the "create new" row sit last via `order`, after the matches. */
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+/* Natural-height rows: otherwise an overflowing flex list compresses them rather than scrolling. */
+.ts-dropdown-content > * {
+  flex-shrink: 0 !important;
 }
 
 .ts-dropdown .option {
@@ -135,13 +143,16 @@
   color: var(--color-white) !important;
 }
 
-/* Create option (Add...) styling */
+/* "Add …" sits after the matches and reads quiet (suggest existing first). */
 .ts-dropdown .create {
+  order: 1 !important;
   padding: 0.5rem 1rem !important;
   cursor: pointer !important;
   transition: background-color 0.15s ease !important;
   background-color: white !important;
-  color: var(--text-default) !important;
+  color: var(--text-muted) !important;
+  font-size: 0.8125rem !important;
+  border-top: 1px solid var(--color-gray-200) !important;
 }
 
 /* Option with balance display */
@@ -187,13 +198,14 @@
   display: block !important;
 }
 
+/* Calm group labels (DESIGN.md No-Shout): sentence case, not all-caps eyebrows. */
 .ts-dropdown .optgroup-header {
-  padding: 0.5rem 1rem !important;
+  padding: 0.5rem 1rem 0.25rem !important;
   font-weight: 600 !important;
-  font-size: 0.875rem !important;
+  font-size: 0.75rem !important;
   color: var(--color-gray-600) !important;
-  text-transform: uppercase !important;
-  letter-spacing: 0.05em !important;
+  text-transform: none !important;
+  letter-spacing: normal !important;
   background-color: var(--color-gray-50) !important;
 }
 

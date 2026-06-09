@@ -1,0 +1,247 @@
+# Alias dictionary — merchant / mode / synonym phrases the category picker uses to
+# SUGGEST a subcategory. It never silently rewrites what the user types; it just makes the
+# right node easy to find (typing "Carrefour" surfaces "Groceries").
+#
+# Format:  <subcategory key>: ["phrase", "phrase", ...]
+#   - Every key MUST match a CHILD key in config/transaction_taxonomy.yml.
+#   - Matching is case-, accent- and punctuation-insensitive ("zémidjan" == "zemidjan",
+#     "j'adore" == "jadore"), so you don't need to list every spelling variant.
+#   - EN + FR + local terms live together; the picker merges them.
+#   - This same dictionary later seeds voice categorisation. Region: Benin / West Africa.
+
+aliases:
+  # ---------------- Food & Groceries ----------------
+  groceries: ["marché", "supermarché", "épicerie", "alimentation", "grocery", "groceries",
+    "supermarket", "food shopping", "erevan", "mont sinai", "franc prix", "j'adore", "carrefour",
+    "intermarché", "auchan", "leclerc", "bonprix", "socofrais", "club sococé", "tokpa yoyo",
+    "marché ganhi", "dantokpa", "gbegamey", "aïdjèdo", "wologuèdè", "cadjèhoun", "menontin"]
+  monthly_provisions: ["provisions", "provisions du mois", "courses du mois", "ravitaillement",
+    "stock maison", "monthly provisions", "monthly shopping", "stock up"]
+
+  # ---------------- Eating out ----------------
+  restaurant_maquis: ["maquis", "restaurant", "resto", "déjeuner", "dîner", "cantine", "atassinon",
+    "eating out", "lunch", "dinner"]
+  street_food: ["street food", "cuisine de rue", "alloco", "alocodrome", "beignet", "brochette",
+    "akpan", "cafétaria", "cafétariat", "bonne dame", "garba", "coconon", "atanon", "tchang", "dibi",
+    "dibiterie", "dibiterie sénégalaise"]
+  cafe_snacks: ["café", "coffee", "snack", "goûter", "petit déjeuner", "viennoiserie", "glace",
+    "breakfast", "pastry", "ice cream"]
+  bar_buvette: ["bar", "buvette", "tchoukoutou", "tchouk", "bière", "sodabi", "happy hour", "beer",
+    "drinks", "pub"]
+  food_delivery: ["livraison", "livraison repas", "uber eats", "gozem food", "glovo", "foodora",
+    "beninresto", "jumia food", "food delivery", "takeaway"]
+
+  # ---------------- Transport ----------------
+  moto_taxi: ["zem", "zemidjan", "taxi moto", "taxi-moto", "kèkènon", "okada", "moto taxi",
+    "motorcycle taxi", "bike taxi"]
+  public_transport: ["bus", "taxi", "taxi ville", "tricycle", "keke", "tro tro", "trotro",
+    "woro woro", "woro-woro", "gbaka", "tokpa tokpa", "tokpa-tokpa", "transport en commun",
+    "nonvi voyage", "minibus", "public transport", "shared taxi"]
+  ride_hailing: ["gozem", "yango", "uber", "bolt", "heetch", "vtc", "ride hailing", "ride-hailing"]
+  fuel: ["essence", "carburant", "kpayo", "fuel", "gas", "gasoil", "station essence",
+    "station service", "jnp", "benin petro", "oryx", "ewell", "jb petroleum", "sonacop",
+    "petrol", "diesel", "gas station"]
+  parking_tolls: ["parking", "péage", "frais de péage", "stationnement", "ticket parking", "toll", "tolls"]
+  vehicle_upkeep: ["entretien", "entretien voiture", "réparation auto", "mécanicien", "garage",
+    "vidange", "pièces auto", "pneu", "lavage auto", "carwash", "crevaison", "car repair",
+    "mechanic", "oil change", "tyre", "car maintenance"]
+  goods_transport: ["triporteur", "camion", "transport marchandise", "transport de marchandises",
+    "livraison marchandise", "porteur", "manutention", "déménagement", "frais de transport marchandise",
+    "tricycle", "goods transport", "freight", "moving", "porter"]
+
+  # ---------------- Housing & Home ----------------
+  rent: ["loyer", "rent", "house rent", "loyer maison"]
+  household_items: ["mobilier", "meuble", "meubles", "décoration", "déco", "décoration intérieure",
+    "interior design", "ikea", "furniture", "articles ménagers", "rideaux", "matelas", "literie",
+    "household items", "home decor", "mattress", "curtains"]
+  home_repairs: ["réparation maison", "rénovation", "menuisier", "plombier", "plomberie",
+    "électricien", "maçon", "peinture", "amélioration maison", "construction maison", "home repair",
+    "renovation", "plumber", "electrician", "mason", "carpenter", "painting"]
+  domestic_help: ["ménagère", "bonne", "domestique", "aide ménagère", "maid", "house help", "nounou",
+    "housekeeper", "cleaner", "nanny"]
+  cleaning_laundry: ["lessive", "laundry", "blanchisserie", "pressing", "nettoyage", "ménage",
+    "jardinage", "jardinier", "cleaning", "dry cleaning", "ironing"]
+  home_supplies: ["produits ménagers", "produits d'entretien", "savon", "savon liquide", "détergent",
+    "eau de javel", "javel", "brosse", "éponge", "balai", "serpillière", "désodorisant", "insecticide",
+    "raid", "papier toilette", "ampoule", "piles", "bougie", "cadenas", "seau", "soap", "liquid soap",
+    "detergent", "bleach", "brush", "sponge", "broom", "mop", "cleaning products", "air freshener",
+    "toilet paper", "light bulb", "batteries", "candle", "padlock", "bucket"]
+  security_guard: ["gardien", "gate keeper", "vigile", "sécurité", "agent de sécurité", "gardiennage",
+    "security", "guard", "watchman"]
+  home_insurance: ["assurance habitation", "assurance maison", "assurance logement", "home insurance"]
+
+  # ---------------- Electricity & Water ----------------
+  electricity: ["électricité", "courant", "facture électricité", "sbee", "cie", "ceet", "sonabel",
+    "senelec", "recharge compteur", "compteur", "prépayé", "nepa", "light", "electricity", "power",
+    "electric bill", "prepaid meter"]
+  water: ["eau", "facture eau", "soneb", "sen'eau", "sodeci", "sones", "tde", "bidon d'eau", "water",
+    "water bill"]
+
+  # ---------------- Kitchen supplies ----------------
+  cooking_gas: ["gaz", "bouteille de gaz", "bonbonne", "butane", "recharge gaz", "cooking gas",
+    "gas bottle", "gas refill"]
+  charcoal_wood: ["charbon", "bois", "bois de chauffe", "firewood", "charbon de bois", "charcoal", "coal"]
+  kitchen_utensils: ["ustensiles", "marmite", "casserole", "couteau", "vaisselle",
+    "ustensiles de cuisine", "assiette", "plat", "kitchen utensils", "pots", "pan", "cutlery", "plates"]
+  kitchen_consumables: ["allumettes", "briquet", "papier aluminium", "film alimentaire",
+    "sachets", "sac poubelle", "serviettes", "matches", "foil", "cling film", "trash bags", "napkins"]
+
+  # ---------------- Telecom & Internet ----------------
+  airtime: ["crédit", "crédit d'appel", "recharge", "recharge crédit", "unité", "airtime",
+    "carte recharge", "forfait appel", "phone credit", "top up", "topup", "recharge card"]
+  mobile_data: ["data", "forfait", "forfait internet", "forfait data", "internet mobile",
+    "méga", "go internet", "pass internet", "giga", "mobile data", "internet bundle", "data bundle"]
+  home_internet: ["wifi", "wi-fi", "internet maison", "home internet", "fibre", "box internet",
+    "canal box", "canalbox", "isocel", "sbin", "pocket wifi", "fiber", "broadband"]
+
+  # ---------------- Technology & Tools ----------------
+  electronics: ["téléphone", "smartphone", "ordinateur", "laptop", "pc portable", "télévision",
+    "tv", "drone", "écran", "tablette", "console de jeu", "phone", "computer", "tablet", "screen"]
+  appliances: ["électroménager", "machine à laver", "réfrigérateur", "frigo", "climatiseur",
+    "clim", "ventilateur", "micro-onde", "congélateur", "appliance", "washing machine", "fridge",
+    "refrigerator", "air conditioner", "fan", "freezer"]
+  computer_accessories: ["clavier", "souris", "câble", "chargeur", "disque dur", "clé usb",
+    "imprimante", "accessoire informatique", "powerbank", "keyboard", "mouse", "cable", "charger",
+    "hard drive", "usb", "printer"]
+
+  # ---------------- Health ----------------
+  pharmacy: ["pharmacie", "pharmacy", "médicament", "produits pharmaceutiques", "paracétamol",
+    "doliprane", "coton", "alcool", "medicine", "medication", "drugs"]
+  consultation: ["consultation", "clinique", "médecin", "docteur", "ophtalmologue", "dentiste",
+    "centre de santé", "doctor", "clinic", "dentist", "checkup"]
+  hospital: ["hôpital", "hospital", "cnhu", "hôpital de zone", "chic", "urgence", "hospitalisation",
+    "chirurgie", "surgery", "emergency"]
+  lab_tests: ["laboratoire", "labo", "analyse", "prise de sang", "radio", "radiologie",
+    "échographie", "scanner", "irm", "dialyse", "lab", "laboratory", "x-ray", "blood test",
+    "scan", "ultrasound"]
+  medical_supplies: ["lunettes", "lunettes médicales", "eyeglasses", "verres correcteurs",
+    "prothèse", "fauteuil roulant", "béquilles", "tensiomètre", "matériel médical", "appareil auditif",
+    "glasses", "medical device", "wheelchair", "crutches"]
+  health_insurance: ["assurance santé", "assurance maladie", "assurance vie", "mutuelle",
+    "health insurance"]
+
+  # ---------------- Education ----------------
+  school_fees: ["écolage", "frais de scolarité", "scolarité", "inscription", "frais d'inscription",
+    "registration fees", "school fees", "frais d'examen", "examen", "tuition fees", "exam fees"]
+  school_supplies: ["fournitures", "fournitures scolaires", "cahier", "stylo", "cartable", "livre",
+    "achat de livres", "uniforme", "tenue scolaire", "school supplies", "notebook", "pen", "books",
+    "uniform", "backpack"]
+  tuition_courses: ["formation", "formation en ligne", "cours", "cours particuliers", "répétiteur",
+    "online course", "webinaire", "événement", "event", "conférence", "séminaire", "certification",
+    "course", "training", "tutoring", "lessons", "workshop", "seminar"]
+
+  # ---------------- Clothing & Personal care ----------------
+  clothing_shoes: ["vêtements", "habits", "chaussures", "tenue", "pagne", "wax", "prêt-à-porter",
+    "sur mesure", "costume", "robe", "tenue de soirée", "clothing", "shoes", "clothes", "shirt",
+    "dress", "outfit"]
+  tailoring: ["couturier", "couturière", "tailleur", "couture", "frais de couture", "broderie",
+    "tailor", "sewing", "seamstress"]
+  salon_beauty: ["salon", "coiffure", "coiffeur", "barbier", "salon de coiffure", "spa", "massage",
+    "manucure", "pédicure", "soin du visage", "tresse", "pose ongles", "haircut", "barber", "hair",
+    "manicure", "pedicure"]
+  cosmetics: ["cosmétique", "maquillage", "produits de beauté", "crème", "parfum", "savon",
+    "soin de peau", "produits cosmétiques", "lotion", "make up", "makeup", "cosmetics", "skincare",
+    "perfume", "cream"]
+
+  # ---------------- Recreation & lifestyle ----------------
+  outings: ["sortie", "cinéma", "fête", "soirée", "party", "club", "boîte de nuit", "concert",
+    "parc d'attraction", "sortie détente", "night out", "cinema", "movie", "outing"]
+  betting_games: ["pari", "paris sportifs", "1xbet", "betway", "premierbet", "sportybet", "melbet",
+    "1win", "loto", "pmu", "jeux d'argent", "bet", "betting", "gambling", "lottery"]
+  subscriptions_fun: ["abonnement", "netflix", "disney+", "prime video", "spotify", "canal+",
+    "mycanal", "dstv", "youtube premium", "showmax", "deezer", "itunes", "subscription"]
+  sport_fitness: ["sport", "fitness", "salle de sport", "gym", "abonnement gym", "football",
+    "terrain de foot", "musculation", "yoga", "sports", "soccer", "workout"]
+  photo: ["photo", "photoshoot", "séance photo", "studio photo", "photographe", "shooting",
+    "tirage photo", "photography", "photographer"]
+
+  # ---------------- Family & social ----------------
+  gifts: ["cadeau", "gift", "présent", "carte cadeau", "present"]
+  ceremonies: ["mariage", "funérailles", "baptême", "cérémonie", "dot", "deuil", "fiançailles",
+    "enterrement", "wedding", "funeral", "baptism", "ceremony"]
+  family_support: ["soutien familial", "aide à la famille", "envoi famille", "soutien famille",
+    "argent parents", "black tax", "family support", "family help"]
+  donations: ["don", "donation", "quête", "dîme", "offrande", "zakat", "sadaqa", "aumône",
+    "charité", "contribution religieuse", "collecte", "quete", "dime", "aumone", "offering",
+    "tithe", "charity", "alms"]
+  childcare: ["garderie", "garde d'enfants", "crèche", "nounou", "baby sitter", "babysitting",
+    "frais de garde", "childcare", "daycare", "nursery"]
+
+  # ---------------- Savings & Investment ----------------
+  savings_deposit: ["épargne", "compte épargne", "dépôt épargne", "savings", "mise de côté",
+    "argent de côté", "savings deposit", "deposit", "set aside"]
+  tontine: ["tontine", "cotisation", "susu", "esusu", "cotisation tontine", "njangi",
+    "savings group", "rotating savings"]
+  investment: ["investissement", "investment", "placement", "action", "obligation", "bourse",
+    "crypto", "bitcoin", "parts sociales", "fonds", "brvm", "fcp", "s&p 500", "or", "soaga",
+    "nsia asset management", "ftse", "msci", "stocks", "shares", "bonds"]
+  land_construction: ["terrain", "achat de terrain", "construction", "parpaing", "ciment", "sable",
+    "matériaux construction", "frais de construction", "frais d'architecte", "land", "land purchase",
+    "building materials", "cement"]
+  investment_fees: ["frais d'investissement", "commission de gestion", "frais de courtage", "courtage",
+    "investment fees", "management fee", "brokerage fee"]
+
+  # ---------------- Fees & taxes ----------------
+  mobile_money_fees: ["frais momo", "frais mobile money", "momo fee", "frais flooz", "frais wave",
+    "frais transfert momo", "frais mtn", "frais moov", "glo fee", "orange fee", "frais orange",
+    "mobile money fee"]
+  bank_fees: ["frais bancaires", "frais de compte", "agios", "commission bancaire", "commission",
+    "frais carte", "frais tenue de compte", "frais gab", "bank fees", "bank charges", "account fee",
+    "card fee"]
+  withdrawal_send_fees: ["frais de retrait", "retrait", "frais d'envoi", "envoi", "frais de transfert",
+    "cash out", "cash in", "frais agent", "frais dépôt", "withdrawal fee", "sending fee", "transfer fee",
+    "agent fee"]
+  taxes: ["impôt", "impôts", "taxe", "tva", "taxe foncière", "taxes foncières", "taf",
+    "taxe activités financières", "douane", "droits de douane", "patente", "vignette", "ifu",
+    "tax", "taxes", "income tax", "property tax", "vat", "customs duty"]
+
+  # ---------------- Travel ----------------
+  flights_tickets: ["billet d'avion", "avion", "vol", "flight", "fly ticket", "tgv", "train",
+    "bus longue distance", "transport interurbain", "baobab express", "plane ticket", "airfare",
+    "train ticket"]
+  customs: ["douane", "customs", "dédouanement", "frais de douane"]
+  tourism: ["tourisme", "visite touristique", "souvenir", "hôtel", "hotel", "excursion", "frais hôtel",
+    "sightseeing", "souvenirs"]
+
+  # ---------------- Other (expense) ----------------
+  business_work_expense: ["dépense professionnelle", "frais professionnels", "frais de travail",
+    "stock", "marchandise", "fournisseur", "matériel de travail", "business expense", "work expense",
+    "supplies", "supplier"]
+  printing_admin: ["photocopie", "photocopy", "impression", "printing", "print", "scan", "scanner",
+    "cyber", "cyber café", "cybercafé", "saisie", "lamination", "plastification", "timbre",
+    "timbre fiscal", "frais de dossier", "acte de naissance", "carte d'identité", "passeport",
+    "passport", "démarche administrative", "légalisation", "stamp", "administrative fees"]
+  unexpected_expense: ["imprévu", "unexpected", "dépense imprévue", "urgence", "emergency"]
+
+  # ================ INCOME ================
+  salary: ["salaire", "salary", "paie", "paye", "paycheck", "fiche de paie", "virement salaire",
+    "wages", "pay"]
+  bonus: ["prime", "bonus", "13ème mois", "treizième", "prime de rendement", "gratification", "13th month"]
+  allowance_perdiem: ["allocation", "per diem", "indemnité", "argent de poche", "indemnité journalière",
+    "allowance", "stipend"]
+  sales: ["vente", "ventes", "sales", "recette", "revente", "chiffre d'affaires", "encaissement",
+    "revenue", "turnover"]
+  business_income: ["revenu d'entreprise", "business income", "bénéfice", "profit", "revenu commerce",
+    "earnings"]
+  side_hustle: ["activité complémentaire", "side hustle", "freelance", "petit boulot", "gig"]
+  commission_income: ["commission", "commissions", "courtage", "commission vente"]
+  remittance: ["transfert reçu", "remittance", "western union", "moneygram", "ria", "envoi reçu",
+    "argent de l'étranger", "money from abroad", "diaspora transfer"]
+  family_support_received: ["soutien familial reçu", "aide reçue", "soutien reçu", "argent des parents",
+    "family support received", "money from family"]
+  social_support: ["soutien social", "social support", "allocation sociale", "aide sociale",
+    "aide de l'état", "government assistance", "welfare"]
+  interest: ["intérêt", "intérêts", "interest", "intérêts épargne"]
+  dividends: ["dividende", "dividendes", "dividends", "part de bénéfice"]
+  rental_income: ["loyer reçu", "revenu locatif", "rental income", "location", "loyer encaissé",
+    "rent received"]
+  investment_return: ["rendement", "retour sur investissement", "investment return", "plus-value",
+    "gain placement", "returns", "capital gain"]
+  bank_cashback: ["intérêt créditeur", "bank cashback", "credit interest", "agios créditeurs"]
+  refund: ["remboursement", "refund", "retour argent", "remboursement reçu", "reimbursement"]
+  loan_repayment_received: ["remboursement de prêt", "loan repayment", "dette remboursée",
+    "prêt remboursé", "loan repaid"]
+  cashback_rewards: ["cashback", "remise", "récompense", "rewards", "points", "points fidélité"]
+  gift_received: ["cadeau reçu", "gift received", "don reçu", "argent cadeau"]
+  betting_winnings: ["gain", "gains de paris", "winnings", "jackpot", "gain loto", "gain pari"]
+  grant_scholarship: ["bourse", "subvention", "grant", "scholarship", "bourse d'étude", "aide étude"]

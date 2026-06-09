@@ -7,6 +7,7 @@ class AnalyticsController < ApplicationController
     @currency = current_space.currency
     @period = params[:period].presence_in(PERIODS) || "this_month"
     @date_range = compute_date_range
+    @drill_category = params[:category].presence
 
     load_income_expense_data
     load_debts_data
@@ -56,21 +57,10 @@ class AnalyticsController < ApplicationController
     @total_expenses = expense_tx.sum(:amount).abs
     @net = @total_income - @total_expenses
 
-    # Income by category (doughnut)
-    @income_by_category = income_tx
-      .joins(:transaction_type)
-      .group("transaction_types.name")
-      .sum(:amount)
-      .transform_values(&:abs)
-      .sort_by { |_, v| -v }.to_h
-
-    # Expense by category (doughnut)
-    @expense_by_category = expense_tx
-      .joins(:transaction_type)
-      .group("transaction_types.name")
-      .sum(:amount)
-      .transform_values(&:abs)
-      .sort_by { |_, v| -v }.to_h
+    # Income / expense by category — subcategories roll up to their parent.
+    # With ?category=<parent name>, drill into that parent's subcategories instead.
+    @income_by_category = CategorySpendQuery.new(income_tx, drill: @drill_category).call
+    @expense_by_category = CategorySpendQuery.new(expense_tx, drill: @drill_category).call
 
     # Net cash flow trend (line) — group by month or day depending on period
     @income_trend = group_by_period(income_tx).transform_values(&:abs)

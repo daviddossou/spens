@@ -132,12 +132,12 @@ class TransactionForm < BaseForm
     false
   end
 
-  def transaction_type_suggestions
-    TransactionTypeSuggestionsService.new(space, kind).all
+  def transaction_type_options
+    TransactionTypeSuggestionsService.new(space, kind).options
   end
 
-  def default_transaction_type_suggestions
-    TransactionTypeSuggestionsService.new(space, kind).defaults
+  def default_transaction_type_options
+    TransactionTypeSuggestionsService.new(space, kind).default_options
   end
 
   def account_suggestions

@@ -1,0 +1,230 @@
+# Category taxonomy — single source of truth (Parent -> Subcategory, two flat levels).
+#
+# - Keys are STABLE and locale-independent (snake_case). Never rename a key once shipped;
+#   the per-space `transaction_types.template_key` points at it.
+# - Names are bilingual (en/fr) right here, so EN and FR can never drift apart.
+# - Read by the TransactionTaxonomy registry; transactions attach to a parent OR a child,
+#   and analytics rolls a parent up over its children.
+# - Aliases (merchant/mode synonyms that the picker uses to SUGGEST a node) live in a
+#   separate file: config/transaction_type_aliases.yml
+#
+# Verified for Benin / West Africa. `uncategorized_expense` / `uncategorized_income`
+# are the default parents for user-created nodes that don't match a template.
+
+expense:
+  food_groceries:
+    en: "🛒 Food & Groceries"
+    fr: "🛒 Marché & Alimentation"
+    children:
+      groceries:           { en: "🛒 Groceries",              fr: "🛒 Provisions" }
+      monthly_provisions:  { en: "📦 Monthly provisions",     fr: "📦 Provisions du mois" }
+
+  eating_out:
+    en: "🍽️ Eating out"
+    fr: "🍽️ Repas à l'extérieur"
+    children:
+      restaurant_maquis:   { en: "🍽️ Restaurant & Maquis",    fr: "🍽️ Restaurant & Maquis" }
+      street_food:         { en: "🍢 Street food",            fr: "🍢 Cuisine de rue" }
+      cafe_snacks:         { en: "☕ Coffee & Snacks",          fr: "☕ Café & Snacks" }
+      bar_buvette:         { en: "🍺 Bar & Buvette",           fr: "🍺 Bar & Buvette" }
+      food_delivery:       { en: "🛵 Food delivery",           fr: "🛵 Livraison de repas" }
+
+  transport:
+    en: "🚍 Transport"
+    fr: "🚍 Transport"
+    children:
+      moto_taxi:           { en: "🛵 Moto-taxi (Zem)",         fr: "🛵 Taxi-moto (Zem)" }
+      public_transport:    { en: "🚌 Public transport",        fr: "🚌 Transport en commun" }
+      ride_hailing:        { en: "📱 Ride-hailing",            fr: "📱 VTC (Gozem/Yango)" }
+      fuel:                { en: "⛽ Fuel",                     fr: "⛽ Carburant" }
+      parking_tolls:       { en: "🅿️ Parking & Tolls",         fr: "🅿️ Parking & Péage" }
+      vehicle_upkeep:      { en: "🔧 Vehicle upkeep",          fr: "🔧 Entretien véhicule" }
+      goods_transport:     { en: "🛺 Goods transport",         fr: "🛺 Transport de marchandises" }
+
+  housing_home:
+    en: "🏠 Housing & Home"
+    fr: "🏠 Logement & Maison"
+    children:
+      rent:                { en: "🏠 Rent",                    fr: "🏠 Loyer" }
+      household_items:     { en: "🛋️ Furniture & furnishings",  fr: "🛋️ Mobilier & Décoration" }
+      home_repairs:        { en: "🔨 Home repairs",            fr: "🔨 Réparations & Amélioration" }
+      domestic_help:       { en: "🧹 Domestic help",           fr: "🧹 Aide ménagère" }
+      cleaning_laundry:    { en: "🧺 Laundry & Cleaning",      fr: "🧺 Lessive & Nettoyage" }
+      home_supplies:       { en: "🧼 Home & cleaning supplies", fr: "🧼 Produits d'entretien" }
+      security_guard:      { en: "🔒 Security & Guard",        fr: "🔒 Sécurité & Gardien" }
+      home_insurance:      { en: "🛡️ Home insurance",          fr: "🛡️ Assurance habitation" }
+
+  electricity_water:
+    en: "💡 Electricity & Water"
+    fr: "💡 Électricité & Eau"
+    children:
+      electricity:         { en: "💡 Electricity",             fr: "💡 Électricité" }
+      water:               { en: "🚰 Water",                   fr: "🚰 Eau" }
+
+  kitchen_supplies:
+    en: "🍲 Kitchen supplies"
+    fr: "🍲 Fournitures de cuisine"
+    children:
+      cooking_gas:         { en: "🔥 Cooking gas",             fr: "🔥 Gaz" }
+      charcoal_wood:       { en: "🪵 Charcoal & firewood",     fr: "🪵 Charbon & Bois" }
+      kitchen_utensils:    { en: "🍳 Kitchen utensils",        fr: "🍳 Ustensiles de cuisine" }
+      kitchen_consumables: { en: "🧴 Kitchen consumables",     fr: "🧴 Consommables de cuisine" }
+
+  telecom_internet:
+    en: "📱 Telecommunication & Internet"
+    fr: "📱 Télécommunication & Internet"
+    children:
+      airtime:             { en: "📞 Airtime / Credit",        fr: "📞 Crédit d'appel" }
+      mobile_data:         { en: "📶 Mobile data",             fr: "📶 Forfait internet" }
+      home_internet:       { en: "🛜 Home internet",           fr: "🛜 Internet (maison)" }
+
+  technology_tools:
+    en: "💻 Technology & Tools"
+    fr: "💻 Technologie & Matériel"
+    children:
+      electronics:          { en: "📱 Electronics",             fr: "📱 Électronique" }
+      appliances:           { en: "🧊 Appliances",              fr: "🧊 Électroménager" }
+      computer_accessories: { en: "🖥️ Computer & accessories",  fr: "🖥️ Informatique & accessoires" }
+
+  health:
+    en: "💊 Health"
+    fr: "💊 Santé"
+    children:
+      pharmacy:            { en: "💊 Pharmacy",                fr: "💊 Pharmacie" }
+      consultation:        { en: "🩺 Consultation",            fr: "🩺 Consultation" }
+      hospital:            { en: "🏥 Hospital",                fr: "🏥 Hôpital" }
+      lab_tests:           { en: "🔬 Lab & tests",             fr: "🔬 Laboratoire & Analyses" }
+      medical_supplies:    { en: "🩼 Medical devices & supplies", fr: "🩼 Matériel & Dispositifs médicaux" }
+      health_insurance:    { en: "🛡️ Health insurance",        fr: "🛡️ Assurance santé" }
+
+  education:
+    en: "🎓 Education"
+    fr: "🎓 Éducation"
+    children:
+      school_fees:         { en: "🎓 School fees",             fr: "🎓 Frais de scolarité" }
+      school_supplies:     { en: "✏️ School supplies",         fr: "✏️ Fournitures scolaires" }
+      tuition_courses:     { en: "📚 Courses & events",         fr: "📚 Cours & Événements" }
+
+  clothing_personal_care:
+    en: "👕 Clothing & Personal care"
+    fr: "👕 Vêtements & Soins personnels"
+    children:
+      clothing_shoes:      { en: "👕 Clothing & shoes",        fr: "👕 Vêtements & Chaussures" }
+      tailoring:           { en: "🧵 Tailoring",               fr: "🧵 Couture" }
+      salon_beauty:        { en: "💇 Salon & beauty",          fr: "💇 Salon & Beauté" }
+      cosmetics:           { en: "💄 Cosmetics & products",    fr: "💄 Cosmétiques & Produits" }
+
+  recreation_lifestyle:
+    en: "🎬 Recreation & lifestyle"
+    fr: "🎬 Loisirs & Style de vie"
+    children:
+      outings:             { en: "🎉 Outings",                 fr: "🎉 Sorties" }
+      betting_games:       { en: "🎲 Betting & games",         fr: "🎲 Paris & Jeux" }
+      subscriptions_fun:   { en: "📺 Subscriptions (fun)",     fr: "📺 Abonnements (distraction)" }
+      sport_fitness:       { en: "⚽ Sport & fitness",         fr: "⚽ Sport & Fitness" }
+      photo:               { en: "📸 Photo & studio",          fr: "📸 Photo & Studio" }
+
+  family_social:
+    en: "👨‍👩‍👧‍👦 Family & social"
+    fr: "👨‍👩‍👧‍👦 Famille & Social"
+    children:
+      gifts:               { en: "🎁 Gifts",                   fr: "🎁 Cadeaux" }
+      ceremonies:          { en: "💒 Ceremonies",              fr: "💒 Cérémonies" }
+      family_support:      { en: "🤝 Family support",          fr: "🤝 Soutien familial" }
+      donations:           { en: "🙏 Donations & offerings",   fr: "🙏 Dons & Offrandes" }
+      childcare:           { en: "👶 Childcare",               fr: "👶 Garde d'enfants" }
+
+  savings_investment:
+    en: "💰 Savings & Investment"
+    fr: "💰 Épargne & Investissement"
+    children:
+      savings_deposit:     { en: "🏦 Savings deposit",         fr: "🏦 Dépôt d'épargne" }
+      tontine:             { en: "💰 Tontine",                 fr: "💰 Tontine" }
+      investment:          { en: "📈 Investment",              fr: "📈 Investissement" }
+      land_construction:   { en: "🏗️ Land & construction",     fr: "🏗️ Terrain & Construction" }
+      investment_fees:     { en: "💸 Investment fees",         fr: "💸 Frais d'investissement" }
+
+  transaction_fees:
+    en: "💳 Fees & taxes"
+    fr: "💳 Frais & Impôts"
+    children:
+      mobile_money_fees:    { en: "📲 Mobile money fees",       fr: "📲 Frais Mobile Money" }
+      bank_fees:            { en: "🏦 Bank fees & commission",   fr: "🏦 Frais & Commission bancaire" }
+      withdrawal_send_fees: { en: "💸 Withdrawal & send fees",  fr: "💸 Frais de retrait & envoi" }
+      taxes:                { en: "🧾 Taxes & duties",          fr: "🧾 Impôts & Taxes" }
+
+  travel:
+    en: "✈️ Travel"
+    fr: "✈️ Voyage"
+    children:
+      flights_tickets:     { en: "✈️ Flights & tickets",       fr: "✈️ Billets & Transport" }
+      customs:             { en: "🛃 Customs",                 fr: "🛃 Douane" }
+      tourism:             { en: "🗺️ Tourism & souvenirs",     fr: "🗺️ Tourisme & Souvenirs" }
+
+  other_expense:
+    en: "❓ Other"
+    fr: "❓ Autre"
+    children:
+      uncategorized_expense: { en: "❓ Uncategorized",         fr: "❓ Non catégorisé" }
+      business_work_expense: { en: "💼 Business / work",       fr: "💼 Dépense professionnelle" }
+      printing_admin:        { en: "🖨️ Printing & admin",       fr: "🖨️ Photocopie & démarches" }
+      misc_expense:          { en: "🧩 Miscellaneous",         fr: "🧩 Divers" }
+      unexpected_expense:    { en: "🥵 Unexpected",            fr: "🥵 Imprévu" }
+
+income:
+  salary_employment:
+    en: "💼 Salary & Employment"
+    fr: "💼 Salaire & Emploi"
+    children:
+      salary:              { en: "💼 Salary",                  fr: "💼 Salaire" }
+      bonus:               { en: "🎖️ Bonus",                   fr: "🎖️ Prime" }
+      allowance_perdiem:   { en: "👛 Allowance / per diem",    fr: "👛 Allocation / Indemnité" }
+
+  business_trade:
+    en: "🏢 Business & Trade"
+    fr: "🏢 Affaires & Commerce"
+    children:
+      sales:               { en: "🛒 Sales",                   fr: "🛒 Ventes" }
+      business_income:     { en: "🏢 Business income",         fr: "🏢 Revenu d'entreprise" }
+      side_hustle:         { en: "💪 Side hustle",             fr: "💪 Activité complémentaire" }
+      commission_income:   { en: "💰 Commission",              fr: "💰 Commission" }
+
+  transfers_received:
+    en: "💸 Transfers & Support received"
+    fr: "💸 Transferts & Soutien reçus"
+    children:
+      remittance:          { en: "💸 Remittance",              fr: "💸 Transfert reçu" }
+      family_support_received: { en: "🤝 Family support",      fr: "🤝 Soutien familial reçu" }
+      social_support:      { en: "🏛️ Social support",          fr: "🏛️ Soutien social" }
+
+  investment_returns:
+    en: "📈 Investment returns"
+    fr: "📈 Revenus de placements"
+    children:
+      interest:            { en: "🏦 Interest",                fr: "🏦 Intérêts" }
+      dividends:           { en: "📈 Dividends",               fr: "📈 Dividendes" }
+      rental_income:       { en: "🏠 Rental income",           fr: "🏠 Revenu locatif" }
+      investment_return:   { en: "📈 Investment return",       fr: "📈 Rendement d'investissement" }
+      bank_cashback:       { en: "🎉 Bank cashback",           fr: "🎉 Cashback bancaire" }
+
+  refunds_reimbursements:
+    en: "↩️ Refunds & Reimbursements"
+    fr: "↩️ Remboursements"
+    children:
+      refund:              { en: "↩️ Refund",                  fr: "↩️ Remboursement" }
+      loan_repayment_received: { en: "💳 Loan repayment",      fr: "💳 Remboursement de prêt reçu" }
+      cashback_rewards:    { en: "🎉 Cashback & rewards",      fr: "🎉 Remises & Récompenses" }
+
+  gifts_windfall:
+    en: "🎁 Gifts & windfall"
+    fr: "🎁 Cadeaux & Gains"
+    children:
+      gift_received:       { en: "🎁 Gift received",           fr: "🎁 Cadeau reçu" }
+      betting_winnings:    { en: "🎲 Betting winnings",        fr: "🎲 Gains de paris" }
+      grant_scholarship:   { en: "🎓 Grant / scholarship",     fr: "🎓 Subvention / Bourse" }
+
+  other_income:
+    en: "💵 Other income"
+    fr: "💵 Autre revenu"
+    children:
+      uncategorized_income: { en: "❓ Uncategorized",          fr: "❓ Non catégorisé" }

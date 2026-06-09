@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_04_15_100002) do
+ActiveRecord::Schema[8.0].define(version: 2026_06_07_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -90,8 +90,12 @@ ActiveRecord::Schema[8.0].define(version: 2026_04_15_100002) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.uuid "space_id", null: false
+    t.string "template_key"
+    t.uuid "parent_id"
     t.index "lower((name)::text), space_id, kind", name: "index_transaction_types_on_lower_name_space_and_kind", unique: true
     t.index ["kind"], name: "index_transaction_types_on_kind"
+    t.index ["parent_id"], name: "index_transaction_types_on_parent_id"
+    t.index ["space_id", "template_key"], name: "index_transaction_types_on_space_and_template_key", unique: true, where: "(template_key IS NOT NULL)"
     t.index ["space_id"], name: "index_transaction_types_on_space_id"
   end
 
@@ -147,6 +151,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_04_15_100002) do
   add_foreign_key "memberships", "users"
   add_foreign_key "spaces", "users"
   add_foreign_key "transaction_types", "spaces"
+  add_foreign_key "transaction_types", "transaction_types", column: "parent_id"
   add_foreign_key "transactions", "accounts"
   add_foreign_key "transactions", "debts"
   add_foreign_key "transactions", "spaces"

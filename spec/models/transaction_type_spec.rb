@@ -2,22 +2,27 @@
 #
 # Table name: transaction_types
 #
-#  id          :uuid             not null, primary key
-#  budget_goal :float            default(0.0)
-#  kind        :string           not null, indexed
-#  name        :string           not null
-#  created_at  :datetime         not null
-#  updated_at  :datetime         not null
-#  space_id    :uuid             not null, indexed
+#  id           :uuid             not null, primary key
+#  budget_goal  :float            default(0.0)
+#  kind         :string           not null, indexed
+#  name         :string           not null
+#  template_key :string           indexed => [space_id]
+#  created_at   :datetime         not null
+#  updated_at   :datetime         not null
+#  parent_id    :uuid             indexed
+#  space_id     :uuid             not null, indexed => [template_key], indexed
 #
 # Indexes
 #
 #  index_transaction_types_on_kind                       (kind)
 #  index_transaction_types_on_lower_name_space_and_kind  (lower((name)::text), space_id, kind) UNIQUE
+#  index_transaction_types_on_parent_id                  (parent_id)
+#  index_transaction_types_on_space_and_template_key     (space_id,template_key) UNIQUE WHERE (template_key IS NOT NULL)
 #  index_transaction_types_on_space_id                   (space_id)
 #
 # Foreign Keys
 #
+#  fk_rails_...  (parent_id => transaction_types.id)
 #  fk_rails_...  (space_id => spaces.id)
 #
 require 'rails_helper'
@@ -247,7 +252,7 @@ RSpec.describe TransactionType, type: :model do
       expect(templates.keys).to include(:salary, :side_hustle, :investment_return)
 
       # Expense types
-      expect(templates.keys).to include(:groceries, :fuel_transport, :electricity_water)
+      expect(templates.keys).to include(:groceries, :fuel, :electricity_water)
     end
 
     it 'returns translated values for English locale' do
@@ -286,29 +291,47 @@ RSpec.describe TransactionType, type: :model do
 
       expect(templates[:salary][:kind]).to eq('income')
       expect(templates[:groceries][:kind]).to eq('expense')
-      expect(templates[:debt_repayment][:kind]).to eq('expense')
-      expect(templates[:loan_repayment][:kind]).to eq('income')
-      expect(templates[:transfer_in][:kind]).to eq('transfer_in')
-      expect(templates[:transfer_out][:kind]).to eq('transfer_out')
+      expect(templates[:mobile_money_fees][:kind]).to eq('expense')
+      expect(templates[:loan_repayment_received][:kind]).to eq('income')
     end
 
     it 'includes comprehensive transaction type categories' do
       templates = described_class.templates
 
-      # Transfer types
-      expect(templates.keys).to include(:transfer_in, :transfer_out)
+      # Parent categories
+      expect(templates.keys).to include(:transport, :food_groceries, :electricity_water)
 
       # Essential expenses
-      expect(templates.keys).to include(:rent, :electricity_water, :groceries)
+      expect(templates.keys).to include(:rent, :groceries, :fuel)
 
       # Income sources
-      expect(templates.keys).to include(:salary, :side_hustle, :performance_bonuses)
+      expect(templates.keys).to include(:salary, :side_hustle, :bonus)
 
-      # Financial management
-      expect(templates.keys).to include(:debt_repayment, :loan_repayment)
+      # Fees & financial
+      expect(templates.keys).to include(:bank_fees, :mobile_money_fees, :taxes)
+    end
+  end
 
-      # Fees
-      expect(templates.keys).to include(:bank_account_fees, :mobile_money_fees)
+  describe '.default_template_keys' do
+    %w[expense income].each do |kind|
+      context "for #{kind}" do
+        let(:keys) { described_class.default_template_keys(kind) }
+
+        it 'returns 20 keys' do
+          expect(keys.size).to eq(20)
+        end
+
+        it 'returns only keys that exist in the taxonomy with the matching kind' do
+          keys.each do |key|
+            expect(TransactionTaxonomy.exists?(key)).to be(true), "#{key} is not a taxonomy node"
+            expect(TransactionTaxonomy.kind_of(key)).to eq(kind), "#{key} is not a #{kind}"
+          end
+        end
+      end
+    end
+
+    it 'returns an empty list for non-categorised kinds' do
+      expect(described_class.default_template_keys('transfer_in')).to eq([])
     end
   end
 
