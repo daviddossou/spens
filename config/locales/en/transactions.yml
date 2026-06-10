@@ -35,6 +35,9 @@ en:
       from_account_placeholder: "From which account?"
       to_account_label: "To"
       to_account_placeholder: "To which account?"
+      fee_amount_label: "Fee (optional)"
+      fee_amount_placeholder: "0.00"
+      fee_help: "If this had a fee (e.g. a Mobile Money charge), add it and we'll record it for you."
       transaction_type_label: "Category"
       transaction_type_placeholder: "e.g. Groceries, Salary, Rent..."
       show_more_details: "More details (optional)"
@@ -51,12 +54,16 @@ en:
     create:
       success: "Transaction saved!"
 
+    fee:
+      description: "Fee · %{label}"
+
     transfer:
       type_name:
         transfer_out: "📤 Transfer out"
         transfer_in: "📥 Transfer in"
       description_out: "%{from_account_name} ➡️ %{to_account_name}"
       description_in: "%{to_account_name} ⬅️ %{from_account_name}"
+      fee_description: "Fee · %{from_account_name} ➡️ %{to_account_name}"
     edit:
       title: "Edit Transaction"
       subtitle: "Update your transaction details"

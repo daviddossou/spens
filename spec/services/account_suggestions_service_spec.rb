@@ -452,4 +452,24 @@ RSpec.describe AccountSuggestionsService do
       end
     end
   end
+
+  describe 'ranking' do
+    it 'orders accounts by most-recently-updated first' do
+      create(:account, user: user, name: 'Older', updated_at: 5.days.ago)
+      create(:account, user: user, name: 'Newer', updated_at: 1.day.ago)
+
+      expect(service.all.first(2)).to eq(%w[Newer Older])
+    end
+
+    it 'breaks ties between equally-recent accounts by how often each is used' do
+      frequent = create(:account, user: user, name: 'Frequent')
+      rare = create(:account, user: user, name: 'Rare')
+      create_list(:transaction, 3, user: user, account: frequent)
+      create(:transaction, user: user, account: rare)
+      # Pin both to the same recency (transactions bump updated_at) so usage decides.
+      Account.where(id: [ frequent.id, rare.id ]).update_all(updated_at: 1.day.ago)
+
+      expect(service.all.first(2)).to eq(%w[Frequent Rare])
+    end
+  end
 end

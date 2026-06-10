@@ -12,6 +12,7 @@ class TransactionForm < BaseForm
   attribute :from_account_name, :string
   attribute :to_account_name, :string
   attribute :amount, :decimal
+  attribute :fee_amount, :decimal
   attribute :transaction_date, :date, default: -> { Date.current }
   attribute :transaction_type_name, :string
   attribute :note, :string
@@ -23,6 +24,7 @@ class TransactionForm < BaseForm
   # Validations
   validates :kind, presence: true, inclusion: { in: %w[expense income transfer transfer_in transfer_out debt_in debt_out] }
   validates :amount, presence: true, numericality: { greater_than: 0 }
+  validates :fee_amount, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
   validates :transaction_date, presence: true
 
   # Conditional validations based on kind
@@ -85,6 +87,7 @@ class TransactionForm < BaseForm
       from_account_name: payload[:from_account_name],
       to_account_name: payload[:to_account_name],
       amount: payload[:amount],
+      fee_amount: payload[:fee_amount],
       transaction_date: payload[:transaction_date] || Date.current,
       transaction_type_name: payload[:transaction_type_name],
       note: payload[:note],
@@ -195,6 +198,12 @@ class TransactionForm < BaseForm
     [ "transfer", "transfer_in", "transfer_out" ].include?(kind)
   end
 
+  # A fee only applies when money leaves the user's account — never on income or
+  # debt_in, where the sender pays the fee, not the user.
+  def fee_applicable?
+    %w[expense transfer debt_out].include?(kind)
+  end
+
   private
 
   def double_transfer?
@@ -215,17 +224,45 @@ class TransactionForm < BaseForm
   end
 
   def create_regular_transaction
+    account = find_or_create_account
     self.transaction = create_and_validate_transaction(
-      account: find_or_create_account,
+      account: account,
       transaction_type: find_or_create_transaction_type,
       amount: amount,
       description: description.presence || transaction_type_name
     )
+    create_fee_transaction(account: account)
   end
 
   def create_transfer_transactions
     create_transfer_in_transaction
     create_transfer_out_transaction
+    create_fee_transaction(account: from_account)
+  end
+
+  # Records an optional provider fee (e.g. a mobile-money charge) as its own expense in the
+  # same submit — unlinked from any debt (a cost, not a repayment) and never the primary.
+  def create_fee_transaction(account:)
+    return unless fee_applicable?
+    return if fee_amount.blank? || fee_amount <= 0
+
+    create_and_validate_transaction(
+      account: account,
+      transaction_type: fee_transaction_type,
+      amount: fee_amount,
+      description: fee_description(account)
+    )
+  end
+
+  def fee_description(account)
+    if transfer?
+      I18n.t("transactions.transfer.fee_description",
+             from_account_name: from_account.name, to_account_name: to_account.name)
+    else
+      label = description.presence || transaction_type_name.presence ||
+              contact_name.presence || account&.name
+      I18n.t("transactions.fee.description", label: label)
+    end
   end
 
   def create_transfer_in_transaction
@@ -255,16 +292,18 @@ class TransactionForm < BaseForm
   end
 
   def create_debt_transaction
+    account = find_or_create_account
     auto_description = I18n.t("debts.transaction_description.#{kind}.#{debt.direction}", contact_name: debt.name)
     type_name = I18n.t("debts.transaction_type.#{kind}.#{debt.direction}")
 
     self.transaction = create_and_validate_transaction(
-      account: find_or_create_account,
+      account: account,
       transaction_type: find_or_create_transaction_type(type_name, kind),
       amount: amount,
       description: description.presence || auto_description,
       debt: debt
     )
+    create_fee_transaction(account: account)
   end
 
   def create_and_validate_transaction(account:, transaction_type:, amount:, description:, debt: nil)
@@ -314,6 +353,13 @@ class TransactionForm < BaseForm
   def transfer_type_in
     type_name = I18n.t("transactions.transfer.type_name.#{TransactionType::KIND_TRANSFER_IN}")
     @transfer_type_in ||= find_or_create_transaction_type(type_name, TransactionType::KIND_TRANSFER_IN)
+  end
+
+  # The fee is an ordinary expense; pass the taxonomy node's display name so the
+  # service materialises it (and its parent) and rolls it up under "Fees & taxes".
+  def fee_transaction_type
+    fee_name = TransactionTaxonomy.name(TransactionType::FEE_KEY)
+    @fee_transaction_type ||= find_or_create_transaction_type(fee_name, "expense")
   end
 
   def update_existing_transaction
