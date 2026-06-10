@@ -14,9 +14,11 @@ class QuickEntriesController < ApplicationController
     build_form(draft)
 
     if draft.confident? && @form.submit
+      log_attempt(draft, @form.transaction)
       redirect_with_reload_to transaction_path(id: @form.transaction.id),
                               notice: success_notice(@form.transaction), status: :see_other
     else
+      log_attempt(draft, nil)
       render turbo_stream: turbo_stream.replace("transaction_form", partial: "transactions/form")
     end
   end
@@ -26,6 +28,18 @@ class QuickEntriesController < ApplicationController
   def build_form(draft)
     @form = TransactionForm.new(current_space, draft.to_form_payload)
     @form.user = current_user
+  end
+
+  # Best-effort: logging the attempt must never break the user's submission.
+  def log_attempt(draft, transaction)
+    return if params[:text].blank?
+
+    QuickEntryAttempt.record(
+      space: current_space, user: current_user, text: params[:text].to_s,
+      locale: I18n.locale, draft: draft, transaction: transaction
+    )
+  rescue StandardError => e
+    Rails.logger.warn("quick-entry attempt logging failed: #{e.message}")
   end
 
   def success_notice(transaction)

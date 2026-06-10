@@ -84,6 +84,26 @@ RSpec.describe QuickEntriesController, type: :request do
       expect(response).to have_http_status(:see_other)
     end
 
+    it "logs an attempt linked to the transaction on auto-create" do
+      expect do
+        post quick_entry_path, params: { text: "2000 zem" }
+      end.to change(QuickEntryAttempt, :count).by(1)
+
+      attempt = QuickEntryAttempt.order(:created_at).last
+      expect(attempt.source).to eq("rules")
+      expect(attempt.created_transaction).to eq(space.transactions.order(:created_at).last)
+    end
+
+    it "logs a manual-fallback attempt when it can't auto-create" do
+      expect do
+        post quick_entry_path,
+             params: { text: "transfer 10000 to savings" },
+             headers: { "Accept" => "text/vnd.turbo-stream.html" }
+      end.to change(QuickEntryAttempt, :count).by(1)
+
+      expect(QuickEntryAttempt.order(:created_at).last.source).to eq("manual_fallback")
+    end
+
     it "requires authentication" do
       sign_out user
       post quick_entry_path, params: { text: "2000 zem" }
