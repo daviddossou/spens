@@ -97,5 +97,17 @@ RSpec.describe TransactionTypeSuggestionsService do
       income  = described_class.new(user, 'income').default_options.map { |o| o[:value] }
       expect(expense).not_to eq(income)
     end
+
+    context 'ranking recorded categories' do
+      it 'breaks ties between equally-recent categories by how often each is used' do
+        touched_at = 2.days.ago
+        frequent = create(:transaction_type, user: user, kind: 'expense', name: 'Frequent', updated_at: touched_at)
+        rare = create(:transaction_type, user: user, kind: 'expense', name: 'Rare', updated_at: touched_at)
+        create_list(:transaction, 3, user: user, transaction_type: frequent)
+        create(:transaction, user: user, transaction_type: rare)
+
+        expect(service.default_options.first(2).map { |o| o[:value] }).to eq(%w[Frequent Rare])
+      end
+    end
   end
 end

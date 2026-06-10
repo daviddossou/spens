@@ -705,6 +705,157 @@ RSpec.describe TransactionForm, type: :model do
       end
     end
 
+    context 'for a transfer with a fee' do
+      let(:fee_attributes) do
+        {
+          kind: 'transfer',
+          from_account_name: 'Checking',
+          to_account_name: 'Savings',
+          amount: 100.00,
+          fee_amount: 1.50,
+          transaction_date: Date.current
+        }
+      end
+      let(:form) { described_class.new(space, fee_attributes) }
+
+      it 'records the transfer plus a separate fee transaction (3 in total)' do
+        expect { form.submit }.to change { space.transactions.count }.by(3)
+      end
+
+      it 'files the fee as an expense on the source account, under the fee category' do
+        form.submit
+
+        fee_type = space.transaction_types.find_by(template_key: TransactionType::FEE_KEY)
+        expect(fee_type).to be_present
+        expect(fee_type.kind).to eq('expense')
+
+        fee_tx = space.transactions.find_by(transaction_type: fee_type)
+        expect(fee_tx.account.name).to eq('Checking')
+        expect(fee_tx.amount).to be < 0
+        expect(fee_tx.amount.abs).to eq(1.50)
+      end
+
+      it 'keeps the transfer-out as the primary transaction' do
+        form.submit
+        expect(form.transaction.transaction_type.kind).to eq(TransactionType::KIND_TRANSFER_OUT)
+      end
+
+      it 'skips the fee transaction when the fee is blank' do
+        no_fee = described_class.new(space, fee_attributes.merge(fee_amount: nil))
+        expect { no_fee.submit }.to change { space.transactions.count }.by(2)
+      end
+
+      it 'skips the fee transaction when the fee is zero' do
+        zero_fee = described_class.new(space, fee_attributes.merge(fee_amount: 0))
+        expect { zero_fee.submit }.to change { space.transactions.count }.by(2)
+      end
+
+      it 'rejects a negative fee' do
+        bad_fee = described_class.new(space, fee_attributes.merge(fee_amount: -5))
+        expect(bad_fee).not_to be_valid
+        expect(bad_fee.errors[:fee_amount]).to be_present
+      end
+    end
+
+    context 'for an expense with a fee' do
+      let(:expense_attributes) do
+        {
+          kind: 'expense',
+          account_name: 'Mobile Money',
+          transaction_type_name: 'Send to Mum',
+          amount: 5000,
+          fee_amount: 100,
+          transaction_date: Date.current
+        }
+      end
+      let(:form) { described_class.new(space, expense_attributes) }
+
+      it 'records the expense plus a separate fee transaction' do
+        expect { form.submit }.to change { space.transactions.count }.by(2)
+      end
+
+      it 'files the fee as an expense on the same account, under the fee category' do
+        form.submit
+
+        fee_type = space.transaction_types.find_by(template_key: TransactionType::FEE_KEY)
+        fee_tx = space.transactions.find_by(transaction_type: fee_type)
+        expect(fee_tx.account.name).to eq('Mobile Money')
+        expect(fee_tx.amount.abs).to eq(100)
+      end
+
+      it 'keeps the expense itself as the primary transaction' do
+        form.submit
+        expect(form.transaction.transaction_type.name).to eq('Send to Mum')
+      end
+    end
+
+    context 'for income (no fee offered)' do
+      let(:income_attributes) do
+        {
+          kind: 'income',
+          account_name: 'Bank',
+          transaction_type_name: 'Salary',
+          amount: 5000,
+          fee_amount: 100,
+          transaction_date: Date.current
+        }
+      end
+      let(:form) { described_class.new(space, income_attributes) }
+
+      it 'ignores any fee and records only the income transaction' do
+        expect { form.submit }.to change { space.transactions.count }.by(1)
+        expect(space.transaction_types.find_by(template_key: TransactionType::FEE_KEY)).to be_nil
+      end
+    end
+
+    context 'for a debt movement with a fee' do
+      let(:debt_attributes) do
+        {
+          kind: 'debt_out',
+          contact_name: 'Kofi',
+          direction: 'lent',
+          account_name: 'Mobile Money',
+          amount: 20000,
+          fee_amount: 150,
+          transaction_date: Date.current
+        }
+      end
+      let(:form) { described_class.new(space, debt_attributes) }
+
+      it 'records the debt transaction plus a separate fee transaction' do
+        expect { form.submit }.to change { space.transactions.count }.by(2)
+      end
+
+      it 'files the fee as an expense, unlinked from the debt' do
+        form.submit
+
+        fee_type = space.transaction_types.find_by(template_key: TransactionType::FEE_KEY)
+        fee_tx = space.transactions.find_by(transaction_type: fee_type)
+        expect(fee_tx.amount.abs).to eq(150)
+        expect(fee_tx.debt).to be_nil
+      end
+    end
+
+    context 'for incoming debt money (debt_in, no fee offered)' do
+      let(:debt_in_attributes) do
+        {
+          kind: 'debt_in',
+          contact_name: 'Ama',
+          direction: 'borrowed',
+          account_name: 'Mobile Money',
+          amount: 20000,
+          fee_amount: 150,
+          transaction_date: Date.current
+        }
+      end
+      let(:form) { described_class.new(space, debt_in_attributes) }
+
+      it 'ignores any fee and records only the debt transaction' do
+        expect { form.submit }.to change { space.transactions.count }.by(1)
+        expect(space.transaction_types.find_by(template_key: TransactionType::FEE_KEY)).to be_nil
+      end
+    end
+
     context 'when service raises StandardError' do
       before do
         allow(FindOrCreateAccountService).to receive(:new).and_raise(StandardError, "Service error")

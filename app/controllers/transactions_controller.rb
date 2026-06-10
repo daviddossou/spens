@@ -71,6 +71,7 @@ class TransactionsController < ApplicationController
       :from_account_name,
       :to_account_name,
       :amount,
+      :fee_amount,
       :transaction_date,
       :transaction_type_name,
       :note,

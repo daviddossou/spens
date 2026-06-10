@@ -33,6 +33,10 @@ class TransactionType < ApplicationRecord
   KIND_DEBT_IN = "debt_in"
   KIND_DEBT_OUT = "debt_out"
 
+  # Taxonomy subcategory used to file an inline fee (e.g. a mobile-money withdrawal/send
+  # fee) recorded alongside an expense, transfer, or debt_out transaction.
+  FEE_KEY = "withdrawal_send_fees"
+
   ##
   # Associations
   belongs_to :space

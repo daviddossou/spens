@@ -202,6 +202,23 @@
         ) %>
       </div>
 
+      <% if @form.fee_applicable? %>
+        <div class="transaction-form__fee">
+          <%= render Forms::InputFieldComponent.new(
+            form: f,
+            field: :fee_amount,
+            type: :number_field,
+            label: t('.fee_amount_label'),
+            help_text: t('.fee_help'),
+            required: false,
+            prepend: get_currency_symbol(current_space.currency),
+            step: "0.01",
+            min: "0",
+            placeholder: t('.fee_amount_placeholder')
+          ) %>
+        </div>
+      <% end %>
+
       <div class="transaction-form__date">
         <%= render Forms::InputFieldComponent.new(
           form: f,

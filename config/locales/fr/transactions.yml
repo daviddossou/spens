@@ -35,6 +35,9 @@ fr:
       from_account_placeholder: "Depuis quel compte ?"
       to_account_label: "Vers"
       to_account_placeholder: "Vers quel compte ?"
+      fee_amount_label: "Frais (optionnel)"
+      fee_amount_placeholder: "0.00"
+      fee_help: "S'il y a eu des frais (ex. une charge Mobile Money), ajoute-les et on les enregistre pour toi."
       transaction_type_label: "Catégorie"
       transaction_type_placeholder: "ex. Courses, Salaire, Loyer..."
       show_more_details: "Plus de détails (optionnel)"
@@ -51,12 +54,16 @@ fr:
     create:
       success: "Transaction enregistrée !"
 
+    fee:
+      description: "Frais · %{label}"
+
     transfer:
       type_name:
         transfer_out: "Transfert sortant"
         transfer_in: "Transfert entrant"
       description_out: "%{from_account_name} ➡️ %{to_account_name}"
       description_in: "%{to_account_name} ⬅️ %{from_account_name}"
+      fee_description: "Frais · %{from_account_name} ➡️ %{to_account_name}"
     edit:
       title: "Modifier la transaction"
       subtitle: "Mets à jour les détails de ta transaction"

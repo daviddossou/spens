@@ -6,14 +6,14 @@ class AccountSuggestionsService
   end
 
   def all
-    user_accounts = @space.accounts.order(updated_at: :desc).pluck(:name)
+    user_accounts = ranked_accounts.pluck(:name)
     templates = Account.templates(I18n.locale).values
 
     (user_accounts + templates).uniq
   end
 
   def all_with_balances
-    user_accounts = @space.accounts.order(updated_at: :desc).pluck(:name, :balance)
+    user_accounts = ranked_accounts.pluck(:name, :balance)
     user_suggestions = user_accounts.map { |name, balance| { name: name, balance: balance } }
 
     templates = Account.templates(I18n.locale).values
@@ -26,7 +26,7 @@ class AccountSuggestionsService
   end
 
   def defaults
-    user_accounts = @space.accounts.order(updated_at: :desc).pluck(:name)
+    user_accounts = ranked_accounts.pluck(:name)
 
     return user_accounts if user_accounts.length >= 10
 
@@ -38,7 +38,7 @@ class AccountSuggestionsService
   end
 
   def defaults_with_balances
-    user_accounts = @space.accounts.order(updated_at: :desc).pluck(:name, :balance)
+    user_accounts = ranked_accounts.pluck(:name, :balance)
     user_suggestions = user_accounts.map { |name, balance| { name: name, balance: balance } }
 
     return user_suggestions if user_suggestions.length >= 10
@@ -51,5 +51,18 @@ class AccountSuggestionsService
 
     needed = 10 - user_suggestions.length
     user_suggestions + available_templates.take(needed)
+  end
+
+  private
+
+  # Most recently touched accounts first, with the most-used (by number of
+  # transactions) winning ties — so the account a user just reached for sits at the top
+  # of every picker. left_joins keeps accounts that have no transactions yet.
+  def ranked_accounts
+    @space.accounts
+          .left_joins(:transactions)
+          .group("accounts.id")
+          .order(updated_at: :desc)
+          .order(Arel.sql("COUNT(transactions.id) DESC"))
   end
 end

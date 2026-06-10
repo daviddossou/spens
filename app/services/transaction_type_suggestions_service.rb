@@ -48,12 +48,15 @@ class TransactionTypeSuggestionsService
   end
 
   # "Recorded" = appears on at least one transaction, which excludes the parent rows
-  # auto-created for roll-up (they hold no transactions of their own). Newest first.
+  # auto-created for roll-up (they hold no transactions of their own). Most-recent first,
+  # with the most-used (by number of transactions) breaking ties.
   def recorded_types
     @recorded_types ||= @space.transaction_types
       .where(kind: @kind)
-      .where(id: Transaction.select(:transaction_type_id))
-      .order(updated_at: :desc).to_a
+      .joins(:transactions)
+      .group("transaction_types.id")
+      .order(updated_at: :desc)
+      .order(Arel.sql("COUNT(transactions.id) DESC")).to_a
   end
 
   def common_options
