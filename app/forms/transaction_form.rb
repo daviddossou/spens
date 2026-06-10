@@ -237,14 +237,20 @@ class TransactionForm < BaseForm
   def create_transfer_transactions
     create_transfer_in_transaction
     create_transfer_out_transaction
-    create_fee_transaction(account: from_account)
+    create_fee_transaction(account: from_account) if fee_present?
+  end
+
+  # True only where money leaves the account (see #fee_applicable?) and a positive fee was
+  # entered. A predicate so the transfer path can skip resolving the source account — which
+  # would otherwise find-or-create a stray account — when there is no fee to record.
+  def fee_present?
+    fee_applicable? && fee_amount.present? && fee_amount.positive?
   end
 
   # Records an optional provider fee (e.g. a mobile-money charge) as its own expense in the
   # same submit — unlinked from any debt (a cost, not a repayment) and never the primary.
   def create_fee_transaction(account:)
-    return unless fee_applicable?
-    return if fee_amount.blank? || fee_amount <= 0
+    return unless fee_present?
 
     create_and_validate_transaction(
       account: account,
