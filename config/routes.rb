@@ -31,6 +31,9 @@ Rails.application.routes.draw do
     # Transactions
     resources :transactions, only: [ :new, :create, :show, :edit, :update, :destroy ]
 
+    # Quick add: parse one natural-language utterance into a transaction (typed now, voice later)
+    resource :quick_entry, only: [ :new, :create ]
+
     # Goals
     resources :goals, only: [ :index, :show, :new, :create, :edit, :update, :destroy ]
 

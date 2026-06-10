@@ -24,6 +24,21 @@
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
+/* Secondary FAB (quick add) — stacked above the primary, slate to set it apart */
+.fab--secondary {
+  bottom: calc(64px + env(safe-area-inset-bottom, 0px) + 1rem + 56px + 0.75rem);
+  background-color: var(--color-secondary);
+  box-shadow:
+    0 4px 12px rgba(var(--color-secondary-rgb), 0.35),
+    0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.fab--secondary:hover {
+  box-shadow:
+    0 6px 16px rgba(var(--color-secondary-rgb), 0.4),
+    0 3px 6px rgba(0, 0, 0, 0.12);
+}
+
 /* Keep FAB within the 640px content area on wide screens */
 @media (min-width: 672px) {
   .fab {

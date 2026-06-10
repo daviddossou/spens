@@ -104,14 +104,14 @@
 }
 
 .kind-option--selected,
-.kind-option__input:checked + .kind-option {
+.kind-option__input:checked+.kind-option {
   background: rgba(var(--kind-accent-rgb), 0.16);
   border-color: var(--kind-accent);
   box-shadow: 0 0 0 3px rgba(var(--kind-accent-rgb), 0.18);
 }
 
 .kind-option:focus-visible,
-.kind-option__input:focus-visible + .kind-option {
+.kind-option__input:focus-visible+.kind-option {
   outline: none;
   border-color: var(--kind-accent);
   box-shadow: 0 0 0 3px rgba(var(--kind-accent-rgb), 0.3);
@@ -235,4 +235,23 @@
   .transaction-form__transfer-accounts {
     gap: 0.75rem;
   }
+}
+
+/* Quick add — natural-language entry (the surface voice will plug into) */
+.quick-entry {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.quick-entry__input {
+  font-size: 1rem;
+  padding: 0.875rem 1rem;
+}
+
+.quick-entry__examples {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.8125rem;
+  line-height: 1.4;
 }

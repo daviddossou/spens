@@ -1,0 +1,12 @@
+en:
+  quick_entries:
+    new:
+      title: "Quick add"
+    form:
+      subtitle: "Describe your transaction"
+      placeholder: "e.g. 2000 zem, or 5k groceries at Carrefour"
+      examples: "Just say the amount and what it was for — we'll sort the rest."
+      submit: "Add"
+      enter_manually: "Enter details manually"
+    create:
+      created: "Added %{category} · %{amount}"

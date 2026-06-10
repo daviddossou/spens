@@ -27,6 +27,7 @@ fr:
       sign_out: "Se déconnecter"
       transactions_title: "Transactions récentes"
       add_transaction: "Ajouter"
+      quick_add: "Ajout rapide"
       loading: "Chargement..."
       has_note: "Avec note"
       stats:
