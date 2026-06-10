@@ -1,0 +1,11 @@
+<% content_for :title, t('.title') %>
+
+<%= turbo_frame_tag "modal" do %>
+  <div class="page-container page-container--narrow">
+    <%# Reuses the "transaction_form" frame id so a not-confident parse can swap in the
+        manual transaction form (rendered by QuickEntriesController#create). %>
+    <%= turbo_frame_tag "transaction_form" do %>
+      <%= render 'form' %>
+    <% end %>
+  </div>
+<% end %>

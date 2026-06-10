@@ -1,0 +1,89 @@
+# Keyword data for QuickEntry::Parser — the deterministic, rules-first brain behind
+# quick-add / voice. Built for what speech-to-text produces (spelled-out numbers, few
+# symbols). Bilingual EN/FR. Add phrases here to widen coverage without code changes —
+# this is the "grow less dependent on AI over time" lever.
+#
+# All phrases are matched after CategoryText-style normalization (accent/case/punctuation
+# insensitive), so list them in their natural form.
+
+en:
+  # kind detection — first matching group wins; default is "expense".
+  kind:
+    income:
+      [received, receive, got paid, get paid, salary, wage, wages, paycheck, payday,
+       refund, refunded, reimbursed, reimbursement, repaid, paid back, repayment, cashback,
+       dividend, dividends, interest, bonus, allowance, sold, income, earned, earning]
+    transfer:
+      [transfer, transferred, moved to, move to, sent to my, top up, topped up, withdraw,
+       withdrawal, withdrew, deposit, deposited]
+    debt_lent:
+      [lent, loaned, gave a loan, fronted, spotted]
+    debt_borrowed:
+      [borrowed, owe, i owe, took a loan]
+  # For transfers: which account is the source vs the destination. Matched as the word
+  # right before an account name (articles like "my"/"the" are skipped).
+  transfer_prepositions:
+    from: [from, out of]
+    to: [to, into, onto]
+  # Flags a separate provider fee on the same entry; the number nearest the keyword is the fee.
+  fee: [fee, fees, charge, charges, commission]
+  date:
+    yesterday: [yesterday]
+    day_before_yesterday: [day before yesterday]
+    today: [today, just now]
+  weekdays: { monday: 1, tuesday: 2, wednesday: 3, thursday: 4, friday: 5, saturday: 6, sunday: 7 }
+  # account hints → matched against the user's account names; if none match, the
+  # instrument hint is tried as a substring of an account name.
+  instruments:
+    cash: [cash, in cash]
+    momo: [momo, mobile money, mtn, moov, mtn momo, moov money, wave, orange money]
+    bank: [bank, bank account, card, by card]
+  numbers:
+    units:
+      { zero: 0, one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8,
+        nine: 9, ten: 10, eleven: 11, twelve: 12, thirteen: 13, fourteen: 14, fifteen: 15,
+        sixteen: 16, seventeen: 17, eighteen: 18, nineteen: 19 }
+    tens:
+      { twenty: 20, thirty: 30, forty: 40, fifty: 50, sixty: 60, seventy: 70, eighty: 80,
+        ninety: 90 }
+    scales:
+      { hundred: 100, thousand: 1000, k: 1000, grand: 1000, million: 1000000, m: 1000000 }
+
+fr:
+  kind:
+    income:
+      [recu, reçu, recue, reçue, j'ai recu, salaire, paie, paye, paye par, paiement recu,
+       remboursement, rembourse, remboursé, remboursee, cashback, dividende, dividendes,
+       interet, intérêt, prime, bonus, vendu, revenu, gagne, gagné, encaisse, encaissé]
+    transfer:
+      [transfert, transfere, transféré, vire, viré, virement, envoye sur mon, depot,
+       dépôt, depose, déposé, retrait, retire, retiré, recharge]
+    debt_lent:
+      [prete, prêté, j'ai prete, avance, avancé]
+    debt_borrowed:
+      [emprunte, emprunté, je dois, j'ai emprunte, dette]
+  transfer_prepositions:
+    from: [de, du, depuis]
+    to: [a, au, aux, vers, sur]
+  fee: [frais, commission, commissions]
+  date:
+    yesterday: [hier]
+    day_before_yesterday: [avant-hier, avant hier]
+    today: [aujourd'hui, aujourdhui, a l'instant]
+  weekdays: { lundi: 1, mardi: 2, mercredi: 3, jeudi: 4, vendredi: 5, samedi: 6, dimanche: 7 }
+  instruments:
+    cash: [especes, espèces, liquide, en espece, cash]
+    momo: [momo, mobile money, mtn, moov, mtn momo, moov money, wave, orange money]
+    bank: [banque, compte bancaire, carte, par carte]
+  numbers:
+    units:
+      { zero: 0, zéro: 0, un: 1, une: 1, deux: 2, trois: 3, quatre: 4, cinq: 5, six: 6,
+        sept: 7, huit: 8, neuf: 9, dix: 10, onze: 11, douze: 12, treize: 13, quatorze: 14,
+        quinze: 15, seize: 16, "dix-sept": 17, dixsept: 17, "dix-huit": 18, dixhuit: 18,
+        "dix-neuf": 19, dixneuf: 19 }
+    tens:
+      { vingt: 20, trente: 30, quarante: 40, cinquante: 50, soixante: 60,
+        "soixante-dix": 70, soixantedix: 70, "quatre-vingt": 80, quatrevingt: 80,
+        "quatre-vingts": 80, quatrevingts: 80, "quatre-vingt-dix": 90, quatrevingtdix: 90 }
+    scales:
+      { cent: 100, cents: 100, mille: 1000, k: 1000, million: 1000000, millions: 1000000, m: 1000000 }
