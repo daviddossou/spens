@@ -27,4 +27,12 @@ RSpec.describe QuickEntry::CategoryInference do
   it "returns nil when nothing matches" do
     expect(infer("two thousand")).to be_nil
   end
+
+  it "resolves a learned alias the built-ins don't know" do
+    expect(infer("2000 zoomzoom")).to be_nil
+
+    LearnedAlias.teach(phrase: "zoomzoom", taxonomy_key: "moto_taxi", source: "edit_diff")
+
+    expect(infer("2000 zoomzoom")).to eq("moto_taxi")
+  end
 end

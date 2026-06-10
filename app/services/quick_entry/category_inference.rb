@@ -18,6 +18,7 @@ module QuickEntry
     def infer
       best_key = nil
       best_score = [ 0, 0 ]
+      learned = LearnedAlias.active_index
 
       tokens.each_index do |i|
         (1..MAX_NGRAM).each do |n|
@@ -25,7 +26,9 @@ module QuickEntry
           next unless window && window.size == n
 
           phrase = window.join(" ")
-          key = CategoryAliasMatcher.match(phrase) || TransactionTaxonomy.key_for_name(phrase)
+          # Learned aliases are the last resort, so they only ever fill a gap the built-ins miss.
+          key = CategoryAliasMatcher.match(phrase) || TransactionTaxonomy.key_for_name(phrase) ||
+                learned[CategoryText.normalize(phrase)]
           next unless key
 
           score = [ n, CategoryText.normalize(phrase).length ]

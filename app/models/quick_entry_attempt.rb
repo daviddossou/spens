@@ -7,6 +7,7 @@
 #  id             :uuid             not null, primary key
 #  ai_draft       :jsonb
 #  ai_used        :boolean          default(FALSE), not null
+#  corrections    :jsonb
 #  locale         :string
 #  outcome        :string           default("pending"), not null, indexed
 #  rules_draft    :jsonb            not null
@@ -31,9 +32,6 @@
 #  fk_rails_...  (transaction_id => transactions.id) ON DELETE => nullify
 #  fk_rails_...  (user_id => users.id)
 #
-# One quick-add submission: the raw utterance, what the rules (and later the AI) parsed, and
-# the transaction it produced. The memory the learning loop is built on — edits diff against
-# `rules_draft`, and the miner reads these in bulk to grow the alias dictionary.
 class QuickEntryAttempt < ApplicationRecord
   ##
   # Associations

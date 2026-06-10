@@ -7,6 +7,7 @@
 #  id             :uuid             not null, primary key
 #  ai_draft       :jsonb
 #  ai_used        :boolean          default(FALSE), not null
+#  corrections    :jsonb
 #  locale         :string
 #  outcome        :string           default("pending"), not null, indexed
 #  rules_draft    :jsonb            not null
