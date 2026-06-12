@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_06_07_120000) do
+ActiveRecord::Schema[8.0].define(version: 2026_06_10_130001) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -58,6 +58,18 @@ ActiveRecord::Schema[8.0].define(version: 2026_06_07_120000) do
     t.index ["token"], name: "index_invitations_on_token", unique: true
   end
 
+  create_table "learned_aliases", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "phrase", null: false
+    t.string "taxonomy_key", null: false
+    t.string "state", default: "candidate", null: false
+    t.string "source", null: false
+    t.integer "confirmations", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["phrase"], name: "index_learned_aliases_on_phrase", unique: true
+    t.index ["state"], name: "index_learned_aliases_on_state"
+  end
+
   create_table "memberships", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.uuid "user_id", null: false
     t.uuid "space_id", null: false
@@ -66,6 +78,26 @@ ActiveRecord::Schema[8.0].define(version: 2026_06_07_120000) do
     t.index ["space_id"], name: "index_memberships_on_space_id"
     t.index ["user_id", "space_id"], name: "index_memberships_on_user_id_and_space_id", unique: true
     t.index ["user_id"], name: "index_memberships_on_user_id"
+  end
+
+  create_table "quick_entry_attempts", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "space_id", null: false
+    t.uuid "user_id", null: false
+    t.uuid "transaction_id"
+    t.text "text", null: false
+    t.string "locale"
+    t.jsonb "rules_draft", default: {}, null: false
+    t.boolean "ai_used", default: false, null: false
+    t.jsonb "ai_draft"
+    t.string "source", null: false
+    t.string "outcome", default: "pending", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.jsonb "corrections"
+    t.index ["outcome"], name: "index_quick_entry_attempts_on_outcome"
+    t.index ["space_id"], name: "index_quick_entry_attempts_on_space_id"
+    t.index ["transaction_id"], name: "index_quick_entry_attempts_on_transaction_id"
+    t.index ["user_id"], name: "index_quick_entry_attempts_on_user_id"
   end
 
   create_table "spaces", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -149,6 +181,9 @@ ActiveRecord::Schema[8.0].define(version: 2026_06_07_120000) do
   add_foreign_key "invitations", "users", column: "invited_by_id"
   add_foreign_key "memberships", "spaces"
   add_foreign_key "memberships", "users"
+  add_foreign_key "quick_entry_attempts", "spaces"
+  add_foreign_key "quick_entry_attempts", "transactions", on_delete: :nullify
+  add_foreign_key "quick_entry_attempts", "users"
   add_foreign_key "spaces", "users"
   add_foreign_key "transaction_types", "spaces"
   add_foreign_key "transaction_types", "transaction_types", column: "parent_id"

@@ -33,6 +33,7 @@ class TransactionsController < ApplicationController
     build_form_for_edit(update_params.to_h.symbolize_keys)
 
     if @form.submit
+      QuickEntry::CorrectionLearner.learn(@transaction)
       redirect_with_reload_to transaction_path(id: @transaction.id), notice: t(".success"), status: :see_other
     else
       render :edit, status: :unprocessable_entity
