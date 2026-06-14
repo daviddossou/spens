@@ -104,6 +104,27 @@ RSpec.describe QuickEntriesController, type: :request do
       expect(QuickEntryAttempt.order(:created_at).last.source).to eq("manual_fallback")
     end
 
+    it "uses the AI fallback to fill a category gap, records source ai, and learns a candidate" do
+      allow(QuickEntry::LlmParser).to receive(:enabled?).and_return(true)
+      llm = instance_double(
+        QuickEntry::LlmParser,
+        parse: QuickEntry::LlmParser::Result.new(
+          kind: "expense", amount: 3000, category_key: "groceries",
+          category_name: TransactionTaxonomy.name("groceries", :en), phrase: "ndogou"
+        )
+      )
+      allow(QuickEntry::LlmParser).to receive(:new).and_return(llm)
+
+      expect do
+        post quick_entry_path, params: { text: "3000 ndogou" }
+      end.to change { space.transactions.count }.by(1)
+
+      attempt = QuickEntryAttempt.order(:created_at).last
+      expect(attempt.source).to eq("ai")
+      expect(attempt.ai_used).to be(true)
+      expect(LearnedAlias.find_by(phrase: "ndogou")).to be_candidate
+    end
+
     it "requires authentication" do
       sign_out user
       post quick_entry_path, params: { text: "2000 zem" }
