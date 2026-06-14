@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_06_10_130001) do
+ActiveRecord::Schema[8.0].define(version: 2026_06_13_210706) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -68,6 +68,18 @@ ActiveRecord::Schema[8.0].define(version: 2026_06_10_130001) do
     t.datetime "updated_at", null: false
     t.index ["phrase"], name: "index_learned_aliases_on_phrase", unique: true
     t.index ["state"], name: "index_learned_aliases_on_state"
+  end
+
+  create_table "learned_keywords", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "phrase", null: false
+    t.string "kind", null: false
+    t.string "state", default: "candidate", null: false
+    t.string "source", null: false
+    t.integer "confirmations", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["phrase"], name: "index_learned_keywords_on_phrase", unique: true
+    t.index ["state"], name: "index_learned_keywords_on_state"
   end
 
   create_table "memberships", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|

@@ -140,10 +140,17 @@ module QuickEntry
         elsif match_any?(kw["debt_borrowed"]) then "debt_in"
         elsif match_any?(kw["transfer"]) then "transfer"
         elsif match_any?(kw["income"]) then "income"
+        else learned_kind
         end
 
       @explicit_kind = !detected.nil?
       detected || "expense"
+    end
+
+    # Human-approved learned verbs (LearnedKeyword), consulted only after the built-in sets miss,
+    # so they fill a gap — never shadow a built-in. Empty until a candidate is approved.
+    def learned_kind
+      LearnedKeyword.active_index.find { |phrase, _| normalized.include?(phrase) }&.last
     end
 
     # --- amount -------------------------------------------------------------

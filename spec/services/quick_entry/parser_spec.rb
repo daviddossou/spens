@@ -45,6 +45,20 @@ RSpec.describe QuickEntry::Parser do
       # "rent" is an expense category; no kind keyword, so it stays expense
       expect(parse("25000 rent").kind).to eq("expense")
     end
+
+    it "reads an unknown verb as expense until a learned keyword is approved" do
+      expect(parse("j'ai dépanné Ali de 2000", locale: :fr).kind).to eq("expense")
+
+      LearnedKeyword.teach(phrase: "dépanné", kind: "debt_out", source: "ai").approve!
+
+      expect(parse("j'ai dépanné Ali de 2000", locale: :fr).kind).to eq("debt_out")
+    end
+
+    it "consults a learned keyword only as a gap-fill, never over a built-in" do
+      LearnedKeyword.teach(phrase: "depanne", kind: "debt_out", source: "ai")&.approve!
+      # a built-in income word still wins outright
+      expect(parse("reçu 50000 salaire", locale: :fr).kind).to eq("income")
+    end
   end
 
   describe "date" do
