@@ -33,6 +33,7 @@ fr:
       saving_goal: "Objectif d'épargne"
       actions_title: "Actions"
       add_transaction: "Ajouter une transaction"
+      quick_add: "Ajout rapide"
       edit_account: "Modifier"
       delete_account: "Supprimer"
       delete_confirmation: "Supprimer ce compte ? Cette action est irréversible."
