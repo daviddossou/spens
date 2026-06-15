@@ -7,7 +7,7 @@ RSpec.describe "Admin vocabulary review", type: :request do
   include ActionView::RecordIdentifier
 
   let(:admin) { create(:user, :admin) }
-  before { sign_in admin }
+  before { sign_in admin, scope: :user }
 
   it "approves a candidate alias and writes an audit row" do
     row = LearnedAlias.teach(phrase: "zoomzoom", taxonomy_key: "moto_taxi", source: "ai")

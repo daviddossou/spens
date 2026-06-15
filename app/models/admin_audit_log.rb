@@ -12,6 +12,9 @@ class AdminAuditLog < ApplicationRecord
     grant_admin revoke_admin
   ].freeze
 
+  # UUID primary key → order by time, not the random id, so .first/.last/.recent are chronological.
+  self.implicit_order_column = "created_at"
+
   belongs_to :admin_user, class_name: "User"
 
   validates :action, inclusion: { in: ACTIONS }

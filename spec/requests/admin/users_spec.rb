@@ -8,7 +8,7 @@ RSpec.describe "Admin users", type: :request do
   let(:admin)  { create(:user, :admin) }
   let(:target) { create(:user) }
 
-  before { sign_in admin }
+  before { sign_in admin, scope: :user }
 
   it "grants admin and logs it" do
     expect { patch grant_admin_admin_user_path(id: target.id) }

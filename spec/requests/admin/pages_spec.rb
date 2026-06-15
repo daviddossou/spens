@@ -10,7 +10,7 @@ RSpec.describe "Admin pages render", type: :request do
   let(:space) { admin.spaces.first }
 
   before do
-    sign_in admin
+    sign_in admin, scope: :user
     LearnedAlias.teach(phrase: "zoomzoom", taxonomy_key: "moto_taxi", source: "ai")
     LearnedKeyword.teach(phrase: "depanne", kind: "debt_out", source: "ai")
     create(:quick_entry_attempt, user: other, space: other.spaces.first, text: "2000 zoomzoom")

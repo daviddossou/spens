@@ -8,7 +8,7 @@ RSpec.describe "Admin impersonation", type: :request do
   let(:admin)  { create(:user, :admin) }
   let(:target) { create(:user) }
 
-  before { sign_in admin }
+  before { sign_in admin, scope: :user }
 
   it "starts impersonating a regular user and logs it" do
     expect { post impersonate_admin_user_path(id: target.id) }
@@ -38,9 +38,9 @@ RSpec.describe "Admin impersonation", type: :request do
   it "stops impersonating, restores the admin, and logs it" do
     post impersonate_admin_user_path(id: target.id)
 
-    expect { delete stop_impersonating_path }.to change(AdminAuditLog, :count).by(1)
+    expect { delete stop_impersonating_path }
+      .to change { AdminAuditLog.where(action: "impersonate_stop").count }.by(1)
     expect(response).to redirect_to(admin_root_path)
-    expect(AdminAuditLog.last.action).to eq("impersonate_stop")
 
     # the real admin is back: the admin area is reachable again
     get admin_root_path

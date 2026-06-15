@@ -14,19 +14,19 @@ RSpec.describe "Admin access", type: :request do
   end
 
   it "redirects a signed-in non-admin back to the app" do
-    sign_in user
+    sign_in user, scope: :user
     get admin_root_path
     expect(response).to redirect_to(root_path)
   end
 
   it "lets an admin in" do
-    sign_in admin
+    sign_in admin, scope: :user
     get admin_root_path
     expect(response).to have_http_status(:success)
   end
 
   it "keeps every admin section behind the gate for non-admins" do
-    sign_in user
+    sign_in user, scope: :user
     [ admin_users_path, admin_spaces_path, admin_transactions_path,
       admin_quick_entry_attempts_path, admin_audit_logs_path,
       admin_learned_aliases_path, admin_learned_keywords_path ].each do |path|
