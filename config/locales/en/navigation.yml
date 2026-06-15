@@ -2,6 +2,7 @@ en:
   navigation:
     header:
       settings: "Settings"
+      admin: "Admin"
       contact_support: "Contact Support"
       log_out: "Log Out"
     bottom_nav:

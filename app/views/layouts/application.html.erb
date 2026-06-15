@@ -54,6 +54,7 @@
     <main class="main-container<%= ' main-container--with-shell' if user_signed_in? %>">
       <!-- Flash messages -->
       <%= render Ui::FlashMessageComponent.new(flash) %>
+      <%= render "shared/impersonation_banner" %>
 
       <%= yield %>
     </main>

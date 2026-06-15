@@ -2,6 +2,7 @@ fr:
   navigation:
     header:
       settings: "Paramètres"
+      admin: "Admin"
       contact_support: "Contacter le support"
       log_out: "Se déconnecter"
     bottom_nav:

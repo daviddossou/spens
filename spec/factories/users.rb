@@ -3,6 +3,7 @@
 # Table name: users
 #
 #  id                     :uuid             not null, primary key
+#  admin                  :boolean          default(FALSE), not null
 #  current_sign_in_at     :datetime
 #  current_sign_in_ip     :string
 #  email                  :string           default(""), not null, indexed
@@ -69,6 +70,10 @@ FactoryBot.define do
 
     trait :without_space do
       create_default_space { false }
+    end
+
+    trait :admin do
+      admin { true }
     end
   end
 end

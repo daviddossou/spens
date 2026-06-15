@@ -1,5 +1,23 @@
 # frozen_string_literal: true
 
+# == Schema Information
+#
+# Table name: learned_keywords
+#
+#  id            :uuid             not null, primary key
+#  confirmations :integer          default(0), not null
+#  kind          :string           not null
+#  phrase        :string           not null, indexed
+#  source        :string           not null
+#  state         :string           default("candidate"), not null, indexed
+#  created_at    :datetime         not null
+#  updated_at    :datetime         not null
+#
+# Indexes
+#
+#  index_learned_keywords_on_phrase  (phrase) UNIQUE
+#  index_learned_keywords_on_state   (state)
+#
 require "rails_helper"
 
 RSpec.describe LearnedKeyword do

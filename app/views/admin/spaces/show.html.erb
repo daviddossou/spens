@@ -1,0 +1,65 @@
+<% content_for(:title, @space.name) %>
+
+<div class="admin-page">
+  <header class="admin-page__header">
+    <h1 class="admin-page__title"><%= @space.name %></h1>
+    <p class="admin-page__subtitle">
+      <%= t("admin.spaces.owned_by", email: @space.user&.email) %> · <%= @space.currency %><%= " · #{@space.country}" if @space.country.present? %>
+    </p>
+  </header>
+
+  <section class="admin-section">
+    <h2 class="admin-section__title"><%= t("admin.spaces.members") %></h2>
+    <% if @members.any? %>
+      <ul class="admin-pills">
+        <% @members.each do |member| %>
+          <li><%= link_to member.email, admin_user_path(id: member.id), class: "admin-pill" %></li>
+        <% end %>
+      </ul>
+    <% else %>
+      <p class="admin-empty"><%= t("admin.spaces.no_members") %></p>
+    <% end %>
+  </section>
+
+  <section class="admin-section">
+    <h2 class="admin-section__title"><%= t("admin.spaces.accounts") %></h2>
+    <% if @accounts.any? %>
+      <table class="admin-table">
+        <thead><tr><th><%= t("admin.cols.name") %></th><th><%= t("admin.cols.balance") %></th></tr></thead>
+        <tbody>
+          <% @accounts.each do |account| %>
+            <tr>
+              <td><%= account.name %></td>
+              <td class="admin-amount"><%= format_money(account.balance, @space.currency) %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    <% else %>
+      <p class="admin-empty"><%= t("admin.spaces.no_accounts") %></p>
+    <% end %>
+  </section>
+
+  <section class="admin-section">
+    <h2 class="admin-section__title"><%= t("admin.spaces.categories") %></h2>
+    <% if @transaction_types.any? %>
+      <ul class="admin-tree">
+        <% @transaction_types.each do |type| %>
+          <li>
+            <%= type.name %> <span class="admin-row__type"><%= type.kind %></span>
+            <% if type.children.any? %>
+              <ul><% type.children.each do |child| %><li><%= child.name %></li><% end %></ul>
+            <% end %>
+          </li>
+        <% end %>
+      </ul>
+    <% else %>
+      <p class="admin-empty"><%= t("admin.spaces.no_categories") %></p>
+    <% end %>
+  </section>
+
+  <section class="admin-section">
+    <h2 class="admin-section__title"><%= t("admin.spaces.recent_transactions") %> · <%= number_with_delimiter(@transactions_count) %></h2>
+    <%= render "admin/shared/transactions_table", transactions: @recent_transactions %>
+  </section>
+</div>

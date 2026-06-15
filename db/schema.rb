@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_06_13_210706) do
+ActiveRecord::Schema[8.0].define(version: 2026_06_14_122738) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -26,6 +26,19 @@ ActiveRecord::Schema[8.0].define(version: 2026_06_13_210706) do
     t.index "lower((name)::text), space_id", name: "index_accounts_on_lower_name_and_space_id", unique: true
     t.index ["space_id"], name: "index_accounts_on_space_id"
     t.index ["user_id"], name: "index_accounts_on_user_id"
+  end
+
+  create_table "admin_audit_logs", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "admin_user_id", null: false
+    t.string "action", null: false
+    t.string "target_type"
+    t.uuid "target_id"
+    t.jsonb "metadata", default: {}, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["action"], name: "index_admin_audit_logs_on_action"
+    t.index ["admin_user_id"], name: "index_admin_audit_logs_on_admin_user_id"
+    t.index ["target_type", "target_id"], name: "index_admin_audit_logs_on_target_type_and_target_id"
   end
 
   create_table "debts", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -181,12 +194,14 @@ ActiveRecord::Schema[8.0].define(version: 2026_06_13_210706) do
     t.datetime "updated_at", null: false
     t.string "otp_code"
     t.datetime "otp_sent_at"
+    t.boolean "admin", default: false, null: false
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
   add_foreign_key "accounts", "spaces"
   add_foreign_key "accounts", "users"
+  add_foreign_key "admin_audit_logs", "users", column: "admin_user_id"
   add_foreign_key "debts", "spaces"
   add_foreign_key "debts", "users"
   add_foreign_key "invitations", "spaces"

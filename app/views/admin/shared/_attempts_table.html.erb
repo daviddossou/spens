@@ -1,0 +1,34 @@
+<%# Locals: attempts, show_user (optional) %>
+<% if attempts.any? %>
+  <table class="admin-table">
+    <thead>
+      <tr>
+        <th><%= t("admin.cols.when") %></th>
+        <% if local_assigns[:show_user] %><th><%= t("admin.cols.user") %></th><% end %>
+        <th><%= t("admin.cols.utterance") %></th>
+        <th><%= t("admin.cols.source") %></th>
+        <th><%= t("admin.cols.ai") %></th>
+        <th><%= t("admin.cols.outcome") %></th>
+      </tr>
+    </thead>
+    <tbody>
+      <% attempts.each do |attempt| %>
+        <tr>
+          <td><%= attempt.created_at.strftime("%Y-%m-%d %H:%M") %></td>
+          <% if local_assigns[:show_user] %>
+            <td><%= link_to attempt.user.email, admin_user_path(id: attempt.user_id) %></td>
+          <% end %>
+          <td>
+            <code><%= truncate(attempt.text, length: 50) %></code>
+            <span class="admin-row__type"><%= attempt.locale %></span>
+          </td>
+          <td><%= admin_badge(attempt.source) %></td>
+          <td><%= attempt.ai_used? ? "✓" : "—" %></td>
+          <td><%= admin_outcome_badge(attempt.outcome) %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+<% else %>
+  <p class="admin-empty"><%= t("admin.attempts.empty") %></p>
+<% end %>

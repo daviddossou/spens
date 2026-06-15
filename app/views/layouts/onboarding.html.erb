@@ -33,6 +33,7 @@
   <body style="background-color: var(--color-off-white);">
     <main class="main-container">
       <%= render Ui::FlashMessageComponent.new(flash) %>
+      <%= render "shared/impersonation_banner" %>
       <%= yield %>
     </main>
   </body>

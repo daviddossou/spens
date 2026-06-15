@@ -56,6 +56,35 @@ Rails.application.routes.draw do
     # Analytics
     get "analytics", to: "analytics#index", as: :analytics
 
+    # Admin area (gated by Admin::BaseController; not space-scoped)
+    namespace :admin do
+      root "dashboard#show"
+
+      resources :learned_aliases, only: :index do
+        member { patch :approve; patch :reject }
+      end
+      resources :learned_keywords, only: :index do
+        member { patch :approve; patch :reject }
+      end
+
+      resources :users, only: [ :index, :show ] do
+        member do
+          post :impersonate
+          patch :grant_admin
+          patch :revoke_admin
+        end
+      end
+
+      resources :spaces, only: [ :index, :show ]
+      resources :transactions, only: :index
+      resources :quick_entry_attempts, only: :index
+      resources :audit_logs, only: :index
+    end
+
+    # Stop impersonating — OUTSIDE the admin gate, since current_user is the impersonated
+    # (non-admin) user mid-impersonation. Guarded by the true-admin id stashed in the session.
+    delete "stop_impersonating", to: "impersonations#destroy", as: :stop_impersonating
+
     # Onboarding routes
     get "onboarding", to: "onboarding#show"
 

@@ -1,0 +1,19 @@
+<% content_for(:title, t("admin.attempts.title")) %>
+
+<div class="admin-page">
+  <header class="admin-page__header">
+    <h1 class="admin-page__title"><%= t("admin.attempts.title") %></h1>
+    <%= form_with url: admin_quick_entry_attempts_path, method: :get, class: "admin-search" do |f| %>
+      <%= f.select :outcome,
+            options_for_select([ [ t("admin.filter_all"), "" ] ] + QuickEntryAttempt.outcomes.keys.map { |o| [ t("admin.outcomes.#{o}"), o ] }, params[:outcome]),
+            {}, class: "admin-input" %>
+      <%= f.select :source,
+            options_for_select([ [ t("admin.filter_all"), "" ] ] + QuickEntryAttempt::SOURCES.map { |s| [ s, s ] }, params[:source]),
+            {}, class: "admin-input" %>
+      <%= f.submit t("admin.filter"), class: "admin-btn admin-btn--sm" %>
+    <% end %>
+  </header>
+
+  <%= render "admin/shared/attempts_table", attempts: @attempts, show_user: true %>
+  <%= render "admin/shared/pagination" %>
+</div>
