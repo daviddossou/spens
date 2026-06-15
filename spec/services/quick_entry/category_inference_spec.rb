@@ -28,11 +28,13 @@ RSpec.describe QuickEntry::CategoryInference do
     expect(infer("two thousand")).to be_nil
   end
 
-  it "resolves a learned alias the built-ins don't know" do
+  it "resolves a learned alias only once it's approved (candidate-only)" do
     expect(infer("2000 zoomzoom")).to be_nil
 
-    LearnedAlias.teach(phrase: "zoomzoom", taxonomy_key: "moto_taxi", source: "edit_diff")
+    learned = LearnedAlias.teach(phrase: "zoomzoom", taxonomy_key: "moto_taxi", source: "edit_diff")
+    expect(infer("2000 zoomzoom")).to be_nil # still a candidate — not yet consulted
 
+    learned.approve!
     expect(infer("2000 zoomzoom")).to eq("moto_taxi")
   end
 end

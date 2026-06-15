@@ -54,17 +54,28 @@ class QuickEntryAttempt < ApplicationRecord
   validates :text, presence: true
   validates :source, inclusion: { in: SOURCES }
 
-  # Records one submission. `draft` is the parsed Draft we acted on; `transaction` is the
-  # auto-created record (nil when we fell back to the manual form).
-  def self.record(space:, user:, text:, locale:, draft:, transaction: nil)
+  # Records one submission. `draft` is the parsed Draft we acted on; `ai_draft` is the LLM's
+  # raw output when it was consulted; `transaction` is the auto-created record (nil when we
+  # fell back to the manual form).
+  def self.record(space:, user:, text:, locale:, draft:, ai_draft: nil, transaction: nil)
     create!(
       space: space,
       user: user,
       text: text.to_s,
       locale: locale.to_s,
       rules_draft: draft.to_h,
-      source: transaction ? "rules" : "manual_fallback",
+      ai_used: ai_draft.present?,
+      ai_draft: ai_draft,
+      source: source_for(ai_draft, transaction),
       transaction_id: transaction&.id
     )
+  end
+
+  # "manual_fallback" when nothing auto-created; otherwise "ai" if the AI was consulted to get
+  # there (rules weren't confident on their own), else "rules".
+  def self.source_for(ai_draft, transaction)
+    return "manual_fallback" unless transaction
+
+    ai_draft.present? ? "ai" : "rules"
   end
 end

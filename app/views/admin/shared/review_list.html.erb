@@ -1,0 +1,36 @@
+<% content_for(:title, t("admin.#{controller_name}.title")) %>
+
+<div class="admin-page">
+  <header class="admin-page__header">
+    <h1 class="admin-page__title"><%= t("admin.#{controller_name}.title") %></h1>
+    <p class="admin-page__subtitle"><%= t("admin.#{controller_name}.subtitle") %></p>
+  </header>
+
+  <nav class="admin-tabs">
+    <% Admin::Reviewable::STATES.each do |state| %>
+      <%= link_to t("admin.states.#{state}"), url_for(action: :index, state: state),
+            class: class_names("admin-tab", "admin-tab--active" => @state == state) %>
+    <% end %>
+  </nav>
+
+  <% if @records.any? %>
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th><%= t("admin.vocab.phrase") %></th>
+          <th><%= t("admin.vocab.maps_to") %></th>
+          <th><%= t("admin.vocab.source") %></th>
+          <th><%= t("admin.vocab.confirmations") %></th>
+          <th><%= t("admin.vocab.state") %></th>
+          <th class="admin-table__actions"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <%= render partial: "admin/shared/learned_row",
+              collection: @records, as: :row, locals: { samples_by_id: @samples } %>
+      </tbody>
+    </table>
+  <% else %>
+    <p class="admin-empty"><%= t("admin.review.empty", state: t("admin.states.#{@state}")) %></p>
+  <% end %>
+</div>

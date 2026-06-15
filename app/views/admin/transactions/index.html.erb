@@ -1,0 +1,15 @@
+<% content_for(:title, t("admin.transactions.title")) %>
+
+<div class="admin-page">
+  <header class="admin-page__header">
+    <h1 class="admin-page__title"><%= t("admin.transactions.title") %></h1>
+    <%= form_with url: admin_transactions_path, method: :get, class: "admin-search" do |f| %>
+      <%= f.search_field :q, value: params[:q], placeholder: t("admin.transactions.search"), class: "admin-input" %>
+      <%= f.hidden_field :space_id, value: params[:space_id] if params[:space_id].present? %>
+      <%= f.submit t("admin.search"), class: "admin-btn admin-btn--sm" %>
+    <% end %>
+  </header>
+
+  <%= render "admin/shared/transactions_table", transactions: @transactions, show_space: true %>
+  <%= render "admin/shared/pagination" %>
+</div>

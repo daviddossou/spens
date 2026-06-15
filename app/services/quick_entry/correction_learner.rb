@@ -5,12 +5,6 @@ module QuickEntry
   # parse. A category correction becomes a global LearnedAlias (so the rules catch it next time);
   # other field changes are recorded on the attempt as signals for the offline miner.
   class CorrectionLearner
-    # EN/FR filler the residual-phrase extraction drops on top of the parser's own keywords.
-    STOPWORDS = %w[
-      the a an of for and or with my me you it at on in to from this that paid pay spent bought buy
-      le la les un une de des du pour et ou avec mon ma mes au aux sur ce cette paye achete depense pris
-    ].freeze
-
     def self.learn(transaction)
       new(transaction).learn
     rescue StandardError => e
@@ -83,62 +77,9 @@ module QuickEntry
     # Only learn when the corrected category is a shared taxonomy node (never a custom type).
     def teach_category(change)
       key = TransactionTaxonomy.key_for_name(change["to"]) or return
-      phrase = candidate_phrase or return
+      phrase = PhraseExtractor.call(text: @attempt.text, locale: @attempt.locale, space: @transaction.space) or return
 
       LearnedAlias.teach(phrase: phrase, taxonomy_key: key, source: "edit_diff")
-    end
-
-    # The part of the utterance the rules couldn't categorise: the longest contiguous run of
-    # words that aren't numbers, known keywords, account names, stopwords, or already-known
-    # aliases. Capped at 3 words so CategoryInference (1–3-grams) can match it back.
-    def candidate_phrase
-      run = longest_significant_run
-      run.empty? ? nil : run.join(" ")
-    end
-
-    def longest_significant_run
-      best = []
-      current = []
-      utterance_tokens.each do |tok|
-        if significant?(tok)
-          current << tok
-          best = current.dup if current.size > best.size
-        else
-          current = []
-        end
-      end
-      best.first(3)
-    end
-
-    def utterance_tokens
-      @utterance_tokens ||= @attempt.text.to_s.downcase.split(/[^[:alnum:]]+/).reject(&:blank?)
-    end
-
-    def significant?(tok)
-      return false if tok.length < 2 || tok.match?(/\A\d/)
-      return false if ignored_tokens.include?(I18n.transliterate(tok))
-
-      CategoryAliasMatcher.match(tok).blank?
-    end
-
-    def ignored_tokens
-      @ignored_tokens ||= keyword_phrases.flat_map { |p| I18n.transliterate(p).downcase.split(/[^a-z0-9-]+/) }
-                                         .reject(&:empty?).to_set
-    end
-
-    def keyword_phrases
-      lang = @attempt.locale.to_s.start_with?("fr") ? "fr" : "en"
-      preps = Keywords.transfer_prepositions(lang)
-      [
-        *Keywords.kind(lang).values.flatten,
-        *Keywords.date(lang).values.flatten,
-        *Keywords.weekdays(lang).keys,
-        *Keywords.instruments(lang).values.flatten,
-        *Keywords.fee(lang),
-        *Array(preps["from"]), *Array(preps["to"]),
-        *@transaction.space.accounts.pluck(:name),
-        *STOPWORDS
-      ]
     end
   end
 end

@@ -1,0 +1,88 @@
+<% content_for(:title, @user.email) %>
+
+<div class="admin-page">
+  <header class="admin-page__header admin-page__header--row">
+    <div>
+      <h1 class="admin-page__title"><%= @user.email %></h1>
+      <p class="admin-page__subtitle">
+        <%= [ @user.first_name, @user.last_name ].compact_blank.join(" ") %>
+        <%= admin_badge(@user.admin? ? "admin" : "user", tone: @user.admin? ? :info : :neutral) %>
+      </p>
+    </div>
+    <div class="admin-actions">
+      <% unless @user.admin? %>
+        <%= button_to t("admin.users.impersonate"), impersonate_admin_user_path(id: @user.id),
+              method: :post, class: "admin-btn admin-btn--primary" %>
+      <% end %>
+      <% if @user.admin? %>
+        <%= button_to t("admin.users.revoke_admin"), revoke_admin_admin_user_path(id: @user.id),
+              method: :patch, class: "admin-btn",
+              form: { data: { turbo_confirm: t("admin.users.confirm_revoke") } } %>
+      <% else %>
+        <%= button_to t("admin.users.grant_admin"), grant_admin_admin_user_path(id: @user.id),
+              method: :patch, class: "admin-btn",
+              form: { data: { turbo_confirm: t("admin.users.confirm_grant") } } %>
+      <% end %>
+    </div>
+  </header>
+
+  <section class="admin-section">
+    <h2 class="admin-section__title"><%= t("admin.users.profile") %></h2>
+    <dl class="admin-details">
+      <div><dt><%= t("admin.cols.phone") %></dt><dd><%= @user.phone_number.presence || "—" %></dd></div>
+      <div><dt><%= t("admin.cols.joined") %></dt><dd><%= @user.created_at.strftime("%Y-%m-%d") %></dd></div>
+      <div><dt><%= t("admin.cols.sign_ins") %></dt><dd><%= @user.sign_in_count %></dd></div>
+      <div><dt><%= t("admin.cols.last_seen") %></dt><dd><%= @user.current_sign_in_at&.strftime("%Y-%m-%d %H:%M") || "—" %></dd></div>
+    </dl>
+  </section>
+
+  <section class="admin-section">
+    <h2 class="admin-section__title"><%= t("admin.users.spaces") %></h2>
+    <% if @spaces.any? %>
+      <ul class="admin-pills">
+        <% @spaces.each do |space| %>
+          <li>
+            <%= link_to space.name, admin_space_path(id: space.id), class: "admin-pill" %>
+            <% if @owned_spaces.include?(space) %><span class="admin-pill__tag"><%= t("admin.users.owner") %></span><% end %>
+          </li>
+        <% end %>
+      </ul>
+    <% else %>
+      <p class="admin-empty"><%= t("admin.users.no_spaces") %></p>
+    <% end %>
+  </section>
+
+  <section class="admin-section">
+    <h2 class="admin-section__title"><%= t("admin.users.recent_transactions") %></h2>
+    <%= render "admin/shared/transactions_table", transactions: @recent_transactions %>
+  </section>
+
+  <section class="admin-section">
+    <h2 class="admin-section__title"><%= t("admin.users.debts") %></h2>
+    <% if @debts.any? %>
+      <table class="admin-table">
+        <thead><tr>
+          <th><%= t("admin.cols.name") %></th><th><%= t("admin.cols.direction") %></th>
+          <th><%= t("admin.cols.status") %></th><th><%= t("admin.cols.outstanding") %></th>
+        </tr></thead>
+        <tbody>
+          <% @debts.each do |debt| %>
+            <tr>
+              <td><%= debt.name %></td>
+              <td><%= admin_badge(debt.direction) %></td>
+              <td><%= admin_badge(debt.status, tone: debt.status == "paid" ? :success : :warning) %></td>
+              <td><%= format_money(debt.remaining_balance, debt.space.currency) %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    <% else %>
+      <p class="admin-empty"><%= t("admin.users.no_debts") %></p>
+    <% end %>
+  </section>
+
+  <section class="admin-section">
+    <h2 class="admin-section__title"><%= t("admin.users.recent_attempts") %></h2>
+    <%= render "admin/shared/attempts_table", attempts: @attempts %>
+  </section>
+</div>

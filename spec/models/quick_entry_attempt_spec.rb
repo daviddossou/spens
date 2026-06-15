@@ -63,5 +63,18 @@ RSpec.describe QuickEntryAttempt do
       expect(attempt.source).to eq("manual_fallback")
       expect(attempt.created_transaction).to be_nil
     end
+
+    it "marks the source as ai (and ai_used) when the LLM was consulted" do
+      transaction = create(:transaction, space: space)
+      draft = QuickEntry::Draft.new(kind: "expense", amount: 3000, transaction_type_name: "Groceries")
+
+      attempt = described_class.record(
+        space: space, user: user, text: "3000 ndogou", locale: :en, draft: draft,
+        ai_draft: { "phrase" => "ndogou", "category_key" => "groceries" }, transaction: transaction
+      )
+
+      expect(attempt.source).to eq("ai")
+      expect(attempt.ai_used).to be(true)
+    end
   end
 end

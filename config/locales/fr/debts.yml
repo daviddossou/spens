@@ -88,6 +88,7 @@ fr:
         borrowed: "Suis cette dette et les paiements"
       actions_title: "Actions"
       add_transaction: "Ajouter une transaction"
+      quick_add: "Ajout rapide"
       edit_debt: "Modifier"
       note_title: "Note"
       recent_transactions: "Transactions récentes"

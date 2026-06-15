@@ -89,6 +89,7 @@ fr:
       success: "Transaction supprimée !"
     show:
       add_transaction: "Ajouter une transaction"
+      quick_add: "Ajout rapide"
       edit: "Modifier"
       delete: "Supprimer"
       delete_confirmation: "Es-tu sûr de vouloir supprimer cette transaction ? Les soldes seront ajustés."

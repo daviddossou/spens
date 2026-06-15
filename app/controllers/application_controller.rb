@@ -9,6 +9,7 @@ class ApplicationController < ActionController::Base
   include DeviseLayoutConcern
   include SpaceScoping
   include OnboardingRedirection
+  include Impersonation
 
   protected
 

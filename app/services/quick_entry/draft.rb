@@ -4,7 +4,8 @@ module QuickEntry
   # The structured result of parsing one utterance — maps onto TransactionForm's payload.
   Draft = Data.define(
     :kind, :amount, :account_name, :from_account_name, :to_account_name,
-    :transaction_type_name, :fee_amount, :transaction_date, :description, :debt_id, :unresolved
+    :transaction_type_name, :fee_amount, :transaction_date, :description,
+    :debt_id, :contact_name, :direction, :unresolved
   ) do
     CATEGORY_KINDS = %w[expense income].freeze
     DEBT_KINDS = %w[debt_in debt_out].freeze
@@ -12,11 +13,13 @@ module QuickEntry
     # Ruby's Data has no native defaults; this lets callers pass only what they parsed.
     def initialize(kind:, amount: nil, account_name: nil, from_account_name: nil,
                    to_account_name: nil, transaction_type_name: nil, fee_amount: nil,
-                   transaction_date: nil, description: nil, debt_id: nil, unresolved: [])
+                   transaction_date: nil, description: nil, debt_id: nil,
+                   contact_name: nil, direction: nil, unresolved: [])
       super
     end
 
-    # Enough to auto-create without review; anything short falls back to the prefilled form.
+    # Enough to auto-create without review — only when the referenced entities already exist
+    # (a known debt, existing accounts). A new account/person needs the prefilled form.
     def confident?
       case kind
       when *CATEGORY_KINDS then amount.present? && transaction_type_name.present?
@@ -37,7 +40,9 @@ module QuickEntry
         fee_amount: fee_amount,
         transaction_date: transaction_date,
         description: description,
-        debt_id: debt_id
+        debt_id: debt_id,
+        contact_name: contact_name,
+        direction: direction
       }.compact
     end
   end

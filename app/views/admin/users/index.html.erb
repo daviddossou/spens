@@ -1,0 +1,42 @@
+<% content_for(:title, t("admin.users.title")) %>
+
+<div class="admin-page">
+  <header class="admin-page__header">
+    <h1 class="admin-page__title"><%= t("admin.users.title") %></h1>
+    <%= form_with url: admin_users_path, method: :get, class: "admin-search" do |f| %>
+      <%= f.search_field :q, value: params[:q], placeholder: t("admin.users.search"), class: "admin-input" %>
+      <%= f.submit t("admin.search"), class: "admin-btn admin-btn--sm" %>
+    <% end %>
+  </header>
+
+  <table class="admin-table">
+    <thead>
+      <tr>
+        <th><%= t("admin.cols.email") %></th>
+        <th><%= t("admin.cols.name") %></th>
+        <th><%= t("admin.cols.role") %></th>
+        <th><%= t("admin.cols.sign_ins") %></th>
+        <th><%= t("admin.cols.last_seen") %></th>
+        <th><%= t("admin.cols.spaces") %></th>
+        <th class="admin-table__actions"></th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @users.each do |user| %>
+        <tr>
+          <td><%= link_to user.email, admin_user_path(id: user.id) %></td>
+          <td><%= [ user.first_name, user.last_name ].compact_blank.join(" ") %></td>
+          <td><%= admin_badge(user.admin? ? "admin" : "user", tone: user.admin? ? :info : :neutral) %></td>
+          <td><%= user.sign_in_count %></td>
+          <td><%= user.current_sign_in_at&.to_date || "—" %></td>
+          <td><%= user.memberships.size %></td>
+          <td class="admin-table__actions">
+            <%= link_to t("admin.view"), admin_user_path(id: user.id), class: "admin-btn admin-btn--sm" %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+
+  <%= render "admin/shared/pagination" %>
+</div>

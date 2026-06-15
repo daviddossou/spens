@@ -1,0 +1,35 @@
+<% content_for(:title, t("admin.audit.title")) %>
+
+<div class="admin-page">
+  <header class="admin-page__header">
+    <h1 class="admin-page__title"><%= t("admin.audit.title") %></h1>
+    <p class="admin-page__subtitle"><%= t("admin.audit.subtitle") %></p>
+  </header>
+
+  <% if @logs.any? %>
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th><%= t("admin.cols.when") %></th>
+          <th><%= t("admin.cols.admin") %></th>
+          <th><%= t("admin.cols.action") %></th>
+          <th><%= t("admin.cols.target") %></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @logs.each do |log| %>
+          <tr>
+            <td><%= log.created_at.strftime("%Y-%m-%d %H:%M") %></td>
+            <td><%= log.admin_user&.email %></td>
+            <td><%= admin_badge(t("admin.actions.#{log.action}", default: log.action)) %></td>
+            <td><%= admin_audit_target(log) %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% else %>
+    <p class="admin-empty"><%= t("admin.audit.empty") %></p>
+  <% end %>
+
+  <%= render "admin/shared/pagination" %>
+</div>

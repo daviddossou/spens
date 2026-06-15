@@ -1,0 +1,38 @@
+<% content_for(:title, t("admin.spaces.title")) %>
+
+<div class="admin-page">
+  <header class="admin-page__header">
+    <h1 class="admin-page__title"><%= t("admin.spaces.title") %></h1>
+    <%= form_with url: admin_spaces_path, method: :get, class: "admin-search" do |f| %>
+      <%= f.search_field :q, value: params[:q], placeholder: t("admin.spaces.search"), class: "admin-input" %>
+      <%= f.submit t("admin.search"), class: "admin-btn admin-btn--sm" %>
+    <% end %>
+  </header>
+
+  <table class="admin-table">
+    <thead>
+      <tr>
+        <th><%= t("admin.cols.name") %></th>
+        <th><%= t("admin.cols.owner") %></th>
+        <th><%= t("admin.cols.currency") %></th>
+        <th><%= t("admin.cols.members") %></th>
+        <th class="admin-table__actions"></th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @spaces.each do |space| %>
+        <tr>
+          <td><%= link_to space.name, admin_space_path(id: space.id) %></td>
+          <td><%= space.user&.email || "—" %></td>
+          <td><%= space.currency %></td>
+          <td><%= space.memberships.size %></td>
+          <td class="admin-table__actions">
+            <%= link_to t("admin.view"), admin_space_path(id: space.id), class: "admin-btn admin-btn--sm" %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+
+  <%= render "admin/shared/pagination" %>
+</div>

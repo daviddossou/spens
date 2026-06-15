@@ -30,7 +30,7 @@ RSpec.describe QuickEntry::CorrectionLearner do
 
     learned = LearnedAlias.find_by(phrase: "zoomzoom")
     expect(learned).to be_present
-    expect(learned).to be_active
+    expect(learned).to be_candidate # candidate-only: a human approves it in the dashboard
     expect(learned.taxonomy_key).to eq("groceries")
   end
 

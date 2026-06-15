@@ -41,6 +41,7 @@ fr:
       subtitle: "Gère ton objectif d'épargne"
       actions_title: "Actions"
       add_transaction: "Ajouter une transaction"
+      quick_add: "Ajout rapide"
       edit_goal: "Modifier"
       recent_transactions: "Transactions récentes"
       no_transactions: "Aucune transaction"

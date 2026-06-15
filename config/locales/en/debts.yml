@@ -88,6 +88,7 @@ en:
         borrowed: "Track this debt and payments"
       actions_title: "Actions"
       add_transaction: "Add Transaction"
+      quick_add: "Quick add"
       edit_debt: "Edit"
       note_title: "Note"
       recent_transactions: "Recent Transactions"

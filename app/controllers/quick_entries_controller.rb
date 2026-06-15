@@ -10,15 +10,17 @@ class QuickEntriesController < ApplicationController
   end
 
   def create
-    draft = QuickEntry::Coordinator.call(params[:text].to_s, space: current_space, locale: I18n.locale)
+    result = QuickEntry::Coordinator.call(params[:text].to_s, space: current_space, locale: I18n.locale)
+    draft = result.draft
     build_form(draft)
 
     if draft.confident? && @form.submit
-      log_attempt(draft, @form.transaction)
+      attempt = log_attempt(draft, result.ai_draft, @form.transaction)
+      QuickEntry::AiAssistLearner.learn(attempt) if attempt&.ai_used?
       redirect_with_reload_to transaction_path(id: @form.transaction.id),
                               notice: success_notice(@form.transaction), status: :see_other
     else
-      log_attempt(draft, nil)
+      log_attempt(draft, result.ai_draft, nil)
       render turbo_stream: turbo_stream.replace("transaction_form", partial: "transactions/form")
     end
   end
@@ -31,15 +33,16 @@ class QuickEntriesController < ApplicationController
   end
 
   # Best-effort: logging the attempt must never break the user's submission.
-  def log_attempt(draft, transaction)
+  def log_attempt(draft, ai_draft, transaction)
     return if params[:text].blank?
 
     QuickEntryAttempt.record(
       space: current_space, user: current_user, text: params[:text].to_s,
-      locale: I18n.locale, draft: draft, transaction: transaction
+      locale: I18n.locale, draft: draft, ai_draft: ai_draft, transaction: transaction
     )
   rescue StandardError => e
     Rails.logger.warn("quick-entry attempt logging failed: #{e.message}")
+    nil
   end
 
   def success_notice(transaction)

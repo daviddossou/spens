@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= content_for(:title).presence || "Admin · Spens" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="robots" content="noindex">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <%= yield :head %>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body class="admin-body">
+    <header class="admin-topbar">
+      <div class="admin-topbar__inner">
+        <%= link_to "Spens Admin", admin_root_path, class: "admin-topbar__brand" %>
+        <nav class="admin-nav">
+          <% admin_nav_items.each do |item| %>
+            <%= link_to item[:label], item[:path],
+                  class: class_names("admin-nav__link", "admin-nav__link--active" => current_page?(item[:path])) %>
+          <% end %>
+        </nav>
+        <div class="admin-topbar__meta">
+          <span class="admin-topbar__email"><%= current_user.email %></span>
+          <%= link_to t("admin.nav.exit"), root_path, class: "admin-topbar__exit" %>
+        </div>
+      </div>
+    </header>
+
+    <main class="admin-main">
+      <%= render Ui::FlashMessageComponent.new(flash) %>
+      <%= yield %>
+    </main>
+  </body>
+</html>

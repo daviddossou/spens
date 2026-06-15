@@ -33,6 +33,7 @@ en:
       saving_goal: "Savings Goal"
       actions_title: "Actions"
       add_transaction: "Add Transaction"
+      quick_add: "Quick add"
       edit_account: "Edit"
       delete_account: "Delete"
       delete_confirmation: "Delete this account? This cannot be undone."

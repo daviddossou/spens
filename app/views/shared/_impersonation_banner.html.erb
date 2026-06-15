@@ -1,0 +1,9 @@
+<% if impersonating? %>
+  <div class="impersonation-banner" role="status">
+    <span class="impersonation-banner__text">
+      <%= t("admin.impersonation.banner", name: current_user.email) %>
+    </span>
+    <%= button_to t("admin.impersonation.stop"), stop_impersonating_path, method: :delete,
+          class: "impersonation-banner__stop" %>
+  </div>
+<% end %>

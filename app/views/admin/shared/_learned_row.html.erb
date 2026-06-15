@@ -1,0 +1,28 @@
+<%# Locals: row (LearnedAlias|LearnedKeyword), samples_by_id (optional Hash) %>
+<% samples = local_assigns[:samples_by_id]&.dig(row.id) %>
+<tr id="<%= dom_id(row) %>" class="admin-row">
+  <td>
+    <code><%= row.phrase %></code>
+    <% if samples.present? %>
+      <ul class="admin-samples">
+        <% samples.each do |utterance| %>
+          <li>"<%= truncate(utterance, length: 60) %>"</li>
+        <% end %>
+      </ul>
+    <% end %>
+  </td>
+  <td><%= learned_target(row) %> <span class="admin-row__type"><%= learned_type_label(row) %></span></td>
+  <td><%= admin_badge(row.source) %></td>
+  <td><%= row.confirmations %></td>
+  <td><%= admin_state_badge(row.state) %></td>
+  <td class="admin-table__actions">
+    <% unless row.active? %>
+      <%= button_to t("admin.review.approve"), approve_learned_path(row), method: :patch,
+            class: "admin-btn admin-btn--success admin-btn--sm" %>
+    <% end %>
+    <% unless row.rejected? %>
+      <%= button_to t("admin.review.reject"), reject_learned_path(row), method: :patch,
+            class: "admin-btn admin-btn--danger admin-btn--sm" %>
+    <% end %>
+  </td>
+</tr>

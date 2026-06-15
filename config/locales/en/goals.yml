@@ -41,6 +41,7 @@ en:
       subtitle: "Manage your savings goal"
       actions_title: "Actions"
       add_transaction: "Add Transaction"
+      quick_add: "Quick add"
       edit_goal: "Edit"
       recent_transactions: "Recent Transactions"
       no_transactions: "No transactions yet"

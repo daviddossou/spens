@@ -1,0 +1,13 @@
+<% if @page > 1 || @has_more %>
+  <nav class="admin-pagination">
+    <% if @page > 1 %>
+      <%= link_to t("admin.pagination.prev"), url_for(request.query_parameters.merge(page: @page - 1)),
+            class: "admin-btn admin-btn--sm" %>
+    <% end %>
+    <span class="admin-pagination__page"><%= t("admin.pagination.page", n: @page) %></span>
+    <% if @has_more %>
+      <%= link_to t("admin.pagination.next"), url_for(request.query_parameters.merge(page: @page + 1)),
+            class: "admin-btn admin-btn--sm" %>
+    <% end %>
+  </nav>
+<% end %>

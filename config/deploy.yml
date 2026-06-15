@@ -25,6 +25,8 @@ env:
   clear:
     SOLID_QUEUE_IN_PUMA: true
     DB_HOST: spens-db
+    QUICK_ENTRY_LLM_URL: http://spens-ollama:11434/v1
+    QUICK_ENTRY_LLM_MODEL: qwen2.5:3b
 
 aliases:
   console: app exec --interactive --reuse "bin/rails console"
@@ -58,3 +60,17 @@ accessories:
       - db/production_init.sql:/docker-entrypoint-initdb.d/setup.sql
     directories:
       - data:/var/lib/postgresql/data
+
+  # Self-hosted LLM for the quick-add AI fallback. Reachable from the app on the kamal network
+  # at http://spens-ollama:11434; the host port is bound to localhost for smoke tests only.
+  # Stays idle until config.x.quick_entry_llm is set (Phase 3a).
+  ollama:
+    image: ollama/ollama
+    host: 46.62.157.51
+    port: "127.0.0.1:11434:11434"
+    env:
+      clear:
+        OLLAMA_KEEP_ALIVE: "5m"
+        OLLAMA_MAX_LOADED_MODELS: "1"
+    directories:
+      - data:/root/.ollama
