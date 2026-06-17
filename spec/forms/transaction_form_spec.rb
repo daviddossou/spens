@@ -144,21 +144,24 @@ RSpec.describe TransactionForm, type: :model do
         form.to_account_name = 'Savings'
       end
 
-      it 'is valid with only to_account_name (from defaults to account_name)' do
+      it 'requires from_account_name' do
         form.from_account_name = nil
-        expect(form).to be_valid
+        expect(form).not_to be_valid
+        expect(form.errors[:from_account_name]).to include("can't be blank")
       end
 
-      it 'is valid with only from_account_name (to defaults to account_name)' do
+      it 'requires to_account_name' do
         form.to_account_name = nil
-        expect(form).to be_valid
+        expect(form).not_to be_valid
+        expect(form.errors[:to_account_name]).to include("can't be blank")
       end
 
-      it 'requires at least one transfer account' do
+      it 'requires both transfer accounts' do
         form.from_account_name = nil
         form.to_account_name = nil
         expect(form).not_to be_valid
         expect(form.errors[:from_account_name]).to include("can't be blank")
+        expect(form.errors[:to_account_name]).to include("can't be blank")
       end
 
       it 'does not require account_name' do
@@ -202,14 +205,14 @@ RSpec.describe TransactionForm, type: :model do
         it 'skips the different-accounts check when from_account_name is missing' do
           form.from_account_name = nil
           form.to_account_name = 'Savings'
-          expect(form).to be_valid
+          form.valid?
           expect(form.errors[:to_account_name]).not_to include(I18n.t('errors.messages.different_account'))
         end
 
         it 'skips the different-accounts check when to_account_name is missing' do
           form.from_account_name = 'Checking'
           form.to_account_name = nil
-          expect(form).to be_valid
+          form.valid?
           expect(form.errors[:to_account_name]).not_to include(I18n.t('errors.messages.different_account'))
         end
       end
@@ -967,6 +970,7 @@ RSpec.describe TransactionForm, type: :model do
       }
     end
     let(:form) { described_class.new(space, transfer_attributes) }
+    let(:writer) { BuildTransaction.new(form) }
     let(:from_account) { create(:account, user: user, name: 'Checking') }
     let(:to_account) { create(:account, user: user, name: 'Savings') }
     let(:transfer_type_out) { create(:transaction_type, user: user, kind: TransactionType::KIND_TRANSFER_OUT) }
@@ -987,30 +991,30 @@ RSpec.describe TransactionForm, type: :model do
 
     it 'memoizes from_account' do
       expect(FindOrCreateAccountService).to receive(:new).with(space, 'Checking').once.and_call_original
-      form.send(:from_account)
-      form.send(:from_account)
+      writer.send(:from_account)
+      writer.send(:from_account)
     end
 
     it 'memoizes to_account' do
       expect(FindOrCreateAccountService).to receive(:new).with(space, 'Savings').once.and_call_original
-      form.send(:to_account)
-      form.send(:to_account)
+      writer.send(:to_account)
+      writer.send(:to_account)
     end
 
     it 'memoizes transfer_type_out' do
       expect(FindOrCreateTransactionTypeService).to receive(:new)
         .with(space, I18n.t('transactions.transfer.type_name.transfer_out'), TransactionType::KIND_TRANSFER_OUT)
         .once.and_call_original
-      form.send(:transfer_type_out)
-      form.send(:transfer_type_out)
+      writer.send(:transfer_type_out)
+      writer.send(:transfer_type_out)
     end
 
     it 'memoizes transfer_type_in' do
       expect(FindOrCreateTransactionTypeService).to receive(:new)
         .with(space, I18n.t('transactions.transfer.type_name.transfer_in'), TransactionType::KIND_TRANSFER_IN)
         .once.and_call_original
-      form.send(:transfer_type_in)
-      form.send(:transfer_type_in)
+      writer.send(:transfer_type_in)
+      writer.send(:transfer_type_in)
     end
   end
 

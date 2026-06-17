@@ -404,6 +404,14 @@ RSpec.describe TransactionsController, type: :request do
       expect(response).to have_http_status(:success)
     end
 
+    it "renders kind-switch links scoped to this transaction (id is :id, not :locale)" do
+      get edit_transaction_path(id: transaction.id)
+
+      expect(response.body).to include("/transactions/#{transaction.id}/edit?kind=income")
+      # The optional (:locale) scope must not swallow the id, doubling the path.
+      expect(response.body).not_to match(%r{/#{transaction.id}/transactions/#{transaction.id}/edit})
+    end
+
     context "when not authenticated" do
       before { sign_out user }
 
@@ -420,6 +428,34 @@ RSpec.describe TransactionsController, type: :request do
     let(:transaction) do
       create(:transaction, user: user, account: account, transaction_type: transaction_type,
                            amount: -42.50, description: "Lunch")
+    end
+
+    context "correcting a quick-entry transaction's kind (income → expense)" do
+      let(:income_type) { create(:transaction_type, user: user, kind: :income, name: "Misc") }
+      let(:qe_transaction) do
+        create(:transaction, user: user, account: account, transaction_type: income_type,
+                             amount: 100, description: "Refund")
+      end
+
+      before do
+        create(:quick_entry_attempt, user: user, transaction_id: qe_transaction.id,
+                                     text: "100 refund", source: "rules",
+                                     rules_draft: { "kind" => "income", "amount" => 100,
+                                                    "transaction_type_name" => "Misc",
+                                                    "transaction_date" => Date.current.iso8601 })
+      end
+
+      it "keeps the same transaction id and records the kind correction" do
+        patch transaction_path(id: qe_transaction.id), params: {
+          transaction: { kind: "expense", transaction_type_name: "Groceries", amount: "100" }
+        }
+
+        expect(qe_transaction.reload.transaction_type.kind).to eq("expense")
+
+        attempt = QuickEntryAttempt.find_by(transaction_id: qe_transaction.id)
+        expect(attempt.outcome).to eq("edited")
+        expect(attempt.corrections["kind"]).to eq("from" => "income", "to" => "expense")
+      end
     end
 
     context "with valid parameters" do

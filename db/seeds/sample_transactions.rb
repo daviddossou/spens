@@ -120,6 +120,7 @@ ActiveRecord::Base.transaction do
     elsif roll < 90 # 15% transfers
       from_acc, to_acc = accounts.values.sample(2)
       amount = rand(5000..50000)
+      group_id = SecureRandom.uuid # pair the two legs
 
       type_out = find_or_create_type(space, "📤 Transfer out", "transfer_out")
       CreateTransactionService.new(
@@ -128,7 +129,8 @@ ActiveRecord::Base.transaction do
         transaction_type: type_out,
         amount: amount,
         transaction_date: date,
-        description: "#{from_acc.name} ➡️ #{to_acc.name}"
+        description: "#{from_acc.name} ➡️ #{to_acc.name}",
+        transfer_group_id: group_id
       ).call
 
       type_in = find_or_create_type(space, "📥 Transfer in", "transfer_in")
@@ -138,7 +140,8 @@ ActiveRecord::Base.transaction do
         transaction_type: type_in,
         amount: amount,
         transaction_date: date,
-        description: "#{to_acc.name} ⬅️ #{from_acc.name}"
+        description: "#{to_acc.name} ⬅️ #{from_acc.name}",
+        transfer_group_id: group_id
       ).call
 
     else # 10% debt transactions

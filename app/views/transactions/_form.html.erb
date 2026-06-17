@@ -1,6 +1,11 @@
-<%= form_with model: @form, url: transactions_path, method: :post, class: "transaction-form",
+<%# Shared form for create and edit. Locals form_url / form_method default to
+    the create endpoint; edit passes the transaction path + :patch. %>
+<%= form_with model: @form,
+      url: local_assigns.fetch(:form_url, transactions_path),
+      method: local_assigns.fetch(:form_method, :post),
+      class: "transaction-form",
       data: {
-        controller: "transaction-form debt-fields",
+        controller: "transaction-form debt-fields kind-switch",
         debt_fields_intent_labels_value: debt_intent_label_map.to_json,
         debt_fields_debts_by_name_value: @form.debts_by_name.to_json,
         debt_fields_contact_name_value: @form.contact_name,
@@ -14,10 +19,10 @@
     <!-- Kind Selector (hidden when opened from a specific debt — the kind is fixed) -->
     <% unless @form.debt_id.present? %>
       <div class="transaction-form__kind">
-        <div class="kind-selector kind-selector--quad" role="radiogroup" aria-label="<%= t('.kind_label', default: 'Type') %>">
+        <div class="kind-selector kind-selector--quad" role="radiogroup" aria-label="<%= t('transactions.form.kind_label', default: 'Type') %>">
           <% transaction_top_level_options(@form).each do |opt| %>
-            <%= link_to new_transaction_path(@form.kind_params(opt[:kind])),
-                        data: { turbo_frame: "transaction_form" },
+            <%= link_to transaction_kind_switch_path(@form, opt[:kind]),
+                        data: { turbo_frame: "transaction_form", action: "kind-switch#switch" },
                         role: "radio",
                         "aria-checked": opt[:selected].to_s,
                         class: "kind-option kind-option--#{opt[:value]}#{' kind-option--selected' if opt[:selected]}" do %>
@@ -37,12 +42,12 @@
         form: f,
         field: :amount,
         type: :number_field,
-        label: t('.amount_label'),
+        label: t('transactions.form.amount_label'),
         required: true,
         prepend: get_currency_symbol(current_space.currency),
         step: "0.01",
-        min: "0",
-        placeholder: t('.amount_placeholder'),
+        min: "0.01",
+        placeholder: t('transactions.form.amount_placeholder'),
         autofocus: true
       ) %>
     </div>
@@ -54,13 +59,13 @@
           <%= render Forms::InputFieldComponent.new(
             form: f,
             field: :from_account_name,
-            label: t('.from_account_label'),
+            label: t('transactions.form.from_account_label'),
             required: true,
             autocomplete: true,
             autocomplete_options: @form.account_suggestions,
             default_autocomplete_options: @form.default_account_suggestions,
             allow_create: true,
-            placeholder: t('.from_account_placeholder'),
+            placeholder: t('transactions.form.from_account_placeholder'),
             field_data: { tom_select_currency_value: get_currency_symbol(current_space.currency) }
           ) %>
         </div>
@@ -69,13 +74,13 @@
           <%= render Forms::InputFieldComponent.new(
             form: f,
             field: :to_account_name,
-            label: t('.to_account_label'),
+            label: t('transactions.form.to_account_label'),
             required: true,
             autocomplete: true,
             autocomplete_options: @form.account_suggestions,
             default_autocomplete_options: @form.default_account_suggestions,
             allow_create: true,
-            placeholder: t('.to_account_placeholder'),
+            placeholder: t('transactions.form.to_account_placeholder'),
             field_data: { tom_select_currency_value: get_currency_symbol(current_space.currency) }
           ) %>
         </div>
@@ -91,11 +96,11 @@
           <%= render Forms::InputFieldComponent.new(
             form: f,
             field: :contact_name,
-            label: t('.contact_name_label'),
+            label: t('transactions.form.contact_name_label'),
             autocomplete: true,
             autocomplete_options: @form.debt_person_suggestions,
             allow_create: true,
-            placeholder: t('.contact_name_placeholder'),
+            placeholder: t('transactions.form.contact_name_placeholder'),
             field_data: { action: "tom-select:change->debt-fields#onPersonChange change->debt-fields#onPersonChange" }
           ) %>
         </div>
@@ -104,8 +109,8 @@
       <!-- Direction picker (shown only for a new or both-directions person) -->
       <div class="transaction-form__debt-direction kind-selector hidden"
            data-debt-fields-target="directionPicker" role="radiogroup"
-           aria-label="<%= t('.direction_label') %>">
-        <% [["lent", t('.direction_lent')], ["borrowed", t('.direction_borrowed')]].each do |dir, label| %>
+           aria-label="<%= t('transactions.form.direction_label') %>">
+        <% [["lent", t('transactions.form.direction_lent')], ["borrowed", t('transactions.form.direction_borrowed')]].each do |dir, label| %>
           <button type="button" class="kind-option kind-option--choice"
                   data-debt-fields-target="directionOption"
                   data-direction="<%= dir %>"
@@ -119,7 +124,7 @@
       <% intent_direction = @form.direction.presence || "lent" %>
       <div class="transaction-form__debt-intents kind-selector<%= ' hidden' unless @form.direction.present? || @form.debt_id.present? %>"
            data-debt-fields-target="intents" role="radiogroup"
-           aria-label="<%= t('.kind_label', default: 'Type') %>">
+           aria-label="<%= t('transactions.form.kind_label', default: 'Type') %>">
         <% debt_direction_intent_options(intent_direction).each do |io| %>
           <button type="button"
                   class="kind-option kind-option--<%= io[:kind] %> <%= 'kind-option--selected' if @form.kind == io[:kind] %>"
@@ -136,12 +141,12 @@
         <%= render Forms::InputFieldComponent.new(
           form: f,
           field: :account_name,
-          label: t('.account_label'),
+          label: t('transactions.form.account_label'),
           autocomplete: true,
           autocomplete_options: @form.account_suggestions,
           default_autocomplete_options: @form.default_account_suggestions,
           allow_create: true,
-          placeholder: t('.account_placeholder'),
+          placeholder: t('transactions.form.account_placeholder'),
           field_data: { tom_select_currency_value: get_currency_symbol(current_space.currency) }
         ) %>
       </div>
@@ -151,12 +156,12 @@
         <%= render Forms::InputFieldComponent.new(
           form: f,
           field: :account_name,
-          label: t('.account_label'),
+          label: t('transactions.form.account_label'),
           autocomplete: true,
           autocomplete_options: @form.account_suggestions,
           default_autocomplete_options: @form.default_account_suggestions,
           allow_create: true,
-          placeholder: t('.account_placeholder'),
+          placeholder: t('transactions.form.account_placeholder'),
           field_data: { tom_select_currency_value: get_currency_symbol(current_space.currency) }
         ) %>
       </div>
@@ -165,13 +170,13 @@
         <%= render Forms::InputFieldComponent.new(
           form: f,
           field: :transaction_type_name,
-          label: t('.transaction_type_label'),
+          label: t('transactions.form.transaction_type_label'),
           required: true,
           autocomplete: true,
           autocomplete_options: @form.transaction_type_options,
           default_autocomplete_options: @form.default_transaction_type_options,
           allow_create: true,
-          placeholder: t('.transaction_type_placeholder')
+          placeholder: t('transactions.form.transaction_type_placeholder')
         ) %>
       </div>
     <% end %>
@@ -183,38 +188,40 @@
         class="link-button"
         data-action="click->transaction-form#toggleDetails"
         data-transaction-form-target="toggleButton"
-        data-show-text="<%= t('.show_more_details') %>"
-        data-hide-text="<%= t('.hide_more_details') %>">
-        <%= t('.show_more_details') %>
+        data-show-text="<%= t('transactions.form.show_more_details') %>"
+        data-hide-text="<%= t('transactions.form.hide_more_details') %>">
+        <%= t('transactions.form.show_more_details') %>
       </button>
     </div>
 
-    <!-- Optional Fields (Initially Hidden) -->
-    <div class="transaction-form__optional-fields hidden" data-transaction-form-target="optionalFields">
+    <!-- Optional Fields (expanded when an existing fee needs editing) -->
+    <div class="transaction-form__optional-fields<%= ' hidden' unless @form.fee_amount.present? %>"
+         data-transaction-form-target="optionalFields"
+         data-expanded="<%= @form.fee_amount.present? %>">
       <div class="transaction-form__description">
         <%= render Forms::InputFieldComponent.new(
           form: f,
           field: :description,
-          label: t('.description_label'),
-          help_text: t('.description_help'),
-          placeholder: t('.description_placeholder'),
+          label: t('transactions.form.description_label'),
+          help_text: t('transactions.form.description_help'),
+          placeholder: t('transactions.form.description_placeholder'),
           required: false
         ) %>
       </div>
 
-      <% if @form.fee_applicable? %>
-        <div class="transaction-form__fee">
+      <% if @form.fee_applicable? || @form.debt_transaction? %>
+        <div class="transaction-form__fee<%= ' hidden' unless @form.fee_applicable? %>" data-debt-fields-target="feeField">
           <%= render Forms::InputFieldComponent.new(
             form: f,
             field: :fee_amount,
             type: :number_field,
-            label: t('.fee_amount_label'),
-            help_text: t('.fee_help'),
+            label: t('transactions.form.fee_amount_label'),
+            help_text: t('transactions.form.fee_help'),
             required: false,
             prepend: get_currency_symbol(current_space.currency),
             step: "0.01",
             min: "0",
-            placeholder: t('.fee_amount_placeholder')
+            placeholder: t('transactions.form.fee_amount_placeholder')
           ) %>
         </div>
       <% end %>
@@ -224,7 +231,7 @@
           form: f,
           field: :transaction_date,
           type: :date_field,
-          label: t('.date_label'),
+          label: t('transactions.form.date_label'),
           required: false
         ) %>
       </div>
@@ -234,10 +241,10 @@
           form: f,
           field: :note,
           type: :text_area,
-          label: t('.note_label'),
-          help_text: t('.note_help'),
+          label: t('transactions.form.note_label'),
+          help_text: t('transactions.form.note_help'),
           rows: 3,
-          placeholder: t('.note_placeholder')
+          placeholder: t('transactions.form.note_placeholder')
         ) %>
       </div>
     </div>
@@ -245,7 +252,7 @@
     <!-- Submit Button -->
     <div class="transaction-form__actions">
       <%= render Ui::ButtonComponent.new(
-        text: t('.save_transaction'),
+        text: @form.editing? ? t('transactions.edit.update_transaction') : t('transactions.form.save_transaction'),
         type: :submit,
         variant: :primary,
         size: :lg,

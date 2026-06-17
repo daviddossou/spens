@@ -32,8 +32,7 @@ module TransactionHelper
   # Get signed amount based on transaction kind
   def transaction_signed_amount(transaction)
     kind = transaction.transaction_type.kind
-    income_kinds = %w[income debt_in transfer_in]
-    income_kinds.include?(kind) ? transaction.amount.abs : -transaction.amount.abs
+    TransactionKind.money_in?(kind) ? transaction.amount.abs : -transaction.amount.abs
   end
 
   # Top-level cards for the transaction picker. "Debt" is a UI category (not a
@@ -57,6 +56,20 @@ module TransactionHelper
       { kind: "debt_in",  label: t("transactions.form.kind_debt_in.#{direction}") },
       { kind: "debt_out", label: t("transactions.form.kind_debt_out.#{direction}") }
     ]
+  end
+
+  # Where a kind-selector card points: a fresh new-transaction form for create,
+  # or the same transaction's edit form (with the target kind) when editing.
+  # kind-switch JS appends the live field values to the href before navigating.
+  def transaction_kind_switch_path(form, target_kind)
+    switch_params = form.kind_params(target_kind)
+    if form.editing?
+      # Pass id: as a keyword — a positional arg would be assigned to the
+      # optional (:locale) scope segment instead of :id, producing a bad URL.
+      edit_transaction_path(id: form.transaction.id, **switch_params)
+    else
+      new_transaction_path(switch_params)
+    end
   end
 
   # Nested label map for the Stimulus controller so intent labels can be swapped

@@ -15,14 +15,20 @@ class CreateTransactionService
       transaction_date: @attributes[:transaction_date],
       note: @attributes[:note],
       description: @attributes[:description],
-      debt: @attributes[:debt]
+      debt: @attributes[:debt],
+      transfer_group_id: @attributes[:transfer_group_id],
+      fee_parent_id: @attributes[:fee_parent_id]
     )
 
     if transaction.invalid?
       raise ActiveRecord::RecordInvalid, transaction
     end
 
-    transaction.save!
+    ActiveRecord::Base.transaction do
+      transaction.save!
+      TransactionLedger.apply(TransactionLedger.snapshot(transaction))
+    end
+
     transaction
   end
 

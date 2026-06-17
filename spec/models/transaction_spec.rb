@@ -11,17 +11,21 @@
 #  updated_at          :datetime         not null
 #  account_id          :uuid             indexed
 #  debt_id             :uuid             indexed
+#  fee_parent_id       :uuid             indexed
 #  space_id            :uuid             not null, indexed
 #  transaction_type_id :uuid             not null, indexed
+#  transfer_group_id   :uuid             indexed
 #  user_id             :uuid             indexed
 #
 # Indexes
 #
 #  index_transactions_on_account_id           (account_id)
 #  index_transactions_on_debt_id              (debt_id)
+#  index_transactions_on_fee_parent_id        (fee_parent_id)
 #  index_transactions_on_space_id             (space_id)
 #  index_transactions_on_transaction_date     (transaction_date)
 #  index_transactions_on_transaction_type_id  (transaction_type_id)
+#  index_transactions_on_transfer_group_id    (transfer_group_id)
 #  index_transactions_on_user_id              (user_id)
 #
 # Foreign Keys
@@ -228,8 +232,11 @@ RSpec.describe Transaction, type: :model do
     end
   end
 
-  describe 'callbacks' do
-    describe '#update_account_balance' do
+  describe 'balance side-effects' do
+    # Maintained by TransactionLedger (invoked by the services and, in specs, by
+    # the factory's after(:create) hook) — no longer by model callbacks. Update
+    # and destroy effects are covered in the service specs.
+    describe 'on create' do
       let(:user) { create(:user) }
       let(:space) { user.spaces.first }
       let(:account) { create(:account, space: space, balance: 1000.0) }
@@ -267,39 +274,6 @@ RSpec.describe Transaction, type: :model do
               amount: -150.0
             )
           end.to change { account.reload.balance }.by(-150.0)
-        end
-      end
-
-      context 'after update' do
-        let!(:transaction) do
-          create(:transaction,
-            space: space,
-            account: account,
-            transaction_type: transaction_type,
-            amount: 100.0
-          )
-        end
-
-        before { account.reload }
-
-        it 'updates account balance when amount changes' do
-          # Initial: 1000.0 + 100.0 = 1100.0
-          expect(account.balance).to eq(1100.0)
-
-          # Update amount from 100.0 to 200.0, difference +100
-          expect do
-            transaction.update!(amount: 200.0)
-          end.to change { account.reload.balance }.from(1100.0).to(1200.0)
-        end
-
-        it 'updates account balance when account changes' do
-          account2 = create(:account, space: space, balance: 500.0)
-
-          # Transaction was for account1 (1100.0)
-          # Move to account2 (500.0)
-          expect do
-            transaction.update!(account: account2)
-          end.to change { account2.reload.balance }.from(500.0).to(600.0)
         end
       end
 

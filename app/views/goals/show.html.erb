@@ -71,4 +71,4 @@
 </div>
 
 <%= render Ui::FabComponent.new(url: new_quick_entry_path, label: t('.quick_add'), icon: :bolt, secondary: true) %>
-<%= render Ui::FabComponent.new(url: new_transaction_path, label: t('.add_transaction')) %>
+<%= render Ui::FabComponent.new(url: new_transaction_path(account_id: @account.id), label: t('.add_transaction')) %>
