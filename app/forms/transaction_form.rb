@@ -29,13 +29,15 @@ class TransactionForm < BaseForm
 
   # Conditional validations based on kind
   validates :transaction_type_name, presence: true, unless: -> { transfer? || debt_transaction? }
-  validate :at_least_one_transfer_account, if: :double_transfer?
+  validates :from_account_name, presence: true, if: :double_transfer?
+  validates :to_account_name, presence: true, if: :double_transfer?
   validate :different_accounts_for_transfer, if: :double_transfer?
 
   # Debt entry from the main form: a person and a direction are required when no
   # existing debt was pre-selected (i.e. not launched from a debt's detail page).
   validates :contact_name, presence: true, if: -> { debt_transaction? && @debt_id.blank? }
-  validates :direction, presence: true, inclusion: { in: %w[lent borrowed] }, if: -> { debt_transaction? && @debt_id.blank? }
+  validates :direction, presence: true, if: -> { debt_transaction? && @debt_id.blank? }
+  validates :direction, inclusion: { in: %w[lent borrowed] }, allow_blank: true, if: :debt_transaction?
 
   ##
   # Class Methods
@@ -62,7 +64,11 @@ class TransactionForm < BaseForm
     end
 
     if editing?
-      payload[:kind] ||= @transaction.transaction_type.kind
+      txn_kind = @transaction.transaction_type.kind
+      # A transfer is presented as the single top-level "transfer" kind, not its
+      # per-leg transfer_in/transfer_out, so the kind selector and the pair-edit
+      # path resolve correctly.
+      payload[:kind] ||= TransactionKind.transfer?(txn_kind) ? "transfer" : txn_kind
       payload[:amount] ||= @transaction.amount.abs
       payload[:description] ||= @transaction.description
       payload[:transaction_date] ||= @transaction.transaction_date
@@ -71,6 +77,15 @@ class TransactionForm < BaseForm
       payload[:account_name] ||= @transaction.account&.name
       payload[:contact_name] ||= @transaction.debt&.name
       payload[:direction] ||= @transaction.debt&.direction
+
+      fee_carrier = TransactionKind.transfer?(txn_kind) ? @transaction.transfer_legs[:out] : @transaction
+      payload[:fee_amount] ||= fee_carrier&.fee&.amount&.abs
+
+      if TransactionKind.transfer?(txn_kind)
+        legs = @transaction.transfer_legs
+        payload[:from_account_name] ||= legs[:out]&.account&.name
+        payload[:to_account_name] ||= legs[:in]&.account&.name
+      end
     end
 
     if @account_id.present? && !editing?
@@ -117,15 +132,7 @@ class TransactionForm < BaseForm
     return false if invalid?
 
     ActiveRecord::Base.transaction do
-      if editing?
-        update_existing_transaction
-      elsif transfer?
-        create_transfer_transactions
-      elsif debt_transaction?
-        create_debt_transaction
-      else
-        create_regular_transaction
-      end
+      self.transaction = (editing? ? EditTransaction : BuildTransaction).new(self).call
     end
 
     true
@@ -135,6 +142,8 @@ class TransactionForm < BaseForm
     false
   end
 
+  ##
+  # View data (autocomplete options / suggestions)
   def transaction_type_options
     TransactionTypeSuggestionsService.new(space, kind).options
   end
@@ -156,27 +165,12 @@ class TransactionForm < BaseForm
     params[:account_id] = account_id if account_id.present?
     # Only carry the debt context onto debt-kind targets, so switching to
     # expense/income/transfer cleanly drops it.
-    if %w[debt_in debt_out].include?(target_kind)
+    if TransactionKind.debt?(target_kind)
       params[:debt_id] = debt_id if debt_id.present?
       params[:direction] = direction if direction.present?
       params[:contact_name] = contact_name if contact_name.present?
     end
     params
-  end
-
-  def debt_transaction?
-    debt_id.present? || %w[debt_in debt_out].include?(kind)
-  end
-
-  # Resolves the debt for this transaction. When launched from a debt's detail
-  # page, @debt is set from @debt_id. From the main form, the debt is found (or
-  # created) from the typed person name + chosen direction.
-  def debt
-    @debt ||= if @debt_id.present?
-      space.debts.find_by(id: @debt_id)
-    elsif contact_name.present? && direction.present?
-      FindOrCreateDebtService.new(space, contact_name, direction, user).call
-    end
   end
 
   # Person options for the "Who?" autocomplete: distinct ongoing-debt names.
@@ -194,14 +188,31 @@ class TransactionForm < BaseForm
     end
   end
 
+  ##
+  # Predicates / resolution
+  def debt_transaction?
+    debt_id.present? || TransactionKind.debt?(kind)
+  end
+
   def transfer?
-    [ "transfer", "transfer_in", "transfer_out" ].include?(kind)
+    TransactionKind.transfer?(kind)
   end
 
   # A fee only applies when money leaves the user's account — never on income or
   # debt_in, where the sender pays the fee, not the user.
   def fee_applicable?
-    %w[expense transfer debt_out].include?(kind)
+    TransactionKind.fee_applicable?(kind)
+  end
+
+  # Resolves the debt for this transaction. When launched from a debt's detail
+  # page, @debt is set from @debt_id. From the main form, the debt is found (or
+  # created) from the typed person name + chosen direction.
+  def debt
+    @debt ||= if @debt_id.present?
+      space.debts.find_by(id: @debt_id)
+    elsif contact_name.present? && direction.present?
+      FindOrCreateDebtService.new(space, contact_name, direction, user).call
+    end
   end
 
   private
@@ -215,183 +226,5 @@ class TransactionForm < BaseForm
                   from_account_name.strip.downcase == to_account_name.strip.downcase
 
     errors.add(:to_account_name, I18n.t("errors.messages.different_account"))
-  end
-
-  def at_least_one_transfer_account
-    return if from_account_name.present? || to_account_name.present?
-
-    errors.add(:from_account_name, :blank)
-  end
-
-  def create_regular_transaction
-    account = find_or_create_account
-    self.transaction = create_and_validate_transaction(
-      account: account,
-      transaction_type: find_or_create_transaction_type,
-      amount: amount,
-      description: description.presence || transaction_type_name
-    )
-    create_fee_transaction(account: account)
-  end
-
-  def create_transfer_transactions
-    create_transfer_in_transaction
-    create_transfer_out_transaction
-    create_fee_transaction(account: from_account) if fee_present?
-  end
-
-  # True only where money leaves the account (see #fee_applicable?) and a positive fee was
-  # entered. A predicate so the transfer path can skip resolving the source account — which
-  # would otherwise find-or-create a stray account — when there is no fee to record.
-  def fee_present?
-    fee_applicable? && fee_amount.present? && fee_amount.positive?
-  end
-
-  # Records an optional provider fee (e.g. a mobile-money charge) as its own expense in the
-  # same submit — unlinked from any debt (a cost, not a repayment) and never the primary.
-  def create_fee_transaction(account:)
-    return unless fee_present?
-
-    create_and_validate_transaction(
-      account: account,
-      transaction_type: fee_transaction_type,
-      amount: fee_amount,
-      description: fee_description(account)
-    )
-  end
-
-  def fee_description(account)
-    if transfer?
-      I18n.t("transactions.transfer.fee_description",
-             from_account_name: from_account.name, to_account_name: to_account.name)
-    else
-      label = description.presence || transaction_type_name.presence ||
-              contact_name.presence || account&.name
-      I18n.t("transactions.fee.description", label: label)
-    end
-  end
-
-  def create_transfer_in_transaction
-    return unless kind == "transfer" || kind == "transfer_in"
-
-    auto_description = transaction_type_name.presence || I18n.t("transactions.transfer.description_in", from_account_name: from_account.name, to_account_name: to_account.name)
-
-    self.transaction = create_and_validate_transaction(
-      account: to_account,
-      transaction_type: transfer_type_in,
-      amount: amount,
-      description: description.presence || auto_description
-    )
-  end
-
-  def create_transfer_out_transaction
-    return unless kind == "transfer" || kind == "transfer_out"
-
-    auto_description = transaction_type_name.presence || I18n.t("transactions.transfer.description_out", from_account_name: from_account.name, to_account_name: to_account.name)
-
-    self.transaction = create_and_validate_transaction(
-      account: from_account,
-      transaction_type: transfer_type_out,
-      amount: amount,
-      description: description.presence || auto_description
-    )
-  end
-
-  def create_debt_transaction
-    account = find_or_create_account
-    auto_description = I18n.t("debts.transaction_description.#{kind}.#{debt.direction}", contact_name: debt.name)
-    type_name = I18n.t("debts.transaction_type.#{kind}.#{debt.direction}")
-
-    self.transaction = create_and_validate_transaction(
-      account: account,
-      transaction_type: find_or_create_transaction_type(type_name, kind),
-      amount: amount,
-      description: description.presence || auto_description,
-      debt: debt
-    )
-    create_fee_transaction(account: account)
-  end
-
-  def create_and_validate_transaction(account:, transaction_type:, amount:, description:, debt: nil)
-    transaction = CreateTransactionService.new(
-      space: space,
-      user: user,
-      account: account,
-      transaction_type: transaction_type,
-      amount: amount.abs,
-      transaction_date: transaction_date,
-      note: note,
-      description: description,
-      debt: debt
-    ).call
-
-    if transaction.invalid?
-      promote_errors(transaction.errors.messages)
-      raise ActiveRecord::RecordInvalid, transaction
-    end
-
-    transaction
-  end
-
-  def find_or_create_account
-    return nil if account_name.blank?
-
-    FindOrCreateAccountService.new(space, account_name).call
-  end
-
-  def find_or_create_transaction_type(type_name = transaction_type_name, kind_name = kind)
-    FindOrCreateTransactionTypeService.new(space, type_name, kind_name).call
-  end
-
-  def from_account
-    @from_account ||= FindOrCreateAccountService.new(space, (from_account_name || account_name)).call
-  end
-
-  def to_account
-    @to_account ||= FindOrCreateAccountService.new(space, (to_account_name || account_name)).call
-  end
-
-  def transfer_type_out
-    type_name = I18n.t("transactions.transfer.type_name.#{TransactionType::KIND_TRANSFER_OUT}")
-    @transfer_type_out ||= find_or_create_transaction_type(type_name, TransactionType::KIND_TRANSFER_OUT)
-  end
-
-  def transfer_type_in
-    type_name = I18n.t("transactions.transfer.type_name.#{TransactionType::KIND_TRANSFER_IN}")
-    @transfer_type_in ||= find_or_create_transaction_type(type_name, TransactionType::KIND_TRANSFER_IN)
-  end
-
-  # The fee is an ordinary expense; pass the taxonomy node's display name so the
-  # service materialises it (and its parent) and rolls it up under "Fees & taxes".
-  def fee_transaction_type
-    fee_name = TransactionTaxonomy.name(TransactionType::FEE_KEY)
-    @fee_transaction_type ||= find_or_create_transaction_type(fee_name, "expense")
-  end
-
-  def update_existing_transaction
-    # For debt transactions, only re-derive the type when the kind actually
-    # changes (debt_in <-> debt_out) so it relabels correctly
-    # (e.g. "Repayment Received" -> "Money Lent"). When unchanged, keep the
-    # existing name verbatim to avoid case drift against the stored type.
-    debt = @transaction.debt
-    type_name =
-      if debt_transaction? && debt && kind != @transaction.transaction_type.kind
-        I18n.t("debts.transaction_type.#{kind}.#{debt.direction}")
-      else
-        transaction_type_name
-      end
-
-    self.transaction = UpdateTransactionService.new(
-      transaction: @transaction,
-      attributes: {
-        kind: kind,
-        description: description,
-        transaction_date: transaction_date,
-        transaction_type_name: type_name,
-        account_name: account_name,
-        amount: amount,
-        note: note
-      }
-    ).call
   end
 end

@@ -11,17 +11,21 @@
 #  updated_at          :datetime         not null
 #  account_id          :uuid             indexed
 #  debt_id             :uuid             indexed
+#  fee_parent_id       :uuid             indexed
 #  space_id            :uuid             not null, indexed
 #  transaction_type_id :uuid             not null, indexed
+#  transfer_group_id   :uuid             indexed
 #  user_id             :uuid             indexed
 #
 # Indexes
 #
 #  index_transactions_on_account_id           (account_id)
 #  index_transactions_on_debt_id              (debt_id)
+#  index_transactions_on_fee_parent_id        (fee_parent_id)
 #  index_transactions_on_space_id             (space_id)
 #  index_transactions_on_transaction_date     (transaction_date)
 #  index_transactions_on_transaction_type_id  (transaction_type_id)
+#  index_transactions_on_transfer_group_id    (transfer_group_id)
 #  index_transactions_on_user_id              (user_id)
 #
 # Foreign Keys
@@ -43,6 +47,11 @@ class Transaction < ApplicationRecord
   belongs_to :account, optional: true
   belongs_to :debt, optional: true
 
+  # A provider fee recorded as its own expense, linked to the transaction it
+  # belongs to so it can be edited/removed alongside its parent.
+  belongs_to :fee_parent, class_name: "Transaction", optional: true
+  has_one :fee, class_name: "Transaction", foreign_key: :fee_parent_id, inverse_of: :fee_parent, dependent: :nullify
+
   ##
   # Nested Attributes
   accepts_nested_attributes_for :account
@@ -55,129 +64,23 @@ class Transaction < ApplicationRecord
   validates :transaction_date, presence: true
 
   ##
-  # Callbacks
-  after_create :apply_account_balance
-  after_create :apply_debt_totals
-  after_update :adjust_account_balance, if: -> { saved_change_to_amount? || saved_change_to_account_id? }
-  after_update :adjust_debt_totals, if: -> { saved_change_to_amount? || saved_change_to_transaction_type_id? }
-  after_destroy :reverse_account_balance
-  after_destroy :reverse_debt_totals
+  # Scopes
+  scope :transfer_group, ->(group_id) { where(transfer_group_id: group_id) }
 
-  private
+  # The other leg of a transfer (same transfer_group_id, different row). Nil for
+  # non-transfers, legacy unpaired legs, or if the partner was already removed.
+  def transfer_partner
+    return nil if transfer_group_id.blank?
 
-  def apply_account_balance
-    return unless account
-
-    account.balance = (account.balance || 0.0) + amount
-    account.save!
+    space.transactions.where(transfer_group_id: transfer_group_id).where.not(id: id).first
   end
 
-  def apply_debt_totals
-    return unless debt
-    return unless transaction_type
-
-    is_debt_increase = (debt.lent? && transaction_type.debt_out?) ||
-                       (debt.borrowed? && transaction_type.debt_in?)
-
-    if is_debt_increase
-      adjust_debt_total(debt, :total_lent, amount.abs)
-    else
-      adjust_debt_total(debt, :total_reimbursed, amount.abs)
-    end
-  end
-
-  def adjust_account_balance
-    if saved_change_to_account_id?
-      old_account_id, _new_account_id = saved_change_to_account_id
-      old_amount = saved_change_to_amount? ? saved_change_to_amount[0] : amount
-
-      if old_account_id.present?
-        old_account = Account.find(old_account_id)
-        old_account.balance = (old_account.balance || 0.0) - old_amount
-        old_account.save!
-      end
-
-      if account.present?
-        account.balance = (account.balance || 0.0) + amount
-        account.save!
-      end
-    elsif saved_change_to_amount?
-      return unless account
-
-      old_amount, new_amount = saved_change_to_amount
-      difference = new_amount - old_amount
-      account.balance = (account.balance || 0.0) + difference
-      account.save!
-    end
-  end
-
-  def adjust_debt_totals
-    return unless debt
-    return unless transaction_type
-
-    if saved_change_to_transaction_type_id?
-      old_type_id = saved_change_to_transaction_type_id[0]
-      old_type = TransactionType.find(old_type_id)
-      old_amount = saved_change_to_amount? ? saved_change_to_amount[0] : amount
-
-      # Reverse old contribution
-      old_is_increase = (debt.lent? && old_type.debt_out?) ||
-                        (debt.borrowed? && old_type.debt_in?)
-      if old_is_increase
-        adjust_debt_total(debt, :total_lent, -old_amount.abs)
-      else
-        adjust_debt_total(debt, :total_reimbursed, -old_amount.abs)
-      end
-
-      # Apply new contribution
-      new_is_increase = (debt.lent? && transaction_type.debt_out?) ||
-                        (debt.borrowed? && transaction_type.debt_in?)
-      if new_is_increase
-        adjust_debt_total(debt, :total_lent, amount.abs)
-      else
-        adjust_debt_total(debt, :total_reimbursed, amount.abs)
-      end
-    elsif saved_change_to_amount?
-      old_amount, new_amount = saved_change_to_amount
-      difference = new_amount.abs - old_amount.abs
-
-      is_debt_increase = (debt.lent? && transaction_type.debt_out?) ||
-                         (debt.borrowed? && transaction_type.debt_in?)
-
-      if is_debt_increase
-        adjust_debt_total(debt, :total_lent, difference)
-      else
-        adjust_debt_total(debt, :total_reimbursed, difference)
-      end
-    end
-  end
-
-  def reverse_account_balance
-    return unless account
-
-    account.balance = (account.balance || 0.0) - amount
-    account.save!
-  end
-
-  def reverse_debt_totals
-    return unless debt
-    return unless transaction_type
-
-    is_debt_increase = (debt.lent? && transaction_type.debt_out?) ||
-                       (debt.borrowed? && transaction_type.debt_in?)
-
-    if is_debt_increase
-      adjust_debt_total(debt, :total_lent, -amount.abs)
-    else
-      adjust_debt_total(debt, :total_reimbursed, -amount.abs)
-    end
-  end
-
-  # Apply a signed delta to a debt total via assignment + save so the
-  # RoundsMoney before_save callback fires (increment!/decrement! write raw
-  # SQL and would bypass it, letting float drift accumulate).
-  def adjust_debt_total(debt, attribute, delta)
-    debt[attribute] = (debt[attribute] || 0.0) + delta
-    debt.save!
+  # This transfer's two legs keyed by direction (either may be nil).
+  def transfer_legs
+    legs = [ self, transfer_partner ].compact
+    {
+      out: legs.find { |t| t.transaction_type.kind == "transfer_out" },
+      in: legs.find { |t| t.transaction_type.kind == "transfer_in" }
+    }
   end
 end

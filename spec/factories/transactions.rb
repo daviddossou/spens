@@ -11,17 +11,21 @@
 #  updated_at          :datetime         not null
 #  account_id          :uuid             indexed
 #  debt_id             :uuid             indexed
+#  fee_parent_id       :uuid             indexed
 #  space_id            :uuid             not null, indexed
 #  transaction_type_id :uuid             not null, indexed
+#  transfer_group_id   :uuid             indexed
 #  user_id             :uuid             indexed
 #
 # Indexes
 #
 #  index_transactions_on_account_id           (account_id)
 #  index_transactions_on_debt_id              (debt_id)
+#  index_transactions_on_fee_parent_id        (fee_parent_id)
 #  index_transactions_on_space_id             (space_id)
 #  index_transactions_on_transaction_date     (transaction_date)
 #  index_transactions_on_transaction_type_id  (transaction_type_id)
+#  index_transactions_on_transfer_group_id    (transfer_group_id)
 #  index_transactions_on_user_id              (user_id)
 #
 # Foreign Keys
@@ -54,5 +58,11 @@ FactoryBot.define do
 
     account { association(:account, space: space) }
     transaction_type { association(:transaction_type, space: space) }
+
+    # Balance side-effects live in the services now, not model callbacks, so post
+    # the ledger effect here for specs that build transactions directly.
+    after(:create) do |transaction|
+      TransactionLedger.apply(TransactionLedger.snapshot(transaction))
+    end
   end
 end

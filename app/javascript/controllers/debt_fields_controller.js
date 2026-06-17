@@ -15,7 +15,8 @@ export default class extends Controller {
     "directionPicker",
     "directionOption",
     "intents",
-    "intentOption"
+    "intentOption",
+    "feeField"
   ]
 
   static values = {
@@ -31,6 +32,7 @@ export default class extends Controller {
 
     this.currentName = this.contactNameValue || ""
     const direction = this.directionInputTarget.value
+    this.syncFee()
 
     if (this.lockedValue) {
       // Opened from a specific debt: direction is known, both actions are valid.
@@ -48,6 +50,7 @@ export default class extends Controller {
       this.markDirectionByValue(direction)
       this.hideIntents()
       this.kindInputTarget.value = this.openingKind(direction)
+      this.syncFee()
     } else if (this.currentName) {
       // A person is filled in but no direction yet (new or both-directions name).
       this.showPicker()
@@ -103,6 +106,7 @@ export default class extends Controller {
       // skip the intent choice and set the opening action directly.
       this.hideIntents()
       this.kindInputTarget.value = this.openingKind(direction)
+      this.syncFee()
     }
   }
 
@@ -162,6 +166,15 @@ export default class extends Controller {
     this.intentOptionTargets.forEach((b) =>
       b.classList.toggle("kind-option--selected", b === btn)
     )
+    this.syncFee()
+  }
+
+  // Among debt kinds, a fee only applies to debt_out (money leaving).
+  syncFee() {
+    if (!this.hasFeeFieldTarget) return
+
+    const applicable = this.kindInputTarget.value === "debt_out"
+    this.feeFieldTarget.classList.toggle("hidden", !applicable)
   }
 
   markDirectionSelected(btn) {

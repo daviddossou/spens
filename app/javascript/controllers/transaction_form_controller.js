@@ -5,14 +5,20 @@ export default class extends Controller {
   static targets = ["optionalFields", "toggleButton"]
 
   connect() {
-    // Ensure optional fields are hidden on initial load and after turbo frame updates
+    // Start collapsed unless the server marked the section expanded (e.g. an
+    // existing fee to edit). Keep this in sync after turbo frame updates.
+    const expanded = this.hasOptionalFieldsTarget &&
+      this.optionalFieldsTarget.dataset.expanded === 'true'
+
     if (this.hasOptionalFieldsTarget) {
-      this.optionalFieldsTarget.classList.add('hidden')
+      this.optionalFieldsTarget.classList.toggle('hidden', !expanded)
     }
-    
-    // Reset toggle button text on connect (after turbo frame reload)
+
     if (this.hasToggleButtonTarget) {
-      this.toggleButtonTarget.textContent = this.toggleButtonTarget.dataset.showText || 'More details'
+      const button = this.toggleButtonTarget
+      button.textContent = expanded
+        ? (button.dataset.hideText || 'Hide details')
+        : (button.dataset.showText || 'More details')
     }
   }
 

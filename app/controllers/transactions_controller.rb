@@ -41,7 +41,7 @@ class TransactionsController < ApplicationController
   end
 
   def destroy
-    @transaction.destroy!
+    DestroyTransactionService.new(@transaction).call
     redirect_to dashboard_path, notice: t(".success"), status: :see_other
   end
 
@@ -52,17 +52,29 @@ class TransactionsController < ApplicationController
   end
 
   def build_form(payload = {})
-    kind = params[:kind] || payload[:kind] || "expense"
-    account_id = params[:account_id] || payload[:account_id]
-    debt_id = params[:debt_id] || payload[:debt_id]
-    direction = params[:direction] || payload[:direction]
-    contact_name = params[:contact_name] || payload[:contact_name]
+    # POST body (payload) wins over carried query params; kind defaults to expense.
+    merged = carried_params.merge(payload.to_h.symbolize_keys)
+    merged[:kind] = merged[:kind].presence || "expense"
 
-    @form = TransactionForm.new(
-      current_space,
-      payload.merge(kind: kind, account_id: account_id, debt_id: debt_id, direction: direction, contact_name: contact_name)
-    )
+    @form = TransactionForm.new(current_space, merged)
     @form.user = current_user
+  end
+
+  def build_form_for_edit(payload = {})
+    merged = carried_params.merge(payload.to_h.symbolize_keys)
+    @form = TransactionForm.new(current_space, merged.merge(transaction: @transaction))
+    @form.user = current_user
+  end
+
+  # Top-level params carried across a kind switch. Read directly (not via permit)
+  # so the nested :transaction isn't logged as unpermitted on create/update.
+  CARRIED_PARAM_KEYS = %i[
+    kind account_id debt_id direction contact_name
+    amount account_name from_account_name to_account_name note description
+  ].freeze
+
+  def carried_params
+    CARRIED_PARAM_KEYS.index_with { |key| params[key] }.compact
   end
 
   def transaction_params
@@ -84,11 +96,10 @@ class TransactionsController < ApplicationController
   end
 
   def update_params
-    params.require(:transaction).permit(:kind, :amount, :description, :transaction_type_name, :transaction_date, :account_name, :note)
-  end
-
-  def build_form_for_edit(payload = {})
-    @form = TransactionForm.new(current_space, payload.merge(transaction: @transaction))
-    @form.user = current_user
+    params.require(:transaction).permit(
+      :kind, :amount, :description, :transaction_type_name, :transaction_date,
+      :account_name, :from_account_name, :to_account_name,
+      :note, :debt_id, :contact_name, :direction, :fee_amount
+    )
   end
 end

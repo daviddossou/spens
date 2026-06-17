@@ -7,10 +7,10 @@ class NormalizeAmountService
   end
 
   def call
-    case @transaction_type.kind
-    when "expense", "transfer_out", "debt_out"
+    kind = @transaction_type.kind
+    if TransactionKind.money_out?(kind)
       -@amount.to_d.abs
-    when "income", "transfer_in", "debt_in"
+    elsif TransactionKind.money_in?(kind)
       @amount.to_d.abs
     else
       @amount.to_d
