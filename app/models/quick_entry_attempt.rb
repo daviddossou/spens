@@ -9,6 +9,7 @@
 #  ai_used        :boolean          default(FALSE), not null
 #  corrections    :jsonb
 #  locale         :string
+#  mined_at       :datetime         indexed
 #  outcome        :string           default("pending"), not null, indexed
 #  rules_draft    :jsonb            not null
 #  source         :string           not null
@@ -21,6 +22,7 @@
 #
 # Indexes
 #
+#  index_quick_entry_attempts_on_mined_at        (mined_at)
 #  index_quick_entry_attempts_on_outcome         (outcome)
 #  index_quick_entry_attempts_on_space_id        (space_id)
 #  index_quick_entry_attempts_on_transaction_id  (transaction_id)
