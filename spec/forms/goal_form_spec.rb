@@ -296,7 +296,7 @@ RSpec.describe GoalForm, type: :model do
 
           transaction = account.transactions.order(:created_at).last
           expect(transaction.amount).to eq(500.0)
-          expect(transaction.transaction_type.kind).to eq(TransactionType::KIND_TRANSFER_IN)
+          expect(transaction.transaction_type.kind).to eq('income')
         end
 
         it 'adjusts account balance' do
@@ -313,7 +313,7 @@ RSpec.describe GoalForm, type: :model do
 
           transaction = account.transactions.order(:created_at).last
           expect(transaction.amount.abs).to eq(500.0)
-          expect(transaction.transaction_type.kind).to eq(TransactionType::KIND_TRANSFER_OUT)
+          expect(transaction.transaction_type.kind).to eq('expense')
         end
 
         it 'adjusts account balance' do

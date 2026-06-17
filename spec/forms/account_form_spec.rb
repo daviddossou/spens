@@ -250,12 +250,12 @@ RSpec.describe AccountForm, type: :model do
       context 'when current_balance is higher than account balance' do
         let(:account) { create(:account, user: user, name: 'My Savings', balance: 500) }
 
-        it 'creates a transaction to adjust the balance' do
+        it 'creates an income transaction to adjust the balance' do
           expect { form.submit }.to change { account.transactions.count }.by(1)
 
           transaction = account.transactions.order(:created_at).last
           expect(transaction.amount).to eq(500.0)
-          expect(transaction.transaction_type.kind).to eq(TransactionType::KIND_TRANSFER_IN)
+          expect(transaction.transaction_type.kind).to eq('income')
         end
 
         it 'adjusts account balance' do
@@ -267,12 +267,12 @@ RSpec.describe AccountForm, type: :model do
       context 'when current_balance is lower than account balance' do
         let(:account) { create(:account, user: user, name: 'My Savings', balance: 1500) }
 
-        it 'creates a transaction to adjust the balance' do
+        it 'creates an expense transaction to adjust the balance' do
           expect { form.submit }.to change { account.transactions.count }.by(1)
 
           transaction = account.transactions.order(:created_at).last
           expect(transaction.amount.abs).to eq(500.0)
-          expect(transaction.transaction_type.kind).to eq(TransactionType::KIND_TRANSFER_OUT)
+          expect(transaction.transaction_type.kind).to eq('expense')
         end
 
         it 'adjusts account balance' do

@@ -57,6 +57,9 @@ fr:
     fee:
       description: "Frais · %{label}"
 
+    balance_adjustment:
+      type_name: "⚖️ Ajustement de solde"
+
     transfer:
       type_name:
         transfer_out: "Transfert sortant"
