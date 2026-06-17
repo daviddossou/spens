@@ -57,6 +57,9 @@ en:
     fee:
       description: "Fee · %{label}"
 
+    balance_adjustment:
+      type_name: "⚖️ Balance adjustment"
+
     transfer:
       type_name:
         transfer_out: "📤 Transfer out"

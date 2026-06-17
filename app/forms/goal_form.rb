@@ -83,44 +83,24 @@ class GoalForm < BaseForm
     current_balance.to_f != account.balance
   end
 
+  # A balance adjustment is a single income (top-up) or expense (drawdown)
+  # transaction — not a transfer, which would require a matching second leg.
   def adjust_account_balance(account)
     difference = current_balance.to_f - account.balance
-    adjustment_type = difference.positive? ? :transfer_in : :transfer_out
+    kind = difference.positive? ? "income" : "expense"
 
-    send("create_#{adjustment_type}_transaction", account, difference.abs)
+    create_adjustment_transaction(account, difference.abs, kind)
   end
 
-  def create_transfer_in_transaction(account, amount)
-    create_adjustment_transaction(account, amount, :transfer_in, TransactionType::KIND_TRANSFER_IN)
-  end
-
-  def create_transfer_out_transaction(account, amount)
-    create_adjustment_transaction(account, amount, :transfer_out, TransactionType::KIND_TRANSFER_OUT)
-  end
-
-  def create_adjustment_transaction(account, amount, type, kind)
-    type_name = I18n.t("transactions.transfer.type_name.#{kind}")
-
-    # For transfer_in, the money comes from an external source to this account
-    # For transfer_out, the money goes from this account to an external destination
-    adjustment_account_name = "Balance Adjustment"
-
+  def create_adjustment_transaction(account, amount, kind)
     params = {
       account_id: account.id,
+      account_name: account.name,
       amount: amount,
       transaction_date: Date.current,
-      transaction_type_name: type_name,
+      transaction_type_name: I18n.t("transactions.balance_adjustment.type_name"),
       kind: kind
     }
-
-    # Add the appropriate account names for the transfer direction
-    if kind == TransactionType::KIND_TRANSFER_IN
-      params[:to_account_name] = account.name
-      params[:from_account_name] = adjustment_account_name
-    else
-      params[:from_account_name] = account.name
-      params[:to_account_name] = adjustment_account_name
-    end
 
     transaction_form = TransactionForm.new(space, params)
     transaction_form.submit
