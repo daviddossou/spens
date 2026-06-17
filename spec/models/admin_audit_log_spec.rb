@@ -1,5 +1,28 @@
 # frozen_string_literal: true
 
+# == Schema Information
+#
+# Table name: admin_audit_logs
+#
+#  id            :uuid             not null, primary key
+#  action        :string           not null, indexed
+#  metadata      :jsonb            not null
+#  target_type   :string           indexed => [target_id]
+#  created_at    :datetime         not null
+#  updated_at    :datetime         not null
+#  admin_user_id :uuid             not null, indexed
+#  target_id     :uuid             indexed => [target_type]
+#
+# Indexes
+#
+#  index_admin_audit_logs_on_action                     (action)
+#  index_admin_audit_logs_on_admin_user_id              (admin_user_id)
+#  index_admin_audit_logs_on_target_type_and_target_id  (target_type,target_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (admin_user_id => users.id)
+#
 require "rails_helper"
 
 RSpec.describe AdminAuditLog do
