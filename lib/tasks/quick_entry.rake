@@ -24,6 +24,39 @@ namespace :quick_entry do
     QuickEntryChallenge.run(args[:space_id].presence)
   end
 
+  # Turns the kind corrections users make (recorded on QuickEntryAttempt) into candidate keywords
+  # for the admin review queue. Pass "dry" to preview without writing or stamping anything:
+  #   bin/rails quick_entry:mine
+  #   bin/rails "quick_entry:mine[dry]"
+  desc "Mine candidate kind-keywords from real corrections into the admin review queue"
+  task :mine, [ :mode ] => :environment do |_t, args|
+    dry = %w[dry preview dry_run].include?(args[:mode].to_s.downcase)
+    QuickEntryMineReport.run(dry: dry)
+  end
+
+  module QuickEntryMineReport
+    module_function
+
+    def run(dry:)
+      result = QuickEntry::Miner.run(dry_run: dry)
+
+      puts ""
+      puts dry ? "QuickEntry miner · DRY RUN (nothing written)" : "QuickEntry miner"
+      if result.candidates.empty?
+        puts "  no new kind-keyword candidates from #{result.scanned} edited attempt(s)"
+      else
+        verb = dry ? "would teach" : "taught (candidate)"
+        result.candidates.each do |c|
+          puts "  • #{c.phrase.ljust(24)} → #{c.kind.ljust(10)} #{verb}   [#{c.text}]"
+        end
+        puts ""
+        puts "  #{result.candidates.size} candidate(s) from #{result.scanned} edited attempt(s)" \
+             "#{dry ? '' : ' · review at /admin/learned_keywords'}"
+      end
+      puts ""
+    end
+  end
+
   module QuickEntryChallenge
     module_function
 
