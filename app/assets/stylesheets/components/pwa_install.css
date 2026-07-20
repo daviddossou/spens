@@ -1,0 +1,70 @@
+/* PWA Install Banner */
+
+.pwa-install {
+  position: fixed;
+  left: 0.75rem;
+  right: 0.75rem;
+  bottom: calc(4.5rem + env(safe-area-inset-bottom));
+  z-index: 150; /* above bottom nav + FABs, below bottom sheet */
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1rem;
+  background-color: var(--color-white);
+  border: 1px solid var(--color-secondary-20);
+  border-radius: 1rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.pwa-install[hidden] {
+  display: none;
+}
+
+.pwa-install__content {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.pwa-install__icon {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 0.5rem;
+  flex-shrink: 0;
+}
+
+.pwa-install__title {
+  margin: 0;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--color-dark-gray);
+}
+
+.pwa-install__subtitle {
+  margin: 0.125rem 0 0;
+  font-size: 0.8125rem;
+  color: var(--color-gray);
+}
+
+.pwa-install__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.pwa-install__button {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 0.625rem;
+  background: none;
+  font-family: inherit;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-gray);
+  cursor: pointer;
+}
+
+.pwa-install__button--primary {
+  background-color: var(--color-primary);
+  color: var(--color-white);
+}

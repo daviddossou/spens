@@ -60,6 +60,7 @@
     </main>
 
     <% if user_signed_in? %>
+      <%= render "shared/pwa_install_banner" %>
       <%= render Navigation::BottomNavComponent.new(current_path: request.path) %>
 
       <!-- Bottom Sheet Modal -->

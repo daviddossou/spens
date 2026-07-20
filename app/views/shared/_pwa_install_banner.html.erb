@@ -1,0 +1,18 @@
+<div class="pwa-install" hidden data-controller="pwa-install" data-turbo-permanent id="pwa-install-banner">
+  <div class="pwa-install__content">
+    <img src="/apple-touch-icon.png" alt="" class="pwa-install__icon">
+    <div class="pwa-install__text">
+      <p class="pwa-install__title"><%= t("pwa.install.title") %></p>
+      <p class="pwa-install__subtitle pwa-install__ios-steps" hidden data-pwa-install-target="iosSteps">
+        <%= t("pwa.install.ios_steps_html") %>
+      </p>
+      <p class="pwa-install__subtitle" data-pwa-install-target="installButton">
+        <%= t("pwa.install.subtitle") %>
+      </p>
+    </div>
+  </div>
+  <div class="pwa-install__actions">
+    <button type="button" class="pwa-install__button pwa-install__button--primary" data-pwa-install-target="installButton" data-action="pwa-install#install"><%= t("pwa.install.install") %></button>
+    <button type="button" class="pwa-install__button" data-action="pwa-install#dismiss"><%= t("pwa.install.not_now") %></button>
+  </div>
+</div>

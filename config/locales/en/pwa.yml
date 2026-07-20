@@ -1,0 +1,8 @@
+en:
+  pwa:
+    install:
+      title: "Add Spens to your home screen"
+      subtitle: "Open it in one tap, like an app"
+      ios_steps_html: "Tap <strong>Share</strong> <span aria-hidden=\"true\">&#x2B06;&#xFE0E;</span> then <strong>Add to Home Screen</strong>"
+      install: "Install"
+      not_now: "Not now"

@@ -18,6 +18,7 @@
 @import url("components/bottom_nav.css");
 @import url("components/fab.css");
 @import url("components/bottom_sheet.css");
+@import url("components/pwa_install.css");
 
 /* Onboarding Components */
 @import url("components/onboarding/account_line.css");
