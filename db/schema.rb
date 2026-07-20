@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_06_17_114226) do
+ActiveRecord::Schema[8.0].define(version: 2026_07_18_210707) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -120,8 +120,10 @@ ActiveRecord::Schema[8.0].define(version: 2026_06_17_114226) do
     t.datetime "updated_at", null: false
     t.jsonb "corrections"
     t.datetime "mined_at"
+    t.datetime "reviewed_at"
     t.index ["mined_at"], name: "index_quick_entry_attempts_on_mined_at"
     t.index ["outcome"], name: "index_quick_entry_attempts_on_outcome"
+    t.index ["reviewed_at"], name: "index_quick_entry_attempts_on_reviewed_at"
     t.index ["space_id"], name: "index_quick_entry_attempts_on_space_id"
     t.index ["transaction_id"], name: "index_quick_entry_attempts_on_transaction_id"
     t.index ["user_id"], name: "index_quick_entry_attempts_on_user_id"

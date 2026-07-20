@@ -9,6 +9,7 @@ en:
       dashboard: "Dashboard"
       aliases: "Aliases"
       keywords: "Keywords"
+      corrections: "Corrections"
       users: "Users"
       spaces: "Spaces"
       transactions: "Transactions"
@@ -71,6 +72,8 @@ en:
       reject_alias: "Rejected alias"
       approve_keyword: "Approved keyword"
       reject_keyword: "Rejected keyword"
+      teach_correction: "Taught from correction"
+      dismiss_correction: "Dismissed correction"
       grant_admin: "Granted admin"
       revoke_admin: "Revoked admin"
     pagination:
@@ -145,6 +148,28 @@ en:
     attempts:
       title: "Quick-entry attempts"
       empty: "No attempts."
+    corrections:
+      title: "Corrections review"
+      subtitle: "What users typed, what the parser guessed, what they corrected — teach the right mapping."
+      parser_guess: "Parser guessed"
+      user_change: "User changed"
+      teach: "Teach"
+      dismiss: "Dismiss"
+      phrase_placeholder: "expression…"
+      pick_category: "Category…"
+      pick_kind: "Kind…"
+      taught: "Taught \"%{phrase}\" — active immediately."
+      invalid: "Pick an expression and a category or kind."
+      dismissed: "Marked as reviewed."
+      empty: "No corrections waiting for review."
+      states:
+        pending: "Pending"
+        reviewed: "Reviewed"
+      fields:
+        transaction_type_name: "Category"
+        amount: "Amount"
+        kind: "Kind"
+        transaction_date: "Date"
     audit:
       title: "Audit log"
       subtitle: "Privileged admin actions."

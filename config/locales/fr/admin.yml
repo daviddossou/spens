@@ -9,6 +9,7 @@ fr:
       dashboard: "Tableau de bord"
       aliases: "Alias"
       keywords: "Mots-clés"
+      corrections: "Corrections"
       users: "Utilisateurs"
       spaces: "Espaces"
       transactions: "Transactions"
@@ -71,6 +72,8 @@ fr:
       reject_alias: "Alias rejeté"
       approve_keyword: "Mot-clé approuvé"
       reject_keyword: "Mot-clé rejeté"
+      teach_correction: "Appris depuis une correction"
+      dismiss_correction: "Correction ignorée"
       grant_admin: "Admin accordé"
       revoke_admin: "Admin retiré"
     pagination:
@@ -145,6 +148,28 @@ fr:
     attempts:
       title: "Saisies rapides"
       empty: "Aucune saisie."
+    corrections:
+      title: "Examen des corrections"
+      subtitle: "Ce que l'utilisateur a dit, ce que le parseur a compris, ce qu'il a corrigé — enseignez la bonne correspondance."
+      parser_guess: "Le parseur a compris"
+      user_change: "L'utilisateur a corrigé"
+      teach: "Enseigner"
+      dismiss: "Ignorer"
+      phrase_placeholder: "expression…"
+      pick_category: "Catégorie…"
+      pick_kind: "Type…"
+      taught: "« %{phrase} » appris — actif immédiatement."
+      invalid: "Choisissez une expression et une catégorie ou un type."
+      dismissed: "Marqué comme examiné."
+      empty: "Aucune correction en attente d'examen."
+      states:
+        pending: "À examiner"
+        reviewed: "Examiné"
+      fields:
+        transaction_type_name: "Catégorie"
+        amount: "Montant"
+        kind: "Type"
+        transaction_date: "Date"
     audit:
       title: "Journal d'audit"
       subtitle: "Actions d'administration privilégiées."

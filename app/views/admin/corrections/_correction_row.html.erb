@@ -1,0 +1,48 @@
+<%# Locals: attempt %>
+<% hint = @hints[attempt] || {} %>
+<% draft = attempt.rules_draft || {} %>
+<tr id="<%= dom_id(attempt) %>" class="admin-row">
+  <td>
+    <%= attempt.created_at.strftime("%Y-%m-%d %H:%M") %><br>
+    <span class="admin-row__type"><%= attempt.user.email %></span>
+  </td>
+  <td>
+    <code><%= truncate(attempt.text, length: 70) %></code>
+    <span class="admin-row__type"><%= attempt.locale %></span>
+    <% if attempt.ai_used? %><%= admin_badge("ai") %><% end %>
+  </td>
+  <td>
+    <span class="admin-row__type"><%= t("admin.kinds.#{draft['kind']}", default: draft["kind"]) %></span>
+    <%= draft["transaction_type_name"] || "—" %><br>
+    <span class="admin-row__type">
+      <%= draft["amount"] || "—" %> · <%= draft["transaction_date"] %>
+    </span>
+  </td>
+  <td>
+    <% (attempt.corrections || {}).each do |field, change| %>
+      <div class="admin-row__type">
+        <%= t("admin.corrections.fields.#{field}", default: field) %>:
+        <s><%= change["from"] %></s> → <strong><%= change["to"] %></strong>
+      </div>
+    <% end %>
+  </td>
+  <td class="admin-table__actions">
+    <% if attempt.reviewed_at.nil? %>
+      <%= form_with url: teach_admin_correction_path(id: attempt.id), method: :post, class: "admin-teach" do |f| %>
+        <%= f.text_field :phrase, value: hint[:phrase], placeholder: t("admin.corrections.phrase_placeholder"),
+              class: "admin-input admin-input--sm" %>
+        <%= f.select :taxonomy_key,
+              grouped_options_for_select(taxonomy_grouped_options, hint[:taxonomy_key]),
+              { include_blank: t("admin.corrections.pick_category") }, class: "admin-input admin-input--sm" %>
+        <%= f.select :kind,
+              options_for_select(LearnedKeyword::KINDS.map { |k| [ t("admin.kinds.#{k}"), k ] }, hint[:kind]),
+              { include_blank: t("admin.corrections.pick_kind") }, class: "admin-input admin-input--sm" %>
+        <%= f.submit t("admin.corrections.teach"), class: "admin-btn admin-btn--success admin-btn--sm" %>
+      <% end %>
+      <%= button_to t("admin.corrections.dismiss"), dismiss_admin_correction_path(id: attempt.id), method: :patch,
+            class: "admin-btn admin-btn--sm" %>
+    <% else %>
+      <%= admin_badge(t("admin.corrections.states.reviewed"), tone: :success) %>
+    <% end %>
+  </td>
+</tr>

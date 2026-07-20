@@ -6,6 +6,7 @@ module AdminHelper
       { label: t("admin.nav.dashboard"), path: admin_root_path },
       { label: t("admin.nav.aliases"), path: admin_learned_aliases_path },
       { label: t("admin.nav.keywords"), path: admin_learned_keywords_path },
+      { label: t("admin.nav.corrections"), path: admin_corrections_path },
       { label: t("admin.nav.users"), path: admin_users_path },
       { label: t("admin.nav.spaces"), path: admin_spaces_path },
       { label: t("admin.nav.transactions"), path: admin_transactions_path },
@@ -51,6 +52,14 @@ module AdminHelper
 
   def reject_learned_path(row)
     row.is_a?(LearnedKeyword) ? reject_admin_learned_keyword_path(id: row.id) : reject_admin_learned_alias_path(id: row.id)
+  end
+
+  # Taxonomy nodes grouped by kind for the corrections teach form:
+  # [["Expense", [["Groceries", "groceries"], ...]], ["Income", [...]]]
+  def taxonomy_grouped_options
+    TransactionTaxonomy.nodes.group_by { |_key, node| node["kind"] }.map do |kind, nodes|
+      [ kind.capitalize, nodes.map { |key, node| [ node[I18n.locale.to_s] || node["en"], key ] }.sort ]
+    end
   end
 
   # Human-friendly target for an audit-log row (the record may since have been deleted).
