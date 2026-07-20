@@ -66,6 +66,9 @@ Rails.application.routes.draw do
       resources :learned_keywords, only: :index do
         member { patch :approve; patch :reject }
       end
+      resources :corrections, only: :index do
+        member { post :teach; patch :dismiss }
+      end
 
       resources :users, only: [ :index, :show ] do
         member do

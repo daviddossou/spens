@@ -21,10 +21,17 @@ module Admin
       render "admin/shared/review_list"
     end
 
+    # Approves the candidate, optionally applying the reviewer's edits first (a fixed-up
+    # phrase or a retargeted category/kind from the inline form on the row).
     def approve
-      @record.approve!
-      record_admin_action(approve_action, target: @record)
-      respond_review
+      @record.assign_attributes(approved_overrides.merge(state: "active"))
+      if @record.save
+        record_admin_action(approve_action, target: @record)
+        respond_review
+      else
+        redirect_back fallback_location: reviewable_index_path,
+                      alert: @record.errors.full_messages.to_sentence
+      end
     end
 
     def reject
@@ -37,6 +44,19 @@ module Admin
 
     def set_record
       @record = reviewable_model.find(params[:id])
+    end
+
+    def approved_overrides
+      overrides = {}
+      overrides[:phrase] = CategoryText.normalize(params[:phrase]) if params[:phrase].present?
+
+      if @record.is_a?(LearnedAlias) && params[:taxonomy_key].present? && TransactionTaxonomy.exists?(params[:taxonomy_key])
+        overrides[:taxonomy_key] = params[:taxonomy_key]
+      elsif @record.is_a?(LearnedKeyword) && LearnedKeyword::KINDS.include?(params[:kind])
+        overrides[:kind] = params[:kind]
+      end
+
+      overrides
     end
 
     # Best-effort { record.id => [utterance, ...] }: there's no FK from a learned row back to the

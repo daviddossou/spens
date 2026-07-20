@@ -17,8 +17,20 @@
   <td><%= admin_state_badge(row.state) %></td>
   <td class="admin-table__actions">
     <% unless row.active? %>
-      <%= button_to t("admin.review.approve"), approve_learned_path(row), method: :patch,
-            class: "admin-btn admin-btn--success admin-btn--sm" %>
+      <%# Approve with optional inline edits: fix the phrase / retarget before it goes live. %>
+      <%= form_with url: approve_learned_path(row), method: :patch, class: "admin-teach" do |f| %>
+        <%= f.text_field :phrase, value: row.phrase, class: "admin-input admin-input--sm" %>
+        <% if row.is_a?(LearnedKeyword) %>
+          <%= f.select :kind,
+                options_for_select(LearnedKeyword::KINDS.map { |k| [ t("admin.kinds.#{k}"), k ] }, row.kind),
+                {}, class: "admin-input admin-input--sm" %>
+        <% else %>
+          <%= f.select :taxonomy_key,
+                grouped_options_for_select(taxonomy_grouped_options, row.taxonomy_key),
+                {}, class: "admin-input admin-input--sm" %>
+        <% end %>
+        <%= f.submit t("admin.review.approve"), class: "admin-btn admin-btn--success admin-btn--sm" %>
+      <% end %>
     <% end %>
     <% unless row.rejected? %>
       <%= button_to t("admin.review.reject"), reject_learned_path(row), method: :patch,

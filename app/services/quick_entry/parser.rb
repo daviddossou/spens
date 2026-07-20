@@ -21,6 +21,7 @@ module QuickEntry
 
     def parse
       @kind = detect_kind
+      detect_date # first: date digits are blanked out before amount detection reads the text
       @amount = detect_amount
       @fee = detect_fee(@amount)
 
@@ -156,7 +157,17 @@ module QuickEntry
     # --- amount -------------------------------------------------------------
 
     def detect_amount
-      amount_in(@text)
+      amount_in(amount_source)
+    end
+
+    # The utterance with date substrings blanked, so "le 16 juin" or "16/06" can never be
+    # read as the amount. Falls back to the transliterated text when no date matched.
+    def amount_source
+      @amount_source || loose_text
+    end
+
+    def ignore_for_amount(str)
+      @amount_source = amount_source.sub(str, " ")
     end
 
     def amount_in(str)
@@ -192,7 +203,7 @@ module QuickEntry
       fee_words = Keywords.fee(@lang).map { |w| translit(w) }
       return nil if fee_words.empty?
 
-      toks = loose_tokens
+      toks = amount_source.split(/[^a-z0-9-]+/).reject(&:empty?)
       idx = toks.index { |t| fee_words.include?(t) }
       return nil unless idx
 
@@ -239,6 +250,10 @@ module QuickEntry
     # --- date ---------------------------------------------------------------
 
     def detect_date
+      @date ||= absolute_date || relative_date || Date.current
+    end
+
+    def relative_date
       dates = Keywords.date(@lang)
       # Check the longer phrase first: "day before yesterday" / "avant-hier" contain "yesterday" / "hier".
       return Date.current - 2 if match_any?(dates["day_before_yesterday"])
@@ -247,21 +262,76 @@ module QuickEntry
       days = relative_days_ago
       return Date.current - days if days
 
-      weekday_date || Date.current
+      weekday_date
     end
 
     # "3 days ago" / "il y a 3 jours" / "2 weeks ago" / "il y a 2 semaines" -> days back.
     def relative_days_ago
       if (m = @text.match(/(\d+)\s*(?:days?|jours?)\s*ago|il y a\s*(\d+)\s*jours?/i))
         n = (m[1] || m[2]).to_i
+        ignore_for_amount(translit(m[0]))
         return n if n.positive?
       end
       if (m = @text.match(/(\d+)\s*(?:weeks?|semaines?)\s*ago|il y a\s*(\d+)\s*semaines?/i))
         n = (m[1] || m[2]).to_i
+        ignore_for_amount(translit(m[0]))
         return n * 7 if n.positive?
       end
       nil
     end
+
+    # "16/06", "16-06-2026", "le 16 juin 2026", "june 16", "on june 16 2026".
+    def absolute_date
+      numeric_date || named_month_date
+    end
+
+    def numeric_date
+      m = loose_text.match(%r{\b(\d{1,2})[/-](\d{1,2})(?:[/-](\d{2,4}))?\b}) or return nil
+      day, month = order_day_month(m[1].to_i, m[2].to_i)
+      return nil unless day
+
+      date = build_date(m[3], month, day) or return nil
+      ignore_for_amount(m[0])
+      date
+    end
+
+    # FR reads d/m, EN m/d; an impossible reading falls back to the other order.
+    def order_day_month(a, b)
+      guess = @lang == "en" ? [ b, a ] : [ a, b ]
+      return guess if valid_day_month?(*guess)
+
+      swapped = guess.reverse
+      valid_day_month?(*swapped) ? swapped : []
+    end
+
+    def valid_day_month?(day, month)
+      day.between?(1, 31) && month.between?(1, 12)
+    end
+
+    def named_month_date
+      months = Keywords.months(@lang)
+      return nil if months.blank?
+
+      pattern = months.keys.sort_by { |k| -k.length }.join("|")
+      m = loose_text.match(/(?:\ble\s+)?\b(?:(\d{1,2})(?:er|st|nd|rd|th)?\s+)?(#{pattern})\b\.?,?\s*(?:(\d{1,2})(?:st|nd|rd|th)?\b)?,?\s*(\d{4})?/)
+      return nil unless m
+
+      day = (m[1] || m[3]).to_i
+      return nil unless day.between?(1, 31)
+
+      date = build_date(m[4], months[m[2]], day) or return nil
+      ignore_for_amount(m[0])
+      date
+    end
+
+    def build_date(year_str, month, day)
+      year = year_str.blank? ? Date.current.year : expand_year(year_str.to_i)
+      Date.new(year, month, day)
+    rescue Date::Error
+      nil
+    end
+
+    def expand_year(year) = year < 100 ? 2000 + year : year
 
     # A named weekday ("monday"/"lundi") -> its most recent past occurrence (today if it matches).
     def weekday_date
@@ -334,6 +404,11 @@ module QuickEntry
     # --- category -----------------------------------------------------------
 
     def resolve_category(kind)
+      name, type_kind = custom_type_match
+      if name && (type_kind == kind || !@explicit_kind)
+        return [ name, type_kind ]
+      end
+
       key = CategoryInference.infer(@text)
       return [ nil, kind ] unless key
 
@@ -343,6 +418,24 @@ module QuickEntry
       return [ nil, kind ] unless cat_kind == kind
 
       [ TransactionTaxonomy.name(key, @lang), kind ]
+    end
+
+    # A user-created category spoken directly ("contribution" -> "Contribution DD"): the user's
+    # own vocabulary beats taxonomy inference. Only truly custom types (no template_key) — the
+    # taxonomy-templated ones are already covered by CategoryInference. Longest match wins.
+    def custom_type_match
+      @space.transaction_types.where(template_key: nil, kind: %w[income expense]).pluck(:name, :kind)
+            .filter_map { |name, type_kind| (len = custom_match_length(name)) && [ len, name, type_kind ] }
+            .max_by(&:first)&.drop(1)
+    end
+
+    # Full normalized name in the utterance, or any distinctive (>= 4 chars) word of the name
+    # spoken as a whole token. Returns the matched length, nil when no match.
+    def custom_match_length(name)
+      norm = CategoryText.normalize(name)
+      return norm.length if norm.length >= 3 && normalized.include?(norm)
+
+      account_tokens(name).find { |t| t.length >= 4 && loose_tokens.include?(t) }&.length
     end
   end
 end

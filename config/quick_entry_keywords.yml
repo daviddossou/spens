@@ -32,6 +32,15 @@ en:
     day_before_yesterday: [day before yesterday]
     today: [today, just now]
   weekdays: { monday: 1, tuesday: 2, wednesday: 3, thursday: 4, friday: 5, saturday: 6, sunday: 7 }
+  months:
+    { january: 1, jan: 1, february: 2, feb: 2, march: 3, mar: 3, april: 4, apr: 4, may: 5,
+      june: 6, jun: 6, july: 7, jul: 7, august: 8, aug: 8, september: 9, sep: 9, sept: 9,
+      october: 10, oct: 10, november: 11, nov: 11, december: 12, dec: 12 }
+  # Generic transaction verbs/fillers PhraseExtractor drops — too unspecific to become a
+  # learned expression ("achat" says nothing about the category).
+  extractor_stopwords:
+    [purchase, purchases, payment, expense, spend, spent, paid, pay, bought, buy, got, sent,
+     send, gave, give, made, make, took, take, put]
   # account hints → matched against the user's account names; if none match, the
   # instrument hint is tried as a substring of an account name.
   instruments:
@@ -71,6 +80,14 @@ fr:
     day_before_yesterday: [avant-hier, avant hier]
     today: [aujourd'hui, aujourdhui, a l'instant]
   weekdays: { lundi: 1, mardi: 2, mercredi: 3, jeudi: 4, vendredi: 5, samedi: 6, dimanche: 7 }
+  months:
+    { janvier: 1, janv: 1, fevrier: 2, février: 2, fev: 2, fév: 2, mars: 3, avril: 4, avr: 4,
+      mai: 5, juin: 6, juillet: 7, juil: 7, aout: 8, août: 8, septembre: 9, sept: 9,
+      octobre: 10, oct: 10, novembre: 11, nov: 11, decembre: 12, décembre: 12, dec: 12, déc: 12 }
+  extractor_stopwords:
+    [achat, achats, acheter, achete, acheté, paiement, paiements, payer, paye, payé, depense,
+     dépense, depenses, dépenses, envoye, envoyé, envoyer, donne, donné, donner,
+     fait, faire, mis, mettre, pris, prendre, recu, reçu]
   instruments:
     cash: [especes, espèces, liquide, en espece, cash]
     momo: [momo, mobile money, mtn, moov, mtn momo, moov money, wave, orange money]

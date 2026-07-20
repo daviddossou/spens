@@ -84,6 +84,35 @@ RSpec.describe TransactionsController, type: :request do
       }
     end
 
+    context "when completing a quick-entry fallback" do
+      it "links the attempt to the created transaction and learns from the picked category" do
+        attempt = create(:quick_entry_attempt, user: user, text: "achat de zoomzoom 100",
+                                               locale: "fr",
+                                               source: "manual_fallback",
+                                               rules_draft: { "kind" => "expense", "amount" => 100.5,
+                                                              "transaction_date" => Date.current.iso8601 })
+
+        post transactions_path, params: {
+          transaction: valid_attributes.merge(quick_entry_attempt_id: attempt.id,
+                                              transaction_type_name: TransactionTaxonomy.name("groceries", :en))
+        }
+
+        attempt.reload
+        expect(attempt.transaction_id).to be_present
+        expect(attempt.outcome).to eq("edited")
+        expect(LearnedAlias.find_by(phrase: "zoomzoom")&.taxonomy_key).to eq("groceries")
+      end
+
+      it "ignores an attempt id from another space" do
+        other = create(:quick_entry_attempt)
+
+        post transactions_path, params: { transaction: valid_attributes.merge(quick_entry_attempt_id: other.id) }
+
+        expect(other.reload.transaction_id).to be_nil
+        expect(response).to have_http_status(:see_other)
+      end
+    end
+
     context "with valid parameters" do
       it "creates a new transaction" do
         expect {

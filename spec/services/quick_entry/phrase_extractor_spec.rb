@@ -29,4 +29,17 @@ RSpec.describe QuickEntry::PhraseExtractor do
   it "caps the run at three words" do
     expect(extract("alpha beta gamma delta").split.size).to eq(3)
   end
+
+  it "drops generic transaction verbs like 'achat'" do
+    expect(extract("achat de punaise pour la maison", locale: :fr)).to eq("punaise")
+  end
+
+  it "drops month names so dates never become expressions" do
+    expect(extract("approvisionnement 2300 le 16 juin 2026", locale: :fr)).to eq("approvisionnement")
+  end
+
+  it "drops the space's own transaction type names" do
+    create(:transaction_type, space: space, name: "Contribution DD", kind: :expense)
+    expect(extract("contribution zoomzoom 500", locale: :fr)).to eq("zoomzoom")
+  end
 end

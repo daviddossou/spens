@@ -16,6 +16,7 @@ class TransactionsController < ApplicationController
     build_form(transaction_params)
 
     if @form.submit
+      link_quick_entry_attempt
       redirect_with_reload_to transaction_path(id: @form.transaction.id), notice: t(".success"), status: :see_other
     else
       render :new, status: :unprocessable_entity
@@ -91,8 +92,25 @@ class TransactionsController < ApplicationController
       :debt_id,
       :description,
       :contact_name,
-      :direction
+      :direction,
+      :quick_entry_attempt_id
     )
+  end
+
+  # The quick-entry fallback prefilled this form: link the created transaction back to the
+  # attempt so what the user completed (e.g. the category they picked) feeds the learning
+  # loop. Best-effort — never breaks the submission.
+  def link_quick_entry_attempt
+    id = params.dig(:transaction, :quick_entry_attempt_id)
+    return if id.blank?
+
+    attempt = QuickEntryAttempt.find_by(id: id, space: current_space, transaction_id: nil)
+    return unless attempt
+
+    attempt.update!(transaction_id: @form.transaction.id)
+    QuickEntry::CorrectionLearner.learn(@form.transaction)
+  rescue StandardError => e
+    Rails.logger.warn("quick-entry attempt linking failed: #{e.message}")
   end
 
   def update_params

@@ -20,7 +20,10 @@ class QuickEntriesController < ApplicationController
       redirect_with_reload_to transaction_path(id: @form.transaction.id),
                               notice: success_notice(@form.transaction), status: :see_other
     else
-      log_attempt(draft, result.ai_draft, nil)
+      attempt = log_attempt(draft, result.ai_draft, nil)
+      # Carried through the form so the transaction the user completes links back to this
+      # attempt — their manual choices (e.g. the category) are the correction signal.
+      @form.quick_entry_attempt_id = attempt&.id
       render turbo_stream: turbo_stream.replace("transaction_form", partial: "transactions/form")
     end
   end

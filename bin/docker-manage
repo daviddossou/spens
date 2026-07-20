@@ -2,146 +2,147 @@
 
 # Docker management script for Spens
 
-case $1 in
+set -euo pipefail
+
+# Compose v2 is a docker plugin ("docker compose"); fall back to the legacy v1 binary.
+if docker compose version >/dev/null 2>&1; then
+  compose() { docker compose "$@"; }
+else
+  compose() { docker-compose "$@"; }
+fi
+
+web() { compose exec web "$@"; }
+# Test runs must not inherit the container's dev RAILS_ENV/DATABASE_URL (docker-compose.yml
+# exports spens_development) — point them explicitly at the test database.
+webtest() {
+  compose exec -e RAILS_ENV=test -e DATABASE_URL=postgresql://postgres:password@db:5432/spens_test web "$@"
+}
+
+case ${1:-} in
   "up")
     echo "🚀 Starting all services..."
-    docker-compose up
+    compose up
     ;;
   "down")
     echo "🛑 Stopping all services..."
-    docker-compose down
+    compose down
     ;;
   "restart")
-    if [ -z "$2" ]; then
+    if [ -z "${2:-}" ]; then
       echo "🔄 Restarting all services..."
-      docker-compose down
-      docker-compose up -d
+      compose down
+      compose up -d
     else
       echo "🔄 Restarting $2 service..."
-      docker-compose restart "$2"
+      compose restart "$2"
     fi
     ;;
   "logs")
     service=${2:-web}
     echo "📄 Following logs for $service..."
-    docker-compose logs -f $service
+    compose logs -f "$service"
     ;;
   "console")
     echo "🎯 Opening Rails console..."
-    docker-compose exec web bin/rails console
+    web bin/rails console
     ;;
   "shell")
     echo "🐚 Opening shell in web container..."
-    docker-compose exec web bash
+    web bash
     ;;
   "test")
-    if [ -z "$2" ]; then
+    if [ -z "${2:-}" ]; then
       echo "🧪 Running all tests..."
-      docker-compose exec web bundle exec rspec
+      webtest bundle exec rspec
     else
-      echo "🧪 Running specific test: $2"
-      docker-compose exec web bundle exec rspec "$2"
+      echo "🧪 Running specific test: ${*:2}"
+      webtest bundle exec rspec "${@:2}"
     fi
     ;;
   "bundle")
-    if [ -z "$2" ]; then
+    if [ -z "${2:-}" ]; then
       echo "💎 Running bundle install..."
-      docker-compose exec web bundle install
+      web bundle install
     else
-      echo "💎 Running bundle $2..."
-      docker-compose exec web bundle "$2"
+      echo "💎 Running bundle ${*:2}..."
+      web bundle "${@:2}"
     fi
     ;;
   "rails")
-    if [ -z "$2" ]; then
+    if [ -z "${2:-}" ]; then
       echo "🚂 Opening Rails console..."
-      docker-compose exec web bin/rails console
+      web bin/rails console
     else
-      echo "🚂 Running Rails command: $2 $3 $4 $5 $6 $7 $8 $9"
-      docker-compose exec web bin/rails "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9"
+      echo "🚂 Running Rails command: ${*:2}"
+      web bin/rails "${@:2}"
     fi
     ;;
   "migrate")
     echo "🗄️  Running migrations..."
-    docker-compose exec web bin/rails db:migrate
+    web bin/rails db:migrate
     ;;
   "rollback")
-    if [ -z "$2" ]; then
+    if [ -z "${2:-}" ]; then
       echo "🔁 Rolling back the latest migration file..."
-      docker-compose exec web bin/rails db:rollback
+      web bin/rails db:rollback
     else
-      echo "🔁 Rolling back to a specific migration: $2"
-      docker-compose exec web bin/rails db:rollback STEP=$2
+      echo "🔁 Rolling back $2 migration(s)..."
+      web bin/rails db:rollback STEP="$2"
     fi
     ;;
   "seed")
     echo "🌱 Seeding database..."
-    docker-compose exec web bin/rails db:seed
+    web bin/rails db:seed
     ;;
   "reset")
     echo "💥 Resetting database..."
-    docker-compose exec web bin/rails db:reset
+    web bin/rails db:reset
     ;;
   "build")
     echo "🔨 Building containers..."
-    docker-compose build
+    compose build
     ;;
   "test-watch")
     echo "👀 Running tests in watch mode..."
-    docker-compose exec web bundle exec rspec --format documentation --color --fail-fast
+    webtest bundle exec rspec --format documentation --color --fail-fast
     ;;
   "test-debug")
     echo "🐛 Running tests with debugging enabled..."
-    docker-compose exec web bundle exec rspec --format documentation --color --backtrace
+    webtest bundle exec rspec --format documentation --color --backtrace
     ;;
   "clean")
     echo "🧹 Cleaning up containers and volumes..."
-    docker-compose down -v
+    compose down -v
     docker system prune -f
     ;;
   "rubocop")
-    if [ -z "$2" ]; then
-      echo "🔍 Running RuboCop on all files..."
-      docker-compose exec web bundle exec rubocop
-    else
-      echo "� Running RuboCop on: $2"
-      docker-compose exec web bundle exec rubocop "$2"
-    fi
+    echo "🔍 Running RuboCop on: ${2:-all files}"
+    web bundle exec rubocop "${@:2}"
     ;;
   "rubocop-fix")
-    if [ -z "$2" ]; then
-      echo "🔧 Auto-correcting safe RuboCop offenses on all files..."
-      docker-compose exec web bundle exec rubocop -a
-    else
-      echo "🔧 Auto-correcting safe RuboCop offenses on: $2"
-      docker-compose exec web bundle exec rubocop -a "$2"
-    fi
+    echo "🔧 Auto-correcting safe RuboCop offenses on: ${2:-all files}"
+    web bundle exec rubocop -a "${@:2}"
     ;;
   "rubocop-fix-all")
-    if [ -z "$2" ]; then
-      echo "⚠️  Auto-correcting ALL RuboCop offenses on all files (including unsafe)..."
-      docker-compose exec web bundle exec rubocop -A
-    else
-      echo "⚠️  Auto-correcting ALL RuboCop offenses on: $2 (including unsafe)..."
-      docker-compose exec web bundle exec rubocop -A "$2"
-    fi
+    echo "⚠️  Auto-correcting ALL RuboCop offenses (including unsafe) on: ${2:-all files}"
+    web bundle exec rubocop -A "${@:2}"
     ;;
   "tailwind-build")
     echo "🎨 Building Tailwind CSS (rails tailwindcss:build)..."
-    docker-compose exec web bin/rails tailwindcss:build
+    web bin/rails tailwindcss:build
     ;;
   "rake")
-    if [ -z "$2" ]; then
+    if [ -z "${2:-}" ]; then
       echo "📋 Please specify a rake task"
       echo "Example: ./bin/docker-manage rake db:migrate"
     else
-      echo "📋 Running rake task: $2 $3 $4 $5 $6 $7 $8 $9"
-      docker-compose exec web bundle exec rake "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9"
+      echo "📋 Running rake task: ${*:2}"
+      web bundle exec rake "${@:2}"
     fi
     ;;
   "status")
     echo "📊 Container Status:"
-    docker-compose ps
+    compose ps
     ;;
   *)
     echo "🐳 Spens Docker Management"
@@ -161,51 +162,30 @@ case $1 in
     echo "  test-watch   Run tests with detailed output and fail-fast"
     echo "  test-debug   Run tests with debugging and full backtrace"
     echo "  migrate      Run database migrations"
+    echo "  rollback     Roll back migrations (optionally specify step count)"
     echo "  seed         Seed the database"
     echo "  reset        Reset database (drop, create, migrate, seed)"
     echo "  build        Build Docker containers"
     echo "  clean        Clean up containers and volumes"
     echo ""
     echo "Code Quality Commands:"
-    echo "  rubocop      Run RuboCop linter (optionally specify file/directory)"
-    echo "  rubocop-fix  Auto-fix safe RuboCop issues (optionally specify file/directory)"
+    echo "  rubocop         Run RuboCop linter (optionally specify file/directory)"
+    echo "  rubocop-fix     Auto-fix safe RuboCop issues (optionally specify file/directory)"
     echo "  rubocop-fix-all Auto-fix ALL issues including unsafe (optionally specify file/directory)"
     echo "  tailwind-build  Run Tailwind CSS build (bin/rails tailwindcss:build)"
     echo ""
     echo "Other Commands:"
-    echo "  rake         Run rake tasks (specify task: db:migrate, currencies:generate_translations, etc.)"
+    echo "  rake         Run rake tasks (specify task: db:migrate, quick_entry:mine, etc.)"
     echo "  status       Show status of all containers"
     echo ""
     echo "Examples:"
     echo "  ./bin/docker-manage up"
-    echo "  ./bin/docker-manage restart web                    # Restart only web service"
+    echo "  ./bin/docker-manage restart web                       # Restart only web service"
     echo "  ./bin/docker-manage logs sidekiq"
     echo "  ./bin/docker-manage console"
-    echo "  ./bin/docker-manage bundle                         # Run bundle install"
-    echo "  ./bin/docker-manage bundle update                  # Run bundle update"
-    echo "  ./bin/docker-manage rails                          # Open Rails console"
-    echo "  ./bin/docker-manage rails generate model User      # Generate a model"
-    echo "  ./bin/docker-manage rails generate view_component:install # Install ViewComponent"
-    echo "  ./bin/docker-manage rails db:migrate               # Run migrations"
-    echo "  ./bin/docker-manage test                           # Run all tests"
-    echo "  ./bin/docker-manage test spec/models/user_spec.rb  # Run specific file"
-    echo "  ./bin/docker-manage test spec/models               # Run all model tests"
-    echo "  ./bin/docker-manage test spec/models/user_spec.rb:25 # Run specific line"
-    echo "  ./bin/docker-manage test-watch                     # Run with detailed output"
-    echo "  ./bin/docker-manage test-debug                     # Run with full debugging"
-    echo ""
-    echo "Code Quality Examples:"
-    echo "  ./bin/docker-manage rubocop                        # Check all files"
-    echo "  ./bin/docker-manage rubocop app/models/user.rb     # Check specific file"
-    echo "  ./bin/docker-manage rubocop app/models/            # Check directory"
-    echo "  ./bin/docker-manage rubocop-fix                    # Auto-fix safe issues (all files)"
-    echo "  ./bin/docker-manage rubocop-fix app/models/user.rb # Auto-fix safe issues (specific file)"
-    echo "  ./bin/docker-manage rubocop-fix-all                # Auto-fix ALL issues (all files)"
-    echo "  ./bin/docker-manage rubocop-fix-all app/models/    # Auto-fix ALL issues (directory)"
-    echo ""
-    echo "Other Examples:"
-    echo "  ./bin/docker-manage rake currencies:generate_translations  # Generate currency translations"
-    echo "  ./bin/docker-manage rake -T                        # List all rake tasks"
-    echo "  ./bin/docker-manage status                         # Show container status"
+    echo "  ./bin/docker-manage rails generate model User         # Generate a model"
+    echo "  ./bin/docker-manage test spec/models/user_spec.rb:25  # Run specific line"
+    echo "  ./bin/docker-manage rake \"admin:grant[user@mail.com]\" # Quote bracketed rake args (zsh)"
+    echo "  ./bin/docker-manage rake -T                           # List all rake tasks"
     ;;
 esac

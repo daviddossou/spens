@@ -79,6 +79,56 @@ RSpec.describe QuickEntry::Parser do
       monday = Date.current - ((Date.current.cwday - 1) % 7)
       expect(parse("2000 zem on monday").transaction_date).to eq(monday)
     end
+
+    it "reads absolute named-month dates (FR and EN)" do
+      expect(parse("courses 2000 le 16 juin 2026", locale: :fr).transaction_date).to eq(Date.new(2026, 6, 16))
+      expect(parse("courses 2000 le 16 juin", locale: :fr).transaction_date).to eq(Date.new(Date.current.year, 6, 16))
+      expect(parse("groceries 2000 on june 16 2026").transaction_date).to eq(Date.new(2026, 6, 16))
+      expect(parse("groceries 2000 on june 16").transaction_date).to eq(Date.new(Date.current.year, 6, 16))
+    end
+
+    it "reads numeric dates, day-first in FR and month-first in EN" do
+      expect(parse("taxi 1500 le 16/06", locale: :fr).transaction_date).to eq(Date.new(Date.current.year, 6, 16))
+      expect(parse("taxi 1500 le 16/06/2026", locale: :fr).transaction_date).to eq(Date.new(2026, 6, 16))
+      expect(parse("taxi 1500 on 06/16").transaction_date).to eq(Date.new(Date.current.year, 6, 16))
+      # impossible month-first reading falls back to day-first
+      expect(parse("taxi 1500 on 16/06").transaction_date).to eq(Date.new(Date.current.year, 6, 16))
+    end
+
+    it "never reads date digits as the amount" do
+      draft = parse("courses 2000 le 16 juin 2026", locale: :fr)
+      expect(draft.amount).to eq(2000)
+
+      expect(parse("16/06 taxi 1500", locale: :fr).amount).to eq(1500)
+      expect(parse("approvisionnement 2300 le 16 juin 2026", locale: :fr).amount).to eq(2300)
+      expect(parse("5k groceries 3 days ago").amount).to eq(5000)
+    end
+  end
+
+  describe "custom transaction types" do
+    it "resolves a spoken word to the user's own category ('Contribution DD')" do
+      create(:transaction_type, space: space, name: "Contribution DD", kind: :expense)
+
+      draft = parse("contribution 1430 de mon Wise", locale: :fr)
+      expect(draft.transaction_type_name).to eq("Contribution DD")
+      expect(draft.kind).to eq("expense")
+    end
+
+    it "lets a custom income type settle the kind when no kind word fired" do
+      create(:transaction_type, space: space, name: "Gombo business", kind: :income)
+
+      draft = parse("gombo 15000", locale: :fr)
+      expect(draft.transaction_type_name).to eq("Gombo business")
+      expect(draft.kind).to eq("income")
+    end
+
+    it "does not let a custom type override an explicit kind keyword" do
+      create(:transaction_type, space: space, name: "Contribution DD", kind: :expense)
+
+      draft = parse("reçu 5000 contribution", locale: :fr)
+      expect(draft.kind).to eq("income")
+      expect(draft.transaction_type_name).not_to eq("Contribution DD")
+    end
   end
 
   describe "account" do

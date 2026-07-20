@@ -1,0 +1,35 @@
+<% content_for(:title, t("admin.corrections.title")) %>
+
+<div class="admin-page">
+  <header class="admin-page__header">
+    <h1 class="admin-page__title"><%= t("admin.corrections.title") %></h1>
+    <p class="admin-page__subtitle"><%= t("admin.corrections.subtitle") %></p>
+  </header>
+
+  <nav class="admin-tabs">
+    <% Admin::CorrectionsController::STATES.each do |state| %>
+      <%= link_to t("admin.corrections.states.#{state}"), admin_corrections_path(state: state),
+            class: class_names("admin-tab", "admin-tab--active" => @state == state) %>
+    <% end %>
+  </nav>
+
+  <% if @attempts.any? %>
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th><%= t("admin.cols.when") %></th>
+          <th><%= t("admin.cols.utterance") %></th>
+          <th><%= t("admin.corrections.parser_guess") %></th>
+          <th><%= t("admin.corrections.user_change") %></th>
+          <th class="admin-table__actions"><%= t("admin.corrections.teach") if @state == "pending" %></th>
+        </tr>
+      </thead>
+      <tbody>
+        <%= render partial: "correction_row", collection: @attempts, as: :attempt %>
+      </tbody>
+    </table>
+    <%= render "admin/shared/pagination" %>
+  <% else %>
+    <p class="admin-empty"><%= t("admin.corrections.empty") %></p>
+  <% end %>
+</div>

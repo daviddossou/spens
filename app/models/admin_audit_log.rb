@@ -23,15 +23,11 @@
 #
 #  fk_rails_...  (admin_user_id => users.id)
 #
-# A persistent trail of privileged admin actions — who did what, to whom, and when. Written
-# whenever an admin impersonates a user, approves/rejects learned vocabulary, or grants/revokes
-# admin. `admin_user` is always the real acting admin (the true admin, even mid-impersonation).
-# `target` is an optional polymorphic-ish pointer (we store type + id loosely so we can log a
-# user, a learned alias/keyword, etc. without a hard association).
 class AdminAuditLog < ApplicationRecord
   ACTIONS = %w[
     impersonate_start impersonate_stop
     approve_alias reject_alias approve_keyword reject_keyword
+    teach_correction dismiss_correction
     grant_admin revoke_admin
   ].freeze
 

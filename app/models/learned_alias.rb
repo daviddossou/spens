@@ -39,9 +39,28 @@ class LearnedAlias < ApplicationRecord
     candidate_teach(phrase: phrase, value: taxonomy_key, source: source, attr: :taxonomy_key)
   end
 
-  # A phrase the built-in alias dictionary / taxonomy already resolves — nothing to learn.
+  # Teach a phrase -> taxonomy_key mapping as immediately active (admin corrections screen).
+  def self.admin_teach(phrase:, taxonomy_key:)
+    super(phrase: phrase, value: taxonomy_key, attr: :taxonomy_key)
+  end
+
+  # A phrase the built-in alias dictionary / taxonomy already resolves — or whose distinctive
+  # word already lives inside a built-in phrase ("contribution" vs "contribution religieuse").
   def self.built_in?(phrase)
-    CategoryAliasMatcher.match(phrase).present? || TransactionTaxonomy.key_for_name(phrase).present?
+    return true if CategoryAliasMatcher.match(phrase).present? || TransactionTaxonomy.key_for_name(phrase).present?
+
+    overlaps_built_in?(phrase, built_in_tokens)
   end
   private_class_method :built_in?
+
+  def self.built_in_tokens
+    @built_in_tokens ||= (CategoryAliasMatcher.phrases + taxonomy_names)
+                         .flat_map { |p| significant_tokens(p) }.to_set
+  end
+  private_class_method :built_in_tokens
+
+  def self.taxonomy_names
+    TransactionTaxonomy.nodes.values.flat_map { |n| [ n["en"], n["fr"] ] }.compact
+  end
+  private_class_method :taxonomy_names
 end

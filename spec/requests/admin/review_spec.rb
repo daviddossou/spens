@@ -29,6 +29,23 @@ RSpec.describe "Admin vocabulary review", type: :request do
     expect(AdminAuditLog.last.action).to eq("reject_keyword")
   end
 
+  it "approves with inline edits (fixed phrase + retargeted category)" do
+    row = LearnedAlias.teach(phrase: "blipblop", taxonomy_key: "moto_taxi", source: "ai")
+
+    patch approve_admin_learned_alias_path(id: row.id),
+          params: { phrase: "zoomzoom", taxonomy_key: "home_repairs" }
+
+    expect(row.reload).to have_attributes(state: "active", phrase: "zoomzoom", taxonomy_key: "home_repairs")
+  end
+
+  it "approves a keyword with an edited kind" do
+    row = LearnedKeyword.teach(phrase: "depanne", kind: "debt_in", source: "ai")
+
+    patch approve_admin_learned_keyword_path(id: row.id), params: { kind: "debt_out" }
+
+    expect(row.reload).to have_attributes(state: "active", kind: "debt_out")
+  end
+
   it "approving makes an alias visible to the rules (active_index)" do
     row = LearnedAlias.teach(phrase: "zoomzoom", taxonomy_key: "moto_taxi", source: "ai")
 

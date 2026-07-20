@@ -52,6 +52,15 @@ RSpec.describe LearnedAlias do
       expect(described_class.count).to eq(0)
     end
 
+    it "refuses a word already living inside a built-in phrase ('contribution' vs 'contribution religieuse')" do
+      expect(described_class.teach(phrase: "contribution", taxonomy_key: "savings", source: "ai")).to be_nil
+      expect(described_class.count).to eq(0)
+    end
+
+    it "still accepts a genuinely novel word" do
+      expect(described_class.teach(phrase: "punaise", taxonomy_key: "home_repairs", source: "edit_diff")).to be_present
+    end
+
     it "replaces a still-pending candidate's value when a newer teaching disagrees" do
       described_class.teach(phrase: "zoomzoom", taxonomy_key: "groceries", source: "ai")
       row = described_class.teach(phrase: "zoomzoom", taxonomy_key: "moto_taxi", source: "ai")
@@ -68,6 +77,23 @@ RSpec.describe LearnedAlias do
       described_class.teach(phrase: "zoomzoom", taxonomy_key: "groceries", source: "ai")
 
       expect(row.reload).to be_active
+      expect(row.taxonomy_key).to eq("moto_taxi")
+    end
+  end
+
+  describe ".admin_teach" do
+    it "writes the mapping active immediately (the admin is the approval)" do
+      row = described_class.admin_teach(phrase: "zoomzoom", taxonomy_key: "moto_taxi")
+
+      expect(row).to be_active
+      expect(described_class.active_index).to eq("zoomzoom" => "moto_taxi")
+    end
+
+    it "retargets an existing candidate and activates it" do
+      described_class.teach(phrase: "zoomzoom", taxonomy_key: "groceries", source: "ai")
+      row = described_class.admin_teach(phrase: "zoomzoom", taxonomy_key: "moto_taxi")
+
+      expect(row).to be_active
       expect(row.taxonomy_key).to eq("moto_taxi")
     end
   end
