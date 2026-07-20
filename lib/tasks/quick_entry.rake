@@ -34,6 +34,18 @@ namespace :quick_entry do
     QuickEntryMineReport.run(dry: dry)
   end
 
+  # Re-runs the (hardened) built-in check over pending candidates and rejects the redundant
+  # ones — one-off cleanup after widening the dedup rules:
+  #   bin/rails quick_entry:prune_redundant_candidates
+  desc "Reject candidate aliases/keywords the built-in dictionaries already cover"
+  task prune_redundant_candidates: :environment do
+    [ LearnedAlias, LearnedKeyword ].each do |model|
+      pruned = model.candidate.select { |row| model.send(:built_in?, row.phrase) }
+      pruned.each(&:reject!)
+      puts "#{model.name}: rejected #{pruned.size} redundant candidate(s)"
+    end
+  end
+
   module QuickEntryMineReport
     module_function
 

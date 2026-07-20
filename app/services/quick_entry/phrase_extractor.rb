@@ -73,10 +73,13 @@ module QuickEntry
         *Keywords.kind(lang).values.flatten,
         *Keywords.date(lang).values.flatten,
         *Keywords.weekdays(lang).keys,
+        *Keywords.months(lang).keys,
+        *Keywords.extractor_stopwords(lang),
         *Keywords.instruments(lang).values.flatten,
         *Keywords.fee(lang),
         *Array(preps["from"]), *Array(preps["to"]),
         *@space.accounts.pluck(:name),
+        *@space.transaction_types.pluck(:name),
         *@exclude,
         *STOPWORDS
       ].compact

@@ -63,5 +63,33 @@ module Learnable
     def stronger_source(current, incoming)
       SOURCE_RANK.fetch(incoming, 99) < SOURCE_RANK.fetch(current, 99) ? incoming : current
     end
+
+    public
+
+    # Direct human teaching (admin corrections screen): the reviewer IS the approval, so the
+    # row is written active immediately — unlike candidate_teach, which waits for the queue.
+    def admin_teach(phrase:, value:, attr:, source: "edit_diff")
+      normalized = CategoryText.normalize(phrase)
+      return nil if normalized.length < 2
+
+      row = find_or_initialize_by(phrase: normalized)
+      row.assign_attributes(attr => value, state: "active", source: row.source.presence || source)
+      row.confirmations = [ row.confirmations.to_i, 1 ].max
+      row.save!
+      row
+    end
+
+    private
+
+    # Token-level containment against the built-in vocabulary: a candidate whose distinctive
+    # word (>= 4 chars) already appears inside a built-in phrase ("contribution" vs
+    # "contribution religieuse") teaches nothing new.
+    def overlaps_built_in?(phrase, built_in_tokens)
+      significant_tokens(phrase).any? { |t| built_in_tokens.include?(t) }
+    end
+
+    def significant_tokens(phrase)
+      I18n.transliterate(phrase.to_s).downcase.split(/[^a-z0-9]+/).select { |t| t.length >= 4 }
+    end
   end
 end

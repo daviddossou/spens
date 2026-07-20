@@ -43,14 +43,27 @@ class LearnedKeyword < ApplicationRecord
     candidate_teach(phrase: phrase, value: kind, source: source, attr: :kind)
   end
 
+  # Teach a phrase -> kind mapping as immediately active (admin corrections screen).
+  def self.admin_teach(phrase:, kind:)
+    super(phrase: phrase, value: kind, attr: :kind)
+  end
+
   # A phrase the built-in kind keywords (either language) already classify — nothing to learn.
   def self.built_in?(phrase)
     normalized = CategoryText.normalize(phrase)
-    %w[en fr].any? do |lang|
+    return true if %w[en fr].any? do |lang|
       QuickEntry::Keywords.kind(lang).values.flatten.any? do |keyword|
         normalized.include?(CategoryText.normalize(keyword))
       end
     end
+
+    overlaps_built_in?(phrase, built_in_tokens)
   end
   private_class_method :built_in?
+
+  def self.built_in_tokens
+    @built_in_tokens ||= %w[en fr].flat_map { |lang| QuickEntry::Keywords.kind(lang).values.flatten }
+                                  .flat_map { |p| significant_tokens(p) }.to_set
+  end
+  private_class_method :built_in_tokens
 end

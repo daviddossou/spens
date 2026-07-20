@@ -28,6 +28,11 @@ class CategoryAliasMatcher
       all_terms[key.to_s] || ""
     end
 
+    # Every alias phrase across all keys — used for token-level dedup of learned candidates.
+    def phrases
+      raw_aliases.values.flat_map { |p| Array(p) }
+    end
+
     private
 
     def raw_aliases
