@@ -1,6 +1,9 @@
 # This file is copied to spec/ when you run 'rails generate rspec:install'
 require 'spec_helper'
-ENV['RAILS_ENV'] ||= 'test'
+# Force the test environment: the Docker web container exports RAILS_ENV=development and a
+# DATABASE_URL pointing at spens_development, which would silently run specs against dev data.
+ENV['RAILS_ENV'] = 'test'
+ENV['DATABASE_URL'] = ENV['DATABASE_URL'].sub('spens_development', 'spens_test') if ENV['DATABASE_URL']
 require_relative '../config/environment'
 # Prevent database truncation if the environment is production
 abort("The Rails environment is running in production mode!") if Rails.env.production?
