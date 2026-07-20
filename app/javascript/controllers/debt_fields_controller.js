@@ -35,13 +35,16 @@ export default class extends Controller {
     this.syncFee()
 
     if (this.lockedValue) {
-      // Opened from a specific debt: direction is known, both actions are valid.
+      // Opened from a specific debt: direction is fixed by that debt, both actions are valid.
       this.hidePicker()
       this.renderIntents(direction)
       this.selectIntentByKind(this.kindInputTarget.value)
     } else if (direction && this.directionExists(this.currentName, direction)) {
-      // Existing debt with this direction: both actions are valid.
-      this.hidePicker()
+      // Existing debt with this direction. The picker stays visible (preselected) so a
+      // wrong guess — e.g. from quick entry / AI — can always be corrected without
+      // deleting the transaction.
+      this.showPicker()
+      this.markDirectionByValue(direction)
       this.renderIntents(direction)
       this.selectIntentByKind(this.kindInputTarget.value)
     } else if (direction) {
@@ -79,9 +82,11 @@ export default class extends Controller {
     const directions = this.debtsByNameValue[name.toLowerCase()] || []
 
     if (directions.length === 1) {
-      // Existing person with a single relationship: infer the direction.
+      // Existing person with a single relationship: infer the direction, but keep the
+      // picker visible (preselected) so an inference mistake stays correctable.
       this.directionInputTarget.value = directions[0]
-      this.hidePicker()
+      this.showPicker()
+      this.markDirectionByValue(directions[0])
       this.renderIntents(directions[0])
       this.selectDefaultIntent()
     } else {
