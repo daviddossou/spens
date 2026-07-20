@@ -19,6 +19,9 @@ class TransactionForm < BaseForm
   attribute :description, :string
   attribute :contact_name, :string
   attribute :direction, :string
+  # Set when the quick-entry fallback rendered this form, so the created transaction can be
+  # linked back to its QuickEntryAttempt and feed the learning loop.
+  attribute :quick_entry_attempt_id, :string
 
   ##
   # Validations
@@ -108,7 +111,8 @@ class TransactionForm < BaseForm
       note: payload[:note],
       description: payload[:description],
       contact_name: payload[:contact_name],
-      direction: payload[:direction]
+      direction: payload[:direction],
+      quick_entry_attempt_id: payload[:quick_entry_attempt_id]
     )
   end
 

@@ -15,6 +15,7 @@
 
     <!-- Hidden field to store the selected kind -->
     <%= f.hidden_field :kind, data: { debt_fields_target: "kindInput" } %>
+    <%= f.hidden_field :quick_entry_attempt_id %>
 
     <!-- Kind Selector (hidden when opened from a specific debt — the kind is fixed) -->
     <% unless @form.debt_id.present? %>
@@ -106,7 +107,8 @@
         </div>
       <% end %>
 
-      <!-- Direction picker (shown only for a new or both-directions person) -->
+      <!-- Direction picker (always shown once a person is set, preselected when inferable,
+           so a wrong quick-entry/AI guess stays correctable) -->
       <div class="transaction-form__debt-direction kind-selector hidden"
            data-debt-fields-target="directionPicker" role="radiogroup"
            aria-label="<%= t('transactions.form.direction_label') %>">

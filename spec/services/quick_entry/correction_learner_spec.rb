@@ -50,6 +50,36 @@ RSpec.describe QuickEntry::CorrectionLearner do
     expect(attempt.corrections["transaction_type_name"]).to include("to" => groceries_name)
   end
 
+  it "learns from a manual-fallback completion (blank draft category, user picked one)" do
+    transaction = attempt_for(
+      text: "2000 zoomzoom",
+      type_name: groceries_name,
+      draft: { "kind" => "expense", "amount" => 2000, "transaction_date" => Date.current.iso8601 }
+    )
+
+    described_class.learn(transaction)
+
+    expect(LearnedAlias.find_by(phrase: "zoomzoom")&.taxonomy_key).to eq("groceries")
+    attempt = QuickEntryAttempt.find_by(transaction_id: transaction.id)
+    expect(attempt.outcome).to eq("edited")
+    expect(attempt.corrections["transaction_type_name"]).to eq("from" => nil, "to" => groceries_name)
+  end
+
+  it "ignores a blank draft category on transfer/debt kinds (legitimately category-less)" do
+    type = create(:transaction_type, space: space, name: "Transfer out", kind: "transfer_out")
+    transaction = create(:transaction, space: space, transaction_type: type, amount: -2000)
+    create(:quick_entry_attempt, user: user, space: space, transaction_id: transaction.id,
+                                 text: "transfer 2000 to savings", source: "rules",
+                                 rules_draft: { "kind" => "transfer", "amount" => 2000,
+                                                "transaction_date" => Date.current.iso8601 })
+
+    described_class.learn(transaction)
+
+    attempt = QuickEntryAttempt.find_by(transaction_id: transaction.id)
+    expect(attempt.corrections || {}).not_to have_key("transaction_type_name")
+    expect(LearnedAlias.count).to eq(0)
+  end
+
   it "does nothing when the parse matched (no diff)" do
     transaction = attempt_for(
       text: "2000 groceries",

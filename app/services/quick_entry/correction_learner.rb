@@ -40,11 +40,17 @@ module QuickEntry
       }.compact
     end
 
-    # Skipped when the draft had no category (transfers/debt): there's nothing to compare.
+    # A blank original is a signal too — the parser found no category and the user picked one
+    # on the fallback form — but only for income/expense (transfers/debt legitimately have no
+    # draft category, so there's nothing to compare).
     def category_change(original)
-      return nil if original.blank?
-
       current = @transaction.transaction_type.name
+      if original.blank?
+        return nil unless %w[income expense].include?(@transaction.transaction_type.kind)
+
+        return { "from" => nil, "to" => current }
+      end
+
       return nil if CategoryText.normalize(original) == CategoryText.normalize(current)
 
       { "from" => original, "to" => current }
