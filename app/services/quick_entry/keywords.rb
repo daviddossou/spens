@@ -8,7 +8,7 @@ module QuickEntry
 
     class << self
       def reload!
-        @data = @numbers = nil
+        @data = @numbers = @months = nil
       end
 
       def data
@@ -21,6 +21,12 @@ module QuickEntry
       def instruments(lang) = section(lang, "instruments")
       def transfer_prepositions(lang) = section(lang, "transfer_prepositions")
       def fee(lang)     = Array(for_lang(lang)["fee"])
+      def extractor_stopwords(lang) = Array(for_lang(lang)["extractor_stopwords"])
+
+      # { transliterated month name => month number } for absolute-date parsing.
+      def months(lang)
+        (@months ||= {})[lang.to_s] ||= translit_keys(for_lang(lang)["months"])
+      end
 
       # { units:, tens:, scales: } with accent-stripped keys for matching.
       def numbers(lang)
