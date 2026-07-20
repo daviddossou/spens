@@ -4,6 +4,10 @@ import "controllers"
 import "chartkick"
 import "Chart.bundle"
 
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("/service-worker.js")
+}
+
 // Clean up body scroll lock before Turbo caches the page
 document.addEventListener("turbo:before-cache", () => {
   document.body.classList.remove("bottom-sheet-open")

@@ -1,0 +1,8 @@
+fr:
+  pwa:
+    install:
+      title: "Ajoutez Spens à votre écran d'accueil"
+      subtitle: "Ouvrez-le en un geste, comme une app"
+      ios_steps_html: "Touchez <strong>Partager</strong> <span aria-hidden=\"true\">&#x2B06;&#xFE0E;</span> puis <strong>Sur l'écran d'accueil</strong>"
+      install: "Installer"
+      not_now: "Plus tard"
