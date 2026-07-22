@@ -18,15 +18,6 @@
 
   <%= render Forms::InputFieldComponent.new(
     form: f,
-    field: :last_name,
-    type: :text_field,
-    label: t('auth.registrations.last_name'),
-    autocomplete: "family-name",
-    required: true
-  ) %>
-
-  <%= render Forms::InputFieldComponent.new(
-    form: f,
     field: :email,
     type: :email_field,
     label: t('auth.registrations.email'),

@@ -42,7 +42,7 @@ class Auth::RegistrationsController < ApplicationController
   private
 
   def registration_params
-    params.require(:user).permit(:first_name, :last_name, :email)
+    params.require(:user).permit(:first_name, :email)
   end
 
   def redirect_if_signed_in

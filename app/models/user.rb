@@ -51,7 +51,8 @@ class User < ApplicationRecord
   # Validations
   validates :email, presence: true, uniqueness: { case_sensitive: false },
                     format: { with: Devise.email_regexp }
-  validates :first_name, :last_name, presence: true
+  # Last name is optional; it can be filled later in the profile settings.
+  validates :first_name, presence: true
   validates :phone_number, format: { with: /\A[\+]?[1-9]?[0-9]{7,15}\z/, message: "must be a valid phone number" }, allow_blank: true
 
   ##
