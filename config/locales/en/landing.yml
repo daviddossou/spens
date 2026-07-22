@@ -4,6 +4,7 @@ en:
       title: "Spens — Take back control of your money"
       description: "Bring your accounts together, track your debts and turn your month-ends into savings margin. Free during launch."
     nav:
+      sign_in: "Sign in"
       features: "Features"
       pricing: "Pricing"
       cta: "Get started"

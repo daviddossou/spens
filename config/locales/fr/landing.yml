@@ -4,6 +4,7 @@ fr:
       title: "Spens — Reprends la main sur ton argent"
       description: "Réunis tes comptes, suis tes dettes et transforme tes fins de mois en marge d'épargne. Gratuit au lancement."
     nav:
+      sign_in: "Se connecter"
       features: "Fonctionnalités"
       pricing: "Tarifs"
       cta: "Commencer"
