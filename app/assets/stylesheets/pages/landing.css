@@ -373,6 +373,8 @@
   gap: 40px;
   align-items: center;
 }
+/* Let grid columns shrink below their content's min width on small screens */
+.landing-calc > * { min-width: 0; }
 .landing-label { display: block; font-size: 14px; font-weight: 700; color: var(--color-charcoal-black); margin-bottom: 8px; }
 .landing-input-group {
   display: flex;
@@ -530,6 +532,15 @@
   .landing-hero { padding: 40px 18px 0; }
   .landing-nav { padding: 16px 18px; gap: 12px; }
   .landing-nav__logo { height: 34px; }
+  /* Anchored dropdown would overflow the viewport: full-width panel instead */
+  .landing-picker__menu {
+    position: fixed;
+    top: 72px;
+    left: 12px;
+    right: 12px;
+    width: auto;
+    max-height: 65vh;
+  }
   .landing-nav__cta { padding: 9px 16px; font-size: 14px; }
   .landing-grid-3, .landing-grid-4 { grid-template-columns: 1fr; }
   .landing-hero__side { display: none; }
@@ -538,10 +549,8 @@
   .landing-hero__cta-row .landing-btn-light { width: 100%; box-sizing: border-box; text-align: center; }
   .landing-h2 { font-size: 26px; line-height: 1.2; }
   .landing-mockup { width: min(300px, 100%); }
-  .landing-calc { padding: 24px 18px; }
+  .landing-calc { padding: 28px 20px; gap: 28px; }
   .landing-calc__projections { grid-template-columns: 1fr; }
-  .landing-acc { grid-template-columns: 1fr; gap: 14px; }
-  .landing-acc__remove { justify-self: start; }
   .landing-recap { flex-direction: column; align-items: stretch; text-align: left; }
   .landing-recap .landing-btn-light { text-align: center; }
   .landing-final__footer { flex-direction: column; gap: 14px; }
