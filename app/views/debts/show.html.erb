@@ -78,4 +78,4 @@
 </div>
 
 <%= render Ui::FabComponent.new(url: new_quick_entry_path, label: t('.quick_add'), icon: :bolt, secondary: true) %>
-<%= render Ui::FabComponent.new(url: new_transaction_path, label: t('.add_transaction')) %>
+<%= render Ui::FabComponent.new(url: new_transaction_path(debt_id: @debt.id, kind: @debt.direction == 'lent' ? 'debt_in' : 'debt_out'), label: t('.add_transaction')) %>
