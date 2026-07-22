@@ -1,0 +1,141 @@
+fr:
+  landing:
+    meta:
+      title: "Spens — Reprends la main sur ton argent"
+      description: "Réunis tes comptes, suis tes dettes et transforme tes fins de mois en marge d'épargne. Gratuit au lancement."
+    nav:
+      features: "Fonctionnalités"
+      pricing: "Tarifs"
+      cta: "Commencer"
+      picker_title: "Pays · langue · devise"
+    hero:
+      badge: "Gratuit au lancement · avantage aux premiers inscrits"
+      title: "Es-tu satisfait de l'état de tes finances aujourd'hui ?"
+      subtitle: "Épargner n'est pas une question de revenu, mais d'habitude, et l'habitude commence par voir clair. Spens réunit tout ton argent, suit tes dettes et transforme tes fins de mois en marge d'épargne."
+      cta: "Commencer à épargner"
+      card_debts:
+        label: "On me doit"
+        amount: "↑ 1,33M"
+        note: "3 dettes suivies · à jour"
+      phone:
+        title: "Tableau de bord"
+        accounts_label: "Mes Comptes"
+        accounts_total: "38,96M"
+        income_title: "Salaire"
+        income_meta: "Revenu · Banque"
+        income_amount: "+ 250K"
+        expense_title: "Riz au marché"
+        expense_meta: "Alimentation · Cash"
+        expense_amount: "− 6 000"
+      card_goal:
+        label: "Objectif · Terrain"
+        value: "64 %"
+    diagnostic:
+      eyebrow: "Es-tu dans ces situations ?"
+      title: "Coche ce qui te ressemble."
+      subtitle: "La plupart des gens ne manquent pas d'argent, ils manquent de visibilité. Vois combien de ces situations te concernent aujourd'hui."
+      items:
+        - "Tu n'arrives à épargner qu'une infime partie de ce que tu gagnes chaque mois."
+        - "Tes fins de mois sont serrées, même quand le mois avait bien commencé."
+        - "Tu ne sais pas vraiment où part ton argent une fois qu'il est parti."
+        - "Tu jongles entre banque, cash et mobile money et tu perds le fil du total."
+        - "Tu oublies qui te doit combien, surtout les remboursements en plusieurs fois."
+        - "Tes proches t'en veulent : tu rembourses en retard et tu oublies combien tu as déjà rendu."
+      tiers:
+        none:
+          title: "Rien pour l'instant ?"
+          line: "Coche les situations que tu vis. Même une seule suffit pour que Spens change ton quotidien."
+        low:
+          title: "Ça commence à parler."
+          line: "Spens réunit ton argent, suit tes dettes et rend chaque dépense lisible."
+        mid:
+          title: "Tu n'es pas seul."
+          line: "La majorité des utilisateurs se reconnaissent ici. Spens est fait exactement pour ça."
+        high:
+          title: "Spens est fait pour toi."
+          line: "Réunis tout, suis tes dettes, épargne enfin, en quelques secondes par jour."
+      cta: "Reprendre le contrôle"
+    pedagogy:
+      eyebrow: "Pourquoi épargner change tout"
+      title: "Ce n'est pas gagner plus. C'est garder une partie de ce que tu gagnes déjà."
+      subtitle: "On croit souvent qu'il faut plus d'argent pour épargner. En réalité, épargner est une habitude, et comme toute habitude, elle démarre petit et grandit avec toi."
+      cards:
+        - title: "La régularité bat le montant"
+          body: "1 000 FCFA mis de côté chaque semaine valent mieux qu'une grosse somme qu'on n'atteint jamais. Ce qui compte, c'est de commencer et de tenir."
+        - title: "Les petits montants s'accumulent"
+          body: "Bout à bout, tes économies deviennent un terrain, une avance, un projet. Spens rend cette progression visible pour que l'envie de continuer ne retombe pas."
+        - title: "Une réserve, c'est la sérénité"
+          body: "Un imprévu (santé, réparation, coup dur) ne te fait plus paniquer quand tu as de côté. Épargner, au fond, c'est s'acheter de la tranquillité d'esprit."
+    calculator:
+      eyebrow: "Calcule ton épargne potentielle"
+      title: "Combien peux-tu mettre de côté ?"
+      subtitle: "Renseigne ton revenu et ajuste le pourcentage que tu te sens capable d'épargner. Regarde ce que ça représente dans 1, 3 et 10 ans."
+      income_label: "Ton revenu mensuel"
+      pct_label: "Part à épargner"
+      monthly_label: "Soit chaque mois"
+      y1_label: "Dans 1 an"
+      y3_label: "Dans 3 ans"
+      y10_label: "Dans 10 ans"
+      note: "Estimation de ce que tu auras mis de côté, hors intérêts. Avec Spens, tu suis cette progression pour de vrai."
+    features:
+      eyebrow: "Voici comment Spens règle ça"
+      title: "Ton problème, ce n'est pas que tu manques d'argent. Tu ne sais juste pas bien le gérer."
+      cards:
+        - title: "Tout au même endroit"
+          body: "Banque, cash et mobile money réunis. Un seul total, toujours juste."
+        - title: "Tes dettes sous contrôle"
+          body: "Qui te doit quoi, remboursement par remboursement. La confiance reste intacte."
+        - title: "Des dépenses lisibles"
+          body: "Tu vois où part l'argent, et tu coupes ce qui ne sert à rien."
+        - title: "Noté en 3 secondes"
+          body: "Assez rapide pour tenir chaque jour, sans jamais accumuler de retard."
+        - title: "Des espaces partagés"
+          body: "Couple, famille, tontine : invite tes proches, tout le monde lit les mêmes chiffres."
+        - title: "Des objectifs d'épargne"
+          body: "Un montant cible par compte, une progression visible qui donne envie de continuer."
+        - title: "Des statistiques claires"
+          body: "Revenus et dépenses par catégorie et par mois. Fini le tableur du dimanche soir."
+        - title: "Une saisie intelligente"
+          body: "Écris « taxi 1500 » : Spens devine le montant et la catégorie pour que tu enregistres 2 fois plus vite."
+    accounts:
+      eyebrow: "Commence tout de suite"
+      title: "Fais le point de tes comptes."
+      subtitle: "Ajoute tes comptes et leur solde, tu pourras en ajouter d'autres plus tard. En 30 secondes, tu vois déjà ton total."
+      name_label: "Nom du compte"
+      name_hint: "Choisis une suggestion ou saisis le tien"
+      name_placeholder: "Ex. Compte courant"
+      balance_label: "Solde"
+      balance_hint: "Combien y a-t-il sur ce compte ?"
+      remove_title: "Retirer"
+      add: "+ Ajouter un autre compte"
+      total_label: "Ton total"
+      cta: "Terminer et créer mon compte"
+      note: "Rien n'est enregistré tant que tu ne crées pas ton compte."
+      suggestions:
+        - "Compte courant"
+        - "Espèces / Cash"
+        - "Orange Money"
+        - "Wave"
+        - "MTN MoMo"
+        - "Moov Money"
+        - "Compte épargne"
+    pricing:
+      launch:
+        eyebrow: "Lancement"
+        price: "Gratuit"
+        body: "Tout Spens, sans limite : comptes, saisie rapide, dettes, objectifs, espaces partagés, stats."
+        cta: "Commencer maintenant"
+      premium:
+        eyebrow: "Premium · à venir"
+        price: "Bientôt"
+        body: "Des outils qui te font gagner du temps : saisie encore plus rapide, analyses fiables et poussées. Les premiers inscrits garderont un avantage."
+        note: "Avantage aux premiers arrivés"
+    final:
+      title: "Si tu n'arrives pas à économiser maintenant, ce n'est pas quand tu auras plus d'argent que tu y parviendras."
+      body: "Améliore tes finances et ta vie grâce à une gestion simplifiée de tes dépenses et de ton épargne. Spens te guide vers une gestion financière sans tracas, pour un avenir où l'épargne n'est plus une source de stress."
+      cta: "Commence à épargner"
+    footer:
+      copyright: "© %{year} Spens"
+      privacy: "Confidentialité"
+      terms: "Conditions"
+      contact: "Contact"

@@ -8,7 +8,7 @@ class HomeController < ApplicationController
     if user_signed_in?
       redirect_to dashboard_path
     else
-      redirect_to new_user_registration_path
+      redirect_to landing_path
     end
   end
 

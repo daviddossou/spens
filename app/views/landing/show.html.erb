@@ -1,0 +1,323 @@
+<%
+  countries = [
+    { code: "BJ", flag: "🇧🇯", name: "Bénin", cur: "XOF", lang: "FR" },
+    { code: "CI", flag: "🇨🇮", name: "Côte d'Ivoire", cur: "XOF", lang: "FR" },
+    { code: "SN", flag: "🇸🇳", name: "Sénégal", cur: "XOF", lang: "FR" },
+    { code: "TG", flag: "🇹🇬", name: "Togo", cur: "XOF", lang: "FR" },
+    { code: "BF", flag: "🇧🇫", name: "Burkina Faso", cur: "XOF", lang: "FR" },
+    { code: "ML", flag: "🇲🇱", name: "Mali", cur: "XOF", lang: "FR" },
+    { code: "NE", flag: "🇳🇪", name: "Niger", cur: "XOF", lang: "FR" },
+    { code: "GN", flag: "🇬🇳", name: "Guinée", cur: "GNF", lang: "FR" },
+    { code: "CM", flag: "🇨🇲", name: "Cameroun", cur: "XAF", lang: "FR" },
+    { code: "NG", flag: "🇳🇬", name: "Nigeria", cur: "NGN", lang: "EN" },
+    { code: "GH", flag: "🇬🇭", name: "Ghana", cur: "GHS", lang: "EN" },
+    { code: "FR", flag: "🇫🇷", name: "France", cur: "EUR", lang: "FR" },
+    { code: "INT", flag: "🌍", name: "International", cur: "USD", lang: "EN" }
+  ]
+  diagnostic_accents = %w[--color-primary --color-success-dark --color-warning-dark --color-info-dark --color-violet --color-danger-dark]
+  sign_up = new_user_registration_path
+%>
+
+<div class="landing-dark">
+  <nav class="landing-nav">
+    <%= link_to root_path, class: "landing-nav__brand" do %>
+      <%= image_tag "spens-logo-white.png", alt: "Spens", class: "landing-nav__logo" %>
+    <% end %>
+    <div class="landing-nav__spacer"></div>
+    <a href="#feat" class="landing-nav__link"><%= t("landing.nav.features") %></a>
+    <a href="#tarifs" class="landing-nav__link"><%= t("landing.nav.pricing") %></a>
+    <div class="landing-picker" data-controller="landing--locale-picker"
+         data-landing--locale-picker-countries-value="<%= countries.to_json %>">
+      <button type="button" class="landing-picker__button"
+              data-action="landing--locale-picker#toggle"
+              data-landing--locale-picker-target="button"
+              aria-haspopup="listbox">
+        <span data-landing--locale-picker-target="flag" aria-hidden="true"><%= countries.first[:flag] %></span>
+        <span data-landing--locale-picker-target="code"><%= countries.first[:cur] %></span>
+        <span class="landing-picker__caret" aria-hidden="true">▾</span>
+      </button>
+      <div class="landing-picker__menu" data-landing--locale-picker-target="menu" hidden>
+        <div class="landing-picker__title"><%= t("landing.nav.picker_title") %></div>
+        <% countries.each do |co| %>
+          <button type="button" class="landing-picker__item"
+                  data-action="landing--locale-picker#pick"
+                  data-code="<%= co[:code] %>">
+            <span class="landing-picker__flag" aria-hidden="true"><%= co[:flag] %></span>
+            <span class="landing-picker__name"><%= co[:name] %></span>
+            <span class="landing-picker__meta"><%= co[:lang] %> · <%= co[:cur] %></span>
+          </button>
+        <% end %>
+      </div>
+    </div>
+    <%= link_to t("landing.nav.cta"), sign_up, class: "landing-nav__cta" %>
+  </nav>
+
+  <header class="landing-hero">
+    <div class="landing-hero__badge"><%= t("landing.hero.badge") %></div>
+    <h1 class="landing-hero__title"><%= t("landing.hero.title") %></h1>
+    <p class="landing-hero__subtitle"><%= t("landing.hero.subtitle") %></p>
+    <div class="landing-hero__cta-row">
+      <%= link_to t("landing.hero.cta"), sign_up, class: "landing-btn-light landing-btn-light--lg" %>
+    </div>
+    <div class="landing-hero__row">
+      <div class="landing-hero__side">
+        <div class="landing-hero__side-label"><%= t("landing.hero.card_debts.label") %></div>
+        <div class="landing-hero__side-amount landing-hero__side-amount--green"><%= t("landing.hero.card_debts.amount") %> <span data-currency-symbol>FCFA</span></div>
+        <div class="landing-hero__side-note"><%= t("landing.hero.card_debts.note") %></div>
+      </div>
+      <div class="landing-mockup">
+        <div class="landing-mockup__header">
+          <div class="landing-mockup__title"><%= t("landing.hero.phone.title") %></div>
+          <div class="landing-mockup__currency" data-currency-label>XOF</div>
+        </div>
+        <div class="landing-mockup__body">
+          <div class="landing-mockup__balance">
+            <div class="landing-mockup__balance-label"><%= t("landing.hero.phone.accounts_label") %></div>
+            <div class="landing-mockup__balance-amount"><%= t("landing.hero.phone.accounts_total") %> <span data-currency-symbol>FCFA</span></div>
+          </div>
+          <div class="landing-mockup__tx">
+            <span class="landing-mockup__tx-icon landing-mockup__tx-icon--in" aria-hidden="true">↑</span>
+            <div class="landing-mockup__tx-body">
+              <div class="landing-mockup__tx-title"><%= t("landing.hero.phone.income_title") %></div>
+              <div class="landing-mockup__tx-meta"><%= t("landing.hero.phone.income_meta") %></div>
+            </div>
+            <b class="landing-mockup__tx-amount landing-mockup__tx-amount--in"><%= t("landing.hero.phone.income_amount") %></b>
+          </div>
+          <div class="landing-mockup__tx">
+            <span class="landing-mockup__tx-icon landing-mockup__tx-icon--out" aria-hidden="true">↓</span>
+            <div class="landing-mockup__tx-body">
+              <div class="landing-mockup__tx-title"><%= t("landing.hero.phone.expense_title") %></div>
+              <div class="landing-mockup__tx-meta"><%= t("landing.hero.phone.expense_meta") %></div>
+            </div>
+            <b class="landing-mockup__tx-amount landing-mockup__tx-amount--out"><%= t("landing.hero.phone.expense_amount") %></b>
+          </div>
+        </div>
+      </div>
+      <div class="landing-hero__side">
+        <div class="landing-hero__side-label"><%= t("landing.hero.card_goal.label") %></div>
+        <div class="landing-hero__side-amount landing-hero__side-amount--indigo"><%= t("landing.hero.card_goal.value") %></div>
+        <div class="landing-hero__side-bar"><div class="landing-hero__side-bar-fill" style="width: 64%;"></div></div>
+      </div>
+    </div>
+  </header>
+</div>
+
+<section class="landing-sect landing-sect--gray" data-controller="landing--diagnostic"
+         data-landing--diagnostic-tiers-value="<%= {
+           none: { title: t("landing.diagnostic.tiers.none.title"), line: t("landing.diagnostic.tiers.none.line") },
+           low: { title: t("landing.diagnostic.tiers.low.title"), line: t("landing.diagnostic.tiers.low.line") },
+           mid: { title: t("landing.diagnostic.tiers.mid.title"), line: t("landing.diagnostic.tiers.mid.line") },
+           high: { title: t("landing.diagnostic.tiers.high.title"), line: t("landing.diagnostic.tiers.high.line") }
+         }.to_json %>">
+  <div class="landing-container">
+    <div class="landing-sect__intro">
+      <div class="landing-eyebrow"><%= t("landing.diagnostic.eyebrow") %></div>
+      <h2 class="landing-h2"><%= t("landing.diagnostic.title") %></h2>
+      <p class="landing-sect__sub"><%= t("landing.diagnostic.subtitle") %></p>
+    </div>
+    <div class="landing-grid-3">
+      <% t("landing.diagnostic.items").each_with_index do |item, i| %>
+        <button type="button" class="landing-diag" style="--accent: var(<%= diagnostic_accents[i] %>);"
+                data-action="landing--diagnostic#toggle"
+                data-landing--diagnostic-target="card"
+                aria-pressed="false">
+          <span class="landing-diag__box" aria-hidden="true"><span class="landing-diag__check">✓</span></span>
+          <span class="landing-diag__text"><%= item %></span>
+        </button>
+      <% end %>
+    </div>
+    <div class="landing-recap">
+      <div class="landing-recap__count" data-landing--diagnostic-target="count" aria-hidden="true">0</div>
+      <div class="landing-recap__body">
+        <div class="landing-recap__title" data-landing--diagnostic-target="title" aria-live="polite"><%= t("landing.diagnostic.tiers.none.title") %></div>
+        <div class="landing-recap__line" data-landing--diagnostic-target="line"><%= t("landing.diagnostic.tiers.none.line") %></div>
+      </div>
+      <%= link_to t("landing.diagnostic.cta"), sign_up, class: "landing-btn-light" %>
+    </div>
+  </div>
+</section>
+
+<section class="landing-sect">
+  <div class="landing-container">
+    <div class="landing-sect__intro">
+      <div class="landing-eyebrow"><%= t("landing.pedagogy.eyebrow") %></div>
+      <h2 class="landing-h2"><%= t("landing.pedagogy.title") %></h2>
+      <p class="landing-sect__sub"><%= t("landing.pedagogy.subtitle") %></p>
+    </div>
+    <div class="landing-grid-3">
+      <% peda_tints = %w[indigo green orange] %>
+      <% t("landing.pedagogy.cards").each_with_index do |card, i| %>
+        <div class="landing-peda">
+          <div class="landing-peda__num landing-peda__num--<%= peda_tints[i] %>" aria-hidden="true"><%= i + 1 %></div>
+          <div class="landing-peda__title"><%= card[:title] %></div>
+          <p class="landing-peda__body"><%= card[:body] %></p>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</section>
+
+<section class="landing-sect landing-sect--mist" data-controller="landing--calculator">
+  <div class="landing-container">
+    <div class="landing-sect__intro">
+      <div class="landing-eyebrow landing-eyebrow--deep"><%= t("landing.calculator.eyebrow") %></div>
+      <h2 class="landing-h2"><%= t("landing.calculator.title") %></h2>
+      <p class="landing-sect__sub landing-sect__sub--on-mist"><%= t("landing.calculator.subtitle") %></p>
+    </div>
+    <div class="landing-calc">
+      <div class="landing-calc__form">
+        <label class="landing-label" for="landing-calc-income"><%= t("landing.calculator.income_label") %></label>
+        <div class="landing-input-group">
+          <span class="landing-input-group__addon" data-currency-label>XOF</span>
+          <input id="landing-calc-income" class="landing-input-group__input" inputmode="numeric" placeholder="150 000"
+                 value="150000" data-landing--calculator-target="income" data-action="input->landing--calculator#compute">
+        </div>
+        <div class="landing-calc__pct-row">
+          <label class="landing-label" for="landing-calc-pct"><%= t("landing.calculator.pct_label") %></label>
+          <span class="landing-calc__pct" data-landing--calculator-target="pct">10 %</span>
+        </div>
+        <input id="landing-calc-pct" type="range" min="1" max="40" value="10" class="landing-calc__slider"
+               data-landing--calculator-target="slider" data-action="input->landing--calculator#compute">
+        <div class="landing-calc__bounds"><span>1 %</span><span>40 %</span></div>
+        <div class="landing-calc__monthly">
+          <div class="landing-calc__monthly-label"><%= t("landing.calculator.monthly_label") %></div>
+          <div class="landing-calc__monthly-amount"><span data-landing--calculator-target="monthly">15 000</span> <span data-currency-label>XOF</span></div>
+        </div>
+      </div>
+      <div class="landing-calc__projections">
+        <div class="landing-proj">
+          <div class="landing-proj__label"><%= t("landing.calculator.y1_label") %></div>
+          <div class="landing-proj__amount" data-landing--calculator-target="y1">180 000</div>
+          <div class="landing-proj__cur" data-currency-label>XOF</div>
+        </div>
+        <div class="landing-proj landing-proj--dark">
+          <div class="landing-proj__label"><%= t("landing.calculator.y3_label") %></div>
+          <div class="landing-proj__amount" data-landing--calculator-target="y3">540 000</div>
+          <div class="landing-proj__cur" data-currency-label>XOF</div>
+        </div>
+        <div class="landing-proj landing-proj--indigo">
+          <div class="landing-proj__label"><%= t("landing.calculator.y10_label") %></div>
+          <div class="landing-proj__amount" data-landing--calculator-target="y10">1 800 000</div>
+          <div class="landing-proj__cur" data-currency-label>XOF</div>
+        </div>
+      </div>
+    </div>
+    <p class="landing-calc__note"><%= t("landing.calculator.note") %></p>
+  </div>
+</section>
+
+<section id="feat" class="landing-sect landing-sect--slate">
+  <div class="landing-container">
+    <div class="landing-eyebrow landing-eyebrow--on-dark"><%= t("landing.features.eyebrow") %></div>
+    <h2 class="landing-h2 landing-h2--on-dark landing-features__title"><%= t("landing.features.title") %></h2>
+    <div class="landing-grid-4">
+      <% t("landing.features.cards").each_with_index do |card, i| %>
+        <div class="landing-feat">
+          <div class="landing-feat__num" aria-hidden="true"><%= format("%02d", i + 1) %></div>
+          <div class="landing-feat__title"><%= card[:title] %></div>
+          <div class="landing-feat__body"><%= card[:body] %></div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</section>
+
+<section class="landing-sect landing-sect--gray" data-controller="landing--accounts">
+  <div class="landing-container landing-container--narrow">
+    <div class="landing-sect__intro landing-sect__intro--center">
+      <div class="landing-eyebrow"><%= t("landing.accounts.eyebrow") %></div>
+      <h2 class="landing-h2"><%= t("landing.accounts.title") %></h2>
+      <p class="landing-sect__sub"><%= t("landing.accounts.subtitle") %></p>
+    </div>
+    <datalist id="landing-acc-suggestions">
+      <% t("landing.accounts.suggestions").each do |s| %>
+        <option value="<%= s %>"></option>
+      <% end %>
+    </datalist>
+    <div class="landing-acc__rows" data-landing--accounts-target="rows">
+      <% [ [ t("landing.accounts.suggestions").first, 450_000 ], [ "Orange Money", 85_000 ] ].each do |name, balance| %>
+        <div class="landing-acc" data-landing--accounts-target="row">
+          <div class="landing-acc__field">
+            <label class="landing-label"><%= t("landing.accounts.name_label") %> <span class="landing-required">*</span></label>
+            <div class="landing-hint"><%= t("landing.accounts.name_hint") %></div>
+            <input list="landing-acc-suggestions" class="landing-input" value="<%= name %>" placeholder="<%= t("landing.accounts.name_placeholder") %>">
+          </div>
+          <div class="landing-acc__field">
+            <label class="landing-label"><%= t("landing.accounts.balance_label") %> <span class="landing-required">*</span></label>
+            <div class="landing-hint"><%= t("landing.accounts.balance_hint") %></div>
+            <div class="landing-input-group">
+              <span class="landing-input-group__addon" data-currency-label>XOF</span>
+              <input class="landing-input-group__input" inputmode="numeric" placeholder="0" value="<%= balance %>"
+                     data-landing--accounts-target="balance" data-action="input->landing--accounts#compute">
+            </div>
+          </div>
+          <button type="button" class="landing-acc__remove" title="<%= t("landing.accounts.remove_title") %>"
+                  data-action="landing--accounts#remove">×</button>
+        </div>
+      <% end %>
+    </div>
+    <template data-landing--accounts-target="template">
+      <div class="landing-acc" data-landing--accounts-target="row">
+        <div class="landing-acc__field">
+          <label class="landing-label"><%= t("landing.accounts.name_label") %> <span class="landing-required">*</span></label>
+          <div class="landing-hint"><%= t("landing.accounts.name_hint") %></div>
+          <input list="landing-acc-suggestions" class="landing-input" placeholder="<%= t("landing.accounts.name_placeholder") %>">
+        </div>
+        <div class="landing-acc__field">
+          <label class="landing-label"><%= t("landing.accounts.balance_label") %> <span class="landing-required">*</span></label>
+          <div class="landing-hint"><%= t("landing.accounts.balance_hint") %></div>
+          <div class="landing-input-group">
+            <span class="landing-input-group__addon" data-currency-label>XOF</span>
+            <input class="landing-input-group__input" inputmode="numeric" placeholder="0"
+                   data-landing--accounts-target="balance" data-action="input->landing--accounts#compute">
+          </div>
+        </div>
+        <button type="button" class="landing-acc__remove" title="<%= t("landing.accounts.remove_title") %>"
+                data-action="landing--accounts#remove">×</button>
+      </div>
+    </template>
+    <button type="button" class="landing-acc__add" data-action="landing--accounts#add"><%= t("landing.accounts.add") %></button>
+    <div class="landing-recap landing-recap--tight">
+      <div class="landing-recap__body">
+        <div class="landing-recap__label"><%= t("landing.accounts.total_label") %></div>
+        <div class="landing-recap__total"><span data-landing--accounts-target="total">535 000</span> <span data-currency-label>XOF</span></div>
+      </div>
+      <%= link_to t("landing.accounts.cta"), sign_up, class: "landing-btn-light" %>
+    </div>
+    <p class="landing-acc__note"><%= t("landing.accounts.note") %></p>
+  </div>
+</section>
+
+<section id="tarifs" class="landing-sect">
+  <div class="landing-container">
+    <div class="landing-grid-2">
+      <div class="landing-price landing-price--launch">
+        <div class="landing-eyebrow"><%= t("landing.pricing.launch.eyebrow") %></div>
+        <div class="landing-price__amount"><%= t("landing.pricing.launch.price") %></div>
+        <p class="landing-price__body"><%= t("landing.pricing.launch.body") %></p>
+        <%= link_to t("landing.pricing.launch.cta"), sign_up, class: "landing-price__cta" %>
+      </div>
+      <div class="landing-price landing-price--premium">
+        <div class="landing-eyebrow landing-eyebrow--muted"><%= t("landing.pricing.premium.eyebrow") %></div>
+        <div class="landing-price__amount landing-price__amount--muted"><%= t("landing.pricing.premium.price") %></div>
+        <p class="landing-price__body"><%= t("landing.pricing.premium.body") %></p>
+        <div class="landing-price__soon"><%= t("landing.pricing.premium.note") %></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="landing-sect landing-sect--dark landing-final">
+  <div class="landing-container">
+    <h2 class="landing-h2 landing-h2--on-dark landing-final__title"><%= t("landing.final.title") %></h2>
+    <p class="landing-final__body"><%= t("landing.final.body") %></p>
+    <%= link_to t("landing.final.cta"), sign_up, class: "landing-btn-light landing-btn-light--lg" %>
+    <div class="landing-final__footer">
+      <span><%= t("landing.footer.copyright", year: Date.current.year) %></span>
+      <a href="#"><%= t("landing.footer.privacy") %></a>
+      <a href="#"><%= t("landing.footer.terms") %></a>
+      <a href="mailto:david@anka.africa"><%= t("landing.footer.contact") %></a>
+      <span><span data-lang-label><%= I18n.locale.to_s.upcase %></span> · <span data-currency-label>XOF</span></span>
+    </div>
+  </div>
+</footer>

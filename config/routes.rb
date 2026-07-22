@@ -26,6 +26,7 @@ Rails.application.routes.draw do
 
     # Main application routes
     root "home#index"
+    get "welcome", to: "landing#show", as: :landing
     get "dashboard", to: "home#show"
 
     # Transactions
