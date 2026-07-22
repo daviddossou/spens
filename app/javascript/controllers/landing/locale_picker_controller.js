@@ -45,7 +45,11 @@ export default class extends Controller {
   }
 
   savedCountry() {
-    try { return localStorage.getItem(STORAGE_KEY) } catch { return null }
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY)
+      if (!raw) return null
+      return raw.startsWith("{") ? JSON.parse(raw).code : raw
+    } catch { return null }
   }
 
   disconnect() {
@@ -68,7 +72,8 @@ export default class extends Controller {
 
   pick(event) {
     const code = event.currentTarget.dataset.code
-    try { localStorage.setItem(STORAGE_KEY, code) } catch {}
+    const picked = this.countriesValue.find((c) => c.code === code)
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify({ code, cur: picked?.cur })) } catch {}
     const country = this.apply(code)
     this.close()
 

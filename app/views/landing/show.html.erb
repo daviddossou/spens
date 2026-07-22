@@ -15,6 +15,8 @@
     { code: "INT", flag: "🌍", name: "International", cur: "USD", lang: "EN" }
   ]
   diagnostic_accents = %w[--color-primary --color-success-dark --color-warning-dark --color-info-dark --color-violet --color-danger-dark]
+  # Landing problem → onboarding financial goals (Space::FINANCIAL_GOALS keys, 1:1)
+  diagnostic_goals = %w[save_regularly cut_wasteful_spending track_spending track_all_accounts track_repayments pay_off_debt]
   sign_up = new_user_registration_path
 %>
 
@@ -121,6 +123,7 @@
         <button type="button" class="landing-diag" style="--accent: var(<%= diagnostic_accents[i] %>);"
                 data-action="landing--diagnostic#toggle"
                 data-landing--diagnostic-target="card"
+                data-goals="<%= diagnostic_goals[i] %>"
                 aria-pressed="false">
           <span class="landing-diag__box" aria-hidden="true"><span class="landing-diag__check">✓</span></span>
           <span class="landing-diag__text"><%= item %></span>
