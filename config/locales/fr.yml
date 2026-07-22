@@ -1,4 +1,8 @@
 fr:
+  number:
+    format:
+      delimiter: " "
+      separator: ","
   date:
     formats:
       default: "%d/%m/%Y"
