@@ -1,29 +1,23 @@
 en:
   financial_goals:
-    save_for_emergency:
-      name: "Emergency Fund"
-      description: "I want a safety net for unexpected expenses"
-    pay_off_debt:
-      name: "Pay Off Debt"
-      description: "I want to clear what I owe and be debt-free"
-    save_for_house:
-      name: "Save for a Home"
-      description: "I want to save up for a house or a big purchase"
-    save_for_vacation:
-      name: "Vacation"
-      description: "I want to reward myself with travel and experiences"
-    build_wealth:
-      name: "Build Wealth"
-      description: "I want to grow my money and achieve financial freedom"
+    save_regularly:
+      name: "Build My Savings"
+      description: "I want to watch my money grow month after month, for my projects"
+    cut_wasteful_spending:
+      name: "Take Back Control of My Spending"
+      description: "I want my money to go toward what really matters"
     track_spending:
-      name: "Track Spending"
-      description: "I want to see where my money goes"
-    budget_better:
-      name: "Budget Better"
-      description: "I want to stop overspending and save more"
-    separate_finances:
-      name: "Separate My Finances"
-      description: "I want to keep personal, business and family money apart"
+      name: "Understand Where My Money Goes"
+      description: "I want month-ends without bad surprises"
+    track_all_accounts:
+      name: "See All My Money Clearly"
+      description: "Bank, cash, mobile money: one picture, always right"
+    pay_off_debt:
+      name: "Free Myself From Debt"
+      description: "I want to repay on time and get my peace of mind back"
+    track_repayments:
+      name: "Get Back What I'm Owed"
+      description: "I want to be repaid without souring any friendship"
 
   validations:
     invalid_goal: "is not a valid goal"

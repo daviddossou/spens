@@ -1,29 +1,23 @@
 fr:
   financial_goals:
-    save_for_emergency:
-      name: "Fonds d'urgence"
-      description: "Je veux un filet de sécurité pour les imprévus"
-    pay_off_debt:
-      name: "Rembourser mes dettes"
-      description: "Je veux me libérer de mes dettes"
-    save_for_house:
-      name: "Acheter un logement"
-      description: "Je veux épargner pour une maison ou un gros achat"
-    save_for_vacation:
-      name: "Vacances"
-      description: "Je veux mettre de côté pour voyager"
-    build_wealth:
-      name: "Faire fructifier mon argent"
-      description: "Je veux faire grandir mon épargne et investir"
+    save_regularly:
+      name: "Me constituer une épargne"
+      description: "Je veux voir mon argent grandir mois après mois, pour mes projets"
+    cut_wasteful_spending:
+      name: "Reprendre le contrôle de mes dépenses"
+      description: "Je veux que mon argent aille vers ce qui compte vraiment"
     track_spending:
-      name: "Suivre mes dépenses"
-      description: "Je veux savoir où va mon argent"
-    budget_better:
-      name: "Mieux budgéter"
-      description: "Je veux arrêter de trop dépenser et épargner plus"
-    separate_finances:
-      name: "Séparer mes finances"
-      description: "Je veux distinguer perso, business et famille"
+      name: "Comprendre où va mon argent"
+      description: "Je veux des fins de mois sans mauvaise surprise"
+    track_all_accounts:
+      name: "Voir clair sur tout mon argent"
+      description: "Banque, cash, mobile money : un seul point, toujours juste"
+    pay_off_debt:
+      name: "Me libérer de mes dettes"
+      description: "Je veux rembourser à temps et retrouver ma tranquillité"
+    track_repayments:
+      name: "Récupérer ce qu'on me doit"
+      description: "Je veux être remboursé sans fâcher personne"
 
   validations:
     invalid_goal: "n'est pas un objectif financier valide"

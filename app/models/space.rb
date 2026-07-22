@@ -55,14 +55,12 @@ class Space < ApplicationRecord
   INCOME_FREQUENCIES = Onboarding::IncomeService::FREQUENCIES.freeze
   INCOME_SOURCES = Onboarding::IncomeService::SOURCES.freeze
   FINANCIAL_GOALS = %w[
-    save_for_emergency
-    pay_off_debt
-    save_for_house
-    save_for_vacation
-    build_wealth
+    save_regularly
+    cut_wasteful_spending
     track_spending
-    budget_better
-    separate_finances
+    track_all_accounts
+    pay_off_debt
+    track_repayments
   ].freeze
 
   ##
