@@ -9,6 +9,7 @@
 #  currency                :string           default("XOF")
 #  financial_goals         :jsonb
 #  income_frequency        :string
+#  locale                  :string
 #  main_income_source      :string
 #  monthly_savings_goal    :decimal(15, 2)
 #  name                    :string           not null
@@ -53,6 +54,7 @@ class Space < ApplicationRecord
   ##
   # Constants
   CURRENCIES = CurrencyService.all_codes.freeze
+  LOCALES = I18n.available_locales.map(&:to_s).freeze
   INCOME_FREQUENCIES = Onboarding::IncomeService::FREQUENCIES.freeze
   INCOME_SOURCES = Onboarding::IncomeService::SOURCES.freeze
   FINANCIAL_GOALS = %w[
@@ -69,6 +71,7 @@ class Space < ApplicationRecord
   validates :name, presence: true, length: { maximum: 100 },
                    uniqueness: { scope: :user_id, case_sensitive: false }
   validates :currency, inclusion: { in: CURRENCIES }, allow_nil: true
+  validates :locale, inclusion: { in: LOCALES }, allow_nil: true
   validates :country, presence: true, if: :requires_country?
   validates :income_frequency, inclusion: { in: INCOME_FREQUENCIES }, allow_blank: true
   validates :main_income_source, inclusion: { in: INCOME_SOURCES }, allow_blank: true

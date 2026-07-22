@@ -143,9 +143,9 @@ RSpec.describe Navigation::HeaderComponent, type: :component do
         expect(rendered.css("[role='menuitem']").length).to be >= 3
       end
 
-      it "renders the language switcher" do
+      it "does not render the language switcher" do
         rendered = render_inline(component)
-        expect(rendered.css(".app-header__dropdown-language")).to be_present
+        expect(rendered.css(".app-header__dropdown-language")).to be_empty
       end
     end
 

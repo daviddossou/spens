@@ -6,8 +6,10 @@ fr:
       name_placeholder: "ex. Business, Famille, Projet..."
       country_label: "Pays"
       currency_label: "Devise"
-      monthly_savings_goal_label: "Objectif d'épargne mensuel (optionnel)"
+      monthly_savings_goal_label: "Objectif d'épargne mensuel"
       monthly_savings_goal_help: "Le cap à viser chaque mois, visible sur le tableau de bord"
+      locale_label: "Langue"
+      locale_help: "La langue utilisée partout dans cet espace"
     index:
       title: "Espaces"
       subtitle: "Gère tes espaces"

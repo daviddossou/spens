@@ -3,9 +3,6 @@
 <div class="onboarding-container">
   <%= render Onboarding::ProgressComponent.new(current_step: 'financial_goal') %>
 
-  <div class="onboarding-language-switcher">
-    <%= render Navigation::LanguageSwitcherComponent.new(params: params) %>
-  </div>
 
   <div class="onboarding-content">
     <header class="onboarding-header">

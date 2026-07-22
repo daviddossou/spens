@@ -14,6 +14,7 @@ class SpacesController < ApplicationController
   def create
     @space = Space.new(space_params.merge(user: current_user))
     @space.onboarding_current_step = "onboarding_financial_goal"
+    @space.locale ||= I18n.locale.to_s
 
     if @space.save
       set_current_space(@space)
@@ -68,6 +69,6 @@ class SpacesController < ApplicationController
   private
 
   def space_params
-    params.require(:space).permit(:name, :currency, :country, :monthly_savings_goal)
+    params.require(:space).permit(:name, :currency, :country, :monthly_savings_goal, :locale)
   end
 end

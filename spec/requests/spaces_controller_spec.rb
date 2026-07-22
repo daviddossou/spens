@@ -136,6 +136,22 @@ RSpec.describe SpacesController, type: :request do
         expect(space.country).to eq("FR")
       end
 
+      it "updates the locale" do
+        patch space_path(id: space.id), params: { space: { locale: "fr" } }
+        expect(space.reload.locale).to eq("fr")
+      end
+
+      it "serves subsequent pages in the space locale" do
+        patch space_path(id: space.id), params: { space: { locale: "fr" } }
+        get spaces_path
+        expect(response.body).to include("Espaces")
+      end
+
+      it "rejects an unsupported locale" do
+        patch space_path(id: space.id), params: { space: { locale: "de" } }
+        expect(response).to have_http_status(:unprocessable_entity)
+      end
+
       it "redirects to spaces index" do
         patch space_path(id: space.id), params: { space: { name: "Updated" } }
         expect(response).to redirect_to(spaces_path)
