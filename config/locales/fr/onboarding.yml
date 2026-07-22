@@ -40,7 +40,7 @@ fr:
       form:
         back: "Retour"
         continue: "Continuer"
-        monthly_savings_goal_label: "Combien veux-tu épargner par mois ? (optionnel)"
+        monthly_savings_goal_label: "Combien veux-tu épargner par mois ?"
         monthly_savings_goal_help: "On suivra ce cap ensemble sur ton tableau de bord"
       select_field_component:
         country_label: "Où habites-tu ?"
