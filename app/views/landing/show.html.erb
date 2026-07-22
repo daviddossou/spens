@@ -151,7 +151,7 @@
         <div class="landing-peda">
           <div class="landing-peda__num landing-peda__num--<%= peda_tints[i] %>" aria-hidden="true"><%= i + 1 %></div>
           <div class="landing-peda__title"><%= card[:title] %></div>
-          <p class="landing-peda__body"><%= card[:body] %></p>
+          <p class="landing-peda__body"><%= safe_join(card[:body].split("%{currency}", -1).map { |part| h(part) }.zip([ tag.span("FCFA", data: { currency_symbol: true }) ]).flatten.compact) %></p>
         </div>
       <% end %>
     </div>

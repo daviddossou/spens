@@ -62,7 +62,7 @@ en:
       subtitle: "We often think we need more money to save. In reality, saving is a habit, and like any habit, it starts small and grows with you."
       cards:
         - title: "Consistency beats amount"
-          body: "1,000 FCFA set aside every week beats a big sum you never reach. What matters is starting and keeping at it."
+          body: "1,000 %{currency} set aside every week beats a big sum you never reach. What matters is starting and keeping at it."
         - title: "Small amounts add up"
           body: "End to end, your savings become a plot of land, a deposit, a project. Spens makes that progress visible so the will to continue never fades."
         - title: "A reserve means peace of mind"
