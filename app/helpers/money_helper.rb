@@ -60,7 +60,9 @@ module MoneyHelper
     if (abs_amount % 1).zero?
       number_with_delimiter(abs_amount.to_i)
     else
-      number_with_precision(abs_amount, precision: 2)
+      number_with_precision(abs_amount, precision: 2,
+                            delimiter: I18n.t("number.format.delimiter", default: ","),
+                            separator: I18n.t("number.format.separator", default: "."))
     end
   end
 

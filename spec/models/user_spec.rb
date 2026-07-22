@@ -126,10 +126,9 @@ RSpec.describe User, type: :model do
         expect(user.errors[:first_name]).to include("can't be blank")
       end
 
-      it "requires a last name" do
+      it "does not require a last name" do
         user.last_name = nil
-        expect(user).not_to be_valid
-        expect(user.errors[:last_name]).to include("can't be blank")
+        expect(user).to be_valid
       end
     end
 
