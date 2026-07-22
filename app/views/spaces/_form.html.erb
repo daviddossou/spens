@@ -36,6 +36,17 @@
   </div>
 
   <div class="space-form__field">
+    <%= render Forms::SelectFieldComponent.new(
+      form: form,
+      field: :locale,
+      options: Space::LOCALES.map { |l| [{ "en" => "English", "fr" => "Français" }.fetch(l, l), l] },
+      selected: form.object.locale || I18n.locale.to_s,
+      label: t('spaces.form.locale_label'),
+      help_text: t('spaces.form.locale_help')
+    ) %>
+  </div>
+
+  <div class="space-form__field">
     <%= render Forms::InputFieldComponent.new(
       form: form,
       field: :monthly_savings_goal,

@@ -19,6 +19,7 @@ class Auth::RegistrationsController < ApplicationController
       space = Space.create!(
         user: @user,
         name: I18n.t("spaces.default_name", default: "Personal"),
+        locale: I18n.locale.to_s,
         onboarding_current_step: "onboarding_financial_goal"
       )
 

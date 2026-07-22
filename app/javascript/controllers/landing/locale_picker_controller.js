@@ -36,10 +36,11 @@ export default class extends Controller {
     }
     const country = this.apply(this.detectCountry())
 
-    // A saved manual choice also restores its language (auto-detection alone
-    // only sets the currency, so a direct /fr or /en visit is never overridden).
+    // Restore a saved choice's language, or follow the detected country's
+    // language — unless the visitor explicitly asked for /en or /fr.
     const locale = country.lang.toLowerCase()
-    if (this.savedCountry() && locale !== document.documentElement.lang) {
+    const explicitLocale = /^\/(en|fr)(\/|$)/.test(window.location.pathname)
+    if (locale !== document.documentElement.lang && (this.savedCountry() || !explicitLocale)) {
       window.location.href = `/${locale}/welcome`
     }
   }

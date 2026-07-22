@@ -7,6 +7,7 @@
 #  currency                :string           default("XOF")
 #  financial_goals         :jsonb
 #  income_frequency        :string
+#  locale                  :string
 #  main_income_source      :string
 #  monthly_savings_goal    :decimal(15, 2)
 #  name                    :string           not null
