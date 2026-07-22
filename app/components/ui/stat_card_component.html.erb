@@ -4,8 +4,11 @@
       <span class="stat-card__icon" aria-hidden="true"><%= icon %></span>
     <% end %>
     <%= label %>
+    <% if sublabel %>
+      <span class="stat-card__sublabel"><%= sublabel %></span>
+    <% end %>
   </span>
-  <span class="stat-card__value <%= "stat-card__value--positive" if trend == :positive %><%= "stat-card__value--negative" if trend == :negative %>">
+  <span class="stat-card__value <%= "stat-card__value--positive" if trend == :positive %><%= "stat-card__value--negative" if trend == :negative %><%= "stat-card__value--caution" if trend == :caution %>">
     <% if trend_glyph %>
       <span class="stat-card__trend" aria-hidden="true"><%= trend_glyph %></span>
     <% end %>

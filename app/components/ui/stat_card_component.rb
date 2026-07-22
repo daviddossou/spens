@@ -3,16 +3,17 @@
 class Ui::StatCardComponent < ViewComponent::Base
   VARIANTS = %i[default hero compact].freeze
 
-  def initialize(label:, value:, currency: nil, trend: nil, variant: :default, icon: nil)
+  def initialize(label:, value:, currency: nil, trend: nil, variant: :default, icon: nil, sublabel: nil)
     @label = label
     @value = value
     @currency = currency
-    @trend = trend # :positive, :negative, or nil
+    @trend = trend # :positive, :negative, :caution, or nil
     @variant = VARIANTS.include?(variant) ? variant : :default
     @icon = icon
+    @sublabel = sublabel
   end
 
-  attr_reader :label, :value, :currency, :trend, :variant, :icon
+  attr_reader :label, :value, :currency, :trend, :variant, :icon, :sublabel
 
   def hero?
     variant == :hero
@@ -26,7 +27,7 @@ class Ui::StatCardComponent < ViewComponent::Base
   def trend_glyph
     case trend
     when :positive then "↑"
-    when :negative then "↓"
+    when :negative, :caution then "↓"
     end
   end
 end

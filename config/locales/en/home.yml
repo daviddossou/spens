@@ -26,6 +26,13 @@ en:
       stats:
         total_balance: "Total Balance"
         saved_this_month: "Saved This Month"
+        goal_sublabel: "Goal %{goal}"
+        view_accounts: "View my accounts"
+        view_lent: "View money owed to me"
+        view_borrowed: "View money I owe"
+        set_goal_sublabel: "Set a goal"
+        set_goal: "Set a monthly savings goal"
+        edit_goal: "Edit the monthly savings goal"
         owed_to_me: "Owed to Me"
         i_owe: "I Owe"
     empty_state:

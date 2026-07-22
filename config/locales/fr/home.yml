@@ -33,6 +33,13 @@ fr:
       stats:
         total_balance: "Mes Comptes"
         saved_this_month: "Épargné ce mois"
+        goal_sublabel: "Objectif %{goal}"
+        view_accounts: "Voir mes comptes"
+        view_lent: "Voir l'argent qu'on me doit"
+        view_borrowed: "Voir l'argent que je dois"
+        set_goal_sublabel: "Définir un objectif"
+        set_goal: "Définir un objectif d'épargne mensuel"
+        edit_goal: "Modifier l'objectif d'épargne mensuel"
         owed_to_me: "On me doit"
         i_owe: "Je dois"
     empty_state:
