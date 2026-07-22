@@ -1,0 +1,128 @@
+en:
+  landing:
+    meta:
+      title: "Spens — Take back control of your money"
+      description: "Bring your accounts together, track your debts and turn your month-ends into savings margin. Free during launch."
+    nav:
+      sign_in: "Sign in"
+      features: "Features"
+      pricing: "Pricing"
+      cta: "Get started"
+      picker_title: "Country · language · currency"
+    hero:
+      badge: "Free at launch · early users get an advantage"
+      title: "Are you happy with the state of your finances today?"
+      subtitle: "Saving isn't about income, it's about habit, and habit starts with seeing clearly. Spens brings all your money together, tracks your debts and turns your month-ends into savings margin."
+      cta: "Start saving"
+      card_debts:
+        label: "Owed to me"
+        amount: "↑ 1.33M"
+        note: "3 debts tracked · up to date"
+      phone:
+        title: "Dashboard"
+        accounts_label: "My Accounts"
+        accounts_total: "38.96M"
+        income_title: "Salary"
+        income_meta: "Income · Bank"
+        income_amount: "+ 250K"
+        expense_title: "Rice at the market"
+        expense_meta: "Food · Cash"
+        expense_amount: "− 6,000"
+      card_goal:
+        label: "Goal · Land plot"
+        value: "64%"
+    diagnostic:
+      eyebrow: "Do these sound familiar?"
+      title: "Tick what sounds like you."
+      subtitle: "Most people don't lack money, they lack visibility. See how many of these situations apply to you today."
+      items:
+        - "You only manage to save a tiny part of what you earn each month."
+        - "Your month-ends are tight, even when the month started well."
+        - "You don't really know where your money goes once it's gone."
+        - "You juggle bank, cash and mobile money and lose track of the total."
+        - "You forget who owes you how much, especially installment repayments."
+        - "Your loved ones resent it: you repay late and forget how much you've already paid back."
+      tiers:
+        none:
+          title: "Nothing yet?"
+          line: "Tick the situations you live with. Even one is enough for Spens to change your day-to-day."
+        low:
+          title: "It's starting to sound familiar."
+          line: "Spens brings your money together, tracks your debts and makes every expense readable."
+        mid:
+          title: "You're not alone."
+          line: "Most users recognize themselves here. Spens is built exactly for this."
+        high:
+          title: "Spens is made for you."
+          line: "Bring it all together, track your debts, finally save, in a few seconds a day."
+      cta: "Take back control"
+    pedagogy:
+      eyebrow: "Why saving changes everything"
+      title: "It's not about earning more. It's about keeping part of what you already earn."
+      subtitle: "We often think we need more money to save. In reality, saving is a habit, and like any habit, it starts small and grows with you."
+      cards:
+        - title: "Consistency beats amount"
+          body: "%{amount} %{currency} set aside every week beats a big sum you never reach. What matters is starting and keeping at it."
+        - title: "Small amounts add up"
+          body: "End to end, your savings become a plot of land, a deposit, a project. Spens makes that progress visible so the will to continue never fades."
+        - title: "A reserve means peace of mind"
+          body: "An emergency (health, a repair, a hard blow) no longer makes you panic when you have something set aside. Saving, deep down, is buying yourself peace of mind."
+    calculator:
+      eyebrow: "Calculate your saving potential"
+      title: "How much can you set aside?"
+      subtitle: "Enter your income and adjust the percentage you feel able to save. See what it represents in 1, 3 and 10 years."
+      income_label: "Your monthly income"
+      pct_label: "Share to save"
+      monthly_label: "That's every month"
+      y1_label: "In 1 year"
+      y3_label: "In 3 years"
+      y10_label: "In 10 years"
+      note: "Estimate of what you'll have set aside, excluding interest. With Spens, you track this progress for real."
+    features:
+      eyebrow: "Here's how Spens fixes it"
+      title: "Your problem isn't that you lack money. You just don't manage it well yet."
+      cards:
+        - title: "Everything in one place"
+          body: "Bank, cash and mobile money together. One total, always right."
+        - title: "Your debts under control"
+          body: "Who owes you what, repayment by repayment. Trust stays intact."
+        - title: "Readable spending"
+          body: "You see where the money goes, and you cut what serves no purpose."
+        - title: "Logged in 3 seconds"
+          body: "Fast enough to keep up every day, without ever falling behind."
+        - title: "Shared spaces"
+          body: "Couple, family, tontine: invite your loved ones, everyone reads the same numbers."
+        - title: "Savings goals"
+          body: "A target amount per account, visible progress that makes you want to continue."
+        - title: "Clear statistics"
+          body: "Income and expenses by category and by month. No more Sunday-night spreadsheet."
+        - title: "Smart entry"
+          body: "Write \"taxi 1500\": Spens guesses the amount and category so you log twice as fast."
+    accounts:
+      eyebrow: "Start right away"
+      title: "Take stock of your accounts."
+      subtitle: "Add your accounts and their balance, you can add more later. In 30 seconds, you already see your total."
+      add: "+ Add another account"
+      total_label: "Your total"
+      cta: "Finish and create my account"
+      note: "Nothing is saved until you create your account."
+    pricing:
+      launch:
+        eyebrow: "Launch"
+        price: "Free"
+        body: "All of Spens, no limits: accounts, quick entry, debts, goals, shared spaces, stats."
+        cta: "Get started now"
+      premium:
+        eyebrow: "Premium · coming"
+        price: "Soon"
+        body: "Tools that save you time: even faster entry, reliable and deeper analysis. Early users will keep an advantage."
+        note: "Early-bird advantage"
+    final:
+      title: "If you can't save money now, it's not when you have more money that you'll manage to."
+      body: "Improve your finances and your life with simplified tracking of your spending and savings. Spens guides you toward hassle-free money management, for a future where saving is no longer a source of stress."
+      cta: "Start saving"
+    footer:
+      copyright: "© %{year} Spens"
+      privacy: "Privacy"
+      terms: "Terms"
+      contact: "Contact"

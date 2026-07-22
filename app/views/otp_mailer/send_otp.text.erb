@@ -1,4 +1,4 @@
-<%= t('auth.mailer.otp.greeting', name: @user.first_name) %>
+<%= t('auth.mailer.otp.greeting', name: @user.first_name.presence || @user.email.split("@").first) %>
 
 <%= t('auth.mailer.otp.message') %>
 

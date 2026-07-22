@@ -216,9 +216,9 @@ RSpec.describe HomeController, type: :request do
     context "when not authenticated" do
       before { sign_out user }
 
-      it "redirects to sign up page" do
+      it "redirects to the landing page" do
         get root_path
-        expect(response).to redirect_to(new_user_registration_path)
+        expect(response).to redirect_to(landing_path)
       end
     end
   end

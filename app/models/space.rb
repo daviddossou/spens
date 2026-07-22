@@ -10,6 +10,7 @@
 #  financial_goals         :jsonb
 #  income_frequency        :string
 #  main_income_source      :string
+#  monthly_savings_goal    :decimal(15, 2)
 #  name                    :string           not null
 #  onboarding_current_step :string
 #  created_at              :datetime         not null
@@ -55,14 +56,12 @@ class Space < ApplicationRecord
   INCOME_FREQUENCIES = Onboarding::IncomeService::FREQUENCIES.freeze
   INCOME_SOURCES = Onboarding::IncomeService::SOURCES.freeze
   FINANCIAL_GOALS = %w[
-    save_for_emergency
-    pay_off_debt
-    save_for_house
-    save_for_vacation
-    build_wealth
+    save_regularly
+    cut_wasteful_spending
     track_spending
-    budget_better
-    separate_finances
+    track_all_accounts
+    pay_off_debt
+    track_repayments
   ].freeze
 
   ##
@@ -73,6 +72,7 @@ class Space < ApplicationRecord
   validates :country, presence: true, if: :requires_country?
   validates :income_frequency, inclusion: { in: INCOME_FREQUENCIES }, allow_blank: true
   validates :main_income_source, inclusion: { in: INCOME_SOURCES }, allow_blank: true
+  validates :monthly_savings_goal, numericality: { greater_than: 0 }, allow_nil: true
 
   enum :onboarding_current_step, {
     onboarding_financial_goal: "onboarding_financial_goal",

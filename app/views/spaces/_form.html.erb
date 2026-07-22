@@ -34,4 +34,17 @@
       include_blank: true
     ) %>
   </div>
+
+  <div class="space-form__field">
+    <%= render Forms::InputFieldComponent.new(
+      form: form,
+      field: :monthly_savings_goal,
+      type: :number_field,
+      label: t('spaces.form.monthly_savings_goal_label'),
+      help_text: t('spaces.form.monthly_savings_goal_help'),
+      prepend: form.object.currency || "XOF",
+      step: "0.01",
+      min: "0"
+    ) %>
+  </div>
 </div>

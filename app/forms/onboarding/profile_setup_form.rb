@@ -14,12 +14,14 @@ class Onboarding::ProfileSetupForm < BaseForm
   attribute :currency, :string
   attribute :income_frequency, :string
   attribute :main_income_source, :string
+  attribute :monthly_savings_goal, :decimal
 
   ##
   # Validations
   validates :country, presence: true
   validates :currency, presence: true, inclusion: { in: Space::CURRENCIES }
   validates :income_frequency, inclusion: { in: Space::INCOME_FREQUENCIES }, allow_blank: true
+  validates :monthly_savings_goal, numericality: { greater_than: 0 }, allow_nil: true
 
   def initialize(space, payload = {})
     @space = space
@@ -30,7 +32,8 @@ class Onboarding::ProfileSetupForm < BaseForm
       country: payload[:country] || space.country,
       currency: payload[:currency] || space.currency || "XOF",
       income_frequency: payload[:income_frequency] || space.income_frequency,
-      main_income_source: payload[:main_income_source] || space.main_income_source
+      main_income_source: payload[:main_income_source] || space.main_income_source,
+      monthly_savings_goal: payload[:monthly_savings_goal].presence || space.monthly_savings_goal
     )
   end
 
@@ -42,6 +45,7 @@ class Onboarding::ProfileSetupForm < BaseForm
       currency: currency,
       income_frequency: income_frequency,
       main_income_source: main_income_source,
+      monthly_savings_goal: monthly_savings_goal,
       onboarding_current_step: NEXT_STEP
     )
 

@@ -28,7 +28,7 @@ class Onboarding::ProfileSetupsController < OnboardingController
 
   def profile_setup_params
     params.require(:onboarding_profile_setup_form)
-          .permit(:country, :currency, :income_frequency, :main_income_source)
+          .permit(:country, :currency, :income_frequency, :main_income_source, :monthly_savings_goal)
   end
 
   def next_step_path

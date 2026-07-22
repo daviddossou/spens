@@ -9,8 +9,49 @@ export default class extends Controller {
   }
 
   connect() {
-    console.log("Account setup controller connected")
     this.updateRemoveButtons()
+    // Defer so the tom-select controllers on child inputs initialize first.
+    setTimeout(() => this.prefillFromLanding(), 0)
+  }
+
+  // Accounts entered on the landing page (before sign-up) are kept in
+  // localStorage; restore them here, then clear the stash.
+  prefillFromLanding() {
+    let accounts
+    try {
+      accounts = JSON.parse(localStorage.getItem("spens:landing-accounts"))
+    } catch { return }
+    if (!Array.isArray(accounts) || accounts.length === 0) return
+
+    const firstName = this.accountLineTargets[0]?.querySelector('input[name*="[account_name]"]')
+    if (firstName && firstName.value.trim() !== "") return // form already has data
+
+    while (this.accountLineTargets.length < accounts.length) {
+      this.addLine({ preventDefault() {} })
+    }
+    accounts.forEach((account, i) => {
+      const line = this.accountLineTargets[i]
+      this.setFieldValue(line.querySelector('input[name*="[account_name]"]'), account.name)
+      this.setFieldValue(line.querySelector('input[name*="[amount]"]'), account.amount)
+    })
+    try { localStorage.removeItem("spens:landing-accounts") } catch {}
+  }
+
+  setFieldValue(field, value) {
+    if (!field || !value) return
+    const applyViaTomSelect = () => {
+      field.tomselect.addOption({ value, text: value })
+      field.tomselect.setValue(value)
+    }
+    if (field.tomselect) {
+      applyViaTomSelect()
+    } else {
+      // Freshly added lines initialize their tom-select asynchronously.
+      field.value = value
+      setTimeout(() => {
+        if (field.tomselect && !field.tomselect.getValue()) applyViaTomSelect()
+      }, 100)
+    }
   }
 
   addLine(event) {
@@ -26,11 +67,12 @@ export default class extends Controller {
     // Update all field names and IDs with the new index
     this.updateFieldNamesAndIds(wrapper, newIndex)
 
-    // Append to container
-    this.accountsContainerTarget.appendChild(wrapper.firstElementChild)
+    // Append to container (appendChild moves the node out of the wrapper)
+    const line = wrapper.firstElementChild
+    this.accountsContainerTarget.appendChild(line)
 
     // Reinitialize tom-select for the new autocomplete field
-    this.initializeTomSelect(wrapper.firstElementChild)
+    this.initializeTomSelect(line)
 
     this.updateRemoveButtons()
   }

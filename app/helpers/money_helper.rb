@@ -58,9 +58,11 @@ module MoneyHelper
   # (60 -> "60", 218.37 -> "218.37", 0.5 -> "0.50", 2.21 -> "2.21").
   def format_money_number(abs_amount)
     if (abs_amount % 1).zero?
-      number_with_delimiter(abs_amount.to_i, delimiter: ",")
+      number_with_delimiter(abs_amount.to_i)
     else
-      number_with_precision(abs_amount, precision: 2, delimiter: ",")
+      number_with_precision(abs_amount, precision: 2,
+                            delimiter: I18n.t("number.format.delimiter", default: ","),
+                            separator: I18n.t("number.format.separator", default: "."))
     end
   end
 

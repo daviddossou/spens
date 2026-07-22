@@ -16,7 +16,7 @@ class Navigation::HeaderComponent < ViewComponent::Base
     first = current_user.first_name.to_s[0] || ""
     last = current_user.last_name.to_s[0] || ""
     initials = "#{first}#{last}".upcase
-    initials.present? ? initials : "?"
+    initials.present? ? initials : current_user.email.to_s[0].to_s.upcase
   end
 
   def user_full_name

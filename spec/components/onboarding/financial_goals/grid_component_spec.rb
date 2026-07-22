@@ -16,7 +16,7 @@ RSpec.describe Onboarding::FinancialGoals::GridComponent, type: :component do
   end
 
   it 'marks selected goals as selected' do
-    space = Space.new(financial_goals: [ 'save_for_emergency' ])
+    space = Space.new(financial_goals: [ 'save_regularly' ])
     form_object = Onboarding::FinancialGoalForm.new(space)
 
     rendered = render_inline(described_class.new(form_builder: form, model: form_object))

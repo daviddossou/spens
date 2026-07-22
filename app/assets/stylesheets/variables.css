@@ -65,6 +65,14 @@
   --color-rose-pink: #D28B94;
   --color-off-white: #F8F9FA;
 
+  /* Landing / marketing */
+  --color-text-secondary: #5b606e;
+  --color-muted-on-dark: #9197B9;
+  --color-border-soft: #e2e3e9;
+  --color-border-input: #d9dadf;
+  --color-violet: #7A3FB5;
+  --color-violet-20: #e5dcf2;
+
   /* Semantic Color Mappings */
   --text-primary: var(--color-primary);
   --text-secondary: var(--color-secondary);

@@ -35,8 +35,8 @@ RSpec.describe Navigation::HeaderComponent, type: :component do
     context "when user has no names" do
       let(:user) { build_stubbed(:user, first_name: "", last_name: "") }
 
-      it "returns fallback character" do
-        expect(component.user_initials).to eq("?")
+      it "falls back to the email's first letter" do
+        expect(component.user_initials).to eq(user.email[0].upcase)
       end
     end
 
