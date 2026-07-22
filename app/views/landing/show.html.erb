@@ -229,62 +229,35 @@
       <h2 class="landing-h2"><%= t("landing.accounts.title") %></h2>
       <p class="landing-sect__sub"><%= t("landing.accounts.subtitle") %></p>
     </div>
-    <datalist id="landing-acc-suggestions">
-      <% t("landing.accounts.suggestions").each do |s| %>
-        <option value="<%= s %>"></option>
-      <% end %>
-    </datalist>
-    <div class="landing-acc__rows" data-landing--accounts-target="rows">
-      <% [ [ t("landing.accounts.suggestions").first, 450_000 ], [ "Orange Money", 85_000 ] ].each do |name, balance| %>
-        <div class="landing-acc" data-landing--accounts-target="row">
-          <div class="landing-acc__field">
-            <label class="landing-label"><%= t("landing.accounts.name_label") %> <span class="landing-required">*</span></label>
-            <div class="landing-hint"><%= t("landing.accounts.name_hint") %></div>
-            <input list="landing-acc-suggestions" class="landing-input" value="<%= name %>" placeholder="<%= t("landing.accounts.name_placeholder") %>">
-          </div>
-          <div class="landing-acc__field">
-            <label class="landing-label"><%= t("landing.accounts.balance_label") %> <span class="landing-required">*</span></label>
-            <div class="landing-hint"><%= t("landing.accounts.balance_hint") %></div>
-            <div class="landing-input-group">
-              <span class="landing-input-group__addon" data-currency-label>XOF</span>
-              <input class="landing-input-group__input" inputmode="numeric" placeholder="0" value="<%= balance %>"
-                     data-landing--accounts-target="balance" data-action="input->landing--accounts#compute">
-            </div>
-          </div>
-          <button type="button" class="landing-acc__remove" title="<%= t("landing.accounts.remove_title") %>"
-                  data-action="landing--accounts#remove">×</button>
-        </div>
-      <% end %>
-    </div>
-    <template data-landing--accounts-target="template">
-      <div class="landing-acc" data-landing--accounts-target="row">
-        <div class="landing-acc__field">
-          <label class="landing-label"><%= t("landing.accounts.name_label") %> <span class="landing-required">*</span></label>
-          <div class="landing-hint"><%= t("landing.accounts.name_hint") %></div>
-          <input list="landing-acc-suggestions" class="landing-input" placeholder="<%= t("landing.accounts.name_placeholder") %>">
-        </div>
-        <div class="landing-acc__field">
-          <label class="landing-label"><%= t("landing.accounts.balance_label") %> <span class="landing-required">*</span></label>
-          <div class="landing-hint"><%= t("landing.accounts.balance_hint") %></div>
-          <div class="landing-input-group">
-            <span class="landing-input-group__addon" data-currency-label>XOF</span>
-            <input class="landing-input-group__input" inputmode="numeric" placeholder="0"
-                   data-landing--accounts-target="balance" data-action="input->landing--accounts#compute">
-          </div>
-        </div>
-        <button type="button" class="landing-acc__remove" title="<%= t("landing.accounts.remove_title") %>"
-                data-action="landing--accounts#remove">×</button>
+    <%= form_with url: sign_up, method: :get, scope: :landing, class: "landing-acc__form",
+                  data: {
+                    controller: "onboarding--account-setup",
+                    onboarding__account_setup_currency_value: "XOF",
+                    onboarding__account_setup_account_suggestions_value: I18n.t("account_templates").values.to_json,
+                    action: "input->landing--accounts#compute click->landing--accounts#compute submit->landing--accounts#submit"
+                  } do |f| %>
+      <div class="account-setup__accounts-container" data-onboarding--account-setup-target="accountsContainer">
+        <%= f.fields_for :transactions_attributes, Onboarding::TransactionForm.new(space: nil), index: 0 do |tf| %>
+          <%= render Onboarding::AccountLineComponent.new(form: tf, index: 0, transaction: tf.object, currency: "XOF", can_remove: false) %>
+        <% end %>
       </div>
-    </template>
-    <button type="button" class="landing-acc__add" data-action="landing--accounts#add"><%= t("landing.accounts.add") %></button>
-    <div class="landing-recap landing-recap--tight">
+      <button type="button" class="landing-acc__add"
+              data-action="click->onboarding--account-setup#addLine"
+              data-onboarding--account-setup-target="addButton"><%= t("landing.accounts.add") %></button>
+      <template data-onboarding--account-setup-target="template">
+        <%= f.fields_for :transactions_attributes, Onboarding::TransactionForm.new(space: nil), index: "TEMPLATE_INDEX" do |tf| %>
+          <%= render Onboarding::AccountLineComponent.new(form: tf, index: 0, transaction: tf.object, currency: "XOF", can_remove: true) %>
+        <% end %>
+      </template>
+    <% end %>
+    <div class="landing-recap landing-recap--tight" data-landing--accounts-target="recap" hidden>
       <div class="landing-recap__body">
         <div class="landing-recap__label"><%= t("landing.accounts.total_label") %></div>
-        <div class="landing-recap__total"><span data-landing--accounts-target="total">535 000</span> <span data-currency-label>XOF</span></div>
+        <div class="landing-recap__total"><span data-landing--accounts-target="total">0</span> <span data-currency-label>XOF</span></div>
       </div>
-      <%= link_to t("landing.accounts.cta"), sign_up, class: "landing-btn-light" %>
+      <%= link_to t("landing.accounts.cta"), sign_up, class: "landing-btn-light", data: { action: "landing--accounts#save" } %>
     </div>
-    <p class="landing-acc__note"><%= t("landing.accounts.note") %></p>
+    <p class="landing-acc__note" data-landing--accounts-target="note" hidden><%= t("landing.accounts.note") %></p>
   </div>
 </section>
 
