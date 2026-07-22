@@ -8,6 +8,7 @@
 #  financial_goals         :jsonb
 #  income_frequency        :string
 #  main_income_source      :string
+#  monthly_savings_goal    :decimal(15, 2)
 #  name                    :string           not null
 #  onboarding_current_step :string
 #  created_at              :datetime         not null

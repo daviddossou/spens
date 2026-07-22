@@ -40,6 +40,8 @@ en:
       form:
         back: "Back"
         continue: "Continue"
+        monthly_savings_goal_label: "How much do you want to save each month? (optional)"
+        monthly_savings_goal_help: "We'll keep this target in sight on your dashboard"
       select_field_component:
         country_label: "Where do you live?"
         country_help: "Helps us show the right options for your region"

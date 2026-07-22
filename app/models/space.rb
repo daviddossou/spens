@@ -10,6 +10,7 @@
 #  financial_goals         :jsonb
 #  income_frequency        :string
 #  main_income_source      :string
+#  monthly_savings_goal    :decimal(15, 2)
 #  name                    :string           not null
 #  onboarding_current_step :string
 #  created_at              :datetime         not null
@@ -71,6 +72,7 @@ class Space < ApplicationRecord
   validates :country, presence: true, if: :requires_country?
   validates :income_frequency, inclusion: { in: INCOME_FREQUENCIES }, allow_blank: true
   validates :main_income_source, inclusion: { in: INCOME_SOURCES }, allow_blank: true
+  validates :monthly_savings_goal, numericality: { greater_than: 0 }, allow_nil: true
 
   enum :onboarding_current_step, {
     onboarding_financial_goal: "onboarding_financial_goal",

@@ -6,6 +6,8 @@ en:
       name_placeholder: "e.g. Business, Family, Side Hustle..."
       country_label: "Country"
       currency_label: "Currency"
+      monthly_savings_goal_label: "Monthly savings goal (optional)"
+      monthly_savings_goal_help: "The target to aim for each month, shown on the dashboard"
     index:
       title: "Spaces"
       subtitle: "Manage your spaces"

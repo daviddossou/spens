@@ -31,6 +31,17 @@
       field: :main_income_source,
       include_blank: true
     ) %>
+
+    <%= render Forms::InputFieldComponent.new(
+      form: f,
+      field: :monthly_savings_goal,
+      type: :number_field,
+      label: t('.monthly_savings_goal_label'),
+      help_text: t('.monthly_savings_goal_help'),
+      prepend: current_space.currency || "XOF",
+      step: "0.01",
+      min: "0"
+    ) %>
   </div>
 
   <div class="form-actions">
