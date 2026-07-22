@@ -21,6 +21,9 @@ const TZ_MAP = {
 // Display symbol per currency code (mirrors MoneyHelper#get_currency_symbol).
 const SYMBOLS = { XOF: "FCFA", XAF: "FCFA", GNF: "FG", NGN: "₦", GHS: "GH₵", EUR: "€", USD: "$" }
 
+// Rounded weekly example amount per currency (≈ 1 000 FCFA), for the copy.
+const EXAMPLE_AMOUNTS = { XOF: 1000, XAF: 1000, GNF: 15000, NGN: 2500, GHS: 25, EUR: 2, USD: 2 }
+
 // Country/currency picker: changes the currency label everywhere on the page.
 // No conversion; entered amounts keep their value.
 export default class extends Controller {
@@ -86,6 +89,13 @@ export default class extends Controller {
     document.querySelectorAll("[data-currency-symbol]").forEach((el) => {
       el.textContent = SYMBOLS[country.cur] || country.cur
     })
+    const example = EXAMPLE_AMOUNTS[country.cur]
+    if (example) {
+      const locale = document.documentElement.lang === "en" ? "en" : "fr-FR"
+      document.querySelectorAll("[data-example-amount]").forEach((el) => {
+        el.textContent = example.toLocaleString(locale)
+      })
+    }
     document.querySelectorAll("[data-lang-label]").forEach((el) => {
       el.textContent = country.lang
     })

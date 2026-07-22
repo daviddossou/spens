@@ -62,7 +62,7 @@ fr:
       subtitle: "On croit souvent qu'il faut plus d'argent pour épargner. En réalité, épargner est une habitude, et comme toute habitude, elle démarre petit et grandit avec toi."
       cards:
         - title: "La régularité bat le montant"
-          body: "1 000 %{currency} mis de côté chaque semaine valent mieux qu'une grosse somme qu'on n'atteint jamais. Ce qui compte, c'est de commencer et de tenir."
+          body: "%{amount} %{currency} mis de côté chaque semaine valent mieux qu'une grosse somme qu'on n'atteint jamais. Ce qui compte, c'est de commencer et de tenir."
         - title: "Les petits montants s'accumulent"
           body: "Bout à bout, tes économies deviennent un terrain, une avance, un projet. Spens rend cette progression visible pour que l'envie de continuer ne retombe pas."
         - title: "Une réserve, c'est la sérénité"
