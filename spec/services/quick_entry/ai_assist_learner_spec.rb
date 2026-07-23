@@ -12,10 +12,14 @@ RSpec.describe QuickEntry::AiAssistLearner do
 
     described_class.learn(attempt)
 
-    learned = LearnedAlias.find_by(phrase: "ndogou")
+    learned = LearnedAlias.global.find_by(phrase: "ndogou")
     expect(learned).to be_present
     expect(learned).to be_candidate
     expect(learned.taxonomy_key).to eq("groceries")
+
+    personal = LearnedAlias.for_space(space).find_by(phrase: "ndogou")
+    expect(personal).to be_active # the space's own tier needs no review
+    expect(personal.taxonomy_key).to eq("groceries")
   end
 
   it "no-ops without an AI phrase/key" do
@@ -30,9 +34,11 @@ RSpec.describe QuickEntry::AiAssistLearner do
 
     described_class.learn(attempt)
 
-    learned = LearnedKeyword.find_by(phrase: "depanne")
+    learned = LearnedKeyword.global.find_by(phrase: "depanne")
     expect(learned).to be_candidate
     expect(learned.kind).to eq("debt_out")
+
+    expect(LearnedKeyword.for_space(space).find_by(phrase: "depanne")).to be_active
   end
 
   it "captures a novel transfer verb, excluding the accounts the AI named" do

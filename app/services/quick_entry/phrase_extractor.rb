@@ -15,7 +15,7 @@ module QuickEntry
     # EN/FR filler dropped on top of the parser's own keywords.
     STOPWORDS = %w[
       the a an of for and or with my me you it at on in to from this that paid pay spent bought buy
-      le la les un une de des du pour et ou avec mon ma mes au aux sur ce cette paye achete depense pris ai
+      le la les un une de des du pour et ou avec mon ma mes au aux sur ce cette chez paye achete depense pris ai
     ].freeze
 
     def self.call(text:, locale:, space:, exclude: [])

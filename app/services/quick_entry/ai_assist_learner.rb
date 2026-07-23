@@ -29,11 +29,14 @@ module QuickEntry
 
     private
 
-    # expense/income: the word the AI keyed the category on -> a candidate category alias.
+    # expense/income: the word the AI keyed the category on -> the space's own alias (active —
+    # the auto-created transaction the user keeps is an implicit validation, and a later edit
+    # re-teaches over it) + a global candidate for the review queue.
     def teach_alias(ai)
       phrase = ai["phrase"].presence or return
       key = ai["category_key"].presence or return
 
+      LearnedAlias.personal_teach(space: @attempt.space, phrase: phrase, taxonomy_key: key)
       LearnedAlias.teach(phrase: phrase, taxonomy_key: key, source: "ai")
     end
 
@@ -44,6 +47,7 @@ module QuickEntry
       kind = structural_kind(ai) or return
       phrase = kind_phrase(ai) or return
 
+      LearnedKeyword.personal_teach(space: @attempt.space, phrase: phrase, kind: kind)
       LearnedKeyword.teach(phrase: phrase, kind: kind, source: "ai")
     end
 

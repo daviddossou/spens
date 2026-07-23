@@ -122,7 +122,8 @@ RSpec.describe QuickEntriesController, type: :request do
       attempt = QuickEntryAttempt.order(:created_at).last
       expect(attempt.source).to eq("ai")
       expect(attempt.ai_used).to be(true)
-      expect(LearnedAlias.find_by(phrase: "ndogou")).to be_candidate
+      expect(LearnedAlias.global.find_by(phrase: "ndogou")).to be_candidate
+      expect(LearnedAlias.for_space(space).find_by(phrase: "ndogou")).to be_active
     end
 
     it "requires authentication" do
