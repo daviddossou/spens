@@ -6,7 +6,7 @@ fr:
       contact_support: "Contacter le support"
       log_out: "Se déconnecter"
     bottom_nav:
-      dashboard: "Tableau de bord"
+      dashboard: "Accueil"
       debts: "Dettes"
       goals: "Objectifs"
       accounts: "Comptes"
