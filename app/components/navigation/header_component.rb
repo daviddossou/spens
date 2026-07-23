@@ -31,6 +31,11 @@ class Navigation::HeaderComponent < ViewComponent::Base
     helpers.edit_profile_path
   end
 
+  # The active space's learned vocabulary (personal mappings) — nil without a space.
+  def mappings_path
+    helpers.space_mappings_path(space_id: current_space.id) if current_space
+  end
+
   def logout_path
     helpers.destroy_user_session_path
   end

@@ -1,0 +1,61 @@
+<% content_for :title, t('.title') %>
+
+<div class="page-container page-container--narrow">
+  <header class="page-header">
+    <p class="page-header__subtitle"><%= t('.subtitle', space_name: @space.name) %></p>
+  </header>
+
+  <div class="page-content">
+    <% if @aliases.empty? && @keywords.empty? %>
+      <div class="empty-state">
+        <p class="empty-state__title"><%= t('.empty_title') %></p>
+        <p class="empty-state__message"><%= t('.empty_message') %></p>
+      </div>
+    <% else %>
+      <% if @aliases.any? %>
+        <h3 class="member-list__section-title"><%= t('.aliases_title') %></h3>
+        <div class="member-list">
+          <% @aliases.each do |mapping| %>
+            <div class="member-card mapping-card">
+              <div class="member-card__info">
+                <p class="member-card__name">« <%= mapping.display_or_phrase %> »</p>
+              </div>
+              <%# The select shows (and edits) the mapped category — no duplicate label. %>
+              <div class="mapping-card__actions">
+                <%= form_with url: space_mapping_path(space_id: @space.id, id: mapping.id), method: :patch, class: "mapping-card__retarget" do |f| %>
+                  <%= f.select :taxonomy_key,
+                        grouped_options_for_select(taxonomy_grouped_options, mapping.taxonomy_key),
+                        {}, class: "form-select mapping-card__select",
+                        data: { controller: "searchable-select" },
+                        onchange: "this.form.requestSubmit()" %>
+                <% end %>
+                <%= button_to t('.delete'), space_mapping_path(space_id: @space.id, id: mapping.id),
+                      method: :delete, class: "link-button link-button--danger",
+                      form: { data: { turbo_confirm: t('.confirm_delete', phrase: mapping.display_or_phrase) } } %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+
+      <% if @keywords.any? %>
+        <h3 class="member-list__section-title"><%= t('.keywords_title') %></h3>
+        <div class="member-list">
+          <% @keywords.each do |mapping| %>
+            <div class="member-card mapping-card">
+              <div class="member-card__info">
+                <p class="member-card__name">« <%= mapping.display_or_phrase %> »</p>
+                <p class="member-card__email"><%= t("admin.kinds.#{mapping.kind}", default: mapping.kind) %></p>
+              </div>
+              <div class="mapping-card__actions">
+                <%= button_to t('.delete'), space_mapping_path(space_id: @space.id, id: mapping.id, type: "keyword"),
+                      method: :delete, class: "link-button link-button--danger",
+                      form: { data: { turbo_confirm: t('.confirm_delete', phrase: mapping.display_or_phrase) } } %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+    <% end %>
+  </div>
+</div>

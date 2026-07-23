@@ -29,6 +29,7 @@ fr:
       subtitle: "Modifie ton espace"
       submit: "Enregistrer"
       delete_space: "Supprimer cet espace"
+      manage_mappings: "Mots appris"
       confirm_delete: "Tu es sûr(e) de vouloir supprimer \"%{name}\" ? Toutes les données seront perdues."
     update:
       success: "Espace mis à jour."
@@ -36,6 +37,21 @@ fr:
       success: "Espace supprimé."
       last_space: "Tu ne peux pas supprimer ton dernier espace."
       not_owner: "Seul le créateur de l'espace peut le supprimer."
+    mappings:
+      index:
+        title: "Mots appris"
+        subtitle: "Ce que %{space_name} a appris de tes saisies"
+        empty_title: "Rien d'appris pour l'instant"
+        empty_message: "Quand tu corriges une catégorie ou renseignes une description, cet espace apprend tes mots et les réutilise la prochaine fois."
+        aliases_title: "Tes mots → catégorie"
+        keywords_title: "Tes mots → type d'opération"
+        delete: "Oublier"
+        confirm_delete: "Oublier « %{phrase} » ?"
+      update:
+        success: "Association mise à jour."
+        invalid_category: "Catégorie inconnue."
+      destroy:
+        success: "Association oubliée."
     selections:
       create:
         success: "Basculé vers %{name}."

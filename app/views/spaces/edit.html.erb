@@ -13,6 +13,11 @@
                     class: "space-form" do |f| %>
         <%= render 'form', form: f %>
 
+        <div class="space-form__mappings-link">
+          <%= link_to t('.manage_mappings'), space_mappings_path(space_id: @space.id),
+                class: "link-button", data: { turbo_frame: "_top" } %>
+        </div>
+
         <div class="space-form__actions">
           <%= render Ui::ButtonComponent.new(
             text: t('.submit'),

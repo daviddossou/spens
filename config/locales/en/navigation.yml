@@ -2,6 +2,7 @@ en:
   navigation:
     header:
       settings: "Settings"
+      learned_words: "Learned words"
       admin: "Admin"
       contact_support: "Contact Support"
       log_out: "Log Out"
