@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_07_22_173651) do
+ActiveRecord::Schema[8.0].define(version: 2026_07_23_073231) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -39,6 +39,46 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_22_173651) do
     t.index ["action"], name: "index_admin_audit_logs_on_action"
     t.index ["admin_user_id"], name: "index_admin_audit_logs_on_admin_user_id"
     t.index ["target_type", "target_id"], name: "index_admin_audit_logs_on_target_type_and_target_id"
+  end
+
+  create_table "budget_entries", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "space_id", null: false
+    t.uuid "budget_item_id", null: false
+    t.uuid "transaction_type_id"
+    t.date "month", null: false
+    t.string "kind", null: false
+    t.decimal "planned_amount", precision: 15, scale: 2, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["budget_item_id"], name: "index_budget_entries_on_budget_item_id"
+    t.index ["space_id", "budget_item_id", "month"], name: "index_budget_entries_on_space_item_month", unique: true
+    t.index ["space_id", "month"], name: "index_budget_entries_on_space_id_and_month"
+    t.index ["space_id"], name: "index_budget_entries_on_space_id"
+    t.index ["transaction_type_id"], name: "index_budget_entries_on_transaction_type_id"
+  end
+
+  create_table "budget_items", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "space_id", null: false
+    t.uuid "transaction_type_id"
+    t.uuid "from_account_id"
+    t.uuid "to_account_id"
+    t.uuid "debt_id"
+    t.string "kind", null: false
+    t.decimal "amount", precision: 15, scale: 2, null: false
+    t.string "frequency", null: false
+    t.date "starts_on", null: false
+    t.date "ends_on"
+    t.boolean "active", default: true, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["debt_id"], name: "index_budget_items_on_debt_id"
+    t.index ["from_account_id"], name: "index_budget_items_on_from_account_id"
+    t.index ["space_id", "debt_id", "kind"], name: "index_budget_items_on_space_and_debt_active", unique: true, where: "(active AND (debt_id IS NOT NULL))"
+    t.index ["space_id", "from_account_id", "to_account_id"], name: "index_budget_items_on_space_and_transfer_active", unique: true, where: "(active AND (from_account_id IS NOT NULL))"
+    t.index ["space_id", "transaction_type_id"], name: "index_budget_items_on_space_and_type_active", unique: true, where: "(active AND (transaction_type_id IS NOT NULL))"
+    t.index ["space_id"], name: "index_budget_items_on_space_id"
+    t.index ["to_account_id"], name: "index_budget_items_on_to_account_id"
+    t.index ["transaction_type_id"], name: "index_budget_items_on_transaction_type_id"
   end
 
   create_table "debts", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -212,6 +252,14 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_22_173651) do
   add_foreign_key "accounts", "spaces"
   add_foreign_key "accounts", "users"
   add_foreign_key "admin_audit_logs", "users", column: "admin_user_id"
+  add_foreign_key "budget_entries", "budget_items"
+  add_foreign_key "budget_entries", "spaces"
+  add_foreign_key "budget_entries", "transaction_types"
+  add_foreign_key "budget_items", "accounts", column: "from_account_id"
+  add_foreign_key "budget_items", "accounts", column: "to_account_id"
+  add_foreign_key "budget_items", "debts"
+  add_foreign_key "budget_items", "spaces"
+  add_foreign_key "budget_items", "transaction_types"
   add_foreign_key "debts", "spaces"
   add_foreign_key "debts", "users"
   add_foreign_key "invitations", "spaces"
