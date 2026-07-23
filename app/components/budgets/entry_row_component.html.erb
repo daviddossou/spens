@@ -1,0 +1,42 @@
+<% row_body = capture do %>
+  <div class="budget-row__main">
+    <div class="budget-row__heading">
+      <% if leading_icon_kind %>
+        <span class="budget-row__icon budget-row__icon--<%= entry.kind %>" aria-hidden="true"><%= helpers.transaction_icon_svg(leading_icon_kind) %></span>
+      <% end %>
+      <span class="budget-row__name"><%= entry.display_name %></span>
+      <% if frequency_label %>
+        <span class="budget-row__frequency"><%= frequency_label %></span>
+      <% end %>
+    </div>
+    <div class="budget-row__amounts">
+      <span class="budget-row__actual <%= 'budget-row__actual--over' if over? %>"><%= formatted_actual %></span>
+      <span class="budget-row__planned">/ <%= formatted_planned %></span>
+    </div>
+  </div>
+
+  <div class="budget-row__bar" role="progressbar" aria-valuenow="<%= percentage %>" aria-valuemin="0" aria-valuemax="100"
+       aria-label="<%= entry.display_name %>: <%= percentage %>%">
+    <div class="<%= bar_class %>" style="width: <%= bar_percentage %>%;"></div>
+  </div>
+
+  <div class="budget-row__meta">
+    <span class="budget-row__status <%= 'budget-row__status--paid' if celebrate? %>">
+      <% if celebrate? %><span aria-hidden="true">✓</span><% end %>
+      <%= status_label %>
+    </span>
+    <% if over? %>
+      <span class="budget-row__over-label">↑ <%= t("budgets.row.over_by_html", amount: formatted_overage) %></span>
+    <% elsif !fulfilled? && actual < planned %>
+      <span class="budget-row__left-label"><%= t("budgets.row.left_html", amount: helpers.smart_format_money(planned - actual, currency)) %></span>
+    <% end %>
+  </div>
+<% end %>
+
+<% if read_only %>
+  <div class="budget-row"><%= row_body %></div>
+<% else %>
+  <%= link_to edit_budget_entry_path(id: entry.id), class: "budget-row budget-row--link", data: { turbo_frame: "modal" } do %>
+    <%= row_body %>
+  <% end %>
+<% end %>

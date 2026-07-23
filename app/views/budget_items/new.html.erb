@@ -1,0 +1,25 @@
+<% content_for :title, t('.title') %>
+
+<%= turbo_frame_tag "modal" do %>
+  <div class="page-container page-container--narrow">
+    <header class="page-header">
+      <p class="page-header__subtitle"><%= t(".subtitle_#{@form.transfer_kind? ? 'transfer' : (@form.debt_kind? ? 'debt' : 'category')}") %></p>
+    </header>
+
+    <div class="page-content">
+      <%= form_with model: @form, url: budget_items_path(month: params[:month].presence), method: :post, class: "budget-item-form" do |f| %>
+        <%= render 'form', f: f %>
+
+        <div class="budget-item-form__actions">
+          <%= render Ui::ButtonComponent.new(
+            text: t('.save'),
+            type: :submit,
+            variant: :primary,
+            size: :lg,
+            full_width: true
+          ) %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+<% end %>

@@ -1,0 +1,102 @@
+<% content_for :title, t('.title') %>
+
+<div class="page-container page-container--narrow">
+  <header class="page-header">
+    <p class="page-header__subtitle"><%= t('.subtitle') %></p>
+  </header>
+
+  <div class="page-content <%= 'budget-page--with-fab' unless @past_month %>">
+    <nav class="budget-month-nav" aria-label="<%= t('.month_nav_label') %>">
+      <%= link_to budgets_path(month: (@month << 1).strftime("%Y-%m")), class: "budget-month-nav__arrow",
+                  "aria-label": t('.previous_month') do %>&lsaquo;<% end %>
+      <h2 class="budget-month-nav__title"><%= l(@month, format: :month_year).capitalize %></h2>
+      <%= link_to budgets_path(month: (@month >> 1).strftime("%Y-%m")), class: "budget-month-nav__arrow",
+                  "aria-label": t('.next_month') do %>&rsaquo;<% end %>
+    </nav>
+
+    <% if @sections.values.flatten.any? %>
+      <div class="budget-hero">
+        <span class="budget-hero__label"><%= t('.projected_net') %></span>
+        <span class="budget-hero__value <%= 'budget-hero__value--negative' if @projected_net.negative? %>">
+          <%= smart_format_money(@projected_net, current_space.currency, sign: :always) %>
+        </span>
+        <span class="budget-hero__sublabel"><%= t('.actual_so_far_html', amount: smart_format_money(@actual_net, current_space.currency, sign: :always)) %></span>
+        <% if @savings_goal.positive? %>
+          <span class="budget-hero__goal <%= @projected_net >= @savings_goal ? 'budget-hero__goal--on-track' : 'budget-hero__goal--short' %>">
+            <% if @projected_net >= @savings_goal %>
+              ✓ <%= t('.goal_on_track_html', amount: smart_format_money(@savings_goal, current_space.currency)) %>
+            <% else %>
+              <%= t('.goal_short_html', amount: smart_format_money(@savings_goal, current_space.currency),
+                                        missing: smart_format_money(@savings_goal - @projected_net, current_space.currency)) %>
+            <% end %>
+          </span>
+        <% end %>
+      </div>
+
+      <div class="budget-totals">
+        <%= render Ui::StatCardComponent.new(
+          label: t('.planned_income'),
+          value: smart_format_money(@planned_income, current_space.currency),
+          variant: :compact
+        ) %>
+        <%= render Ui::StatCardComponent.new(
+          label: t('.planned_expenses'),
+          value: smart_format_money(@planned_expense, current_space.currency),
+          variant: :compact
+        ) %>
+      </div>
+
+      <% if @past_month %>
+        <div class="budget-summary-link">
+          <%= link_to t('.view_summary'), summary_budgets_path(month: @month.strftime("%Y-%m")), class: "link-button" %>
+        </div>
+      <% end %>
+
+      <% @sections.each do |section, entries| %>
+        <% next if entries.empty? %>
+        <section class="budget-section">
+          <h3 class="budget-section__title"><%= t(".section_#{section}") %></h3>
+          <div class="budget-section__list">
+            <% entries.each do |entry| %>
+              <%= render Budgets::EntryRowComponent.new(
+                entry: entry,
+                actual: @actuals_by_entry[entry] || 0,
+                currency: current_space.currency,
+                read_only: @past_month
+              ) %>
+            <% end %>
+          </div>
+        </section>
+      <% end %>
+    <% elsif @has_items %>
+      <div class="empty-state budget-empty">
+        <h3><%= t('.no_entries_title') %></h3>
+        <p><%= t('.no_entries_message') %></p>
+        <% if @past_month %>
+          <%= link_to t('.view_summary'), summary_budgets_path(month: @month.strftime("%Y-%m")), class: "link-button" %>
+        <% end %>
+      </div>
+    <% else %>
+      <div class="empty-state budget-empty">
+        <svg class="empty-state__icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+        </svg>
+        <h3><%= t('.empty_title') %></h3>
+        <p><%= t('.empty_message') %></p>
+        <% unless @past_month %>
+          <%= render Ui::ButtonComponent.new(
+            text: t('.add_first_item'),
+            url: new_budget_item_path(month: @month.strftime("%Y-%m")),
+            variant: :primary,
+            size: :lg,
+            data: { turbo_frame: "modal" }
+          ) %>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<% unless @past_month %>
+  <%= render Ui::FabComponent.new(url: new_budget_item_path(month: @month.strftime("%Y-%m")), label: t('.add_item')) %>
+<% end %>

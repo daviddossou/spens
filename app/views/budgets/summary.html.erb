@@ -1,0 +1,69 @@
+<% content_for :title, t('.title', month: l(@month, format: :month_year)) %>
+
+<div class="page-container page-container--narrow">
+  <div class="page-content">
+    <nav class="budget-month-nav" aria-label="<%= t('budgets.index.month_nav_label') %>">
+      <%= link_to summary_budgets_path(month: (@month << 1).strftime("%Y-%m")), class: "budget-month-nav__arrow",
+                  "aria-label": t('budgets.index.previous_month') do %>&lsaquo;<% end %>
+      <h2 class="budget-month-nav__title"><%= t('.heading', month: l(@month, format: :month_year)) %></h2>
+      <% if (@month >> 1) < Date.current.beginning_of_month %>
+        <%= link_to summary_budgets_path(month: (@month >> 1).strftime("%Y-%m")), class: "budget-month-nav__arrow",
+                    "aria-label": t('budgets.index.next_month') do %>&rsaquo;<% end %>
+      <% else %>
+        <span class="budget-month-nav__arrow budget-month-nav__arrow--disabled" aria-hidden="true">&rsaquo;</span>
+      <% end %>
+    </nav>
+
+    <% if @sections.values.flatten.any? %>
+      <div class="budget-hero">
+        <span class="budget-hero__label"><%= t('.actual_net') %></span>
+        <span class="budget-hero__value <%= 'budget-hero__value--negative' if @actual_net.negative? %>">
+          <%= smart_format_money(@actual_net, current_space.currency, sign: :always) %>
+        </span>
+        <span class="budget-hero__sublabel"><%= t('.planned_net_html', amount: smart_format_money(@projected_net, current_space.currency, sign: :always)) %></span>
+      </div>
+
+      <div class="budget-totals">
+        <%= render Ui::StatCardComponent.new(
+          label: t('.income'),
+          value: smart_format_money(@actual_income, current_space.currency),
+          sublabel: t('.of_planned_html', amount: smart_format_money(@planned_income, current_space.currency)),
+          variant: :compact
+        ) %>
+        <%= render Ui::StatCardComponent.new(
+          label: t('.expenses'),
+          value: smart_format_money(@actual_expense, current_space.currency),
+          sublabel: t('.of_planned_html', amount: smart_format_money(@planned_expense, current_space.currency)),
+          variant: :compact
+        ) %>
+      </div>
+
+      <% @sections.each do |section, entries| %>
+        <% next if entries.empty? %>
+        <section class="budget-section">
+          <h3 class="budget-section__title"><%= t("budgets.index.section_#{section}") %></h3>
+          <div class="budget-section__list">
+            <% entries.each do |entry| %>
+              <%= render Budgets::EntryRowComponent.new(
+                entry: entry,
+                actual: @actuals_by_entry[entry] || 0,
+                currency: current_space.currency,
+                read_only: true
+              ) %>
+            <% end %>
+          </div>
+        </section>
+      <% end %>
+
+      <div class="budget-summary-link">
+        <%= link_to t('.back_to_budget'), budgets_path(month: @month.strftime("%Y-%m")), class: "link-button" %>
+      </div>
+    <% else %>
+      <div class="empty-state budget-empty">
+        <h3><%= t('.empty_title') %></h3>
+        <p><%= t('.empty_message') %></p>
+        <%= link_to t('.back_to_budget'), budgets_path(month: @month.strftime("%Y-%m")), class: "link-button" %>
+      </div>
+    <% end %>
+  </div>
+</div>

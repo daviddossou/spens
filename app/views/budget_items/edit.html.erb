@@ -1,0 +1,36 @@
+<% content_for :title, t('.title') %>
+
+<%= turbo_frame_tag "modal" do %>
+  <div class="page-container page-container--narrow">
+    <header class="page-header">
+      <p class="page-header__subtitle"><%= t('.subtitle', name: @budget_item.display_name) %></p>
+    </header>
+
+    <div class="page-content">
+      <%= form_with model: @form, url: budget_item_path(id: @budget_item.id, month: params[:month].presence), method: :patch, class: "budget-item-form" do |f| %>
+        <p class="form-help-text"><%= t('.applies_forward') %></p>
+        <%= render 'form', f: f %>
+
+        <div class="budget-item-form__actions">
+          <%= render Ui::ButtonComponent.new(
+            text: t('.save'),
+            type: :submit,
+            variant: :primary,
+            size: :lg,
+            full_width: true
+          ) %>
+
+          <%= render Ui::ButtonComponent.new(
+            text: t('.stop_budgeting'),
+            url: budget_item_path(id: @budget_item.id, month: params[:month].presence),
+            variant: :danger,
+            size: :lg,
+            full_width: true,
+            method: :delete,
+            data: { "turbo-confirm" => t('.stop_confirmation') }
+          ) %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+<% end %>

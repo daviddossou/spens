@@ -1,0 +1,118 @@
+en:
+  date:
+    formats:
+      month_year: "%B %Y"
+
+  budgets:
+    errors:
+      not_found: "Budget line not found"
+    frequencies:
+      daily: "Every day"
+      weekly: "Every week"
+      biweekly: "Every 2 weeks"
+      monthly: "Every month"
+      quarterly: "Every 3 months"
+      yearly: "Every year"
+    form:
+      kind_label: "Type"
+      kind_income: "Income"
+      kind_expense: "Expense"
+      kind_transfer: "Transfer"
+      kind_debt: "Debt"
+      from_account_label: "From account"
+      from_account_placeholder: "e.g. Bank"
+      to_account_label: "To account"
+      to_account_placeholder: "e.g. Savings"
+      contact_label: "Who?"
+      contact_placeholder: "e.g. Georges"
+      direction_label: "Direction"
+      debt_in: "They pay me"
+      debt_out: "I pay them"
+      type_label: "Category"
+      type_placeholder: "e.g. Rent, Salary…"
+      amount_label: "Amount"
+      amount_placeholder: "0"
+      frequency_label: "How often?"
+      frequency_help: "Daily and weekly amounts are added up into one monthly line."
+      already_budgeted: "is already in your budget — edit that line instead"
+    row:
+      done_income: "Received"
+      done_expense: "Paid"
+      done_transfer: "Transferred"
+      done_debt_in: "Received"
+      done_debt_out: "Paid"
+      in_progress: "In progress"
+      expected: "Expected"
+      over_by_html: "over by %{amount}"
+      left_html: "%{amount} left"
+    index:
+      title: "Budget"
+      subtitle: "Your monthly plan, planned vs actual"
+      month_nav_label: "Change month"
+      previous_month: "Previous month"
+      next_month: "Next month"
+      projected_net: "Planned savings"
+      actual_so_far_html: "So far on plan: %{amount}"
+      planned_income: "Planned income"
+      planned_expenses: "Planned expenses"
+      section_income: "Income"
+      section_expense: "Expenses"
+      section_transfer: "Transfers"
+      section_debt: "Debts"
+      goal_on_track_html: "Savings goal %{amount} on track"
+      goal_short_html: "%{missing} short of your %{amount} savings goal"
+      view_summary: "See how this month went"
+      add_item: "Add a budget line"
+      add_first_item: "Add your first line"
+      empty_title: "Plan your month"
+      empty_message: "Add what you expect to earn and spend. We'll track it against reality as you record transactions."
+      no_entries_title: "Nothing planned this month"
+      no_entries_message: "None of your budget lines apply to this month."
+    summary:
+      title: "Budget summary — %{month}"
+      subtitle: "How the month went"
+      heading: "How %{month} went"
+      actual_net: "Net result"
+      planned_net_html: "Planned: %{amount}"
+      income: "Income"
+      expenses: "Expenses"
+      of_planned_html: "of %{amount} planned"
+      back_to_budget: "Back to the budget"
+      empty_title: "No budget for this month"
+      empty_message: "This month had no budget lines."
+
+  budget_items:
+    new:
+      title: "New budget line"
+      subtitle_category: "Plan an income or expense"
+      subtitle_transfer: "Plan a recurring transfer"
+      subtitle_debt: "Plan a debt payment"
+      save: "Add to budget"
+    create:
+      success: "Added to your budget"
+    edit:
+      title: "Edit budget line"
+      subtitle: "Edit %{name}"
+      applies_forward: "Changes apply from this month onward. Past months keep their history."
+      save: "Save changes"
+      stop_budgeting: "Remove from budget"
+      stop_confirmation: "Remove this line from your budget? Past months keep their history."
+    update:
+      success: "Budget line updated"
+    destroy:
+      success: "Removed from your budget"
+
+  budget_entries:
+    edit:
+      title: "Adjust this month"
+      subtitle: "%{type} — %{month}"
+      planned_amount_label: "Planned amount for this month"
+      override_help: "Only this month changes. The recurring rule stays the same."
+      save: "Save"
+      edit_rule: "Edit the recurring rule"
+    update:
+      success: "Month updated"
+
+  navigation:
+    bottom_nav:
+      budget: "Budget"
