@@ -103,7 +103,17 @@
   background: var(--bg-surface);
   border-radius: 0.75rem;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-  overflow: hidden;
+}
+
+/* No overflow:hidden on .stat-cards — it would clip the smart-money
+   tooltip on the first row. Round the end rows instead. */
+.stat-cards > :first-child,
+.stat-cards > :first-child .stat-card--compact {
+  border-radius: 0.75rem 0.75rem 0 0;
+}
+.stat-cards > :last-child,
+.stat-cards > :last-child .stat-card--compact {
+  border-radius: 0 0 0.75rem 0.75rem;
 }
 
 .stat-card--compact {
