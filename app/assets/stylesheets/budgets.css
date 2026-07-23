@@ -1,0 +1,305 @@
+/* Budget Styles */
+
+/* Month navigator */
+.budget-month-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.budget-month-nav__title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--color-dark);
+  text-align: center;
+}
+
+.budget-month-nav__arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 9999px;
+  font-size: 1.25rem;
+  line-height: 1;
+  color: var(--color-secondary);
+  background: var(--color-white);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  text-decoration: none;
+  transition: background-color 0.2s ease;
+}
+
+.budget-month-nav__arrow:hover {
+  background: var(--color-primary-20);
+}
+
+.budget-month-nav__arrow--disabled {
+  opacity: 0.35;
+  pointer-events: none;
+}
+
+/* Hero: projected net */
+.budget-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 1.25rem 1rem 1.5rem;
+  text-align: center;
+}
+
+.budget-hero__label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--color-muted-strong);
+}
+
+.budget-hero__value {
+  font-size: 1.75rem;
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: var(--color-success-dark);
+}
+
+.budget-hero__value--negative {
+  color: var(--color-danger-dark);
+}
+
+.budget-hero__sublabel {
+  font-size: 0.875rem;
+  color: var(--color-muted-strong);
+}
+
+/* Planned totals pair */
+.budget-totals {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.budget-totals > * {
+  min-width: 0;
+}
+
+/* Stack label over value so the pair fits narrow phones without clipping. */
+.budget-totals .stat-card--compact {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.25rem;
+}
+
+/* The global compact rule draws a divider under every non-last card (meant for
+   vertical lists); side-by-side cards need none. Extra selector wins the tie. */
+.budget-totals .stat-card--compact.stat-card--compact {
+  border-bottom: none;
+}
+
+/* Sections */
+.budget-section {
+  margin-bottom: 1.5rem;
+}
+
+.budget-section__title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-dark);
+  margin-bottom: 0.75rem;
+}
+
+.budget-section__list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/* Entry row */
+.budget-row {
+  display: block;
+  padding: 0.875rem 1rem;
+  background: var(--color-white);
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.budget-row--link {
+  text-decoration: none;
+  color: inherit;
+  transition: box-shadow 0.2s ease;
+}
+
+.budget-row--link:hover {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.budget-row__main {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.budget-row__heading {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.budget-row__name {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-dark);
+  overflow-wrap: anywhere;
+}
+
+.budget-row__icon {
+  display: inline-flex;
+  flex-shrink: 0;
+  width: 1rem;
+  height: 1rem;
+  color: var(--color-muted-strong);
+}
+
+.budget-row__icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.budget-row__frequency {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--color-muted-strong);
+  white-space: nowrap;
+}
+
+.budget-row__amounts {
+  display: flex;
+  align-items: baseline;
+  gap: 0.25rem;
+  white-space: nowrap;
+}
+
+.budget-row__actual {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-dark);
+}
+
+.budget-row__actual--over {
+  color: var(--color-danger-dark);
+}
+
+.budget-row__planned {
+  font-size: 0.75rem;
+  color: var(--color-muted-strong);
+}
+
+/* Progress bar */
+.budget-row__bar {
+  height: 6px;
+  margin: 0.5rem 0 0.375rem;
+  background: var(--color-off-white);
+  border-radius: 9999px;
+  overflow: hidden;
+}
+
+.budget-row__bar-fill {
+  height: 100%;
+  border-radius: 9999px;
+  background: var(--color-primary);
+}
+
+.budget-row__bar-fill--income {
+  background: var(--color-success);
+}
+
+.budget-row__bar-fill--over {
+  background: var(--color-danger);
+}
+
+.budget-row__bar-fill--transfer {
+  background: var(--color-info);
+}
+
+.budget-hero__goal {
+  font-size: 0.75rem;
+  font-weight: 500;
+  margin-top: 0.25rem;
+}
+
+.budget-hero__goal--on-track {
+  color: var(--color-success-dark);
+}
+
+.budget-hero__goal--short {
+  color: var(--color-warning-dark);
+}
+
+/* Row meta line */
+.budget-row__meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+}
+
+.budget-row__status {
+  color: var(--color-muted-strong);
+}
+
+.budget-row__status--paid {
+  color: var(--color-success-dark);
+  font-weight: 500;
+}
+
+.budget-row__over-label {
+  color: var(--color-danger-dark);
+  font-weight: 500;
+}
+
+.budget-row__left-label {
+  color: var(--color-muted-strong);
+}
+
+/* Clearance so the FAB never covers the last row's amounts */
+.budget-page--with-fab {
+  padding-bottom: 6rem;
+}
+
+/* Budget empty states stay calm: headline scale, not display scale */
+.empty-state.budget-empty h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+/* Summary link */
+.budget-summary-link {
+  text-align: center;
+  margin-bottom: 1.25rem;
+}
+
+/* Item form */
+.budget-item-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+}
+
+.budget-item-form__kind .kind-selector {
+  margin-bottom: 0.25rem;
+}
+
+.budget-item-form__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 1.25rem;
+}

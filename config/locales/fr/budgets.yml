@@ -1,0 +1,118 @@
+fr:
+  date:
+    formats:
+      month_year: "%B %Y"
+
+  budgets:
+    errors:
+      not_found: "Ligne de budget introuvable"
+    frequencies:
+      daily: "Chaque jour"
+      weekly: "Chaque semaine"
+      biweekly: "Toutes les 2 semaines"
+      monthly: "Chaque mois"
+      quarterly: "Tous les 3 mois"
+      yearly: "Chaque année"
+    form:
+      kind_label: "Type"
+      kind_income: "Revenu"
+      kind_expense: "Dépense"
+      kind_transfer: "Virement"
+      kind_debt: "Dette"
+      from_account_label: "Depuis le compte"
+      from_account_placeholder: "ex. Banque"
+      to_account_label: "Vers le compte"
+      to_account_placeholder: "ex. Épargne"
+      contact_label: "Qui ?"
+      contact_placeholder: "ex. Georges"
+      direction_label: "Sens"
+      debt_in: "On me paie"
+      debt_out: "Je paie"
+      type_label: "Catégorie"
+      type_placeholder: "ex. Loyer, Salaire…"
+      amount_label: "Montant"
+      amount_placeholder: "0"
+      frequency_label: "À quelle fréquence ?"
+      frequency_help: "Les montants journaliers et hebdomadaires sont cumulés en une ligne mensuelle."
+      already_budgeted: "est déjà dans votre budget — modifiez cette ligne"
+    row:
+      done_income: "Reçu"
+      done_expense: "Payé"
+      done_transfer: "Viré"
+      done_debt_in: "Reçu"
+      done_debt_out: "Payé"
+      in_progress: "En cours"
+      expected: "Prévu"
+      over_by_html: "dépassé de %{amount}"
+      left_html: "%{amount} restant"
+    index:
+      title: "Budget"
+      subtitle: "Votre plan mensuel, prévu vs réel"
+      month_nav_label: "Changer de mois"
+      previous_month: "Mois précédent"
+      next_month: "Mois suivant"
+      projected_net: "Épargne prévue"
+      actual_so_far_html: "Réalisé sur le plan : %{amount}"
+      planned_income: "Revenus prévus"
+      planned_expenses: "Dépenses prévues"
+      section_income: "Revenus"
+      section_expense: "Dépenses"
+      section_transfer: "Virements"
+      section_debt: "Dettes"
+      goal_on_track_html: "Objectif d'épargne %{amount} en bonne voie"
+      goal_short_html: "Il manque %{missing} pour votre objectif d'épargne de %{amount}"
+      view_summary: "Voir le bilan du mois"
+      add_item: "Ajouter une ligne"
+      add_first_item: "Ajouter une première ligne"
+      empty_title: "Planifiez votre mois"
+      empty_message: "Ajoutez ce que vous prévoyez de gagner et de dépenser. Nous le comparerons à la réalité au fil de vos transactions."
+      no_entries_title: "Rien de prévu ce mois-ci"
+      no_entries_message: "Aucune de vos lignes de budget ne s'applique à ce mois."
+    summary:
+      title: "Bilan du budget — %{month}"
+      subtitle: "Le bilan du mois"
+      heading: "Bilan de %{month}"
+      actual_net: "Résultat net"
+      planned_net_html: "Prévu : %{amount}"
+      income: "Revenus"
+      expenses: "Dépenses"
+      of_planned_html: "sur %{amount} prévus"
+      back_to_budget: "Retour au budget"
+      empty_title: "Pas de budget pour ce mois"
+      empty_message: "Ce mois n'avait aucune ligne de budget."
+
+  budget_items:
+    new:
+      title: "Nouvelle ligne de budget"
+      subtitle_category: "Planifier un revenu ou une dépense"
+      subtitle_transfer: "Planifier un virement récurrent"
+      subtitle_debt: "Planifier un paiement de dette"
+      save: "Ajouter au budget"
+    create:
+      success: "Ajouté à votre budget"
+    edit:
+      title: "Modifier la ligne"
+      subtitle: "Modifier %{name}"
+      applies_forward: "Les changements s'appliquent à partir de ce mois. Les mois passés gardent leur historique."
+      save: "Enregistrer"
+      stop_budgeting: "Retirer du budget"
+      stop_confirmation: "Retirer cette ligne de votre budget ? Les mois passés gardent leur historique."
+    update:
+      success: "Ligne de budget mise à jour"
+    destroy:
+      success: "Retirée de votre budget"
+
+  budget_entries:
+    edit:
+      title: "Ajuster ce mois"
+      subtitle: "%{type} — %{month}"
+      planned_amount_label: "Montant prévu pour ce mois"
+      override_help: "Seul ce mois change. La règle récurrente reste la même."
+      save: "Enregistrer"
+      edit_rule: "Modifier la règle récurrente"
+    update:
+      success: "Mois mis à jour"
+
+  navigation:
+    bottom_nav:
+      budget: "Budget"

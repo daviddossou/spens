@@ -11,6 +11,7 @@
   --color-primary-rgb: 63, 81, 181;
   --color-secondary: #424660;
   --color-secondary-50: #8d909f;
+  --color-muted-strong: #6b6f80; /* AA-safe muted for sub-1rem text */
   --color-secondary-20: #d9dadf;
   --color-secondary-dark: #2c3044;
   --color-secondary-rgb: 66, 70, 96;

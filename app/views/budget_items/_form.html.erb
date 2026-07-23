@@ -1,0 +1,134 @@
+<%= render "shared/form_errors", object: @form %>
+
+<%= f.hidden_field :starts_on %>
+
+<% unless @form.editing? %>
+  <% tiles = [
+       { value: "income", kind: "income" },
+       { value: "expense", kind: "expense" },
+       { value: "transfer", kind: "transfer" },
+       { value: "debt", kind: "debt_in" }
+     ] %>
+  <div class="budget-item-form__kind">
+    <div class="kind-selector kind-selector--quad" role="radiogroup" aria-label="<%= t('budgets.form.kind_label') %>">
+      <% tiles.each do |tile| %>
+        <% selected = tile[:value] == "debt" ? @form.debt_kind? : @form.kind == tile[:value] %>
+        <%= link_to new_budget_item_path(kind: tile[:kind], month: params[:month].presence),
+                    role: "radio",
+                    "aria-checked": selected.to_s,
+                    class: "kind-option kind-option--#{tile[:value]}#{' kind-option--selected' if selected}" do %>
+          <span class="kind-option__icon kind-option__icon--<%= tile[:value] %>" aria-hidden="true">
+            <%= transaction_icon_svg(tile[:value]) %>
+          </span>
+          <span class="kind-option__label"><%= t("budgets.form.kind_#{tile[:value]}") %></span>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+<% end %>
+
+<% if @form.category_kind? %>
+  <%= f.hidden_field :kind %>
+  <div class="budget-item-form__type">
+    <%= render Forms::InputFieldComponent.new(
+      form: f,
+      field: :transaction_type_name,
+      label: t('budgets.form.type_label'),
+      required: true,
+      autocomplete: true,
+      autocomplete_options: @form.transaction_type_options,
+      default_autocomplete_options: @form.default_transaction_type_options,
+      allow_create: true,
+      placeholder: t('budgets.form.type_placeholder')
+    ) %>
+  </div>
+<% elsif @form.transfer_kind? %>
+  <%= f.hidden_field :kind %>
+  <div class="budget-item-form__transfer">
+    <%= render Forms::InputFieldComponent.new(
+      form: f,
+      field: :from_account_name,
+      label: t('budgets.form.from_account_label'),
+      required: true,
+      autocomplete: true,
+      autocomplete_options: @form.account_suggestions,
+      default_autocomplete_options: @form.default_account_suggestions,
+      allow_create: true,
+      placeholder: t('budgets.form.from_account_placeholder'),
+      field_data: { tom_select_currency_value: get_currency_symbol(current_space.currency) }
+    ) %>
+
+    <%= render Forms::InputFieldComponent.new(
+      form: f,
+      field: :to_account_name,
+      label: t('budgets.form.to_account_label'),
+      required: true,
+      autocomplete: true,
+      autocomplete_options: @form.account_suggestions,
+      default_autocomplete_options: @form.default_account_suggestions,
+      allow_create: true,
+      placeholder: t('budgets.form.to_account_placeholder'),
+      field_data: { tom_select_currency_value: get_currency_symbol(current_space.currency) }
+    ) %>
+  </div>
+<% else %>
+  <div class="budget-item-form__debt"
+       data-controller="budget-debt"
+       data-budget-debt-kinds-by-name-value="<%= @form.debt_kinds_by_name.to_json %>">
+    <%= f.hidden_field :kind, data: { budget_debt_target: "kindInput" } %>
+
+    <%= render Forms::InputFieldComponent.new(
+      form: f,
+      field: :contact_name,
+      label: t('budgets.form.contact_label'),
+      required: true,
+      autocomplete: true,
+      autocomplete_options: @form.debt_person_suggestions,
+      allow_create: true,
+      placeholder: t('budgets.form.contact_placeholder'),
+      field_data: { action: "tom-select:change->budget-debt#onPersonChange change->budget-debt#onPersonChange" }
+    ) %>
+
+    <div class="form-field">
+      <span class="form-label"><%= t('budgets.form.direction_label') %></span>
+      <div class="kind-selector" role="radiogroup" aria-label="<%= t('budgets.form.direction_label') %>">
+        <% @form.debt_direction_options.each do |label, kind| %>
+          <button type="button" class="kind-option kind-option--choice"
+                  role="radio" aria-checked="<%= (@form.kind == kind).to_s %>"
+                  data-budget-debt-target="option"
+                  data-kind="<%= kind %>"
+                  data-action="click->budget-debt#select">
+            <span class="kind-option__label"><%= label %></span>
+          </button>
+        <% end %>
+      </div>
+    </div>
+  </div>
+<% end %>
+
+<div class="budget-item-form__amount">
+  <%= render Forms::InputFieldComponent.new(
+    form: f,
+    field: :amount,
+    type: :number_field,
+    label: t('budgets.form.amount_label'),
+    required: true,
+    value: @form.amount && (@form.amount % 1 == 0 ? @form.amount.to_i : @form.amount.to_f),
+    prepend: get_currency_symbol(current_space.currency),
+    step: "0.01",
+    min: "0.01",
+    placeholder: t('budgets.form.amount_placeholder')
+  ) %>
+</div>
+
+<div class="budget-item-form__frequency">
+  <%= render Forms::SelectFieldComponent.new(
+    form: f,
+    field: :frequency,
+    label: t('budgets.form.frequency_label'),
+    options: @form.frequency_options,
+    required: true,
+    selected: @form.frequency
+  ) %>
+  <p class="form-help-text"><%= t('budgets.form.frequency_help') %></p>
+</div>

@@ -94,9 +94,9 @@ RSpec.describe Navigation::BottomNavComponent, type: :component do
       expect(rendered.css("nav.bottom-nav[aria-label='Main navigation']")).to be_present
     end
 
-    it "renders four tab links" do
+    it "renders five tab links" do
       rendered = render_inline(described_class.new(current_path: "/dashboard"))
-      expect(rendered.css(".bottom-nav__tab").length).to eq(4)
+      expect(rendered.css(".bottom-nav__tab").length).to eq(5)
     end
 
     it "renders tab labels" do
@@ -104,6 +104,7 @@ RSpec.describe Navigation::BottomNavComponent, type: :component do
 
       labels = rendered.css(".bottom-nav__label").map(&:text).map(&:strip)
       expect(labels).to include(I18n.t("navigation.bottom_nav.dashboard"))
+      expect(labels).to include(I18n.t("navigation.bottom_nav.budget"))
       expect(labels).to include(I18n.t("navigation.bottom_nav.debts"))
       expect(labels).to include(I18n.t("navigation.bottom_nav.goals"))
       expect(labels).to include(I18n.t("navigation.bottom_nav.accounts"))
@@ -111,7 +112,7 @@ RSpec.describe Navigation::BottomNavComponent, type: :component do
 
     it "renders SVG icons for each tab" do
       rendered = render_inline(described_class.new(current_path: "/dashboard"))
-      expect(rendered.css(".bottom-nav__icon").length).to eq(4)
+      expect(rendered.css(".bottom-nav__icon").length).to eq(5)
     end
 
     it "marks the active tab with aria-current" do
@@ -130,7 +131,7 @@ RSpec.describe Navigation::BottomNavComponent, type: :component do
     it "does not apply active class to inactive tabs" do
       rendered = render_inline(described_class.new(current_path: "/dashboard"))
       inactive_tabs = rendered.css(".bottom-nav__tab:not(.bottom-nav__tab--active)")
-      expect(inactive_tabs.length).to eq(3)
+      expect(inactive_tabs.length).to eq(4)
     end
 
     it "renders four distinct tabs" do

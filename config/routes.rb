@@ -44,6 +44,13 @@ Rails.application.routes.draw do
     # Accounts
     resources :accounts, only: [ :index, :show, :new, :create, :edit, :update, :destroy ]
 
+    # Monthly budget (forecast + past-month summary), its recurring items and per-month entries
+    resources :budgets, only: [ :index ] do
+      collection { get :summary }
+    end
+    resources :budget_items, only: [ :new, :create, :edit, :update, :destroy ]
+    resources :budget_entries, only: [ :edit, :update ]
+
     # Spaces
     resources :spaces, only: [ :index, :new, :create, :edit, :update, :destroy ] do
       resource :selection, only: :create, module: :spaces

@@ -12,6 +12,7 @@ class Navigation::BottomNavComponent < ViewComponent::Base
   def tabs
     @tabs ||= [
       Tab.new(key: :dashboard, label: t("navigation.bottom_nav.dashboard"), path: helpers.dashboard_path, icon: :dashboard),
+      Tab.new(key: :budget, label: t("navigation.bottom_nav.budget"), path: helpers.budgets_path, icon: :budget),
       Tab.new(key: :debts, label: t("navigation.bottom_nav.debts"), path: helpers.debts_path, icon: :debts),
       Tab.new(key: :goals, label: t("navigation.bottom_nav.goals"), path: helpers.goals_path, icon: :goals),
       Tab.new(key: :accounts, label: t("navigation.bottom_nav.accounts"), path: helpers.accounts_path, icon: :accounts)
@@ -22,6 +23,8 @@ class Navigation::BottomNavComponent < ViewComponent::Base
     case tab.key
     when :dashboard
       current_path == "/" || current_path.match?(%r{/dashboard\b})
+    when :budget
+      current_path.match?(%r{/budget(s|_items|_entries)\b})
     when :debts
       current_path.match?(%r{/debts\b})
     when :goals
