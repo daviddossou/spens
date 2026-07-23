@@ -6,6 +6,7 @@
       class: "transaction-form",
       data: {
         controller: "transaction-form debt-fields kind-switch",
+        action: "tom-select:change->transaction-form#keepTypedText",
         debt_fields_intent_labels_value: debt_intent_label_map.to_json,
         debt_fields_debts_by_name_value: @form.debts_by_name.to_json,
         debt_fields_contact_name_value: @form.contact_name,

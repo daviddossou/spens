@@ -22,6 +22,12 @@ export default class extends Controller {
     const finalConfig = { ...config, ...customOptions }
 
     this.tomSelect = new TomSelect(this.element, finalConfig)
+
+    // Remember what the user actually typed before picking a suggestion, so the form can keep
+    // it (e.g. the merchant name goes to the description when a category suggestion replaces it).
+    this.tomSelect.on("type", (query) => {
+      if (query) this.element.dataset.typedQuery = query
+    })
   }
 
   disconnect() {
@@ -143,11 +149,17 @@ export default class extends Controller {
 
           // Filter through all suggestions when typing — match the label OR the hidden
           // alias phrases (so typing "Carrefour" / "Zem" surfaces the right category).
+          // Options matched by the space's OWN learned phrases rank first: the user's
+          // mapping beats the default suggestions.
           const q = query.toLowerCase()
+          const personalHit = option =>
+            option.personal_aliases && option.personal_aliases.toLowerCase().includes(q)
           const filtered = allOptions.filter(option =>
+            personalHit(option) ||
             (option.text && option.text.toLowerCase().includes(q)) ||
             (option.aliases && option.aliases.toLowerCase().includes(q))
           )
+          filtered.sort((a, b) => (personalHit(b) ? 1 : 0) - (personalHit(a) ? 1 : 0))
           callback(filtered)
         }
 
@@ -162,7 +174,7 @@ export default class extends Controller {
       config.labelField = 'text'
       config.valueField = 'value'
       // Include hidden alias phrases so the post-filter keeps alias-matched options.
-      config.searchField = ['text', 'aliases']
+      config.searchField = ['text', 'aliases', 'personal_aliases']
     }
 
     // If URL is provided, load options from remote source
