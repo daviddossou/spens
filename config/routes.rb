@@ -55,6 +55,8 @@ Rails.application.routes.draw do
     resources :spaces, only: [ :index, :new, :create, :edit, :update, :destroy ] do
       resource :selection, only: :create, module: :spaces
       resources :members, only: [ :index, :new, :create ], module: :spaces
+      # The space's learned vocabulary (personal category/kind mappings)
+      resources :mappings, only: [ :index, :update, :destroy ], module: :spaces
     end
 
     # Invitations (accept flow only — creating invitations goes through spaces/members)

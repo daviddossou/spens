@@ -16,7 +16,9 @@ module Admin
 
     def index
       @state = params[:state].presence_in(STATES) || "candidate"
-      @records = reviewable_model.where(state: @state).order(confirmations: :desc, created_at: :desc)
+      # Global tier only: personal (space-scoped) rows are the user's own vocabulary, managed
+      # from the space settings screen — not subject to admin review.
+      @records = reviewable_model.global.where(state: @state).order(confirmations: :desc, created_at: :desc)
       @samples = sample_utterances(@records)
       render "admin/shared/review_list"
     end

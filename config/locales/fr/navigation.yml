@@ -2,6 +2,7 @@ fr:
   navigation:
     header:
       settings: "Paramètres"
+      learned_words: "Mots appris"
       admin: "Admin"
       contact_support: "Contacter le support"
       log_out: "Se déconnecter"

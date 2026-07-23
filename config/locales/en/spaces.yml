@@ -29,6 +29,7 @@ en:
       subtitle: "Edit your space"
       submit: "Save"
       delete_space: "Delete this space"
+      manage_mappings: "Learned words"
       confirm_delete: "Delete \"%{name}\"? All data in this space will be lost forever."
     update:
       success: "Space updated."
@@ -36,6 +37,21 @@ en:
       success: "Space deleted."
       last_space: "You can't delete your last space."
       not_owner: "Only the space owner can delete it."
+    mappings:
+      index:
+        title: "Learned words"
+        subtitle: "What %{space_name} has learned from your entries"
+        empty_title: "Nothing learned yet"
+        empty_message: "When you correct a category or type a description, this space learns your words and reuses them next time."
+        aliases_title: "Your words → category"
+        keywords_title: "Your words → operation type"
+        delete: "Forget"
+        confirm_delete: "Forget \"%{phrase}\"?"
+      update:
+        success: "Mapping updated."
+        invalid_category: "Unknown category."
+      destroy:
+        success: "Mapping forgotten."
     selections:
       create:
         success: "Switched to %{name}."

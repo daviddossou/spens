@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_07_23_073231) do
+ActiveRecord::Schema[8.0].define(version: 2026_07_23_171412) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -119,7 +119,11 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_23_073231) do
     t.integer "confirmations", default: 0, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["phrase"], name: "index_learned_aliases_on_phrase", unique: true
+    t.uuid "space_id"
+    t.string "display_phrase"
+    t.index ["phrase", "space_id"], name: "index_learned_aliases_on_phrase_and_space", unique: true, where: "(space_id IS NOT NULL)"
+    t.index ["phrase"], name: "index_learned_aliases_on_phrase_global", unique: true, where: "(space_id IS NULL)"
+    t.index ["space_id"], name: "index_learned_aliases_on_space_id"
     t.index ["state"], name: "index_learned_aliases_on_state"
   end
 
@@ -131,7 +135,11 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_23_073231) do
     t.integer "confirmations", default: 0, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["phrase"], name: "index_learned_keywords_on_phrase", unique: true
+    t.uuid "space_id"
+    t.string "display_phrase"
+    t.index ["phrase", "space_id"], name: "index_learned_keywords_on_phrase_and_space", unique: true, where: "(space_id IS NOT NULL)"
+    t.index ["phrase"], name: "index_learned_keywords_on_phrase_global", unique: true, where: "(space_id IS NULL)"
+    t.index ["space_id"], name: "index_learned_keywords_on_space_id"
     t.index ["state"], name: "index_learned_keywords_on_state"
   end
 
@@ -264,6 +272,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_23_073231) do
   add_foreign_key "debts", "users"
   add_foreign_key "invitations", "spaces"
   add_foreign_key "invitations", "users", column: "invited_by_id"
+  add_foreign_key "learned_aliases", "spaces"
+  add_foreign_key "learned_keywords", "spaces"
   add_foreign_key "memberships", "spaces"
   add_foreign_key "memberships", "users"
   add_foreign_key "quick_entry_attempts", "spaces"

@@ -18,6 +18,26 @@ RSpec.describe QuickEntry::CorrectionLearner do
     transaction
   end
 
+  it "re-teaches a KNOWN word personally when the user overrides the built-in mapping" do
+    # "carrefour" is a built-in groceries alias; the user re-categorised to monthly provisions.
+    transaction = attempt_for(
+      text: "5k carrefour bank",
+      type_name: TransactionTaxonomy.name("monthly_provisions", :en),
+      draft: { "kind" => "expense", "amount" => 5000, "transaction_type_name" => groceries_name,
+               "transaction_date" => Date.current.iso8601 }
+    )
+
+    described_class.learn(transaction)
+
+    personal = LearnedAlias.for_space(space).find_by(phrase: "carrefour")
+    expect(personal).to be_active
+    expect(personal.taxonomy_key).to eq("monthly_provisions")
+
+    # And the next identical utterance resolves to the user's own category.
+    draft = QuickEntry::Parser.parse("5k carrefour", space: space, locale: :en)
+    expect(draft.transaction_type_name).to eq(TransactionTaxonomy.name("monthly_provisions", :en))
+  end
+
   it "learns a global alias from a category correction" do
     transaction = attempt_for(
       text: "2000 zoomzoom",
@@ -28,10 +48,14 @@ RSpec.describe QuickEntry::CorrectionLearner do
 
     described_class.learn(transaction)
 
-    learned = LearnedAlias.find_by(phrase: "zoomzoom")
+    learned = LearnedAlias.global.find_by(phrase: "zoomzoom")
     expect(learned).to be_present
     expect(learned).to be_candidate # candidate-only: a human approves it in the dashboard
     expect(learned.taxonomy_key).to eq("groceries")
+
+    personal = LearnedAlias.for_space(transaction.space).find_by(phrase: "zoomzoom")
+    expect(personal).to be_active # the user's own correction is active for their space at once
+    expect(personal.taxonomy_key).to eq("groceries")
   end
 
   it "records the correction and marks the attempt edited" do

@@ -148,10 +148,12 @@ module QuickEntry
       detected || "expense"
     end
 
-    # Human-approved learned verbs (LearnedKeyword), consulted only after the built-in sets miss,
-    # so they fill a gap — never shadow a built-in. Empty until a candidate is approved.
+    # Learned verbs (LearnedKeyword), consulted only after the built-in sets miss, so they fill
+    # a gap — never shadow a built-in. The space's own keywords (active on first correction)
+    # come before the human-approved global ones.
     def learned_kind
-      LearnedKeyword.active_index.find { |phrase, _| normalized.include?(phrase) }&.last
+      LearnedKeyword.personal_index(@space).find { |phrase, _| normalized.include?(phrase) }&.last ||
+        LearnedKeyword.active_index.find { |phrase, _| normalized.include?(phrase) }&.last
     end
 
     # --- amount -------------------------------------------------------------
@@ -409,7 +411,7 @@ module QuickEntry
         return [ name, type_kind ]
       end
 
-      key = CategoryInference.infer(@text)
+      key = CategoryInference.infer(@text, space: @space)
       return [ nil, kind ] unless key
 
       cat_kind = TransactionTaxonomy.kind_of(key)

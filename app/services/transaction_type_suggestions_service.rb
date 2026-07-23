@@ -65,17 +65,27 @@ class TransactionTypeSuggestionsService
     end
   end
 
+  # The space's own learned phrases per taxonomy key ("chez l'indien" -> monthly_provisions).
+  # Carried separately from the shared aliases so the picker can rank a personal match first.
+  def personal_terms
+    @personal_terms ||= LearnedAlias.for_space(@space).active
+      .pluck(:taxonomy_key, :display_phrase, :phrase)
+      .group_by(&:first)
+      .transform_values { |rows| rows.map { |_, display, phrase| display.presence || phrase }.join(" ") }
+  end
+
   def option_for_key(key)
     name = TransactionTaxonomy.name(key)
-    { value: name, text: name, aliases: CategoryAliasMatcher.terms(key) }
+    build_option(name, key)
   end
 
   def option_for_type(type)
-    key = type.template_key
-    {
-      value: type.name,
-      text: type.name,
-      aliases: key.present? ? CategoryAliasMatcher.terms(key) : ""
-    }
+    build_option(type.name, type.template_key)
+  end
+
+  def build_option(name, key)
+    option = { value: name, text: name, aliases: key.present? ? CategoryAliasMatcher.terms(key) : "" }
+    option[:personal_aliases] = personal_terms[key] if key.present? && personal_terms[key]
+    option
   end
 end

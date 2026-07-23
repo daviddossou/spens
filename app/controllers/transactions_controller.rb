@@ -17,6 +17,7 @@ class TransactionsController < ApplicationController
 
     if @form.submit
       link_quick_entry_attempt
+      QuickEntry::DescriptionLearner.learn(@form.transaction)
       redirect_with_reload_to transaction_path(id: @form.transaction.id), notice: t(".success"), status: :see_other
     else
       render :new, status: :unprocessable_entity
@@ -35,6 +36,7 @@ class TransactionsController < ApplicationController
 
     if @form.submit
       QuickEntry::CorrectionLearner.learn(@transaction)
+      QuickEntry::DescriptionLearner.learn(@transaction)
       redirect_with_reload_to transaction_path(id: @transaction.id), notice: t(".success"), status: :see_other
     else
       render :edit, status: :unprocessable_entity

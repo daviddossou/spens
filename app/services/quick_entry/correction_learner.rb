@@ -2,8 +2,10 @@
 
 module QuickEntry
   # When a quick-entry transaction is edited, diff the user's saved values against the original
-  # parse. A category correction becomes a global LearnedAlias (so the rules catch it next time);
-  # other field changes are recorded on the attempt as signals for the offline miner.
+  # parse. A correction teaches the space's own vocabulary immediately (active — the user's
+  # edit IS the approval, and their next utterance parses right without waiting for review)
+  # AND feeds the global tier: a category correction becomes a global candidate LearnedAlias;
+  # kind changes stay recorded on the attempt as signals for the offline miner.
   class CorrectionLearner
     def self.learn(transaction)
       new(transaction).learn
@@ -26,6 +28,7 @@ module QuickEntry
 
       @attempt.update!(outcome: "edited", corrections: diff)
       teach_category(diff["transaction_type_name"]) if diff.key?("transaction_type_name")
+      teach_kind(diff["kind"]) if diff.key?("kind")
     end
 
     private
@@ -80,12 +83,35 @@ module QuickEntry
       kind.to_s.start_with?("transfer") ? "transfer" : kind.to_s
     end
 
-    # Only learn when the corrected category is a shared taxonomy node (never a custom type).
+    # Personal tier immediately + global candidate. Only when the corrected category is a
+    # shared taxonomy node (never a custom type — the parser already matches those by name).
+    #
+    # The two tiers key on different phrases: the personal row re-teaches the word that LED to
+    # the wrong guess ("carrefour" -> the user's pick, overriding the built-in), while the
+    # global candidate keys on the residual word the dictionaries DON'T know yet (gap-fill).
     def teach_category(change)
       key = TransactionTaxonomy.key_for_name(change["to"]) or return
-      phrase = PhraseExtractor.call(text: @attempt.text, locale: @attempt.locale, space: @transaction.space) or return
+      residual = PhraseExtractor.call(text: @attempt.text, locale: @attempt.locale, space: @transaction.space)
+      _, matched = CategoryInference.new(@attempt.text, space: @transaction.space).infer_with_phrase
 
-      LearnedAlias.teach(phrase: phrase, taxonomy_key: key, source: "edit_diff")
+      if (personal = matched || residual)
+        LearnedAlias.personal_teach(space: @transaction.space, phrase: personal, taxonomy_key: key)
+      end
+      LearnedAlias.teach(phrase: residual, taxonomy_key: key, source: "edit_diff") if residual
+    end
+
+    # A structural kind correction teaches the space's own keyword immediately; the global
+    # candidate stays the offline miner's job (it reads the recorded signal).
+    def teach_kind(change)
+      kind = kind_family(change["to"])
+      return unless LearnedKeyword::KINDS.include?(kind)
+
+      phrase = PhraseExtractor.call(
+        text: @attempt.text, locale: @attempt.locale, space: @transaction.space,
+        exclude: [ @transaction.debt&.name ].compact
+      ) or return
+
+      LearnedKeyword.personal_teach(space: @transaction.space, phrase: phrase, kind: kind)
     end
   end
 end
