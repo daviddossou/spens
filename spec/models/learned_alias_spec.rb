@@ -4,19 +4,27 @@
 #
 # Table name: learned_aliases
 #
-#  id            :uuid             not null, primary key
-#  confirmations :integer          default(0), not null
-#  phrase        :string           not null, indexed
-#  source        :string           not null
-#  state         :string           default("candidate"), not null, indexed
-#  taxonomy_key  :string           not null
-#  created_at    :datetime         not null
-#  updated_at    :datetime         not null
+#  id             :uuid             not null, primary key
+#  confirmations  :integer          default(0), not null
+#  display_phrase :string
+#  phrase         :string           not null, indexed => [space_id], indexed
+#  source         :string           not null
+#  state          :string           default("candidate"), not null, indexed
+#  taxonomy_key   :string           not null
+#  created_at     :datetime         not null
+#  updated_at     :datetime         not null
+#  space_id       :uuid             indexed => [phrase], indexed
 #
 # Indexes
 #
-#  index_learned_aliases_on_phrase  (phrase) UNIQUE
-#  index_learned_aliases_on_state   (state)
+#  index_learned_aliases_on_phrase_and_space  (phrase,space_id) UNIQUE WHERE (space_id IS NOT NULL)
+#  index_learned_aliases_on_phrase_global     (phrase) UNIQUE WHERE (space_id IS NULL)
+#  index_learned_aliases_on_space_id          (space_id)
+#  index_learned_aliases_on_state             (state)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (space_id => spaces.id)
 #
 require "rails_helper"
 

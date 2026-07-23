@@ -19,6 +19,38 @@
 #   bin/rails quick_entry:challenge
 #   bin/rails "quick_entry:challenge[<space_id>]"
 namespace :quick_entry do
+  # Post-deploy: seeds the system tier of learned_aliases from the YML dictionary, making the
+  # DB the runtime source (CategoryAliasMatcher falls back to the YML until this has run).
+  # Idempotent; never overwrites a phrase a learned/admin row already owns.
+  #   bin/rails quick_entry:import_system_aliases
+  desc "Import config/transaction_type_aliases.yml into learned_aliases as system rows"
+  task import_system_aliases: :environment do
+    aliases = YAML.load_file(CategoryAliasMatcher::PATH)["aliases"] || {}
+    created = updated = skipped = 0
+
+    aliases.each do |key, phrases|
+      Array(phrases).each do |phrase|
+        normalized = CategoryText.normalize(phrase)
+        next if normalized.blank?
+
+        row = LearnedAlias.find_or_initialize_by(phrase: normalized, space_id: nil)
+        if row.new_record?
+          row.update!(taxonomy_key: key.to_s, source: "system", state: "active",
+                      display_phrase: phrase, confirmations: 1)
+          created += 1
+        elsif row.source == "system"
+          row.update!(taxonomy_key: key.to_s, display_phrase: phrase)
+          updated += 1
+        else
+          skipped += 1
+        end
+      end
+    end
+
+    CategoryAliasMatcher.reload!
+    puts "system aliases: #{created} created, #{updated} updated, #{skipped} skipped (owned by learned rows)"
+  end
+
   desc "Challenge QuickEntry with West-African francophone phrases (read-only diagnostic)"
   task :challenge, [ :space_id ] => :environment do |_t, args|
     QuickEntryChallenge.run(args[:space_id].presence)
