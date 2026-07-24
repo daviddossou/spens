@@ -40,4 +40,42 @@ RSpec.describe TransactionTaxonomy do
       expect(node["fr"]).to be_present, "#{key} missing FR name"
     end
   end
+
+  # The examples above run against the YML fallback (empty taxonomy_nodes table).
+  describe "DB-backed mode" do
+    around do |example|
+      described_class.reload!
+      example.run
+      described_class.reload!
+    end
+
+    before do
+      TaxonomyNode.create!(key: "db_food", kind: "expense", name_en: "🍚 Food", name_fr: "🍚 Bouffe", position: 2)
+      TaxonomyNode.create!(key: "db_transport", kind: "expense", name_en: "🚕 Rides", name_fr: "🚕 Trajets", position: 1)
+      TaxonomyNode.create!(key: "db_taxi", kind: "expense", parent_key: "db_transport",
+                           name_en: "Taxi", name_fr: "Taxi", position: 1)
+      TaxonomyNode.create!(key: "db_zem", kind: "expense", parent_key: "db_transport",
+                           name_en: "Zem", name_fr: "Zémidjan", position: 0)
+    end
+
+    it "reads from the table instead of the YML" do
+      expect(described_class.parent_keys("expense")).to eq(%w[db_transport db_food])
+      expect(described_class.name("db_zem", :fr)).to eq("Zémidjan")
+      expect(described_class.exists?("food_groceries")).to be(false)
+    end
+
+    it "orders siblings by position" do
+      expect(described_class.child_keys("db_transport")).to eq(%w[db_zem db_taxi])
+    end
+
+    it "hides inactive nodes" do
+      TaxonomyNode.find_by(key: "db_taxi").update!(active: false)
+      expect(described_class.exists?("db_taxi")).to be(false)
+      expect(described_class.child_keys("db_transport")).to eq(%w[db_zem])
+    end
+
+    it "resolves display names back to keys" do
+      expect(described_class.key_for_name("zemidjan")).to eq("db_zem")
+    end
+  end
 end

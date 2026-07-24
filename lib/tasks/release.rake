@@ -6,5 +6,6 @@ namespace :release do
   desc "Run post-deploy tasks"
   task run_after: :environment do
     Rake::Task["quick_entry:import_system_aliases"].invoke
+    Rake::Task["taxonomy:import_nodes"].invoke
   end
 end
