@@ -1,0 +1,12 @@
+<%# Locals: node (+ row_locals passthrough) — inline rename, swapped in for the row via turbo. %>
+<div id="<%= dom_id(node) %>" data-key="<%= node.key %>" class="admin-tree-row admin-tree-row--editing">
+  <%= form_with model: node, url: admin_taxonomy_node_path(id: node.id), method: :patch, class: "admin-teach" do |f| %>
+    <% if node.errors.any? %><span class="admin-row__type"><%= node.errors.full_messages.to_sentence %></span><% end %>
+    <%= f.text_field :name_en, "aria-label": t("admin.taxonomy.cols.name_en"), class: "admin-input admin-input--sm" %>
+    <%= f.text_field :name_fr, "aria-label": t("admin.taxonomy.cols.name_fr"), class: "admin-input admin-input--sm" %>
+    <code><%= node.key %></code>
+    <%= f.submit t("admin.taxonomy.save"), class: "admin-btn admin-btn--success admin-btn--sm" %>
+  <% end %>
+  <%= button_to t("admin.taxonomy.cancel"), rename_admin_taxonomy_node_path(id: node.id, cancel: 1), method: :patch,
+        class: "admin-btn admin-btn--sm" %>
+</div>
