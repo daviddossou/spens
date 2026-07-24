@@ -53,6 +53,36 @@ RSpec.describe "Admin vocabulary review", type: :request do
       .to change { LearnedAlias.active_index }.from({}).to("zoomzoom" => "moto_taxi")
   end
 
+  describe "alias dictionary (active tab)" do
+    it "renders active aliases grouped by category" do
+      LearnedAlias.admin_teach(phrase: "zoomzoom", taxonomy_key: "moto_taxi")
+      get admin_learned_aliases_path(state: "active")
+      expect(response.body).to include("zoomzoom")
+      expect(response.body).to include(TransactionTaxonomy.name("moto_taxi"))
+    end
+
+    it "adds an alias straight to active and audits it" do
+      expect do
+        post admin_learned_aliases_path, params: { phrase: "chez tantie", taxonomy_key: "street_food" }
+      end.to change(LearnedAlias.active, :count).by(1).and change(AdminAuditLog, :count).by(1)
+      expect(AdminAuditLog.last.action).to eq("create_alias")
+    end
+
+    it "rejects an invalid category on create" do
+      expect do
+        post admin_learned_aliases_path, params: { phrase: "x", taxonomy_key: "nope" }
+      end.not_to change(LearnedAlias, :count)
+    end
+
+    it "reassigns an alias to another category" do
+      row = LearnedAlias.admin_teach(phrase: "zoomzoom", taxonomy_key: "moto_taxi")
+      expect do
+        patch reassign_admin_learned_alias_path(id: row.id), params: { taxonomy_key: "fuel" }
+      end.to change { row.reload.taxonomy_key }.from("moto_taxi").to("fuel")
+      expect(AdminAuditLog.last.action).to eq("reassign_alias")
+    end
+  end
+
   it "replaces the row over turbo_stream" do
     row = LearnedKeyword.teach(phrase: "depanne", kind: "debt_out", source: "ai")
 
