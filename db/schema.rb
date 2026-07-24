@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_07_23_171412) do
+ActiveRecord::Schema[8.0].define(version: 2026_07_23_210208) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -192,6 +192,20 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_23_171412) do
     t.string "locale"
     t.index "user_id, lower((name)::text)", name: "index_spaces_on_user_id_and_lower_name", unique: true
     t.index ["user_id"], name: "index_spaces_on_user_id"
+  end
+
+  create_table "taxonomy_nodes", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "key", null: false
+    t.string "kind", null: false
+    t.string "parent_key"
+    t.string "name_en", null: false
+    t.string "name_fr", null: false
+    t.integer "position", default: 0, null: false
+    t.boolean "active", default: true, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["key"], name: "index_taxonomy_nodes_on_key", unique: true
+    t.index ["kind", "parent_key", "position"], name: "index_taxonomy_nodes_on_kind_and_parent_key_and_position"
   end
 
   create_table "transaction_types", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|

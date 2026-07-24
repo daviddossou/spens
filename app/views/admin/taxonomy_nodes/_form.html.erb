@@ -1,0 +1,44 @@
+<%= form_with model: @node, url: (@node.new_record? ? admin_taxonomy_nodes_path : admin_taxonomy_node_path(id: @node.id)), class: "admin-form" do |f| %>
+  <% if @node.errors.any? %>
+    <p class="admin-form__errors"><%= @node.errors.full_messages.to_sentence %></p>
+  <% end %>
+
+  <% if @node.new_record? %>
+    <div class="admin-form__field">
+      <%= f.label :key, t("admin.taxonomy.cols.key"), class: "admin-form__label" %>
+      <%= f.text_field :key, class: "admin-input", placeholder: "snake_case_key" %>
+      <p class="admin-form__hint"><%= t("admin.taxonomy.key_hint") %></p>
+    </div>
+    <div class="admin-form__field">
+      <%= f.label :kind, t("admin.taxonomy.cols.kind"), class: "admin-form__label" %>
+      <%= f.select :kind, TransactionTaxonomy::KINDS.map { |k| [ t("admin.taxonomy.kinds.#{k}"), k ] },
+            {}, class: "admin-input" %>
+    </div>
+  <% else %>
+    <div class="admin-form__field">
+      <span class="admin-form__label"><%= t("admin.taxonomy.cols.key") %></span>
+      <p class="admin-form__static"><code><%= @node.key %></code> · <%= t("admin.taxonomy.kinds.#{@node.kind}") %></p>
+    </div>
+  <% end %>
+
+  <div class="admin-form__field">
+    <%= f.label :parent_key, t("admin.taxonomy.cols.parent"), class: "admin-form__label" %>
+    <%= f.select :parent_key,
+          TaxonomyNode.parents.where(kind: @node.kind).ordered.map { |p| [ p.name_en, p.key ] },
+          { include_blank: t("admin.taxonomy.no_parent") },
+          { class: "admin-input", data: { controller: "searchable-select" } } %>
+  </div>
+  <div class="admin-form__field">
+    <%= f.label :name_en, t("admin.taxonomy.cols.name_en"), class: "admin-form__label" %>
+    <%= f.text_field :name_en, class: "admin-input" %>
+  </div>
+  <div class="admin-form__field">
+    <%= f.label :name_fr, t("admin.taxonomy.cols.name_fr"), class: "admin-form__label" %>
+    <%= f.text_field :name_fr, class: "admin-input" %>
+  </div>
+
+  <div class="admin-form__actions">
+    <%= f.submit t("admin.taxonomy.save"), class: "admin-btn admin-btn--success" %>
+    <%= link_to t("admin.taxonomy.cancel"), admin_taxonomy_nodes_path(kind: @node.kind), class: "admin-btn" %>
+  </div>
+<% end %>

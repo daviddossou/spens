@@ -3,7 +3,7 @@
 <% draft = attempt.rules_draft || {} %>
 <tr id="<%= dom_id(attempt) %>" class="admin-row">
   <td>
-    <%= attempt.created_at.strftime("%Y-%m-%d %H:%M") %><br>
+    <%= admin_time(attempt.created_at) %><br>
     <span class="admin-row__type"><%= attempt.user.email %></span>
   </td>
   <td>
@@ -30,17 +30,21 @@
     <% if attempt.reviewed_at.nil? %>
       <%= form_with url: teach_admin_correction_path(id: attempt.id), method: :post, class: "admin-teach" do |f| %>
         <%= f.text_field :phrase, value: hint[:phrase], placeholder: t("admin.corrections.phrase_placeholder"),
-              class: "admin-input admin-input--sm" %>
+              "aria-label": t("admin.vocab.phrase"), class: "admin-input admin-input--sm" %>
         <%= f.select :taxonomy_key,
               grouped_options_for_select(taxonomy_grouped_options, hint[:taxonomy_key]),
-              { include_blank: t("admin.corrections.pick_category") }, class: "admin-input admin-input--sm" %>
+              { include_blank: t("admin.corrections.pick_category") },
+              { "aria-label": t("admin.corrections.pick_category"), class: "admin-input admin-input--sm",
+                data: { controller: "searchable-select", placeholder: t("admin.corrections.pick_category") } } %>
         <%= f.select :kind,
               options_for_select(LearnedKeyword::KINDS.map { |k| [ t("admin.kinds.#{k}"), k ] }, hint[:kind]),
-              { include_blank: t("admin.corrections.pick_kind") }, class: "admin-input admin-input--sm" %>
+              { include_blank: t("admin.corrections.pick_kind") },
+              { "aria-label": t("admin.corrections.pick_kind"), class: "admin-input admin-input--sm" } %>
         <%= f.submit t("admin.corrections.teach"), class: "admin-btn admin-btn--success admin-btn--sm" %>
       <% end %>
       <%= button_to t("admin.corrections.dismiss"), dismiss_admin_correction_path(id: attempt.id), method: :patch,
-            class: "admin-btn admin-btn--sm" %>
+            class: "admin-btn admin-btn--sm",
+            form: { data: { turbo_confirm: t("admin.corrections.confirm_dismiss") } } %>
     <% else %>
       <%= admin_badge(t("admin.corrections.states.reviewed"), tone: :success) %>
     <% end %>

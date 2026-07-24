@@ -1,0 +1,61 @@
+<% content_for(:title, t("admin.learned_aliases.title")) %>
+
+<div class="admin-page">
+  <header class="admin-page__header">
+    <h1 class="admin-page__title"><%= t("admin.learned_aliases.title") %></h1>
+    <p class="admin-page__subtitle"><%= t("admin.dict.subtitle") %></p>
+    <%= form_with url: admin_learned_aliases_path, method: :get, class: "admin-search" do |f| %>
+      <%= f.hidden_field :state, value: "active" %>
+      <%= f.search_field :q, value: params[:q], placeholder: t("admin.dict.search"),
+            "aria-label": t("admin.dict.search"), class: "admin-input" %>
+      <%= f.submit t("admin.search"), class: "admin-btn admin-btn--sm" %>
+    <% end %>
+  </header>
+
+  <nav class="admin-tabs">
+    <% Admin::Reviewable::STATES.each do |state| %>
+      <%= link_to url_for(action: :index, state: state, q: params[:q].presence),
+            class: class_names("admin-tab", "admin-tab--active" => @state == state) do %>
+        <%= t("admin.states.#{state}") %> · <%= number_with_delimiter(@state_counts[state].to_i) %>
+      <% end %>
+    <% end %>
+  </nav>
+
+  <% if @ordered_keys.any? %>
+    <% @ordered_keys.each do |key| %>
+      <% rows = @groups[key] %>
+      <section class="admin-dict__cat">
+        <h2 class="admin-dict__name">
+          <%= TransactionTaxonomy.name(key) || t("admin.dict.unknown_category", key: key) %>
+          <span class="admin-dict__count"><%= rows.size %></span>
+        </h2>
+        <div class="admin-chips">
+          <% rows.each do |row| %>
+            <details class="admin-chip" id="<%= dom_id(row) %>" data-controller="lazy-select">
+              <summary class="admin-chip__phrase"><%= row.display_phrase.presence || row.phrase %></summary>
+              <div class="admin-chip__menu">
+                <%= form_with url: reassign_admin_learned_alias_path(id: row.id), method: :patch, class: "admin-teach" do |f| %>
+                  <%= f.select :taxonomy_key,
+                        grouped_options_for_select(taxonomy_grouped_options, row.taxonomy_key),
+                        {}, { "aria-label": t("admin.dict.move"), class: "admin-input admin-input--sm" } %>
+                  <%= f.submit t("admin.dict.move"), class: "admin-btn admin-btn--sm" %>
+                <% end %>
+                <%= button_to t("admin.dict.remove"), reject_admin_learned_alias_path(id: row.id), method: :patch,
+                      class: "admin-btn admin-btn--danger admin-btn--sm",
+                      form: { data: { turbo_confirm: t("admin.dict.confirm_remove", phrase: row.phrase) } } %>
+              </div>
+            </details>
+          <% end %>
+          <%= form_with url: admin_learned_aliases_path, method: :post, class: "admin-chip-add" do |f| %>
+            <%= f.hidden_field :taxonomy_key, value: key %>
+            <%= f.text_field :phrase, placeholder: t("admin.dict.add_placeholder"),
+                  "aria-label": t("admin.dict.add_placeholder"), class: "admin-input admin-input--sm" %>
+            <%= f.submit t("admin.dict.add"), class: "admin-btn admin-btn--sm" %>
+          <% end %>
+        </div>
+      </section>
+    <% end %>
+  <% else %>
+    <p class="admin-empty"><%= t("admin.review.empty", state: t("admin.states.active")) %></p>
+  <% end %>
+</div>

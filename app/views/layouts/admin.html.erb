@@ -6,11 +6,11 @@
     <meta name="robots" content="noindex">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
-    <%= yield :head %>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <%= stylesheet_link_tag "tom-select.bootstrap5", "data-turbo-track": "reload" %>
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
   </head>
@@ -19,10 +19,15 @@
     <header class="admin-topbar">
       <div class="admin-topbar__inner">
         <%= link_to "Spens Admin", admin_root_path, class: "admin-topbar__brand" %>
-        <nav class="admin-nav">
-          <% admin_nav_items.each do |item| %>
-            <%= link_to item[:label], item[:path],
-                  class: class_names("admin-nav__link", "admin-nav__link--active" => current_page?(item[:path])) %>
+        <nav class="admin-nav" aria-label="Admin">
+          <% admin_nav_groups.each_with_index do |group, i| %>
+            <% if i.positive? %><span class="admin-nav__sep" aria-hidden="true"></span><% end %>
+            <% group.each do |item| %>
+              <%= link_to item[:path],
+                    class: class_names("admin-nav__link", "admin-nav__link--active" => current_page?(item[:path])) do %>
+                <%= item[:label] %><% if item[:count].to_i.positive? %><span class="admin-nav__count"><%= item[:count] %></span><% end %>
+              <% end %>
+            <% end %>
           <% end %>
         </nav>
         <div class="admin-topbar__meta">

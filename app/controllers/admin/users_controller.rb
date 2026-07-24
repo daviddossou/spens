@@ -6,7 +6,7 @@ module Admin
 
     def index
       scope = User.includes(:memberships).order(created_at: :desc)
-      scope = scope.where("email ILIKE ?", "%#{params[:q]}%") if params[:q].present?
+      scope = scope.where("email ILIKE ?", "%#{ActiveRecord::Base.sanitize_sql_like(params[:q])}%") if params[:q].present?
       @users = paginate(scope)
     end
 

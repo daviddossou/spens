@@ -1,18 +1,47 @@
 # frozen_string_literal: true
 
 module AdminHelper
-  def admin_nav_items
+  # Nav in three groups (learning workbench · data lookup · system), with pending-work
+  # counts so the daily queue is visible from anywhere.
+  def admin_nav_groups
+    counts = admin_pending_counts
     [
-      { label: t("admin.nav.dashboard"), path: admin_root_path },
-      { label: t("admin.nav.aliases"), path: admin_learned_aliases_path },
-      { label: t("admin.nav.keywords"), path: admin_learned_keywords_path },
-      { label: t("admin.nav.corrections"), path: admin_corrections_path },
-      { label: t("admin.nav.users"), path: admin_users_path },
-      { label: t("admin.nav.spaces"), path: admin_spaces_path },
-      { label: t("admin.nav.transactions"), path: admin_transactions_path },
-      { label: t("admin.nav.attempts"), path: admin_quick_entry_attempts_path },
-      { label: t("admin.nav.audit"), path: admin_audit_logs_path }
+      [
+        { label: t("admin.nav.dashboard"), path: admin_root_path },
+        { label: t("admin.nav.corrections"), path: admin_corrections_path, count: counts[:corrections] },
+        { label: t("admin.nav.aliases"), path: admin_learned_aliases_path, count: counts[:aliases] },
+        { label: t("admin.nav.keywords"), path: admin_learned_keywords_path, count: counts[:keywords] },
+        { label: t("admin.nav.attempts"), path: admin_quick_entry_attempts_path }
+      ],
+      [
+        { label: t("admin.nav.users"), path: admin_users_path },
+        { label: t("admin.nav.spaces"), path: admin_spaces_path },
+        { label: t("admin.nav.transactions"), path: admin_transactions_path }
+      ],
+      [
+        { label: t("admin.nav.taxonomy"), path: admin_taxonomy_nodes_path },
+        { label: t("admin.nav.audit"), path: admin_audit_logs_path }
+      ]
     ]
+  end
+
+  def admin_pending_counts
+    @admin_pending_counts ||= {
+      corrections: QuickEntryAttempt.needs_review.count,
+      aliases: LearnedAlias.global.candidate.count,
+      keywords: LearnedKeyword.global.candidate.count
+    }
+  end
+
+  # Compact timestamp that scans fast on monitor screens: relative under a day, date after.
+  def admin_time(time)
+    return "—" if time.blank?
+
+    if time > 24.hours.ago
+      t("admin.time_ago", time: time_ago_in_words(time))
+    else
+      time.strftime("%Y-%m-%d %H:%M")
+    end
   end
 
   # Coloured pill for a learned-vocabulary state / attempt outcome / source.
@@ -54,12 +83,35 @@ module AdminHelper
     row.is_a?(LearnedKeyword) ? reject_admin_learned_keyword_path(id: row.id) : reject_admin_learned_alias_path(id: row.id)
   end
 
+  def restore_learned_path(row, undo_state)
+    if row.is_a?(LearnedKeyword)
+      restore_admin_learned_keyword_path(id: row.id, undo_state: undo_state)
+    else
+      restore_admin_learned_alias_path(id: row.id, undo_state: undo_state)
+    end
+  end
+
   # Taxonomy nodes grouped by kind for the corrections teach form:
   # [["Expense", [["Groceries", "groceries"], ...]], ["Income", [...]]]
   def taxonomy_grouped_options
     TransactionTaxonomy.nodes.group_by { |_key, node| node["kind"] }.map do |kind, nodes|
       [ kind.capitalize, nodes.map { |key, node| [ node[I18n.locale.to_s] || node["en"], key ] }.sort ]
     end
+  end
+
+  # Money direction for a transaction row: sign + semantic tone, never color alone.
+  OUTFLOW_KINDS = %w[expense transfer_out debt_out].freeze
+
+  def admin_outflow?(txn)
+    OUTFLOW_KINDS.include?(txn.transaction_type&.kind)
+  end
+
+  def admin_amount_class(txn)
+    admin_outflow?(txn) ? "admin-amount--out" : "admin-amount--in"
+  end
+
+  def admin_signed_amount(txn)
+    "#{admin_outflow?(txn) ? '−' : '+'} #{format_money(txn.amount, txn.space.currency)}"
   end
 
   # Human-friendly target for an audit-log row (the record may since have been deleted).

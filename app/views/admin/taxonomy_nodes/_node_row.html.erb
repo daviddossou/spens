@@ -1,0 +1,64 @@
+<%# Locals: node, first, last, reference_count, alias_count, child_count (parents only) %>
+<% child_count = local_assigns[:child_count] %>
+<div id="<%= dom_id(node) %>" data-key="<%= node.key %>"
+     class="<%= class_names("admin-tree-row", "admin-tree-row--inactive" => !node.active?) %>">
+  <span class="admin-tree-row__handle" aria-hidden="true">⣿</span>
+  <% if node.parent? %>
+    <button type="button" class="admin-taxgroup__toggle" data-action="tax-group#toggle"
+            aria-label="<%= t("admin.taxonomy.toggle") %>">▸</button>
+  <% end %>
+  <span class="admin-tree-row__names">
+    <span class="admin-tree-row__en"><%= node.parent? ? tag.strong(node.name_en) : node.name_en %></span>
+    <span class="admin-tree-row__fr"><%= node.name_fr %></span>
+  </span>
+  <% if node.parent? && child_count.to_i.positive? %>
+    <span class="admin-dict__count"><%= child_count %></span>
+  <% end %>
+  <% unless node.active? %><%= admin_badge(t("admin.taxonomy.inactive"), tone: :neutral) %><% end %>
+
+  <details class="admin-menu">
+    <summary class="admin-menu__trigger" aria-label="<%= t("admin.taxonomy.actions") %>">⋯</summary>
+    <div class="admin-menu__panel">
+      <div class="admin-menu__info">
+        <code><%= node.key %></code>
+        <span><%= t("admin.taxonomy.cols.spaces") %> · <%= reference_count %></span>
+        <% if alias_count.positive? %>
+          <%= link_to "#{t('admin.taxonomy.cols.aliases')} · #{alias_count}",
+                admin_learned_aliases_path(state: "active", q: TransactionTaxonomy.name(node.key, :en) || node.key) %>
+        <% else %>
+          <span><%= t("admin.taxonomy.cols.aliases") %> · 0</span>
+        <% end %>
+      </div>
+      <%= button_to t("admin.taxonomy.rename"), rename_admin_taxonomy_node_path(id: node.id), method: :patch,
+            class: "admin-menu__item" %>
+      <%= link_to t("admin.taxonomy.edit"), edit_admin_taxonomy_node_path(id: node.id), class: "admin-menu__item" %>
+      <% if node.parent? && node.active? %>
+        <%= link_to t("admin.taxonomy.add_child"), new_admin_taxonomy_node_path(kind: node.kind, parent_key: node.key),
+              class: "admin-menu__item" %>
+      <% end %>
+      <% unless first %>
+        <%= button_to t("admin.taxonomy.move_up"), move_up_admin_taxonomy_node_path(id: node.id, q: params[:q].presence),
+              method: :patch, class: "admin-menu__item" %>
+      <% end %>
+      <% unless last %>
+        <%= button_to t("admin.taxonomy.move_down"), move_down_admin_taxonomy_node_path(id: node.id, q: params[:q].presence),
+              method: :patch, class: "admin-menu__item" %>
+      <% end %>
+      <% if node.active? %>
+        <% unless node.protected_key? %>
+          <%= button_to t("admin.taxonomy.deactivate"), deactivate_admin_taxonomy_node_path(id: node.id),
+                method: :patch, class: "admin-menu__item admin-menu__item--danger",
+                form: { data: { turbo_confirm: t("admin.taxonomy.confirm_deactivate") } } %>
+        <% end %>
+      <% else %>
+        <%= button_to t("admin.taxonomy.activate"), activate_admin_taxonomy_node_path(id: node.id),
+              method: :patch, class: "admin-menu__item" %>
+        <% if reference_count.zero? && !(node.parent? && node.children.exists?) %>
+          <%= button_to t("admin.taxonomy.destroy"), admin_taxonomy_node_path(id: node.id), method: :delete,
+                data: { turbo_confirm: t("admin.taxonomy.confirm_destroy") },
+                class: "admin-menu__item admin-menu__item--danger" %>
+        <% end %>
+      <% end %>
+    </div>
+  </details>
+</div>

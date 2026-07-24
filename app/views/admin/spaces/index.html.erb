@@ -9,14 +9,13 @@
     <% end %>
   </header>
 
-  <table class="admin-table">
+  <div class="admin-table-wrap"><table class="admin-table">
     <thead>
       <tr>
-        <th><%= t("admin.cols.name") %></th>
-        <th><%= t("admin.cols.owner") %></th>
-        <th><%= t("admin.cols.currency") %></th>
-        <th><%= t("admin.cols.members") %></th>
-        <th class="admin-table__actions"></th>
+        <th scope="col"><%= t("admin.cols.name") %></th>
+        <th scope="col"><%= t("admin.cols.owner") %></th>
+        <th scope="col"><%= t("admin.cols.currency") %></th>
+        <th scope="col"><%= t("admin.cols.members") %></th>
       </tr>
     </thead>
     <tbody>
@@ -26,13 +25,10 @@
           <td><%= space.user&.email || "—" %></td>
           <td><%= space.currency %></td>
           <td><%= space.memberships.size %></td>
-          <td class="admin-table__actions">
-            <%= link_to t("admin.view"), admin_space_path(id: space.id), class: "admin-btn admin-btn--sm" %>
-          </td>
         </tr>
       <% end %>
     </tbody>
-  </table>
+  </table></div>
 
   <%= render "admin/shared/pagination" %>
 </div>

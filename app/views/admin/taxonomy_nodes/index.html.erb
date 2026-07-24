@@ -1,0 +1,56 @@
+<% content_for(:title, t("admin.taxonomy.title")) %>
+
+<div class="admin-page">
+  <header class="admin-page__header">
+    <h1 class="admin-page__title"><%= t("admin.taxonomy.title") %></h1>
+    <p class="admin-page__subtitle"><%= t("admin.taxonomy.subtitle") %></p>
+    <%= form_with url: admin_taxonomy_nodes_path, method: :get, class: "admin-search" do |f| %>
+      <%= f.hidden_field :kind, value: @kind %>
+      <%= f.search_field :q, value: @q, placeholder: t("admin.taxonomy.search"),
+            "aria-label": t("admin.taxonomy.search"), class: "admin-input" %>
+      <%= f.submit t("admin.search"), class: "admin-btn admin-btn--sm" %>
+    <% end %>
+  </header>
+
+  <nav class="admin-tabs">
+    <% TransactionTaxonomy::KINDS.each do |kind| %>
+      <%= link_to t("admin.taxonomy.kinds.#{kind}"), admin_taxonomy_nodes_path(kind: kind, q: @q.presence),
+            class: class_names("admin-tab", "admin-tab--active" => @kind == kind) %>
+    <% end %>
+    <%= link_to t("admin.taxonomy.new_node"), new_admin_taxonomy_node_path(kind: @kind),
+          class: "admin-btn admin-btn--sm" %>
+  </nav>
+
+  <% if @parents.any? %>
+    <div class="admin-tree" data-controller="tax-sort"
+         data-tax-sort-url-value="<%= reorder_admin_taxonomy_nodes_path %>"
+         data-tax-sort-draggable-value=".admin-taxgroup">
+      <% @parents.each_with_index do |parent, p_idx| %>
+        <% children = @children[parent.key] || [] %>
+        <div class="<%= class_names("admin-taxgroup", "admin-taxgroup--open" => @open_keys.include?(parent.key)) %>"
+             data-controller="tax-group" data-key="<%= parent.key %>">
+          <%= render "node_row", node: parent,
+                first: p_idx.zero?, last: p_idx == @parents.size - 1,
+                child_count: children.size,
+                reference_count: @reference_counts[parent.key].to_i,
+                alias_count: @alias_counts[parent.key].to_i %>
+          <div class="admin-taxgroup__children" data-controller="tax-sort"
+               data-tax-sort-url-value="<%= reorder_admin_taxonomy_nodes_path %>">
+            <% if children.any? %>
+              <% children.each_with_index do |child, c_idx| %>
+                <%= render "node_row", node: child,
+                      first: c_idx.zero?, last: c_idx == children.size - 1,
+                      reference_count: @reference_counts[child.key].to_i,
+                      alias_count: @alias_counts[child.key].to_i %>
+              <% end %>
+            <% else %>
+              <p class="admin-tree__none"><%= t("admin.taxonomy.no_children") %></p>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <p class="admin-empty"><%= @q.present? ? t("admin.taxonomy.no_match", q: @q) : t("admin.taxonomy.empty") %></p>
+  <% end %>
+</div>

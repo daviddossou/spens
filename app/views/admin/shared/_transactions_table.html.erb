@@ -1,21 +1,23 @@
 <%# Locals: transactions, show_space (optional) %>
 <% if transactions.any? %>
-  <table class="admin-table">
+  <div class="admin-table-wrap"><table class="admin-table">
     <thead>
       <tr>
-        <th><%= t("admin.cols.date") %></th>
-        <th><%= t("admin.cols.type") %></th>
-        <th><%= t("admin.cols.amount") %></th>
-        <th><%= t("admin.cols.account") %></th>
-        <% if local_assigns[:show_space] %><th><%= t("admin.cols.space") %></th><% end %>
+        <th scope="col"><%= t("admin.cols.date") %></th>
+        <th scope="col"><%= t("admin.cols.description") %></th>
+        <th scope="col"><%= t("admin.cols.type") %></th>
+        <th scope="col"><%= t("admin.cols.amount") %></th>
+        <th scope="col"><%= t("admin.cols.account") %></th>
+        <% if local_assigns[:show_space] %><th scope="col"><%= t("admin.cols.space") %></th><% end %>
       </tr>
     </thead>
     <tbody>
       <% transactions.each do |txn| %>
         <tr>
           <td><%= txn.transaction_date.strftime("%Y-%m-%d") %></td>
+          <td><%= truncate(txn.description.presence || "—", length: 60) %></td>
           <td><%= txn.transaction_type&.name || "—" %></td>
-          <td class="admin-amount"><%= format_money(txn.amount, txn.space.currency) %></td>
+          <td class="admin-amount <%= admin_amount_class(txn) %>"><%= admin_signed_amount(txn) %></td>
           <td><%= txn.account&.name || "—" %></td>
           <% if local_assigns[:show_space] %>
             <td><%= link_to txn.space.name, admin_space_path(id: txn.space_id) %></td>
@@ -23,7 +25,7 @@
         </tr>
       <% end %>
     </tbody>
-  </table>
+  </table></div>
 <% else %>
   <p class="admin-empty"><%= t("admin.transactions.empty") %></p>
 <% end %>

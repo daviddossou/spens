@@ -26,8 +26,11 @@
 class AdminAuditLog < ApplicationRecord
   ACTIONS = %w[
     impersonate_start impersonate_stop
-    approve_alias reject_alias approve_keyword reject_keyword
+    approve_alias reject_alias restore_alias create_alias reassign_alias
+    approve_keyword reject_keyword restore_keyword
     teach_correction dismiss_correction
+    create_taxonomy_node update_taxonomy_node activate_taxonomy_node
+    deactivate_taxonomy_node destroy_taxonomy_node
     grant_admin revoke_admin
   ].freeze
 

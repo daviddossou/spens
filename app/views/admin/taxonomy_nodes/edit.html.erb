@@ -1,0 +1,9 @@
+<% content_for(:title, t("admin.taxonomy.edit_node")) %>
+
+<div class="admin-page">
+  <header class="admin-page__header">
+    <h1 class="admin-page__title"><%= t("admin.taxonomy.edit_node") %></h1>
+    <p class="admin-page__subtitle"><%= @node.name_en %></p>
+  </header>
+  <%= render "form" %>
+</div>

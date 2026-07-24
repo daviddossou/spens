@@ -3,39 +3,71 @@
 <div class="admin-page">
   <header class="admin-page__header">
     <h1 class="admin-page__title"><%= t("admin.dashboard.title") %></h1>
-    <p class="admin-page__subtitle"><%= t("admin.dashboard.subtitle") %></p>
+    <p class="admin-page__subtitle">
+      <%= t("admin.dashboard.inbox_summary",
+            corrections: @pending_corrections_count, candidates: @top_candidates.size) %>
+    </p>
   </header>
 
   <section class="admin-section">
-    <h2 class="admin-section__title"><%= t("admin.dashboard.system") %></h2>
-    <div class="admin-cards">
-      <% @counts.each do |label, value| %>
-        <div class="admin-card">
-          <span class="admin-card__value"><%= number_with_delimiter(value) %></span>
-          <span class="admin-card__label"><%= t("admin.counts.#{label}") %></span>
-        </div>
+    <h2 class="admin-section__title"><%= t("admin.dashboard.inbox_corrections") %></h2>
+    <% if @pending_corrections.any? %>
+      <div class="admin-table-wrap"><table class="admin-table">
+        <thead>
+          <tr>
+            <th scope="col"><%= t("admin.cols.when") %></th>
+            <th scope="col"><%= t("admin.cols.utterance") %></th>
+            <th scope="col"><%= t("admin.corrections.parser_guess") %></th>
+            <th scope="col"><%= t("admin.corrections.user_change") %></th>
+            <th scope="col" class="admin-table__actions"><%= t("admin.corrections.teach") %></th>
+          </tr>
+        </thead>
+        <tbody>
+          <%= render partial: "admin/corrections/correction_row", collection: @pending_corrections, as: :attempt %>
+        </tbody>
+      </table></div>
+      <% if @pending_corrections_count > @pending_corrections.size %>
+        <p><%= link_to t("admin.dashboard.view_all_corrections", count: @pending_corrections_count),
+              admin_corrections_path, class: "admin-btn admin-btn--sm" %></p>
       <% end %>
-    </div>
+    <% else %>
+      <p class="admin-empty"><%= t("admin.corrections.empty") %></p>
+    <% end %>
   </section>
 
   <section class="admin-section">
-    <h2 class="admin-section__title"><%= t("admin.dashboard.quick_entry") %></h2>
-    <div class="admin-cards">
-      <div class="admin-card">
-        <span class="admin-card__value"><%= number_with_delimiter(@attempts_total) %></span>
-        <span class="admin-card__label"><%= t("admin.dashboard.attempts_total") %></span>
-      </div>
-      <div class="admin-card">
-        <span class="admin-card__value"><%= number_to_percentage(@attempts_total.zero? ? 0 : 100.0 * @ai_assisted / @attempts_total, precision: 0) %></span>
-        <span class="admin-card__label"><%= t("admin.dashboard.ai_assisted") %></span>
-      </div>
-      <% QuickEntryAttempt.outcomes.each_key do |outcome| %>
-        <div class="admin-card">
-          <span class="admin-card__value"><%= number_with_delimiter(@attempts_by_outcome[outcome].to_i) %></span>
-          <span class="admin-card__label"><%= t("admin.outcomes.#{outcome}") %></span>
-        </div>
-      <% end %>
-    </div>
+    <h2 class="admin-section__title"><%= t("admin.dashboard.top_candidates") %></h2>
+    <% if @top_candidates.any? %>
+      <div class="admin-table-wrap"><table class="admin-table">
+        <thead>
+          <tr>
+            <th scope="col"><%= t("admin.vocab.type") %></th>
+            <th scope="col"><%= t("admin.vocab.phrase") %></th>
+            <th scope="col"><%= t("admin.vocab.maps_to") %></th>
+            <th scope="col"><%= t("admin.vocab.source") %></th>
+            <th scope="col"><%= t("admin.vocab.confirmations") %></th>
+            <th scope="col" class="admin-table__actions"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @top_candidates.each do |row| %>
+            <tr>
+              <td><%= learned_type_label(row) %></td>
+              <td><code><%= row.phrase %></code></td>
+              <td><%= learned_target(row) %></td>
+              <td><%= admin_badge(row.source) %></td>
+              <td><%= row.confirmations %></td>
+              <td class="admin-table__actions">
+                <%= button_to t("admin.review.approve"), approve_learned_path(row),
+                      method: :patch, class: "admin-btn admin-btn--success admin-btn--sm" %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table></div>
+    <% else %>
+      <p class="admin-empty"><%= t("admin.review.no_candidates") %></p>
+    <% end %>
   </section>
 
   <section class="admin-section">
@@ -55,37 +87,24 @@
   </section>
 
   <section class="admin-section">
-    <h2 class="admin-section__title"><%= t("admin.dashboard.top_candidates") %></h2>
-    <% if @top_candidates.any? %>
-      <table class="admin-table">
-        <thead>
-          <tr>
-            <th><%= t("admin.vocab.type") %></th>
-            <th><%= t("admin.vocab.phrase") %></th>
-            <th><%= t("admin.vocab.maps_to") %></th>
-            <th><%= t("admin.vocab.source") %></th>
-            <th><%= t("admin.vocab.confirmations") %></th>
-            <th class="admin-table__actions"></th>
-          </tr>
-        </thead>
-        <tbody>
-          <% @top_candidates.each do |row| %>
-            <tr>
-              <td><%= learned_type_label(row) %></td>
-              <td><code><%= row.phrase %></code></td>
-              <td><%= learned_target(row) %></td>
-              <td><%= admin_badge(row.source) %></td>
-              <td><%= row.confirmations %></td>
-              <td class="admin-table__actions">
-                <%= button_to t("admin.review.approve"), approve_learned_path(row),
-                      method: :patch, class: "admin-btn admin-btn--success admin-btn--sm" %>
-              </td>
-            </tr>
-          <% end %>
-        </tbody>
-      </table>
-    <% else %>
-      <p class="admin-empty"><%= t("admin.review.no_candidates") %></p>
-    <% end %>
+    <h2 class="admin-section__title"><%= t("admin.dashboard.system") %></h2>
+    <div class="admin-cards">
+      <% @counts.each do |label, value| %>
+        <div class="admin-card">
+          <span class="admin-card__value"><%= number_with_delimiter(value) %></span>
+          <span class="admin-card__label"><%= t("admin.counts.#{label}") %></span>
+        </div>
+      <% end %>
+      <div class="admin-card">
+        <span class="admin-card__value"><%= number_with_delimiter(@attempts_total) %></span>
+        <span class="admin-card__label"><%= t("admin.dashboard.attempts_total") %></span>
+      </div>
+      <% QuickEntryAttempt.outcomes.each_key do |outcome| %>
+        <div class="admin-card">
+          <span class="admin-card__value"><%= number_with_delimiter(@attempts_by_outcome[outcome].to_i) %></span>
+          <span class="admin-card__label"><%= t("admin.outcomes.#{outcome}") %></span>
+        </div>
+      <% end %>
+    </div>
   </section>
 </div>

@@ -1,4 +1,8 @@
-# Category taxonomy — single source of truth (Parent -> Subcategory, two flat levels).
+# Category taxonomy (Parent -> Subcategory, two flat levels).
+#
+# ⚠ One-time seed + fresh-DB fallback only. The runtime source of truth is the
+# taxonomy_nodes table (seeded by taxonomy:import_nodes, edited from the admin
+# dashboard). After the first import, edits here are IGNORED — change it in admin.
 #
 # - Keys are STABLE and locale-independent (snake_case). Never rename a key once shipped;
 #   the per-space `transaction_types.template_key` points at it.
