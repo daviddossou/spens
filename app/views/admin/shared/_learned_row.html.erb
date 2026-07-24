@@ -1,5 +1,6 @@
-<%# Locals: row (LearnedAlias|LearnedKeyword), samples_by_id (optional Hash) %>
+<%# Locals: row (LearnedAlias|LearnedKeyword), samples_by_id (optional), undo_state (optional — set right after a reject) %>
 <% samples = local_assigns[:samples_by_id]&.dig(row.id) %>
+<% undo_state = local_assigns[:undo_state] %>
 <tr id="<%= dom_id(row) %>" class="admin-row">
   <td>
     <code><%= row.phrase %></code>
@@ -16,25 +17,34 @@
   <td><%= row.confirmations %></td>
   <td><%= admin_state_badge(row.state) %></td>
   <td class="admin-table__actions">
-    <% unless row.active? %>
-      <%# Approve with optional inline edits: fix the phrase / retarget before it goes live. %>
-      <%= form_with url: approve_learned_path(row), method: :patch, class: "admin-teach" do |f| %>
-        <%= f.text_field :phrase, value: row.phrase, class: "admin-input admin-input--sm" %>
-        <% if row.is_a?(LearnedKeyword) %>
-          <%= f.select :kind,
-                options_for_select(LearnedKeyword::KINDS.map { |k| [ t("admin.kinds.#{k}"), k ] }, row.kind),
-                {}, class: "admin-input admin-input--sm" %>
-        <% else %>
-          <%= f.select :taxonomy_key,
-                grouped_options_for_select(taxonomy_grouped_options, row.taxonomy_key),
-                {}, class: "admin-input admin-input--sm" %>
+    <% if row.rejected? && undo_state %>
+      <%# Just rejected via turbo — offer the escape hatch inline. %>
+      <%= button_to t("admin.review.undo"), restore_learned_path(row, undo_state), method: :patch,
+            class: "admin-btn admin-btn--sm" %>
+    <% else %>
+      <% unless row.active? %>
+        <%# Approve with optional inline edits: fix the phrase / retarget before it goes live. %>
+        <%= form_with url: approve_learned_path(row), method: :patch, class: "admin-teach" do |f| %>
+          <%= f.text_field :phrase, value: row.phrase, "aria-label": t("admin.vocab.phrase"),
+                class: "admin-input admin-input--sm" %>
+          <% if row.is_a?(LearnedKeyword) %>
+            <%= f.select :kind,
+                  options_for_select(LearnedKeyword::KINDS.map { |k| [ t("admin.kinds.#{k}"), k ] }, row.kind),
+                  {}, { "aria-label": t("admin.vocab.maps_to"), class: "admin-input admin-input--sm" } %>
+          <% else %>
+            <%= f.select :taxonomy_key,
+                  grouped_options_for_select(taxonomy_grouped_options, row.taxonomy_key),
+                  {}, { "aria-label": t("admin.vocab.maps_to"), class: "admin-input admin-input--sm",
+                        data: { controller: "searchable-select" } } %>
+          <% end %>
+          <%= f.submit t("admin.review.approve"), class: "admin-btn admin-btn--success admin-btn--sm" %>
         <% end %>
-        <%= f.submit t("admin.review.approve"), class: "admin-btn admin-btn--success admin-btn--sm" %>
       <% end %>
-    <% end %>
-    <% unless row.rejected? %>
-      <%= button_to t("admin.review.reject"), reject_learned_path(row), method: :patch,
-            class: "admin-btn admin-btn--danger admin-btn--sm" %>
+      <%# System dictionary rows are seeded vocabulary — not a review queue; no per-row reject. %>
+      <% unless row.rejected? || (row.active? && row.source == "system") %>
+        <%= button_to t("admin.review.reject"), reject_learned_path(row), method: :patch,
+              class: "admin-btn admin-btn--danger admin-btn--sm" %>
+      <% end %>
     <% end %>
   </td>
 </tr>

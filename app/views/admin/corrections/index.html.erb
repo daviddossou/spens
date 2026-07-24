@@ -14,20 +14,20 @@
   </nav>
 
   <% if @attempts.any? %>
-    <table class="admin-table">
+    <div class="admin-table-wrap"><table class="admin-table">
       <thead>
         <tr>
-          <th><%= t("admin.cols.when") %></th>
-          <th><%= t("admin.cols.utterance") %></th>
-          <th><%= t("admin.corrections.parser_guess") %></th>
-          <th><%= t("admin.corrections.user_change") %></th>
-          <th class="admin-table__actions"><%= t("admin.corrections.teach") if @state == "pending" %></th>
+          <th scope="col"><%= t("admin.cols.when") %></th>
+          <th scope="col"><%= t("admin.cols.utterance") %></th>
+          <th scope="col"><%= t("admin.corrections.parser_guess") %></th>
+          <th scope="col"><%= t("admin.corrections.user_change") %></th>
+          <th scope="col" class="admin-table__actions"><%= @state == "pending" ? t("admin.corrections.teach") : t("admin.cols.status") %></th>
         </tr>
       </thead>
       <tbody>
         <%= render partial: "correction_row", collection: @attempts, as: :attempt %>
       </tbody>
-    </table>
+    </table></div>
     <%= render "admin/shared/pagination" %>
   <% else %>
     <p class="admin-empty"><%= t("admin.corrections.empty") %></p>

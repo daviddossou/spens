@@ -9,16 +9,15 @@
     <% end %>
   </header>
 
-  <table class="admin-table">
+  <div class="admin-table-wrap"><table class="admin-table">
     <thead>
       <tr>
-        <th><%= t("admin.cols.email") %></th>
-        <th><%= t("admin.cols.name") %></th>
-        <th><%= t("admin.cols.role") %></th>
-        <th><%= t("admin.cols.sign_ins") %></th>
-        <th><%= t("admin.cols.last_seen") %></th>
-        <th><%= t("admin.cols.spaces") %></th>
-        <th class="admin-table__actions"></th>
+        <th scope="col"><%= t("admin.cols.email") %></th>
+        <th scope="col"><%= t("admin.cols.name") %></th>
+        <th scope="col"><%= t("admin.cols.role") %></th>
+        <th scope="col"><%= t("admin.cols.sign_ins") %></th>
+        <th scope="col"><%= t("admin.cols.last_seen") %></th>
+        <th scope="col"><%= t("admin.cols.spaces") %></th>
       </tr>
     </thead>
     <tbody>
@@ -30,13 +29,10 @@
           <td><%= user.sign_in_count %></td>
           <td><%= user.current_sign_in_at&.to_date || "—" %></td>
           <td><%= user.memberships.size %></td>
-          <td class="admin-table__actions">
-            <%= link_to t("admin.view"), admin_user_path(id: user.id), class: "admin-btn admin-btn--sm" %>
-          </td>
         </tr>
       <% end %>
     </tbody>
-  </table>
+  </table></div>
 
   <%= render "admin/shared/pagination" %>
 </div>

@@ -4,32 +4,41 @@
   <header class="admin-page__header">
     <h1 class="admin-page__title"><%= t("admin.#{controller_name}.title") %></h1>
     <p class="admin-page__subtitle"><%= t("admin.#{controller_name}.subtitle") %></p>
+    <%= form_with url: url_for(action: :index), method: :get, class: "admin-search" do |f| %>
+      <%= f.hidden_field :state, value: @state %>
+      <%= f.search_field :q, value: params[:q], placeholder: t("admin.review.search"),
+            "aria-label": t("admin.review.search"), class: "admin-input" %>
+      <%= f.submit t("admin.search"), class: "admin-btn admin-btn--sm" %>
+    <% end %>
   </header>
 
   <nav class="admin-tabs">
     <% Admin::Reviewable::STATES.each do |state| %>
-      <%= link_to t("admin.states.#{state}"), url_for(action: :index, state: state),
-            class: class_names("admin-tab", "admin-tab--active" => @state == state) %>
+      <%= link_to url_for(action: :index, state: state, q: params[:q].presence),
+            class: class_names("admin-tab", "admin-tab--active" => @state == state) do %>
+        <%= t("admin.states.#{state}") %> · <%= number_with_delimiter(@state_counts[state].to_i) %>
+      <% end %>
     <% end %>
   </nav>
 
   <% if @records.any? %>
-    <table class="admin-table">
+    <div class="admin-table-wrap"><table class="admin-table">
       <thead>
         <tr>
-          <th><%= t("admin.vocab.phrase") %></th>
-          <th><%= t("admin.vocab.maps_to") %></th>
-          <th><%= t("admin.vocab.source") %></th>
-          <th><%= t("admin.vocab.confirmations") %></th>
-          <th><%= t("admin.vocab.state") %></th>
-          <th class="admin-table__actions"></th>
+          <th scope="col"><%= t("admin.vocab.phrase") %></th>
+          <th scope="col"><%= t("admin.vocab.maps_to") %></th>
+          <th scope="col"><%= t("admin.vocab.source") %></th>
+          <th scope="col"><%= t("admin.vocab.confirmations") %></th>
+          <th scope="col"><%= t("admin.vocab.state") %></th>
+          <th scope="col" class="admin-table__actions"></th>
         </tr>
       </thead>
       <tbody>
         <%= render partial: "admin/shared/learned_row",
               collection: @records, as: :row, locals: { samples_by_id: @samples } %>
       </tbody>
-    </table>
+    </table></div>
+    <%= render "admin/shared/pagination" %>
   <% else %>
     <p class="admin-empty"><%= t("admin.review.empty", state: t("admin.states.#{@state}")) %></p>
   <% end %>

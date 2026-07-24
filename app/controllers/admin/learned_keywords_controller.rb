@@ -10,5 +10,6 @@ module Admin
     def reviewable_index_path = admin_learned_keywords_path(state: params[:state])
     def approve_action = "approve_keyword"
     def reject_action = "reject_keyword"
+    def restore_action = "restore_keyword"
   end
 end

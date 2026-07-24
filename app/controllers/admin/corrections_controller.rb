@@ -6,6 +6,8 @@ module Admin
   # directly. The extractor's residual phrase and any auto-mined candidate are pre-filled as
   # hints; what the admin submits is written straight to `active`.
   class CorrectionsController < BaseController
+    include CorrectionHints
+
     STATES = %w[pending reviewed].freeze
 
     def index
@@ -49,23 +51,6 @@ module Admin
 
         LearnedKeyword.admin_teach(phrase: phrase, kind: params[:kind])
       end
-    end
-
-    # { phrase:, taxonomy_key:, kind: } prefills for the teach form: the extractor's residual
-    # phrase, the taxonomy key of the category the user corrected to, and a structural-kind
-    # correction when one was recorded. A pending auto-candidate for the phrase fills gaps.
-    def hint_for(attempt)
-      phrase = QuickEntry::PhraseExtractor.call(text: attempt.text, locale: attempt.locale, space: attempt.space)
-      corrections = attempt.corrections || {}
-
-      taxonomy_key = TransactionTaxonomy.key_for_name(corrections.dig("transaction_type_name", "to"))
-      taxonomy_key ||= phrase && LearnedAlias.candidate.find_by(phrase: CategoryText.normalize(phrase))&.taxonomy_key
-
-      kind = corrections.dig("kind", "to")
-      kind = "transfer" if kind.to_s.start_with?("transfer")
-      kind = nil unless LearnedKeyword::KINDS.include?(kind)
-
-      { phrase: phrase, taxonomy_key: taxonomy_key, kind: kind }
     end
   end
 end

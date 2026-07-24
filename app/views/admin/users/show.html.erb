@@ -12,7 +12,8 @@
     <div class="admin-actions">
       <% unless @user.admin? %>
         <%= button_to t("admin.users.impersonate"), impersonate_admin_user_path(id: @user.id),
-              method: :post, class: "admin-btn admin-btn--primary" %>
+              method: :post, class: "admin-btn admin-btn--primary",
+              form: { data: { turbo_confirm: t("admin.users.confirm_impersonate") } } %>
       <% end %>
       <% if @user.admin? %>
         <%= button_to t("admin.users.revoke_admin"), revoke_admin_admin_user_path(id: @user.id),
@@ -60,10 +61,10 @@
   <section class="admin-section">
     <h2 class="admin-section__title"><%= t("admin.users.debts") %></h2>
     <% if @debts.any? %>
-      <table class="admin-table">
+      <div class="admin-table-wrap"><table class="admin-table">
         <thead><tr>
-          <th><%= t("admin.cols.name") %></th><th><%= t("admin.cols.direction") %></th>
-          <th><%= t("admin.cols.status") %></th><th><%= t("admin.cols.outstanding") %></th>
+          <th scope="col"><%= t("admin.cols.name") %></th><th scope="col"><%= t("admin.cols.direction") %></th>
+          <th scope="col"><%= t("admin.cols.status") %></th><th scope="col"><%= t("admin.cols.outstanding") %></th>
         </tr></thead>
         <tbody>
           <% @debts.each do |debt| %>
@@ -75,7 +76,7 @@
             </tr>
           <% end %>
         </tbody>
-      </table>
+      </table></div>
     <% else %>
       <p class="admin-empty"><%= t("admin.users.no_debts") %></p>
     <% end %>

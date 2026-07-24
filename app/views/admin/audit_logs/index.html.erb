@@ -7,26 +7,26 @@
   </header>
 
   <% if @logs.any? %>
-    <table class="admin-table">
+    <div class="admin-table-wrap"><table class="admin-table">
       <thead>
         <tr>
-          <th><%= t("admin.cols.when") %></th>
-          <th><%= t("admin.cols.admin") %></th>
-          <th><%= t("admin.cols.action") %></th>
-          <th><%= t("admin.cols.target") %></th>
+          <th scope="col"><%= t("admin.cols.when") %></th>
+          <th scope="col"><%= t("admin.cols.admin") %></th>
+          <th scope="col"><%= t("admin.cols.action") %></th>
+          <th scope="col"><%= t("admin.cols.target") %></th>
         </tr>
       </thead>
       <tbody>
         <% @logs.each do |log| %>
           <tr>
-            <td><%= log.created_at.strftime("%Y-%m-%d %H:%M") %></td>
+            <td><%= admin_time(log.created_at) %></td>
             <td><%= log.admin_user&.email %></td>
             <td><%= admin_badge(t("admin.actions.#{log.action}", default: log.action)) %></td>
             <td><%= admin_audit_target(log) %></td>
           </tr>
         <% end %>
       </tbody>
-    </table>
+    </table></div>
   <% else %>
     <p class="admin-empty"><%= t("admin.audit.empty") %></p>
   <% end %>

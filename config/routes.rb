@@ -70,14 +70,18 @@ Rails.application.routes.draw do
     namespace :admin do
       root "dashboard#show"
 
-      resources :learned_aliases, only: :index do
-        member { patch :approve; patch :reject }
+      resources :learned_aliases, only: [ :index, :create ] do
+        member { patch :approve; patch :reject; patch :restore; patch :reassign }
       end
       resources :learned_keywords, only: :index do
-        member { patch :approve; patch :reject }
+        member { patch :approve; patch :reject; patch :restore }
       end
       resources :corrections, only: :index do
         member { post :teach; patch :dismiss }
+      end
+      resources :taxonomy_nodes, except: :show do
+        member { patch :activate; patch :deactivate; patch :move_up; patch :move_down; patch :rename }
+        collection { patch :reorder }
       end
 
       resources :users, only: [ :index, :show ] do

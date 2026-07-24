@@ -4,7 +4,7 @@
   <header class="admin-page__header">
     <h1 class="admin-page__title"><%= @space.name %></h1>
     <p class="admin-page__subtitle">
-      <%= t("admin.spaces.owned_by", email: @space.user&.email) %> · <%= @space.currency %><%= " · #{@space.country}" if @space.country.present? %>
+      <%= t("admin.spaces.owned_by", email: @space.user&.email) %> · <%= @space.currency %><%= " · #{@space.country}" if @space.country.present? %> · <%= t("admin.spaces.categories_count", count: @transaction_types_count) %>
     </p>
   </header>
 
@@ -24,8 +24,8 @@
   <section class="admin-section">
     <h2 class="admin-section__title"><%= t("admin.spaces.accounts") %></h2>
     <% if @accounts.any? %>
-      <table class="admin-table">
-        <thead><tr><th><%= t("admin.cols.name") %></th><th><%= t("admin.cols.balance") %></th></tr></thead>
+      <div class="admin-table-wrap"><table class="admin-table">
+        <thead><tr><th scope="col"><%= t("admin.cols.name") %></th><th scope="col"><%= t("admin.cols.balance") %></th></tr></thead>
         <tbody>
           <% @accounts.each do |account| %>
             <tr>
@@ -34,27 +34,9 @@
             </tr>
           <% end %>
         </tbody>
-      </table>
+      </table></div>
     <% else %>
       <p class="admin-empty"><%= t("admin.spaces.no_accounts") %></p>
-    <% end %>
-  </section>
-
-  <section class="admin-section">
-    <h2 class="admin-section__title"><%= t("admin.spaces.categories") %></h2>
-    <% if @transaction_types.any? %>
-      <ul class="admin-tree">
-        <% @transaction_types.each do |type| %>
-          <li>
-            <%= type.name %> <span class="admin-row__type"><%= type.kind %></span>
-            <% if type.children.any? %>
-              <ul><% type.children.each do |child| %><li><%= child.name %></li><% end %></ul>
-            <% end %>
-          </li>
-        <% end %>
-      </ul>
-    <% else %>
-      <p class="admin-empty"><%= t("admin.spaces.no_categories") %></p>
     <% end %>
   </section>
 
