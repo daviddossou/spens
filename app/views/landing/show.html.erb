@@ -216,18 +216,37 @@
   </div>
 </section>
 
-<section id="feat" class="landing-sect landing-sect--slate">
+<% feature_shots = %w[feat-accounts feat-debts feat-budget feat-quick-add feat-spaces feat-goals feat-analytics feat-quick-entry] %>
+<section id="feat" class="landing-sect landing-sect--slate" data-controller="landing--features">
   <div class="landing-container">
     <div class="landing-eyebrow landing-eyebrow--on-dark"><%= t("landing.features.eyebrow") %></div>
     <h2 class="landing-h2 landing-h2--on-dark landing-features__title"><%= t("landing.features.title") %></h2>
-    <div class="landing-grid-4">
-      <% t("landing.features.cards").each_with_index do |card, i| %>
-        <div class="landing-feat">
-          <div class="landing-feat__num" aria-hidden="true"><%= format("%02d", i + 1) %></div>
-          <div class="landing-feat__title"><%= card[:title] %></div>
-          <div class="landing-feat__body"><%= card[:body] %></div>
-        </div>
-      <% end %>
+    <div class="landing-showcase">
+      <div class="landing-showcase__cards">
+        <% t("landing.features.cards").each_with_index do |card, i| %>
+          <button type="button" class="landing-feat" id="landing-feat-<%= i %>"
+                  data-landing--features-target="card"
+                  data-action="landing--features#select"
+                  data-poster="<%= image_path("landing/#{feature_shots[i]}.png") %>"
+                  data-webm="<%= asset_path("landing/#{feature_shots[i]}.webm") %>"
+                  data-mp4="<%= asset_path("landing/#{feature_shots[i]}.mp4") %>"
+                  aria-expanded="false" aria-controls="landing-feat-media-<%= i %>">
+            <div class="landing-feat__num" aria-hidden="true"><%= format("%02d", i + 1) %></div>
+            <div class="landing-feat__title"><%= card[:title] %></div>
+            <div class="landing-feat__body"><%= card[:body] %></div>
+            <div class="landing-feat__media" id="landing-feat-media-<%= i %>">
+              <div class="landing-feat__media-inner">
+                <span class="landing-shot"><video data-landing--features-target="cardVideo" muted loop playsinline preload="none" aria-label="<%= card[:title] %>"></video></span>
+              </div>
+            </div>
+          </button>
+        <% end %>
+      </div>
+      <div class="landing-showcase__preview" aria-hidden="true">
+        <span class="landing-shot landing-shot--panel">
+          <video data-landing--features-target="panelVideo" muted loop playsinline preload="none"></video>
+        </span>
+      </div>
     </div>
   </div>
 </section>
