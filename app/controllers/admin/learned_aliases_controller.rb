@@ -16,7 +16,9 @@ module Admin
         q = CategoryText.normalize(params[:q])
         rows = rows.select do |row|
           row.phrase.include?(q) ||
-            CategoryText.normalize(TransactionTaxonomy.name(row.taxonomy_key).to_s).include?(q)
+            %i[fr en].any? do |locale|
+              CategoryText.normalize(TransactionTaxonomy.name(row.taxonomy_key, locale).to_s).include?(q)
+            end
         end
       end
       @groups = rows.group_by(&:taxonomy_key)

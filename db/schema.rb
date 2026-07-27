@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_07_23_210208) do
+ActiveRecord::Schema[8.0].define(version: 2026_07_27_102953) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -190,6 +190,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_23_210208) do
     t.datetime "updated_at", null: false
     t.decimal "monthly_savings_goal", precision: 15, scale: 2
     t.string "locale"
+    t.string "time_zone"
     t.index "user_id, lower((name)::text)", name: "index_spaces_on_user_id_and_lower_name", unique: true
     t.index ["user_id"], name: "index_spaces_on_user_id"
   end
@@ -267,6 +268,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_23_210208) do
     t.string "otp_code"
     t.datetime "otp_sent_at"
     t.boolean "admin", default: false, null: false
+    t.string "time_zone"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end

@@ -24,6 +24,9 @@ Rails.application.routes.draw do
     put "profile", to: "users/profile#update"
     delete "profile", to: "users/profile#destroy"
 
+    # Device time zone capture (JS posts the IANA zone when it changes)
+    patch "time_zone", to: "users/time_zones#update", as: :time_zone
+
     # Main application routes
     root "home#index"
     get "welcome", to: "landing#show", as: :landing
@@ -78,6 +81,9 @@ Rails.application.routes.draw do
       end
       resources :corrections, only: :index do
         member { post :teach; patch :dismiss }
+      end
+      resources :category_gaps, only: :index do
+        collection { post :map; post :dismiss }
       end
       resources :taxonomy_nodes, except: :show do
         member { patch :activate; patch :deactivate; patch :move_up; patch :move_down; patch :rename }

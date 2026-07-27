@@ -16,6 +16,7 @@ fr:
       spaces: "Espaces"
       transactions: "Transactions"
       attempts: "Saisies"
+      gaps: "Catégories manquantes"
       audit: "Audit"
       exit: "Retour à l'app"
     cols:
@@ -123,6 +124,27 @@ fr:
       added: "\"%{phrase}\" ajouté — actif immédiatement."
       moved: "\"%{phrase}\" correspond maintenant à %{category}."
       unknown_category: "Catégorie inconnue (%{key})"
+    gaps:
+      title: "Catégories manquantes"
+      subtitle: "Les catégories que les utilisateurs ont dû inventer — associez-les à un nœud existant, promouvez-les dans la taxonomie, ou ignorez-les. Leurs données ne sont jamais modifiées."
+      cols:
+        name: "Catégorie créée"
+        kind: "Type"
+        spaces: "Espaces"
+        transactions: "Transactions"
+        samples: "Exemples de descriptions"
+        actions: "Actions"
+      kinds:
+        expense: "Dépense"
+        income: "Revenu"
+      pick_category: "Associer à…"
+      map: "Associer"
+      promote: "Promouvoir"
+      dismiss: "Ignorer"
+      confirm_dismiss: "Ignorer \"%{phrase}\" ? Elle n'apparaîtra plus ici."
+      mapped: "\"%{phrase}\" suggère maintenant %{category} pour tout le monde."
+      dismissed: "\"%{phrase}\" ignorée."
+      empty: "Aucune catégorie manquante — la taxonomie couvre ce que font les utilisateurs."
     review:
       approve: "Approuver"
       reject: "Rejeter"

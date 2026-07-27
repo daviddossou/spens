@@ -27,7 +27,9 @@ module Admin
 
     def new
       @node = TaxonomyNode.new(kind: params[:kind].presence_in(TransactionTaxonomy::KINDS) || "expense",
-                               parent_key: params[:parent_key].presence)
+                               parent_key: params[:parent_key].presence,
+                               name_en: params[:name_en].presence,
+                               name_fr: params[:name_fr].presence)
     end
 
     def create

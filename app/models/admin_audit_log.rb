@@ -29,6 +29,7 @@ class AdminAuditLog < ApplicationRecord
     approve_alias reject_alias restore_alias create_alias reassign_alias
     approve_keyword reject_keyword restore_keyword
     teach_correction dismiss_correction
+    map_category_gap dismiss_category_gap
     create_taxonomy_node update_taxonomy_node activate_taxonomy_node
     deactivate_taxonomy_node destroy_taxonomy_node
     grant_admin revoke_admin

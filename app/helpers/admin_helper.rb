@@ -11,7 +11,8 @@ module AdminHelper
         { label: t("admin.nav.corrections"), path: admin_corrections_path, count: counts[:corrections] },
         { label: t("admin.nav.aliases"), path: admin_learned_aliases_path, count: counts[:aliases] },
         { label: t("admin.nav.keywords"), path: admin_learned_keywords_path, count: counts[:keywords] },
-        { label: t("admin.nav.attempts"), path: admin_quick_entry_attempts_path }
+        { label: t("admin.nav.attempts"), path: admin_quick_entry_attempts_path },
+        { label: t("admin.nav.gaps"), path: admin_category_gaps_path }
       ],
       [
         { label: t("admin.nav.users"), path: admin_users_path },
@@ -91,12 +92,22 @@ module AdminHelper
     end
   end
 
-  # Taxonomy nodes grouped by kind for the corrections teach form:
+  # Taxonomy nodes grouped by kind for category pickers:
   # [["Expense", [["Groceries", "groceries"], ...]], ["Income", [...]]]
-  def taxonomy_grouped_options
+  # bilingual: true (admin screens) appends the other language's name so both FR and EN
+  # are visible and searchable whatever the admin's locale.
+  def taxonomy_grouped_options(bilingual: false)
     TransactionTaxonomy.nodes.group_by { |_key, node| node["kind"] }.map do |kind, nodes|
-      [ kind.capitalize, nodes.map { |key, node| [ node[I18n.locale.to_s] || node["en"], key ] }.sort ]
+      [ kind.capitalize, nodes.map { |key, node| [ taxonomy_option_label(node, bilingual), key ] }.sort ]
     end
+  end
+
+  def taxonomy_option_label(node, bilingual)
+    label = node[I18n.locale.to_s] || node["en"]
+    return label unless bilingual
+
+    other = node[I18n.locale.to_s == "fr" ? "en" : "fr"]
+    other.present? && other != label ? "#{label} · #{other}" : label
   end
 
   # Money direction for a transaction row: sign + semantic tone, never color alone.

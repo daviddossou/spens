@@ -7,5 +7,6 @@ namespace :release do
   task run_after: :environment do
     Rake::Task["quick_entry:import_system_aliases"].invoke
     Rake::Task["taxonomy:import_nodes"].invoke
+    Rake::Task["transaction_types:sync_template_names"].invoke
   end
 end

@@ -32,7 +32,7 @@
         <%= f.text_field :phrase, value: hint[:phrase], placeholder: t("admin.corrections.phrase_placeholder"),
               "aria-label": t("admin.vocab.phrase"), class: "admin-input admin-input--sm" %>
         <%= f.select :taxonomy_key,
-              grouped_options_for_select(taxonomy_grouped_options, hint[:taxonomy_key]),
+              grouped_options_for_select(taxonomy_grouped_options(bilingual: true), hint[:taxonomy_key]),
               { include_blank: t("admin.corrections.pick_category") },
               { "aria-label": t("admin.corrections.pick_category"), class: "admin-input admin-input--sm",
                 data: { controller: "searchable-select", placeholder: t("admin.corrections.pick_category") } } %>

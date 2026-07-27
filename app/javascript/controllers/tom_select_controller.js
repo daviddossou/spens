@@ -21,6 +21,14 @@ export default class extends Controller {
     const customOptions = this.hasOptionsValue ? this.optionsValue : {}
     const finalConfig = { ...config, ...customOptions }
 
+    // Passing config.options overrides the option TomSelect derives from the input's
+    // current value, silently dropping a prefilled value (e.g. editing a transaction
+    // whose category isn't in the default suggestions). Keep it selectable.
+    const initial = this.element.value
+    if (initial && finalConfig.options && !finalConfig.options.some(o => o.value === initial)) {
+      finalConfig.options = [...finalConfig.options, { value: initial, text: initial }]
+    }
+
     this.tomSelect = new TomSelect(this.element, finalConfig)
 
     // Remember what the user actually typed before picking a suggestion, so the form can keep

@@ -226,6 +226,7 @@
 /* --- alias dictionary (category-major chips) ------------------------------- */
 .admin-dict__cat { margin-bottom: 1.25rem; }
 .admin-dict__name { font-size: 0.9375rem; font-weight: 600; margin: 0 0 0.5rem; }
+.admin-dict__name-alt { color: var(--text-muted); font-weight: 500; font-size: 0.8125rem; margin-left: 0.375rem; }
 .admin-dict__count { color: var(--text-muted); font-weight: 500; font-size: 0.8125rem; margin-left: 0.25rem; }
 .admin-chips { display: flex; flex-wrap: wrap; gap: 0.375rem; align-items: flex-start; }
 .admin-chip { position: relative; }
