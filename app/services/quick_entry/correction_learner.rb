@@ -90,7 +90,11 @@ module QuickEntry
     # the wrong guess ("carrefour" -> the user's pick, overriding the built-in), while the
     # global candidate keys on the residual word the dictionaries DON'T know yet (gap-fill).
     def teach_category(change)
-      key = TransactionTaxonomy.key_for_name(change["to"]) or return
+      # Resolve via the type's template_key first: legacy template names ("Transport public")
+      # drifted from today's taxonomy names ("Transport en commun"), so a name lookup alone
+      # silently skips learning on those types.
+      key = @transaction.transaction_type.template_key.presence ||
+            TransactionTaxonomy.key_for_name(change["to"]) or return
       residual = PhraseExtractor.call(text: @attempt.text, locale: @attempt.locale, space: @transaction.space)
       _, matched = CategoryInference.new(@attempt.text, space: @transaction.space).infer_with_phrase
 

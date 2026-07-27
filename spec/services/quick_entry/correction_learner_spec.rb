@@ -38,6 +38,25 @@ RSpec.describe QuickEntry::CorrectionLearner do
     expect(draft.transaction_type_name).to eq(TransactionTaxonomy.name("monthly_provisions", :en))
   end
 
+  it "learns via template_key when the type's legacy name drifted from the taxonomy" do
+    # Old template name "Transport public" ≠ today's taxonomy name "Transport en commun":
+    # the name lookup finds nothing, but the template_key still identifies the node.
+    type = create(:transaction_type, space: space, name: "🚌 Transport public",
+                                     kind: "expense", template_key: "public_transport")
+    transaction = create(:transaction, space: space, transaction_type: type, amount: -1275)
+    create(:quick_entry_attempt, user: user, space: space, transaction_id: transaction.id,
+                                 text: "metro ticket 12.75", source: "rules",
+                                 rules_draft: { "kind" => "expense", "amount" => 1275,
+                                                "transaction_type_name" => moto_name,
+                                                "transaction_date" => Date.current.iso8601 })
+
+    described_class.learn(transaction)
+
+    personal = LearnedAlias.for_space(space).order(:created_at).last
+    expect(personal).to be_present
+    expect(personal.taxonomy_key).to eq("public_transport")
+  end
+
   it "learns a global alias from a category correction" do
     transaction = attempt_for(
       text: "2000 zoomzoom",
