@@ -1,0 +1,52 @@
+<% content_for(:title, t("admin.gaps.title")) %>
+
+<div class="admin-page">
+  <header class="admin-page__header">
+    <h1 class="admin-page__title"><%= t("admin.gaps.title") %></h1>
+    <p class="admin-page__subtitle"><%= t("admin.gaps.subtitle") %></p>
+  </header>
+
+  <% if @gaps.any? %>
+    <div class="admin-table-wrap"><table class="admin-table">
+      <thead>
+        <tr>
+          <th scope="col"><%= t("admin.gaps.cols.name") %></th>
+          <th scope="col"><%= t("admin.gaps.cols.kind") %></th>
+          <th scope="col"><%= t("admin.gaps.cols.spaces") %></th>
+          <th scope="col"><%= t("admin.gaps.cols.transactions") %></th>
+          <th scope="col"><%= t("admin.gaps.cols.samples") %></th>
+          <th scope="col" class="admin-table__actions"><%= t("admin.gaps.cols.actions") %></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @gaps.each do |gap| %>
+          <tr>
+            <td><strong><%= gap.display_name %></strong></td>
+            <td><%= t("admin.gaps.kinds.#{gap.kind}", default: gap.kind) %></td>
+            <td><%= gap.space_count %></td>
+            <td><%= gap.transaction_count %></td>
+            <td class="admin-table__muted"><%= gap.samples.join(" · ") %></td>
+            <td class="admin-table__actions">
+              <%= form_with url: map_admin_category_gaps_path, method: :post, class: "admin-teach" do |f| %>
+                <%= f.hidden_field :phrase, value: gap.display_name %>
+                <%= f.select :taxonomy_key, grouped_options_for_select(taxonomy_grouped_options(bilingual: true)),
+                      { include_blank: t("admin.gaps.pick_category") },
+                      { "aria-label": t("admin.dict.move"), class: "admin-input admin-input--sm",
+                        data: { controller: "searchable-select", placeholder: t("admin.gaps.pick_category") } } %>
+                <%= f.submit t("admin.gaps.map"), class: "admin-btn admin-btn--sm" %>
+              <% end %>
+              <%= link_to t("admin.gaps.promote"),
+                    new_admin_taxonomy_node_path(kind: gap.kind, name_en: gap.display_name, name_fr: gap.display_name),
+                    class: "admin-btn admin-btn--sm" %>
+              <%= button_to t("admin.gaps.dismiss"), dismiss_admin_category_gaps_path(phrase: gap.display_name),
+                    method: :post, class: "admin-btn admin-btn--danger admin-btn--sm",
+                    form: { data: { turbo_confirm: t("admin.gaps.confirm_dismiss", phrase: gap.display_name) } } %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table></div>
+  <% else %>
+    <p class="admin-empty"><%= t("admin.gaps.empty") %></p>
+  <% end %>
+</div>

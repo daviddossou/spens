@@ -11,7 +11,8 @@ module AdminHelper
         { label: t("admin.nav.corrections"), path: admin_corrections_path, count: counts[:corrections] },
         { label: t("admin.nav.aliases"), path: admin_learned_aliases_path, count: counts[:aliases] },
         { label: t("admin.nav.keywords"), path: admin_learned_keywords_path, count: counts[:keywords] },
-        { label: t("admin.nav.attempts"), path: admin_quick_entry_attempts_path }
+        { label: t("admin.nav.attempts"), path: admin_quick_entry_attempts_path },
+        { label: t("admin.nav.gaps"), path: admin_category_gaps_path }
       ],
       [
         { label: t("admin.nav.users"), path: admin_users_path },

@@ -16,6 +16,7 @@ en:
       spaces: "Spaces"
       transactions: "Transactions"
       attempts: "Attempts"
+      gaps: "Category gaps"
       audit: "Audit"
       exit: "Back to app"
     cols:
@@ -123,6 +124,27 @@ en:
       added: "\"%{phrase}\" added — active immediately."
       moved: "\"%{phrase}\" now maps to %{category}."
       unknown_category: "Unknown category (%{key})"
+    gaps:
+      title: "Category gaps"
+      subtitle: "Categories users had to invent — map them to an existing node, promote them into the taxonomy, or dismiss. Their own data is never touched."
+      cols:
+        name: "Created category"
+        kind: "Kind"
+        spaces: "Spaces"
+        transactions: "Transactions"
+        samples: "Sample descriptions"
+        actions: "Actions"
+      kinds:
+        expense: "Expense"
+        income: "Income"
+      pick_category: "Map to…"
+      map: "Map"
+      promote: "Promote"
+      dismiss: "Dismiss"
+      confirm_dismiss: "Dismiss \"%{phrase}\"? It will stop appearing here."
+      mapped: "\"%{phrase}\" now suggests %{category} for everyone."
+      dismissed: "\"%{phrase}\" dismissed."
+      empty: "No open gaps — the taxonomy fits what users are doing."
     review:
       approve: "Approve"
       reject: "Reject"

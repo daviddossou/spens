@@ -82,6 +82,9 @@ Rails.application.routes.draw do
       resources :corrections, only: :index do
         member { post :teach; patch :dismiss }
       end
+      resources :category_gaps, only: :index do
+        collection { post :map; post :dismiss }
+      end
       resources :taxonomy_nodes, except: :show do
         member { patch :activate; patch :deactivate; patch :move_up; patch :move_down; patch :rename }
         collection { patch :reorder }
