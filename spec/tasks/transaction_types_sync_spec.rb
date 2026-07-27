@@ -27,6 +27,15 @@ RSpec.describe "transaction_types:sync_template_names" do
     expect(edited.reload.name).to eq("Mes zems")
   end
 
+  it "renames despite emoji/punctuation drift from the template file" do
+    drifted = create(:transaction_type, space: space, kind: "expense",
+                     template_key: "public_transport", name: "🚍 Transport public")
+
+    run_task
+
+    expect(drifted.reload.name).to eq(TransactionTaxonomy.name("public_transport", :fr))
+  end
+
   it "skips when the target name already exists in the space" do
     create(:transaction_type, space: space, kind: "expense",
            name: TransactionTaxonomy.name("public_transport", :fr))
