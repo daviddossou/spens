@@ -31,6 +31,10 @@ module QuickEntry
 
       LearnedAlias.personal_teach(space: @transaction.space, phrase: phrase, taxonomy_key: key)
       LearnedAlias.teach(phrase: phrase, taxonomy_key: key, source: "description")
+
+      tokens = PhraseExtractor.significant_tokens(text: @transaction.description, locale: @locale,
+                                                  space: @transaction.space)
+      CategoryMemory.remember(space: @transaction.space, tokens: tokens, taxonomy_key: key)
     end
 
     private

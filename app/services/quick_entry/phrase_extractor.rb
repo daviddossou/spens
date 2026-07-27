@@ -34,6 +34,18 @@ module QuickEntry
       run.empty? ? nil : run.join(" ")
     end
 
+    # ALL noise-free tokens, not just the longest run — the material CategoryMemory stores
+    # and matches by overlap ("Metro-Train Ticket 12.75 Wise" -> ["metro", "train", "ticket"]).
+    # Unlike the residual run, alias-known words are KEPT: a memory exists precisely to let
+    # the user's "train" override what the built-in dictionary thinks "train" means.
+    def self.significant_tokens(text:, locale:, space:, exclude: [])
+      new(text: text, locale: locale, space: space, exclude: exclude).significant_tokens
+    end
+
+    def significant_tokens
+      tokens.select { |t| noise_free?(t) }.uniq
+    end
+
     private
 
     def longest_significant_run
@@ -54,11 +66,12 @@ module QuickEntry
       @tokens ||= @text.downcase.split(/[^[:alnum:]]+/).reject(&:blank?)
     end
 
-    def significant?(tok)
-      return false if tok.length < 2 || tok.match?(/\A\d/)
-      return false if ignored_tokens.include?(I18n.transliterate(tok))
+    def noise_free?(tok)
+      tok.length >= 2 && !tok.match?(/\A\d/) && !ignored_tokens.include?(I18n.transliterate(tok))
+    end
 
-      CategoryAliasMatcher.match(tok).blank?
+    def significant?(tok)
+      noise_free?(tok) && CategoryAliasMatcher.match(tok).blank?
     end
 
     def ignored_tokens
