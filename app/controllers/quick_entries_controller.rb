@@ -24,7 +24,10 @@ class QuickEntriesController < ApplicationController
       # Carried through the form so the transaction the user completes links back to this
       # attempt — their manual choices (e.g. the category) are the correction signal.
       @form.quick_entry_attempt_id = attempt&.id
-      render turbo_stream: turbo_stream.replace("transaction_form", partial: "transactions/form")
+      # `update` keeps the <turbo-frame id="transaction_form"> element (replace would destroy
+      # it), so the fallback form's submit stays frame-scoped and the redirect to the
+      # transaction detail triggers frame-missing → full visit in bottom_sheet_controller.
+      render turbo_stream: turbo_stream.update("transaction_form", partial: "transactions/form")
     end
   end
 
