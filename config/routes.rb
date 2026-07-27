@@ -30,6 +30,8 @@ Rails.application.routes.draw do
     # Main application routes
     root "home#index"
     get "welcome", to: "landing#show", as: :landing
+    get "privacy", to: "legal#privacy", as: :privacy
+    get "terms", to: "legal#terms", as: :terms
     get "dashboard", to: "home#show"
 
     # Transactions
