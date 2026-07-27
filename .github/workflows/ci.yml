@@ -146,3 +146,19 @@ jobs:
           mkdir -p config/credentials
           printf '%s' "$RAILS_MASTER_KEY" > config/credentials/production.key
           bin/kamal deploy
+
+      # Own step (not a Kamal hook) so task output is readable in the job list and
+      # lands on the run's Summary page — and a failure marks the run red.
+      - name: Post-deploy tasks (release:run_after)
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        run: |
+          set -o pipefail
+          eval "$(ssh-agent -s)"
+          echo "$SSH_PRIVATE_KEY" | ssh-add -
+          {
+            echo '### release:run_after'
+            echo '```'
+            bin/kamal app exec --reuse "bin/rails release:run_after"
+            echo '```'
+          } | tee -a "$GITHUB_STEP_SUMMARY"

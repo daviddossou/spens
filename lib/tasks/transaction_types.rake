@@ -16,7 +16,11 @@ namespace :transaction_types do
         target = TransactionTaxonomy.name(key.to_s, locale)
         next if legacy_name.blank? || target.blank? || legacy_name == target
 
-        TransactionType.where(template_key: key.to_s, name: legacy_name).find_each do |type|
+        # Normalized comparison: rows were created from historical template wording, so the
+        # emoji or punctuation may not match today's file exactly.
+        TransactionType.where(template_key: key.to_s).where.not(name: target).find_each do |type|
+          next unless CategoryText.normalize(type.name) == CategoryText.normalize(legacy_name)
+
           type.update(name: target) ? renamed += 1 : skipped += 1
         end
       end
