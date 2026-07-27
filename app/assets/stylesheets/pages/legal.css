@@ -1,0 +1,65 @@
+/* Legal pages (privacy, terms) — rendered in the marketing layout */
+
+.legal {
+  padding-top: 48px;
+  padding-bottom: 96px;
+}
+
+.legal__back {
+  margin-bottom: 40px;
+}
+
+.legal__back a {
+  font-weight: 700;
+  color: var(--color-charcoal-black);
+}
+
+.legal h1 {
+  font-family: var(--font-family-display, var(--font-family-base));
+  font-size: 1.75rem;
+  line-height: 1.15;
+  margin: 0 0 8px;
+}
+
+.legal__updated {
+  color: var(--color-medium-gray, #6b7280);
+  font-size: 0.875rem;
+  margin-bottom: 32px;
+}
+
+.legal h2 {
+  font-size: 1.25rem;
+  margin: 36px 0 12px;
+}
+
+.legal p,
+.legal li {
+  color: var(--color-charcoal-black);
+  font-size: 1rem;
+  line-height: 1.7;
+}
+
+.legal ul {
+  padding-left: 22px;
+  margin: 12px 0;
+}
+
+.legal li {
+  margin-bottom: 8px;
+}
+
+.legal a {
+  text-decoration: underline;
+  color: inherit;
+}
+
+.legal__back a {
+  text-decoration: none;
+}
+
+@media (max-width: 640px) {
+  .legal {
+    padding-left: 24px;
+    padding-right: 24px;
+  }
+}

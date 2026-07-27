@@ -316,8 +316,8 @@
     <%= link_to t("landing.final.cta"), sign_up, class: "landing-btn-light landing-btn-light--lg" %>
     <div class="landing-final__footer">
       <span><%= t("landing.footer.copyright", year: Date.current.year) %></span>
-      <a href="#"><%= t("landing.footer.privacy") %></a>
-      <a href="#"><%= t("landing.footer.terms") %></a>
+      <%= link_to t("landing.footer.privacy"), privacy_path %>
+      <%= link_to t("landing.footer.terms"), terms_path %>
       <a href="mailto:djidenou@hey.com"><%= t("landing.footer.contact") %></a>
       <span><span data-lang-label><%= I18n.locale.to_s.upcase %></span> · <span data-currency-label>XOF</span></span>
     </div>
