@@ -25,8 +25,13 @@
     <% @ordered_keys.each do |key| %>
       <% rows = @groups[key] %>
       <section class="admin-dict__cat">
+        <% primary = TransactionTaxonomy.name(key) %>
+        <% alt = TransactionTaxonomy.name(key, I18n.locale.to_s == "fr" ? :en : :fr) %>
         <h2 class="admin-dict__name">
-          <%= TransactionTaxonomy.name(key) || t("admin.dict.unknown_category", key: key) %>
+          <%= primary || t("admin.dict.unknown_category", key: key) %>
+          <% if alt.present? && alt != primary %>
+            <span class="admin-dict__name-alt"><%= alt %></span>
+          <% end %>
           <span class="admin-dict__count"><%= rows.size %></span>
         </h2>
         <div class="admin-chips">
@@ -36,7 +41,7 @@
               <div class="admin-chip__menu">
                 <%= form_with url: reassign_admin_learned_alias_path(id: row.id), method: :patch, class: "admin-teach" do |f| %>
                   <%= f.select :taxonomy_key,
-                        grouped_options_for_select(taxonomy_grouped_options, row.taxonomy_key),
+                        grouped_options_for_select(taxonomy_grouped_options(bilingual: true), row.taxonomy_key),
                         {}, { "aria-label": t("admin.dict.move"), class: "admin-input admin-input--sm" } %>
                   <%= f.submit t("admin.dict.move"), class: "admin-btn admin-btn--sm" %>
                 <% end %>
