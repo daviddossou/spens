@@ -36,6 +36,32 @@ RSpec.describe "transaction_types:sync_template_names" do
     expect(drifted.reload.name).to eq(TransactionTaxonomy.name("public_transport", :fr))
   end
 
+  it "adopts a keyless legacy-named row: sets the template_key and renames" do
+    keyless = create(:transaction_type, space: space, kind: "expense",
+                     template_key: nil, name: "🚌 Transport public")
+
+    run_task
+
+    expect(keyless.reload).to have_attributes(
+      template_key: "public_transport",
+      name: TransactionTaxonomy.name("public_transport", :fr)
+    )
+  end
+
+  it "merges a keyless duplicate into the row already owning the template_key" do
+    owner = create(:transaction_type, space: space, kind: "expense",
+                   template_key: "public_transport",
+                   name: TransactionTaxonomy.name("public_transport", :fr))
+    dup = create(:transaction_type, space: space, kind: "expense",
+                 template_key: nil, name: "🚌 Transport public")
+    moved = create(:transaction, space: space, transaction_type: dup, amount: -500)
+
+    run_task
+
+    expect(TransactionType.exists?(dup.id)).to be(false)
+    expect(moved.reload.transaction_type_id).to eq(owner.id)
+  end
+
   it "skips when the target name already exists in the space" do
     create(:transaction_type, space: space, kind: "expense",
            name: TransactionTaxonomy.name("public_transport", :fr))
