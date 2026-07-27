@@ -12,6 +12,7 @@
 #  monthly_savings_goal    :decimal(15, 2)
 #  name                    :string           not null
 #  onboarding_current_step :string
+#  time_zone               :string
 #  created_at              :datetime         not null
 #  updated_at              :datetime         not null
 #  user_id                 :uuid             not null, indexed

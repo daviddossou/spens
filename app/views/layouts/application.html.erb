@@ -60,6 +60,11 @@
     </main>
 
     <% if user_signed_in? %>
+      <div hidden
+           data-controller="time-zone"
+           data-time-zone-current-value="<%= current_user.time_zone %>"
+           data-time-zone-url-value="<%= time_zone_path %>"></div>
+
       <%= render "shared/pwa_install_banner" %>
       <%= render Navigation::BottomNavComponent.new(current_path: request.path) %>
 

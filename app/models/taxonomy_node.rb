@@ -20,9 +20,6 @@
 #  index_taxonomy_nodes_on_key                               (key) UNIQUE
 #  index_taxonomy_nodes_on_kind_and_parent_key_and_position  (kind,parent_key,position)
 #
-# One node of the category tree (parent category or subcategory). Runtime source of
-# truth for TransactionTaxonomy; seeded once from config/transaction_taxonomy.yml by
-# taxonomy:import_nodes, then managed from the admin dashboard.
 class TaxonomyNode < ApplicationRecord
   # Catch-all keys the app relies on (default_parent_key & friends) — never deactivated.
   PROTECTED_KEYS = %w[other_expense uncategorized_expense other_income uncategorized_income].freeze

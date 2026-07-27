@@ -1,5 +1,25 @@
 # frozen_string_literal: true
 
+# == Schema Information
+#
+# Table name: taxonomy_nodes
+#
+#  id         :uuid             not null, primary key
+#  active     :boolean          default(TRUE), not null
+#  key        :string           not null, indexed
+#  kind       :string           not null, indexed => [parent_key, position]
+#  name_en    :string           not null
+#  name_fr    :string           not null
+#  parent_key :string           indexed => [kind, position]
+#  position   :integer          default(0), not null, indexed => [kind, parent_key]
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#
+# Indexes
+#
+#  index_taxonomy_nodes_on_key                               (key) UNIQUE
+#  index_taxonomy_nodes_on_kind_and_parent_key_and_position  (kind,parent_key,position)
+#
 require "rails_helper"
 
 RSpec.describe TaxonomyNode do

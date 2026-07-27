@@ -8,6 +8,7 @@ class ApplicationController < ActionController::Base
   include InternationalizationSupport
   include DeviseLayoutConcern
   include SpaceScoping
+  include TimeZoneScoping
   include OnboardingRedirection
   include Impersonation
 

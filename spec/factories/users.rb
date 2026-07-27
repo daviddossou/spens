@@ -19,6 +19,7 @@
 #  reset_password_sent_at :datetime
 #  reset_password_token   :string           indexed
 #  sign_in_count          :integer          default(0), not null
+#  time_zone              :string
 #  created_at             :datetime         not null
 #  updated_at             :datetime         not null
 #
