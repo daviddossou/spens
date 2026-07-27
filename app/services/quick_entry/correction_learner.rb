@@ -102,6 +102,10 @@ module QuickEntry
         LearnedAlias.personal_teach(space: @transaction.space, phrase: personal, taxonomy_key: key)
       end
       LearnedAlias.teach(phrase: residual, taxonomy_key: key, source: "edit_diff") if residual
+
+      tokens = PhraseExtractor.significant_tokens(text: @attempt.text, locale: @attempt.locale,
+                                                  space: @transaction.space)
+      CategoryMemory.remember(space: @transaction.space, tokens: tokens, taxonomy_key: key)
     end
 
     # A structural kind correction teaches the space's own keyword immediately; the global

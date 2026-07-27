@@ -24,9 +24,7 @@ module QuickEntry
     # [key, phrase]: the winning taxonomy key AND the text window that produced it — the word
     # the learners re-teach when the user corrects the category ("carrefour" -> their pick).
     def infer_with_phrase
-      best_key = nil
-      best_phrase = nil
-      best_score = [ 0, 0 ]
+      best = { personal: [ nil, nil, [ 0, 0 ] ], builtin: [ nil, nil, [ 0, 0 ] ] }
       personal = LearnedAlias.personal_index(@space)
       learned = LearnedAlias.active_index
 
@@ -38,21 +36,30 @@ module QuickEntry
           phrase = window.join(" ")
           # The space's own vocabulary outranks every built-in mapping ("carrefour" -> their
           # pick); global learned aliases stay the last resort and only ever fill a gap.
-          key = personal[CategoryText.normalize(phrase)] ||
-                CategoryAliasMatcher.match(phrase) || TransactionTaxonomy.key_for_name(phrase) ||
-                learned[CategoryText.normalize(phrase)]
+          if (key = personal[CategoryText.normalize(phrase)])
+            tier = :personal
+          else
+            key = CategoryAliasMatcher.match(phrase) || TransactionTaxonomy.key_for_name(phrase) ||
+                  learned[CategoryText.normalize(phrase)]
+            tier = :builtin
+          end
           next unless key
 
           score = [ n, CategoryText.normalize(phrase).length ]
-          if (score <=> best_score) == 1
-            best_key = key
-            best_phrase = phrase
-            best_score = score
-          end
+          best[tier] = [ key, phrase, score ] if (score <=> best[tier].last) == 1
         end
       end
 
-      [ best_key, best_phrase ]
+      # Precedence: the user's exact vocabulary, then their token-overlap memories ("Ticket
+      # metro" recalls {metro, train, ticket} even when a built-in claims "train"), then the
+      # built-in/global dictionaries. A memory hit has no single carrier phrase (nil).
+      return best[:personal].first(2) if best[:personal].first
+
+      if (memory_key = CategoryMemoryMatcher.match(@text, space: @space))
+        return [ memory_key, nil ]
+      end
+
+      best[:builtin].first(2)
     end
 
     private

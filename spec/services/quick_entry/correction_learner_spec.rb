@@ -57,6 +57,23 @@ RSpec.describe QuickEntry::CorrectionLearner do
     expect(personal.taxonomy_key).to eq("public_transport")
   end
 
+  it "stores a token-set memory so later phrasings recall the corrected category" do
+    transaction = attempt_for(
+      text: "metro train ticket 500",
+      type_name: TransactionTaxonomy.name("public_transport", :en),
+      draft: { "kind" => "expense", "amount" => 500, "transaction_type_name" => moto_name,
+               "transaction_date" => Date.current.iso8601 }
+    )
+
+    described_class.learn(transaction)
+
+    expect(CategoryMemory.find_by(space: space)&.tokens).to include("metro", "train", "ticket")
+
+    # A reordered subset now parses to the corrected category.
+    draft = QuickEntry::Parser.parse("500 ticket metro", space: space, locale: :en)
+    expect(draft.transaction_type_name).to eq(TransactionTaxonomy.name("public_transport", :en))
+  end
+
   it "learns a global alias from a category correction" do
     transaction = attempt_for(
       text: "2000 zoomzoom",

@@ -43,6 +43,7 @@ class Space < ApplicationRecord
   has_many :budget_entries, dependent: :destroy
   # The space's own learned vocabulary (personal tier — see Learnable)
   has_many :learned_aliases, dependent: :delete_all
+  has_many :category_memories, dependent: :delete_all
   has_many :learned_keywords, dependent: :delete_all
 
   ##
