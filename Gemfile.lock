@@ -235,6 +235,8 @@ GEM
     pg (1.6.2-x86_64-darwin)
     pg (1.6.2-x86_64-linux)
     pg (1.6.2-x86_64-linux-musl)
+    posthog-ruby (3.21.0)
+      concurrent-ruby (~> 1)
     pp (0.6.3)
       prettyprint
     prettyprint (0.2.0)
@@ -475,6 +477,7 @@ DEPENDENCIES
   money (~> 6.16)
   money-rails (~> 1.15)
   pg (~> 1.1)
+  posthog-ruby
   propshaft
   puma (>= 5.0)
   rails (~> 8.0.3)
