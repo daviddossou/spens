@@ -18,6 +18,9 @@ class Auth::VerificationsController < ApplicationController
       clear_otp_session
       sign_in(user)
 
+      Analytics.identify(user)
+      Analytics.track(user, context == "sign_up" ? "user_signed_up" : "user_signed_in")
+
       accepted_space = accept_pending_invitation(user)
 
       if accepted_space

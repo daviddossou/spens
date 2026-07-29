@@ -17,10 +17,13 @@ class QuickEntriesController < ApplicationController
     if draft.confident? && @form.submit
       attempt = log_attempt(draft, result.ai_draft, @form.transaction)
       QuickEntry::AiAssistLearner.learn(attempt) if attempt&.ai_used?
+      Analytics.track(current_user, "quick_add_used", confident: true, ai_used: attempt&.ai_used? || false)
+      Analytics.track(current_user, "transaction_created", source: "quick_add")
       redirect_with_reload_to transaction_path(id: @form.transaction.id),
                               notice: success_notice(@form.transaction), status: :see_other
     else
       attempt = log_attempt(draft, result.ai_draft, nil)
+      Analytics.track(current_user, "quick_add_used", confident: false, ai_used: attempt&.ai_used? || false)
       # Carried through the form so the transaction the user completes links back to this
       # attempt — their manual choices (e.g. the category) are the correction signal.
       @form.quick_entry_attempt_id = attempt&.id

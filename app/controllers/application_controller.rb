@@ -11,6 +11,7 @@ class ApplicationController < ActionController::Base
   include TimeZoneScoping
   include OnboardingRedirection
   include Impersonation
+  include AnalyticsTracking
 
   protected
 

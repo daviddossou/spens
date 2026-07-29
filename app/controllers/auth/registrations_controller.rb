@@ -30,6 +30,8 @@ class Auth::RegistrationsController < ApplicationController
       OtpMailer.send_otp(@user).deliver_later
       log_otp(@user) if Rails.env.development?
 
+      Analytics.track(@user, "sign_up_submitted", invited: accepted_space.present?)
+
       session[:otp_user_id] = @user.id
       session[:otp_context] = "sign_up"
       # If joining via invitation, set the invited space as current (skip onboarding)

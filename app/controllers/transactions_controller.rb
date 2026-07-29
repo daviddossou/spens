@@ -18,6 +18,7 @@ class TransactionsController < ApplicationController
     if @form.submit
       link_quick_entry_attempt
       QuickEntry::DescriptionLearner.learn(@form.transaction)
+      Analytics.track(current_user, "transaction_created", source: "manual")
       redirect_with_reload_to transaction_path(id: @form.transaction.id), notice: t(".success"), status: :see_other
     else
       render :new, status: :unprocessable_entity
