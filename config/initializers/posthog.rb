@@ -1,14 +1,15 @@
 # frozen_string_literal: true
 
-# PostHog product analytics (EU cloud — data stays in Frankfurt). Capture is production-only;
-# dev/test never load the JS snippet nor build a client. The project API key lives in Rails
-# credentials (posthog.api_key) — it is public by design (shipped to the browser) but kept
-# with the other keys for consistency. ENV vars act as an override/fallback.
+# PostHog product analytics. Capture is production-only; dev/test never load the JS snippet
+# nor build a client. The project API key lives in Rails credentials (posthog.api_key) — it
+# is public by design (shipped to the browser) but kept with the other keys for consistency.
+# ENV vars act as an override/fallback. Host must match the project's cloud region: ours is
+# US (PostHog assigned the region at org signup; wrong-region events are silently dropped).
 api_key = ENV["POSTHOG_API_KEY"].presence || Rails.application.credentials.dig(:posthog, :api_key)
 
 Rails.application.config.x.posthog = {
   api_key: api_key,
-  host: ENV.fetch("POSTHOG_HOST", "https://eu.i.posthog.com"),
+  host: ENV.fetch("POSTHOG_HOST", "https://us.i.posthog.com"),
   enabled: Rails.env.production? && api_key.present?
 }
 
