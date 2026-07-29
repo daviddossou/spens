@@ -34,6 +34,9 @@ gem "bootsnap", require: false
 # Deploy this application anywhere as a Docker container [https://kamal-deploy.org]
 gem "kamal", require: false
 
+# Product analytics (server-side event capture) [https://posthog.com/docs/libraries/ruby]
+gem "posthog-ruby", require: "posthog"
+
 # Add HTTP asset caching/compression and X-Sendfile acceleration to Puma [https://github.com/basecamp/thruster/]
 gem "thruster", require: false
 
