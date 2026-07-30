@@ -1,0 +1,24 @@
+<% row_body = capture do %>
+  <div class="budget-row__main">
+    <span class="budget-row__name"><%= row[:label] %></span>
+    <span class="budget-row__actual"><%= smart_format_money(row[:amount], current_space.currency) %></span>
+  </div>
+  <% if row[:prev].to_f.positive? %>
+    <div class="budget-row__recurring">
+      <%= t('budgets.unplanned.recurring', amount: strip_tags(smart_format_money(row[:prev], current_space.currency)), month: prev_month_name) %>
+    </div>
+  <% end %>
+<% end %>
+
+<% if read_only || row[:path].nil? %>
+  <div class="budget-row">
+    <%= row_body %>
+  </div>
+<% else %>
+  <%= link_to row[:path], class: "budget-row budget-row--link", data: { turbo_frame: "modal" } do %>
+    <%= row_body %>
+    <div class="budget-row__meta">
+      <span class="budget-row__plan-link"><%= t('budgets.unplanned.plan_it') %></span>
+    </div>
+  <% end %>
+<% end %>

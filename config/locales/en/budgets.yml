@@ -34,6 +34,8 @@ en:
       amount_placeholder: "0"
       frequency_label: "How often?"
       frequency_help: "Daily and weekly amounts are added up into one monthly line."
+      rollover_label: "Cumulative budget"
+      rollover_help: "Whatever is left at the end of the month is added to next month's budget. Handy for bulk or spaced-out purchases."
       already_budgeted: "is already in your budget — edit that line instead"
     row:
       done_income: "Received"
@@ -45,6 +47,7 @@ en:
       expected: "Expected"
       over_by_html: "over by %{amount}"
       left_html: "%{amount} left"
+      carried_html: "incl. %{amount} carried over"
     index:
       title: "Budget"
       subtitle: "Your monthly plan, planned vs actual"
@@ -68,6 +71,16 @@ en:
       empty_message: "Add what you expect to earn and spend. We'll track it against reality as you record transactions."
       no_entries_title: "Nothing planned this month"
       no_entries_message: "None of your budget lines apply to this month."
+    unplanned:
+      title: "Off plan"
+      hint: "Received, spent, or transferred outside your budget this month"
+      group_income: "Income"
+      group_expense: "Expenses"
+      group_transfers: "Transfers"
+      plan_it: "Add to budget"
+      show_more: "Show %{count} more"
+      off_plan_html: "Off plan: %{amounts}"
+      recurring: "already %{amount} in %{month}"
     summary:
       title: "Budget summary — %{month}"
       subtitle: "How the month went"
