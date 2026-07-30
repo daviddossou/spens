@@ -5,12 +5,14 @@
   </div>
   <% if row[:prev].to_f.positive? %>
     <div class="budget-row__recurring">
-      <%= t('budgets.unplanned.recurring', amount: strip_tags(smart_format_money(row[:prev], current_space.currency)), month: prev_month_name) %>
+      <%= t('budgets.unplanned.recurring', amount: format_money(row[:prev], current_space.currency), month: prev_month_name) %>
     </div>
   <% end %>
 <% end %>
 
-<% if read_only || row[:path].nil? %>
+<%# The add-to-budget shortcut is reserved for recurring lines: a category
+    already active last month is worth planning; a one-off is just noise. %>
+<% if read_only || row[:path].nil? || !row[:prev].to_f.positive? %>
   <div class="budget-row">
     <%= row_body %>
   </div>

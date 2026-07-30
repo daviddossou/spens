@@ -15,7 +15,7 @@
         path: new_budget_item_path(month: month_slug, kind: "expense", transaction_type_name: type.name, amount: plan_amount.call(sums[:amount])) }
     end,
     transfers: @unplanned[:transfers].map do |transfer|
-      { label: "#{transfer[:from]&.name} → #{transfer[:to]&.name}", amount: transfer[:amount],
+      { label: "#{transfer[:from]&.name} → #{transfer[:to]&.name}", amount: transfer[:amount], prev: transfer[:prev],
         path: (transfer[:from] && transfer[:to] ? new_budget_item_path(month: month_slug, kind: "transfer",
                                                                        from_account_name: transfer[:from].name,
                                                                        to_account_name: transfer[:to].name,

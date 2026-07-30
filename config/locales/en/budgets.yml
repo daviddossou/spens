@@ -47,6 +47,7 @@ en:
       expected: "Expected"
       over_by_html: "over by %{amount}"
       left_html: "%{amount} left"
+      to_receive_html: "%{amount} to receive"
       carried_html: "incl. %{amount} carried over"
     index:
       title: "Budget"
@@ -62,6 +63,7 @@ en:
       section_expense: "Expenses"
       section_transfer: "Transfers"
       section_debt: "Debts"
+      goal_reached_html: "Savings goal %{amount} reached"
       goal_on_track_html: "Savings goal %{amount} on track"
       goal_short_html: "%{missing} short of your %{amount} savings goal"
       view_summary: "See how this month went"

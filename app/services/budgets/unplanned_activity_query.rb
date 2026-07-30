@@ -13,7 +13,7 @@ module Budgets
 
     # { income: { TransactionType => { amount:, prev: } },
     #   expense: { TransactionType => { amount:, prev: } },
-    #   transfers: [ { from: Account, to: Account, amount: } ] }
+    #   transfers: [ { from: Account, to: Account, amount:, prev: } ] }
     # Each list largest first. :prev is last month's activity on the same
     # category (0 when none) — a nonzero prev flags a recurring off-plan line.
     def call
@@ -60,27 +60,35 @@ module Budgets
     # Pair each transfer_out leg with its partner transfer_in leg to get the
     # (from, to) accounts, then keep the pairs no transfer budget line covers.
     def transfer_sums
-      ins = transfer_legs("transfer_in").index_by(&:transfer_group_id)
+      sums = pair_sums(@month) { |pair| !covered_account_pairs.include?(pair) }
+      prev = pair_sums(@month << 1) { |pair| sums.key?(pair) }
+
+      accounts = @space.accounts.where(id: sums.keys.flatten.uniq).index_by(&:id)
+      sums.map do |(from, to), amount|
+        { from: accounts[from], to: accounts[to], amount: amount.round(2), prev: prev[[ from, to ]].to_f.round(2) }
+      end.sort_by { |transfer| -transfer[:amount] }
+    end
+
+    def pair_sums(month)
+      ins = transfer_legs(month, "transfer_in").index_by(&:transfer_group_id)
 
       sums = Hash.new(0)
-      transfer_legs("transfer_out").each do |leg|
+      transfer_legs(month, "transfer_out").each do |leg|
         partner = ins[leg.transfer_group_id]
         next if partner.nil?
 
         pair = [ leg.account_id, partner.account_id ]
-        sums[pair] += leg.amount.abs unless covered_account_pairs.include?(pair)
+        sums[pair] += leg.amount.abs if yield(pair)
       end
-
-      accounts = @space.accounts.where(id: sums.keys.flatten.uniq).index_by(&:id)
-      sums.map { |(from, to), amount| { from: accounts[from], to: accounts[to], amount: amount.round(2) } }
-          .sort_by { |transfer| -transfer[:amount] }
+      sums
     end
 
-    def transfer_legs(kind)
-      month_scope
-        .joins(:transaction_type)
-        .where(transaction_types: { kind: kind })
-        .where.not(transfer_group_id: nil)
+    def transfer_legs(month, kind)
+      @space.transactions
+            .where(transaction_date: month.all_month, fee_parent_id: nil)
+            .joins(:transaction_type)
+            .where(transaction_types: { kind: kind })
+            .where.not(transfer_group_id: nil)
     end
 
     def covered_account_pairs

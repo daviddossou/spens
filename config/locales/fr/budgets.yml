@@ -47,6 +47,7 @@ fr:
       expected: "Prévu"
       over_by_html: "dépassé de %{amount}"
       left_html: "%{amount} restant"
+      to_receive_html: "%{amount} à recevoir"
       carried_html: "dont %{amount} reportés"
     index:
       title: "Budget"
@@ -62,6 +63,7 @@ fr:
       section_expense: "Dépenses"
       section_transfer: "Virements"
       section_debt: "Dettes"
+      goal_reached_html: "Objectif d'épargne %{amount} atteint"
       goal_on_track_html: "Objectif d'épargne %{amount} en bonne voie"
       goal_short_html: "Il manque %{missing} pour votre objectif d'épargne de %{amount}"
       view_summary: "Voir le bilan du mois"
