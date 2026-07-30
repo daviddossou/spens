@@ -33,5 +33,8 @@ module Spens
     # i18n configuration
     config.i18n.available_locales = [ :en, :fr ]
     config.i18n.default_locale = :en
+
+    # Solid Errors records exceptions in the dedicated `errors` database (all envs)
+    config.solid_errors.connects_to = { database: { writing: :errors } }
   end
 end

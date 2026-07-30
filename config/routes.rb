@@ -120,6 +120,12 @@ Rails.application.routes.draw do
     end
   end
 
+  # Solid Errors dashboard — admin-only, outside the locale scope (engine paths aren't localized).
+  # Warden-level gate; mid-impersonation the current user is the (non-admin) target, so it stays shut.
+  authenticate :user, ->(user) { user.admin? } do
+    mount SolidErrors::Engine, at: "/admin/errors"
+  end
+
   # Sidekiq web interface (only in development)
   if Rails.env.development?
     require "sidekiq/web"

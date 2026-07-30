@@ -18,6 +18,7 @@ fr:
       attempts: "Saisies"
       gaps: "Catégories manquantes"
       audit: "Audit"
+      errors: "Erreurs"
       exit: "Retour à l'app"
     cols:
       email: "E-mail"

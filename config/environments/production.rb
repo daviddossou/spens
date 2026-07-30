@@ -92,4 +92,9 @@ Rails.application.configure do
   #
   # Skip DNS rebinding protection for the default health check endpoint.
   # config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
+  # Solid Errors: email alert on each new (or reappearing) error; prune resolved ones
+  config.solid_errors.send_emails = true
+  config.solid_errors.email_from = "Spens <noreply@spens.me>"
+  config.solid_errors.email_to = "david@anka.africa"
+  config.solid_errors.destroy_after = 90.days
 end

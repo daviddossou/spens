@@ -21,8 +21,18 @@ default: &default
 
 
 development:
-  <<: *default
-  database: spens_development
+  primary:
+    <<: *default
+    database: spens_development
+  errors:
+    <<: *default
+    database: spens_development_errors
+    <%# Derive host/credentials from DATABASE_URL (docker/CI), swapping in the errors db name.
+        The URL may have no db path at all (CI), so set the path explicitly. %>
+    <% if ENV["DATABASE_URL"] %>
+    url: <%= URI(ENV["DATABASE_URL"]).tap { |u| u.path = "/spens_development_errors" } %>
+    <% end %>
+    migrations_paths: db/errors_migrate
 
   # The specified database role being used to connect to PostgreSQL.
   # To create additional roles in PostgreSQL see `$ createuser --help`.
@@ -55,8 +65,17 @@ development:
 # re-generated from your development database when you run "rake".
 # Do not set this db to the same as development or production.
 test:
-  <<: *default
-  database: spens_test
+  primary:
+    <<: *default
+    database: spens_test
+  errors:
+    <<: *default
+    database: spens_test_errors
+    <%# rails_helper rewrites DATABASE_URL to spens_test before Rails loads %>
+    <% if ENV["DATABASE_URL"] %>
+    url: <%= URI(ENV["DATABASE_URL"]).tap { |u| u.path = "/spens_test_errors" } %>
+    <% end %>
+    migrations_paths: db/errors_migrate
 
 # As with config/credentials.yml, you never want to store sensitive information,
 # like your database password, in your source code. If your source code is
@@ -97,3 +116,7 @@ production:
     <<: *primary_production
     database: spens_production_cable
     migrations_paths: db/cable_migrate
+  errors:
+    <<: *primary_production
+    database: spens_production_errors
+    migrations_paths: db/errors_migrate
