@@ -18,6 +18,7 @@ en:
       attempts: "Attempts"
       gaps: "Category gaps"
       audit: "Audit"
+      errors: "Errors"
       exit: "Back to app"
     cols:
       email: "Email"

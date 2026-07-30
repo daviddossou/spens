@@ -21,7 +21,8 @@ module AdminHelper
       ],
       [
         { label: t("admin.nav.taxonomy"), path: admin_taxonomy_nodes_path },
-        { label: t("admin.nav.audit"), path: admin_audit_logs_path }
+        { label: t("admin.nav.audit"), path: admin_audit_logs_path },
+        { label: t("admin.nav.errors"), path: solid_errors_path }
       ]
     ]
   end
