@@ -124,6 +124,7 @@ class Forms::InputFieldComponent < ViewComponent::Base
   def final_field_options
     options = field_options.dup
     options[:class] = final_field_classes
+    options[:value] = custom_value unless custom_value.nil?
 
     if use_autocomplete?
       options[:data] ||= {}

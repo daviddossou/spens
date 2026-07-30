@@ -23,7 +23,7 @@
   <div class="budget-row__meta">
     <span class="budget-row__status <%= 'budget-row__status--paid' if celebrate? %>">
       <% if celebrate? %><span aria-hidden="true">✓</span><% end %>
-      <%= status_label %>
+      <%= status_label %><% if carried? %> <span class="budget-row__carried">· <%= t("budgets.row.carried_html", amount: formatted_carried) %></span><% end %>
     </span>
     <% if over? %>
       <span class="budget-row__over-label">↑ <%= t("budgets.row.over_by_html", amount: formatted_overage) %></span>

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_07_27_191319) do
+ActiveRecord::Schema[8.0].define(version: 2026_07_30_162644) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -50,6 +50,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_27_191319) do
     t.decimal "planned_amount", precision: 15, scale: 2, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.decimal "carried_amount", precision: 15, scale: 2, default: "0.0", null: false
     t.index ["budget_item_id"], name: "index_budget_entries_on_budget_item_id"
     t.index ["space_id", "budget_item_id", "month"], name: "index_budget_entries_on_space_item_month", unique: true
     t.index ["space_id", "month"], name: "index_budget_entries_on_space_id_and_month"
@@ -71,6 +72,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_27_191319) do
     t.boolean "active", default: true, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "rollover", default: false, null: false
     t.index ["debt_id"], name: "index_budget_items_on_debt_id"
     t.index ["from_account_id"], name: "index_budget_items_on_from_account_id"
     t.index ["space_id", "debt_id", "kind"], name: "index_budget_items_on_space_and_debt_active", unique: true, where: "(active AND (debt_id IS NOT NULL))"

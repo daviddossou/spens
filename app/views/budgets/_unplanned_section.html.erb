@@ -1,0 +1,67 @@
+<%
+  month_slug = @month.strftime("%Y-%m")
+  plan_amount = ->(amount) { amount % 1 == 0 ? amount.to_i : amount }
+  visible_limit = 4
+
+  prev_month_name = l(@month << 1, format: "%B")
+
+  groups = {
+    income: @unplanned[:income].map do |type, sums|
+      { label: type.name, amount: sums[:amount], prev: sums[:prev],
+        path: new_budget_item_path(month: month_slug, kind: "income", transaction_type_name: type.name, amount: plan_amount.call(sums[:amount])) }
+    end,
+    expense: @unplanned[:expense].map do |type, sums|
+      { label: type.name, amount: sums[:amount], prev: sums[:prev],
+        path: new_budget_item_path(month: month_slug, kind: "expense", transaction_type_name: type.name, amount: plan_amount.call(sums[:amount])) }
+    end,
+    transfers: @unplanned[:transfers].map do |transfer|
+      { label: "#{transfer[:from]&.name} → #{transfer[:to]&.name}", amount: transfer[:amount],
+        path: (transfer[:from] && transfer[:to] ? new_budget_item_path(month: month_slug, kind: "transfer",
+                                                                       from_account_name: transfer[:from].name,
+                                                                       to_account_name: transfer[:to].name,
+                                                                       amount: plan_amount.call(transfer[:amount])) : nil) }
+    end
+  }
+
+  group_totals = {
+    income: smart_format_money(@unplanned[:income].values.sum { |s| s[:amount] }, current_space.currency, sign: :always),
+    expense: smart_format_money(-@unplanned[:expense].values.sum { |s| s[:amount] }, current_space.currency, sign: :always),
+    transfers: smart_format_money(@unplanned[:transfers].sum { |t| t[:amount] }, current_space.currency)
+  }
+%>
+
+<% if groups.values.any?(&:any?) %>
+  <section class="budget-section">
+    <div class="budget-section__header">
+      <h3 class="budget-section__title"><%= t('budgets.unplanned.title') %></h3>
+    </div>
+    <p class="budget-section__hint"><%= t('budgets.unplanned.hint') %></p>
+
+    <% groups.each do |group, rows| %>
+      <% next if rows.empty? %>
+      <div class="budget-subgroup">
+        <div class="budget-subgroup__header">
+          <h4 class="budget-subgroup__label"><%= t("budgets.unplanned.group_#{group}") %></h4>
+          <span class="budget-subgroup__total budget-subgroup__total--<%= group %>"><%= group_totals[group] %></span>
+        </div>
+
+        <% visible, hidden = rows.size > visible_limit ? [ rows.first(3), rows.drop(3) ] : [ rows, [] ] %>
+        <div class="budget-section__list">
+          <% visible.each do |row| %>
+            <%= render "budgets/unplanned_row", row: row, read_only: read_only, prev_month_name: prev_month_name %>
+          <% end %>
+        </div>
+        <% if hidden.any? %>
+          <details class="budget-more">
+            <summary class="budget-more__summary"><%= t('budgets.unplanned.show_more', count: hidden.size) %></summary>
+            <div class="budget-section__list">
+              <% hidden.each do |row| %>
+                <%= render "budgets/unplanned_row", row: row, read_only: read_only, prev_month_name: prev_month_name %>
+              <% end %>
+            </div>
+          </details>
+        <% end %>
+      </div>
+    <% end %>
+  </section>
+<% end %>

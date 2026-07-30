@@ -54,6 +54,8 @@ class BudgetsController < ApplicationController
     @actual_expense = expense_entries.sum { |e| @actuals_by_entry[e] }
     @actual_net = @actual_income - @actual_expense
 
+    @unplanned = Budgets::UnplannedActivityQuery.new(space: current_space, month: @month).call
+
     @savings_goal = current_space.monthly_savings_goal.to_f
     @past_month = @month < Date.current.beginning_of_month
     @has_items = current_space.budget_items.active.exists?

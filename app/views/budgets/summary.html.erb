@@ -21,6 +21,13 @@
           <%= smart_format_money(@actual_net, current_space.currency, sign: :always) %>
         </span>
         <span class="budget-hero__sublabel"><%= t('.planned_net_html', amount: smart_format_money(@projected_net, current_space.currency, sign: :always)) %></span>
+        <% if @unplanned[:income].any? || @unplanned[:expense].any? %>
+          <span class="budget-hero__offplan">
+            <%= t('budgets.unplanned.off_plan_html',
+                  amounts: safe_join([ (smart_format_money(@unplanned[:income].values.sum { |s| s[:amount] }, current_space.currency, sign: :always) if @unplanned[:income].any?),
+                                       (smart_format_money(-@unplanned[:expense].values.sum { |s| s[:amount] }, current_space.currency, sign: :always) if @unplanned[:expense].any?) ].compact, " / ")) %>
+          </span>
+        <% end %>
       </div>
 
       <div class="budget-totals">
@@ -54,6 +61,8 @@
           </div>
         </section>
       <% end %>
+
+      <%= render "unplanned_section", read_only: true %>
 
       <div class="budget-summary-link">
         <%= link_to t('.back_to_budget'), budgets_path(month: @month.strftime("%Y-%m")), class: "link-button" %>

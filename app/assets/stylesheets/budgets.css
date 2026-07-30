@@ -112,6 +112,141 @@
   margin-bottom: 0.75rem;
 }
 
+.budget-section__header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.budget-section__header .budget-section__title {
+  margin-bottom: 0;
+}
+
+.budget-section__total {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-danger-dark);
+  white-space: nowrap;
+}
+
+.budget-subgroup {
+  margin-bottom: 1rem;
+}
+
+.budget-subgroup__header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.budget-subgroup__label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-dark);
+}
+
+.budget-subgroup__total {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-dark);
+  white-space: nowrap;
+}
+
+.budget-subgroup__total--income {
+  color: var(--color-success-dark);
+}
+
+.budget-subgroup__total--expense {
+  color: var(--color-danger-dark);
+}
+
+.budget-row__plan-link {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--color-primary);
+}
+
+.budget-more {
+  margin-top: 0.5rem;
+}
+
+.budget-more__summary {
+  display: inline-block;
+  padding: 0.75rem 0;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-primary);
+  cursor: pointer;
+  list-style: none;
+}
+
+.budget-more__summary::-webkit-details-marker {
+  display: none;
+}
+
+.budget-more[open] .budget-more__summary {
+  display: none;
+}
+
+.budget-row__recurring {
+  margin-top: 0.25rem;
+  font-size: 0.75rem;
+  color: var(--color-muted-strong);
+}
+
+.budget-row__carried {
+  color: var(--color-muted-strong);
+  font-weight: 400;
+}
+
+.budget-rollover {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.625rem;
+  cursor: pointer;
+}
+
+.budget-rollover__input {
+  margin-top: 0.2rem;
+  width: 1.125rem;
+  height: 1.125rem;
+  accent-color: var(--color-primary);
+  flex-shrink: 0;
+}
+
+.budget-rollover__text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.budget-rollover__label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-dark);
+}
+
+.budget-rollover__help {
+  font-size: 0.75rem;
+  color: var(--color-muted-strong);
+}
+
+.budget-hero__offplan {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--color-muted-strong);
+  margin-top: 0.125rem;
+}
+
+.budget-section__hint {
+  font-size: 0.75rem;
+  color: var(--color-muted-strong);
+  margin: 0.125rem 0 0.75rem;
+}
+
 .budget-section__list {
   display: flex;
   flex-direction: column;

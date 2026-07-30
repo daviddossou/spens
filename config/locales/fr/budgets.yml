@@ -34,6 +34,8 @@ fr:
       amount_placeholder: "0"
       frequency_label: "À quelle fréquence ?"
       frequency_help: "Les montants journaliers et hebdomadaires sont cumulés en une ligne mensuelle."
+      rollover_label: "Budget cumulatif"
+      rollover_help: "Ce qui reste à la fin du mois s'ajoute au budget du mois suivant. Pratique pour les achats groupés ou espacés."
       already_budgeted: "est déjà dans votre budget — modifiez cette ligne"
     row:
       done_income: "Reçu"
@@ -45,6 +47,7 @@ fr:
       expected: "Prévu"
       over_by_html: "dépassé de %{amount}"
       left_html: "%{amount} restant"
+      carried_html: "dont %{amount} reportés"
     index:
       title: "Budget"
       subtitle: "Votre plan mensuel, prévu vs réel"
@@ -68,6 +71,16 @@ fr:
       empty_message: "Ajoutez ce que vous prévoyez de gagner et de dépenser. Nous le comparerons à la réalité au fil de vos transactions."
       no_entries_title: "Rien de prévu ce mois-ci"
       no_entries_message: "Aucune de vos lignes de budget ne s'applique à ce mois."
+    unplanned:
+      title: "Hors plan"
+      hint: "Reçu, dépensé ou viré ce mois-ci en dehors de votre budget"
+      group_income: "Revenus"
+      group_expense: "Dépenses"
+      group_transfers: "Virements"
+      plan_it: "Ajouter au budget"
+      show_more: "Voir les %{count} autres"
+      off_plan_html: "Hors plan : %{amounts}"
+      recurring: "déjà %{amount} en %{month}"
     summary:
       title: "Bilan du budget — %{month}"
       subtitle: "Le bilan du mois"

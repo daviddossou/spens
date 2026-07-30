@@ -66,4 +66,69 @@ RSpec.describe Budgets::EnsureEntriesService do
     ensure_month
     expect(space.budget_entries.sole.planned_amount).to eq(30_000)
   end
+
+  describe "rollover" do
+    let(:june) { month << 1 }
+    let(:type) { create(:transaction_type, space: space, kind: "expense") }
+    let!(:item) { create(:budget_item, space: space, rollover: true, amount: 500_000, starts_on: june, transaction_type: type) }
+
+    def spend(amount, date)
+      create(:transaction, space: space, transaction_type: type, amount: -amount, transaction_date: date)
+    end
+
+    def july_entry
+      space.budget_entries.find_by(month: month)
+    end
+
+    it "carries last month's unspent remainder into this month's planned amount" do
+      ensure_month(june)
+      spend(250_000, june + 10)
+      ensure_month
+
+      expect(july_entry.planned_amount).to eq(750_000)
+      expect(july_entry.carried_amount).to eq(250_000)
+    end
+
+    it "recomputes the carry on re-run while the month is current" do
+      ensure_month(june)
+      spend(250_000, june + 10)
+      ensure_month
+      spend(100_000, june + 15)
+      ensure_month
+
+      expect(july_entry.planned_amount).to eq(650_000)
+      expect(july_entry.carried_amount).to eq(150_000)
+    end
+
+    it "adjusts a manually overridden month by the carry delta only" do
+      ensure_month(june)
+      spend(250_000, june + 10)
+      ensure_month
+      july_entry.update!(planned_amount: 800_000)
+      spend(100_000, june + 15)
+      ensure_month
+
+      expect(july_entry.reload.planned_amount).to eq(700_000)
+      expect(july_entry.carried_amount).to eq(150_000)
+    end
+
+    it "never carries a negative remainder" do
+      ensure_month(june)
+      spend(600_000, june + 10)
+      ensure_month
+
+      expect(july_entry.planned_amount).to eq(500_000)
+      expect(july_entry.carried_amount).to eq(0)
+    end
+
+    it "leaves non-rollover items untouched" do
+      item.update!(rollover: false)
+      ensure_month(june)
+      spend(250_000, june + 10)
+      ensure_month
+
+      expect(july_entry.planned_amount).to eq(500_000)
+      expect(july_entry.carried_amount).to eq(0)
+    end
+  end
 end

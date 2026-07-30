@@ -5,7 +5,11 @@ class BudgetItemsController < ApplicationController
   before_action :set_budget_item, only: [ :edit, :update, :destroy ]
 
   def new
-    @form = BudgetItemForm.new(current_space, kind: params[:kind], starts_on: month_param)
+    @form = BudgetItemForm.new(current_space, kind: params[:kind], starts_on: month_param,
+                                              transaction_type_name: params[:transaction_type_name],
+                                              from_account_name: params[:from_account_name],
+                                              to_account_name: params[:to_account_name],
+                                              amount: params[:amount])
     @form.user = current_user
   end
 
@@ -66,6 +70,6 @@ class BudgetItemsController < ApplicationController
   end
 
   def budget_item_params
-    params.require(:budget_item).permit(:kind, :transaction_type_name, :from_account_name, :to_account_name, :contact_name, :amount, :frequency, :starts_on)
+    params.require(:budget_item).permit(:kind, :transaction_type_name, :from_account_name, :to_account_name, :contact_name, :amount, :frequency, :starts_on, :rollover)
   end
 end

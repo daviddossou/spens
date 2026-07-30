@@ -21,6 +21,13 @@
           <%= smart_format_money(@projected_net, current_space.currency, sign: :always) %>
         </span>
         <span class="budget-hero__sublabel"><%= t('.actual_so_far_html', amount: smart_format_money(@actual_net, current_space.currency, sign: :always)) %></span>
+        <% if @unplanned[:income].any? || @unplanned[:expense].any? %>
+          <span class="budget-hero__offplan">
+            <%= t('budgets.unplanned.off_plan_html',
+                  amounts: safe_join([ (smart_format_money(@unplanned[:income].values.sum { |s| s[:amount] }, current_space.currency, sign: :always) if @unplanned[:income].any?),
+                                       (smart_format_money(-@unplanned[:expense].values.sum { |s| s[:amount] }, current_space.currency, sign: :always) if @unplanned[:expense].any?) ].compact, " / ")) %>
+          </span>
+        <% end %>
         <% if @savings_goal.positive? %>
           <span class="budget-hero__goal <%= @projected_net >= @savings_goal ? 'budget-hero__goal--on-track' : 'budget-hero__goal--short' %>">
             <% if @projected_net >= @savings_goal %>
@@ -68,6 +75,8 @@
           </div>
         </section>
       <% end %>
+
+      <%= render "unplanned_section", read_only: @past_month %>
     <% elsif @has_items %>
       <div class="empty-state budget-empty">
         <h3><%= t('.no_entries_title') %></h3>

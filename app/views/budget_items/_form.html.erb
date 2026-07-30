@@ -132,3 +132,15 @@
   ) %>
   <p class="form-help-text"><%= t('budgets.form.frequency_help') %></p>
 </div>
+
+<% if @form.kind == "expense" %>
+  <div class="budget-item-form__rollover">
+    <label class="budget-rollover">
+      <%= f.check_box :rollover, class: "budget-rollover__input" %>
+      <span class="budget-rollover__text">
+        <span class="budget-rollover__label"><%= t('budgets.form.rollover_label') %></span>
+        <span class="budget-rollover__help"><%= t('budgets.form.rollover_help') %></span>
+      </span>
+    </label>
+  </div>
+<% end %>
