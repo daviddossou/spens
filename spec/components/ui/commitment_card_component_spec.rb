@@ -83,11 +83,11 @@ RSpec.describe Ui::CommitmentCardComponent, type: :component do
     before { render_inline(component) }
 
     it "formats the current value with abbreviation and currency" do
-      expect(component.formatted_current_value.to_s).to include("5K").and include("FCFA")
+      expect(component.formatted_current_value.to_s).to include("5,000").and include("FCFA")
     end
 
     it "formats the target value with abbreviation and currency" do
-      expect(component.formatted_target_value.to_s).to include("10K").and include("FCFA")
+      expect(component.formatted_target_value.to_s).to include("10,000").and include("FCFA")
     end
   end
 

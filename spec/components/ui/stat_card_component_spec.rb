@@ -63,7 +63,7 @@ RSpec.describe Ui::StatCardComponent, type: :component do
     end
 
     it "renders the abbreviated value" do
-      expect(rendered.css(".stat-card__value").text).to include("5K")
+      expect(rendered.css(".stat-card__value").text).to include("5,000")
     end
 
     it "renders the currency symbol" do

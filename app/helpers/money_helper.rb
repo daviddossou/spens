@@ -5,11 +5,14 @@ module MoneyHelper
     "#{format_money_number((amount || 0).abs.round(2))} #{get_currency_symbol(currency_code)}"
   end
 
-  # Smart number formatting with abbreviations (K, M, B) and hover for full value
+  # Smart number formatting with abbreviations (K, M, B) and hover for full value.
+  # The threshold is magnitude-based, not currency-based: below it the full
+  # locale-formatted number shows (1 350 €, 99 999 FCFA); from six digits up
+  # the amount abbreviates the same way in every currency (472K, 1.25M).
   # sign: :auto (default) shows '-' for negatives only
   # sign: :always shows '+' or '-'
   # sign: :never shows no sign
-  def smart_format_money(amount, currency_code = nil, threshold: 1_000, sign: :auto)
+  def smart_format_money(amount, currency_code = nil, threshold: 100_000, sign: :auto)
     currency_code ||= current_space&.currency || "XOF"
     currency_symbol = get_currency_symbol(currency_code)
     abs_amount = (amount || 0).abs.round(2)
@@ -29,13 +32,14 @@ module MoneyHelper
       return "#{prefix}#{format_money_number(abs_amount)} #{currency_symbol}"
     end
 
-    # Calculate abbreviated value
+    # Calculate abbreviated value. K amounts are six digits by construction,
+    # so decimals are false precision (971K, not 970.79K).
     abbreviated, suffix = if abs_amount >= 1_000_000_000
       [ (abs_amount / 1_000_000_000.0).round(2), "B" ]
     elsif abs_amount >= 1_000_000
       [ (abs_amount / 1_000_000.0).round(2), "M" ]
     else
-      [ (abs_amount / 1_000.0).round(2), "K" ]
+      [ (abs_amount / 1_000.0).round(abs_amount >= 100_000 ? 0 : 2).to_f, "K" ]
     end
 
     # Abbreviated values stay terse: drop a trailing ".0" on whole multiples

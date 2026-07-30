@@ -55,9 +55,14 @@ RSpec.describe MoneyHelper, type: :helper do
       expect(result).to eq("500 $")
     end
 
-    it "abbreviates thousands with K" do
+    it "shows thousands in full below the six-digit threshold" do
       result = helper.smart_format_money(5000, "USD")
-      expect(result).to include("5K")
+      expect(result).to eq("5,000 $")
+    end
+
+    it "abbreviates six-digit amounts with K, no decimals" do
+      result = helper.smart_format_money(470_790, "USD")
+      expect(result).to include("471K")
       expect(result).to include("$")
     end
 
@@ -72,13 +77,13 @@ RSpec.describe MoneyHelper, type: :helper do
     end
 
     it "includes title attribute with full amount" do
-      result = helper.smart_format_money(5000, "USD")
+      result = helper.smart_format_money(500_000, "USD")
       expect(result).to include("title=")
-      expect(result).to include("5,000")
+      expect(result).to include("500,000")
     end
 
     it "returns span element for accessibility" do
-      result = helper.smart_format_money(5000, "USD")
+      result = helper.smart_format_money(500_000, "USD")
       expect(result).to include("<span")
       expect(result).to include("cursor-help")
       expect(result).to include('aria-label')
@@ -90,14 +95,14 @@ RSpec.describe MoneyHelper, type: :helper do
     end
 
     it "formats decimal abbreviations" do
-      result = helper.smart_format_money(1500, "USD")
-      expect(result).to include("1.5K")
+      result = helper.smart_format_money(1_500_000, "USD")
+      expect(result).to include("1.5M")
     end
 
     it "removes .0 from whole numbers" do
-      result = helper.smart_format_money(2000, "USD")
-      expect(result).to include("2K")
-      expect(result).not_to include("2.0K")
+      result = helper.smart_format_money(200_000, "USD")
+      expect(result).to include("200K")
+      expect(result).not_to include("200.0K")
     end
 
     it "drops decimals on whole sub-threshold amounts" do
