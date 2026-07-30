@@ -27,9 +27,10 @@ development:
   errors:
     <<: *default
     database: spens_development_errors
-    <%# Derive host/credentials from DATABASE_URL (docker), swapping in the errors db name %>
+    <%# Derive host/credentials from DATABASE_URL (docker/CI), swapping in the errors db name.
+        The URL may have no db path at all (CI), so set the path explicitly. %>
     <% if ENV["DATABASE_URL"] %>
-    url: <%= ENV["DATABASE_URL"].sub(%r{/[^/]+\z}, "/spens_development_errors") %>
+    url: <%= URI(ENV["DATABASE_URL"]).tap { |u| u.path = "/spens_development_errors" } %>
     <% end %>
     migrations_paths: db/errors_migrate
 
@@ -72,7 +73,7 @@ test:
     database: spens_test_errors
     <%# rails_helper rewrites DATABASE_URL to spens_test before Rails loads %>
     <% if ENV["DATABASE_URL"] %>
-    url: <%= ENV["DATABASE_URL"].sub(%r{/[^/]+\z}, "/spens_test_errors") %>
+    url: <%= URI(ENV["DATABASE_URL"]).tap { |u| u.path = "/spens_test_errors" } %>
     <% end %>
     migrations_paths: db/errors_migrate
 
