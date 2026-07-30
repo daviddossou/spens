@@ -30,6 +30,12 @@ fr:
       quick_add: "Ajout rapide"
       loading: "Chargement..."
       has_note: "Avec note"
+      search:
+        placeholder: "Rechercher une transaction…"
+        aria_label: "Rechercher une transaction par description, catégorie ou montant"
+        clear: "Effacer la recherche"
+        no_results: "Aucune transaction ne correspond à « %{query} »"
+        no_results_hint: "Essaie une description, une catégorie, un compte ou un montant"
       stats:
         total_balance: "Mes Comptes"
         saved_this_month: "Épargné ce mois"

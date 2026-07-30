@@ -43,7 +43,9 @@ export default class extends Controller {
     this.showSpinner()
 
     try {
-      const response = await fetch(`${this.urlValue}?page=${this.pageValue}`, {
+      const url = new URL(this.urlValue, window.location.origin)
+      url.searchParams.set("page", this.pageValue)
+      const response = await fetch(url, {
         headers: {
           'Accept': 'text/vnd.turbo-stream.html'
         }

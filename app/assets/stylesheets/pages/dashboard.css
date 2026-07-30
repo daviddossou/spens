@@ -116,6 +116,107 @@
   }
 }
 
+/* Transactions live search — sticks under the fixed app header while the
+   timeline scrolls, so search stays in reach mid-list. */
+.transactions-search {
+  position: sticky;
+  top: calc(56px + env(safe-area-inset-top, 0px));
+  z-index: 10;
+  margin: 0.25rem -0.5rem 0.75rem;
+  padding: 0.5rem;
+  border-radius: 12px;
+  background-color: var(--color-off-white);
+  transition: box-shadow 0.2s ease;
+}
+
+.transactions-search.is-stuck {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.transactions-search__field {
+  position: relative;
+}
+
+.transactions-search__icon {
+  position: absolute;
+  left: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 1.125rem;
+  height: 1.125rem;
+  color: var(--text-muted);
+  pointer-events: none;
+}
+
+.transactions-search__input {
+  min-height: 44px;
+  padding-left: 2.5rem;
+  padding-right: 2.75rem;
+  border-radius: 8px;
+}
+
+/* Our own clear button replaces the native one for a consistent look */
+.transactions-search__input::-webkit-search-cancel-button {
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.transactions-search__clear {
+  position: absolute;
+  right: 0.375rem;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border: none;
+  border-radius: 9999px;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.transactions-search__clear:hover {
+  color: var(--text-default);
+  background-color: var(--color-off-white);
+}
+
+.transactions-search__clear:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.2);
+}
+
+.transactions-search__clear svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.transactions-search__clear.hidden {
+  display: none;
+}
+
+.transactions-search__empty {
+  text-align: center;
+  padding: 2.5rem 1rem;
+}
+
+.transactions-search__empty-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-default);
+  overflow-wrap: anywhere;
+}
+
+.transactions-search__empty-hint {
+  margin-top: 0.375rem;
+  font-size: 0.875rem;
+  color: var(--text-muted);
+}
+
 .dashboard__spinner {
   text-align: center;
   padding: 2rem 0;

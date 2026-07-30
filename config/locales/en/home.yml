@@ -23,6 +23,12 @@ en:
       quick_add: "Quick add"
       loading: "Loading more..."
       has_note: "Has note"
+      search:
+        placeholder: "Search transactions…"
+        aria_label: "Search transactions by description, category or amount"
+        clear: "Clear search"
+        no_results: "No transactions match \"%{query}\""
+        no_results_hint: "Try a description, a category, an account or an amount"
       stats:
         total_balance: "Total Balance"
         saved_this_month: "Saved This Month"

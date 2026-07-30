@@ -1,10 +1,7 @@
 <% content_for :page_title, t('.dashboard_title') %>
 
 <div class="page-container page-container--narrow">
-  <div class="page-content"
-       data-controller="infinite-scroll"
-       data-infinite-scroll-url-value="<%= dashboard_path %>"
-       data-infinite-scroll-page-value="<%= @has_more ? @page + 1 : 0 %>">
+  <div class="page-content">
 
     <!-- Hero: the one glanceable number -->
     <%= link_to accounts_path, class: "stat-card-link stat-card-link--quiet", "aria-label": t('.stats.view_accounts') do %>
@@ -54,29 +51,72 @@
       <% end %>
     </div>
 
-    <!-- Transactions List -->
-    <div id="transactions-container" class="transactions-timeline">
-      <%= render partial: "shared/transactions_list", locals: { grouped_transactions: @grouped_transactions } %>
-    </div>
-
-    <!-- Loading Spinner -->
-    <div id="loading-spinner"
-         data-infinite-scroll-target="spinner"
-         class="dashboard__spinner hidden">
-      <div class="dashboard__spinner-icon"></div>
-      <p class="dashboard__spinner-text"><%= t('.loading') %></p>
-    </div>
-
-    <!-- Load More Trigger (Invisible) -->
-    <% if @has_more %>
-      <div id="infinite-scroll-trigger"
-           data-infinite-scroll-target="trigger"
-           class="dashboard__load-trigger"></div>
+    <!-- Search -->
+    <%= form_with url: dashboard_path, method: :get, role: "search",
+                  class: "transactions-search",
+                  data: { controller: "search-form sticky",
+                          sticky_stuck_class: "is-stuck",
+                          turbo_frame: "transactions_timeline",
+                          turbo_action: "advance" } do %>
+      <div class="transactions-search__field">
+        <svg class="transactions-search__icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
+                d="M21 21l-4.35-4.35M17 10.5a6.5 6.5 0 11-13 0 6.5 6.5 0 0113 0z"/>
+        </svg>
+        <%= search_field_tag :q, @search_query,
+              class: "form-input transactions-search__input",
+              placeholder: t('.search.placeholder'),
+              "aria-label": t('.search.aria_label'),
+              autocomplete: "off",
+              data: { search_form_target: "input",
+                      action: "input->search-form#search keydown.esc->search-form#clear" } %>
+        <button type="button"
+                class="transactions-search__clear hidden"
+                data-search-form-target="clear"
+                data-action="search-form#clear"
+                aria-label="<%= t('.search.clear') %>">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
     <% end %>
 
-    <!-- Empty State -->
-    <% if @transactions.empty? && @page == 1 %>
-      <%= render partial: "empty_state" %>
+    <!-- Transactions timeline (frame so live search swaps only the list) -->
+    <%= turbo_frame_tag "transactions_timeline",
+          data: { controller: "infinite-scroll",
+                  infinite_scroll_url_value: dashboard_path(q: @search_query.presence),
+                  infinite_scroll_page_value: @has_more ? @page + 1 : 0 } do %>
+      <div id="transactions-container" class="transactions-timeline">
+        <%= render partial: "shared/transactions_list", locals: { grouped_transactions: @grouped_transactions } %>
+      </div>
+
+      <!-- Loading Spinner -->
+      <div id="loading-spinner"
+           data-infinite-scroll-target="spinner"
+           class="dashboard__spinner hidden">
+        <div class="dashboard__spinner-icon"></div>
+        <p class="dashboard__spinner-text"><%= t('.loading') %></p>
+      </div>
+
+      <!-- Load More Trigger (Invisible) -->
+      <% if @has_more %>
+        <div id="infinite-scroll-trigger"
+             data-infinite-scroll-target="trigger"
+             class="dashboard__load-trigger"></div>
+      <% end %>
+
+      <!-- Empty States -->
+      <% if @transactions.empty? && @page == 1 %>
+        <% if @search_query.present? %>
+          <div class="transactions-search__empty">
+            <p class="transactions-search__empty-title"><%= t('.search.no_results', query: @search_query) %></p>
+            <p class="transactions-search__empty-hint"><%= t('.search.no_results_hint') %></p>
+          </div>
+        <% else %>
+          <%= render partial: "empty_state" %>
+        <% end %>
+      <% end %>
     <% end %>
   </div>
 </div>
