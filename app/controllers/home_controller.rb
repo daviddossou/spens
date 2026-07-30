@@ -26,7 +26,10 @@ class HomeController < ApplicationController
     @i_owe = current_space.debts.ongoing.borrowed.sum("total_lent - total_reimbursed")
 
     # Transactions timeline (paginated + date-grouped for infinite scroll)
-    load_transactions_timeline(current_space.transactions)
+    @search_query = params[:q].to_s.strip
+    scope = current_space.transactions
+    scope = scope.search(@search_query) if @search_query.present?
+    load_transactions_timeline(scope)
 
     respond_to do |format|
       format.html

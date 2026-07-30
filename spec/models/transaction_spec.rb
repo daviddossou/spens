@@ -210,6 +210,54 @@ RSpec.describe Transaction, type: :model do
     end
   end
 
+  describe '.search' do
+    let(:space) { create(:space) }
+    let(:restaurant_type) { create(:transaction_type, space: space, name: 'Restaurant') }
+    let(:cash_account) { create(:account, space: space, name: 'Cash Wallet') }
+
+    let!(:lunch) do
+      create(:transaction, space: space, transaction_type: restaurant_type,
+             description: 'Lunch with Ada', amount: 5.0)
+    end
+    let!(:groceries) do
+      create(:transaction, space: space, description: 'Groceries',
+             note: 'Weekly market run', amount: 12_500.0, account: cash_account)
+    end
+
+    it 'returns everything for a blank query' do
+      expect(space.transactions.search('  ')).to contain_exactly(lunch, groceries)
+    end
+
+    it 'matches the description case-insensitively' do
+      expect(space.transactions.search('lunch')).to contain_exactly(lunch)
+    end
+
+    it 'matches the note' do
+      expect(space.transactions.search('market')).to contain_exactly(groceries)
+    end
+
+    it 'matches the category name' do
+      expect(space.transactions.search('restau')).to contain_exactly(lunch)
+    end
+
+    it 'matches the account name' do
+      expect(space.transactions.search('wallet')).to contain_exactly(groceries)
+    end
+
+    it 'matches the amount from a number embedded in the query' do
+      expect(space.transactions.search('5 euros')).to contain_exactly(lunch)
+    end
+
+    it 'matches decimal amounts written with a comma' do
+      snack = create(:transaction, space: space, description: 'Snack', amount: 5.5)
+      expect(space.transactions.search('5,5')).to contain_exactly(snack)
+    end
+
+    it 'escapes LIKE wildcards' do
+      expect(space.transactions.search('%')).to be_empty
+    end
+  end
+
   describe 'defaults' do
     it 'uses today for transaction_date if set explicitly in factory' do
       expect(transaction.transaction_date).to eq(Date.today)

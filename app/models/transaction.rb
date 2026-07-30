@@ -67,6 +67,29 @@ class Transaction < ApplicationRecord
   # Scopes
   scope :transfer_group, ->(group_id) { where(transfer_group_id: group_id) }
 
+  # Free-text search across description, note, category name, account name and
+  # amount (any number in the query matches the absolute amount, so "5 euros"
+  # finds 5.00 transactions).
+  scope :search, ->(query) do
+    term = query.to_s.strip
+    next all if term.blank?
+
+    clauses = [
+      "transactions.description ILIKE :pattern",
+      "transactions.note ILIKE :pattern",
+      "transaction_types.name ILIKE :pattern",
+      "accounts.name ILIKE :pattern"
+    ]
+    binds = { pattern: "%#{sanitize_sql_like(term)}%" }
+
+    if (number = term.tr(",", ".")[/\d+(\.\d+)?/])
+      clauses << "ROUND(ABS(transactions.amount)::numeric, 2) = :number"
+      binds[:number] = number.to_f.round(2)
+    end
+
+    left_joins(:transaction_type, :account).where(clauses.join(" OR "), **binds)
+  end
+
   # The other leg of a transfer (same transfer_group_id, different row). Nil for
   # non-transfers, legacy unpaired legs, or if the partner was already removed.
   def transfer_partner
