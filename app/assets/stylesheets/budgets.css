@@ -290,7 +290,9 @@
   font-size: 0.875rem;
   font-weight: 600;
   color: var(--color-dark);
-  overflow-wrap: anywhere;
+  /* break-word wraps whole words to the next line; anywhere split names
+     mid-word ("Geo rges") once full-number amounts widened the right side. */
+  overflow-wrap: break-word;
 }
 
 .budget-row__icon {
@@ -311,6 +313,11 @@
   font-weight: 500;
   color: var(--color-muted-strong);
   white-space: nowrap;
+  /* Secondary info yields: full-number amounts can no longer shrink, so the
+     frequency ellipsizes instead of being overlapped. */
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .budget-row__amounts {

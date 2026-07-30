@@ -87,6 +87,6 @@ RSpec.describe Budgets::UnplannedActivityQuery do
       record(t_in, 15_000, account: cash, transfer_group_id: group)
     end
 
-    expect(query[:transfers]).to eq([ { from: bank, to: cash, amount: 30_000 } ])
+    expect(query[:transfers]).to eq([ { from: bank, to: cash, amount: 30_000, prev: 0 } ])
   end
 end

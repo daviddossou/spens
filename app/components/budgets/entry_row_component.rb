@@ -62,6 +62,11 @@ module Budgets
       end
     end
 
+    # "Left" reads as money still to spend; incoming money is still to receive.
+    def left_label_key
+      %w[income debt_in].include?(entry.kind) ? "to_receive_html" : "left_html"
+    end
+
     def bar_class
       [ "budget-row__bar-fill",
         ("budget-row__bar-fill--over" if over?),

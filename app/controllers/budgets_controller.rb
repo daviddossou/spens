@@ -54,10 +54,19 @@ class BudgetsController < ApplicationController
     @actual_expense = expense_entries.sum { |e| @actuals_by_entry[e] }
     @actual_net = @actual_income - @actual_expense
 
+    # Projected month outcome given reality so far: what already moved plus
+    # what the plan still expects (a fulfilled line contributes nothing more;
+    # overspending is already inside the actuals). Starts equal to the plan
+    # and degrades as the month diverges — this is what the savings-goal
+    # badge tracks. A past month has nothing left to expect.
+    @past_month = @month < Date.current.beginning_of_month
+    remaining_income = income_entries.sum { |e| [ e.planned_amount - @actuals_by_entry[e], 0 ].max }
+    remaining_expense = expense_entries.sum { |e| [ e.planned_amount - @actuals_by_entry[e], 0 ].max }
+    @projected_outcome = @past_month ? @actual_net : @actual_net + remaining_income - remaining_expense
+
     @unplanned = Budgets::UnplannedActivityQuery.new(space: current_space, month: @month).call
 
     @savings_goal = current_space.monthly_savings_goal.to_f
-    @past_month = @month < Date.current.beginning_of_month
     @has_items = current_space.budget_items.active.exists?
   end
 end
