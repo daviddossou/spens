@@ -78,6 +78,18 @@ module Budgets
       end
     end
 
+    def carried
+      entry.carried_amount.to_f
+    end
+
+    def carried?
+      carried.positive?
+    end
+
+    def formatted_carried
+      helpers.smart_format_money(carried, currency)
+    end
+
     def formatted_planned
       helpers.smart_format_money(planned, currency)
     end

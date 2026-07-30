@@ -8,6 +8,7 @@
 #  ends_on             :date
 #  frequency           :string           not null
 #  kind                :string           not null, indexed => [space_id, debt_id]
+#  rollover            :boolean          default(FALSE), not null
 #  starts_on           :date             not null
 #  created_at          :datetime         not null
 #  updated_at          :datetime         not null

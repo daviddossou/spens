@@ -3,6 +3,7 @@
 # Table name: budget_entries
 #
 #  id                  :uuid             not null, primary key
+#  carried_amount      :decimal(15, 2)   default(0.0), not null
 #  kind                :string           not null
 #  month               :date             not null, indexed => [space_id], indexed => [space_id, budget_item_id]
 #  planned_amount      :decimal(15, 2)   not null
