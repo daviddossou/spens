@@ -95,17 +95,23 @@ module QuickEntry
       )
     end
 
-    # A debt with a NEW person (a known one would already be linked by DebtLinker above): prefill
-    # the debt form with the person + direction. Not confident (no debt_id) → the form.
+    # A debt with a NEW person (a known one would already be linked by DebtLinker above). With a
+    # clear direction and a resolved person + amount it auto-creates the counterparty on submit;
+    # only a missing person/amount falls back to the prefilled form.
     def debt_draft(rules, ai, kind)
       resolved = DEBT_KINDS.include?(kind) ? kind : DIRECTION_KIND.fetch(ai.direction.to_s, "debt_out")
+      contact = rules.contact_name.presence || ai.person
+
+      unresolved = []
+      unresolved << :amount if rules.amount.blank?
+      unresolved << :debt if contact.blank?
 
       Draft.new(
         kind: resolved, amount: rules.amount,
-        contact_name: rules.contact_name.presence || ai.person,
+        contact_name: contact,
         direction: rules.direction.presence || (resolved == "debt_in" ? "borrowed" : "lent"),
         transaction_date: rules.transaction_date, description: rules.description,
-        unresolved: [ :debt ]
+        unresolved: unresolved
       )
     end
 

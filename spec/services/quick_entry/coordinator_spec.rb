@@ -100,13 +100,22 @@ RSpec.describe QuickEntry::Coordinator do
       expect(draft).not_to be_confident
     end
 
-    it "routes an AI debt with a new person to the prefilled debt form" do
+    it "auto-creates a debt with a new person from the AI's person + direction" do
       stub_llm(kind: "debt", amount: 2000, person: "Mariam", direction: "lent")
 
       draft = draft_for("dépanné Mariam de 2000", locale: :fr)
       expect(draft.kind).to eq("debt_out")
       expect(draft.contact_name).to eq("Mariam")
       expect(draft.direction).to eq("lent")
+      expect(draft).to be_confident
+    end
+
+    it "still prefills the form when the AI cannot name the person" do
+      stub_llm(kind: "debt", amount: 2000, person: nil, direction: "lent")
+
+      draft = draft_for("dépanné quelqu'un de 2000", locale: :fr)
+      expect(draft.kind).to eq("debt_out")
+      expect(draft.contact_name).to be_nil
       expect(draft).not_to be_confident
     end
   end

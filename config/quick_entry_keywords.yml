@@ -68,7 +68,7 @@ fr:
       [transfert, transfere, transféré, vire, viré, virement, envoye sur mon, depot,
        dépôt, depose, déposé, retrait, retire, retiré, recharge]
     debt_lent:
-      [prete, prêté, j'ai prete, avance, avancé]
+      [prete, prêté, pret, prêt, j'ai prete, avance, avancé]
     debt_borrowed:
       [emprunte, emprunté, je dois, j'ai emprunte, dette]
   transfer_prepositions:

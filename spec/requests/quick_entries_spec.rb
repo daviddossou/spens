@@ -54,6 +54,23 @@ RSpec.describe QuickEntriesController, type: :request do
       expect(response).to have_http_status(:see_other)
     end
 
+    it "auto-creates a new debt and links it when lending to an unknown person" do
+      expect do
+        post quick_entry_path, params: { text: "lent 5000 to John" }
+      end.to change { space.transactions.count }.by(1)
+        .and change { space.debts.count }.by(1)
+
+      debt = space.debts.order(:created_at).last
+      expect(debt.name).to eq("John")
+      expect(debt.direction).to eq("lent")
+
+      transaction = space.transactions.order(:created_at).last
+      expect(transaction.debt).to eq(debt)
+      expect(transaction.transaction_type.kind).to eq("debt_out")
+      expect(transaction.amount.abs).to eq(5000)
+      expect(response).to have_http_status(:see_other)
+    end
+
     it "records a plain income (no debt link) when the person isn't a known debt" do
       expect do
         post quick_entry_path, params: { text: "received 25000 refund from Sosthene" }
