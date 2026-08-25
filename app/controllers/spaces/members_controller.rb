@@ -20,6 +20,7 @@ class Spaces::MembersController < ApplicationController
 
     if @invitation.save
       InvitationMailer.invite(@invitation).deliver_later
+      Brevo.upsert_contact_later(email: @invitation.email, attributes: { INVITED: true })
       redirect_to space_members_path(space_id: @space.id), notice: t(".success"), status: :see_other
     else
       redirect_to space_members_path(space_id: @space.id), alert: @invitation.errors.full_messages.first, status: :see_other

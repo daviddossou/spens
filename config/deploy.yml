@@ -27,6 +27,7 @@ env:
     DB_HOST: spens-db
     QUICK_ENTRY_LLM_URL: http://spens-ollama:11434/v1
     QUICK_ENTRY_LLM_MODEL: qwen2.5:3b
+    BREVO_LIST_ID: 5
 
 aliases:
   console: app exec --interactive --reuse "bin/rails console"

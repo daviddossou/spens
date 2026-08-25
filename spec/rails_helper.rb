@@ -79,6 +79,10 @@ RSpec.configure do |config|
   # FactoryBot configuration
   config.include FactoryBot::Syntax::Methods
 
+  # Time travel (travel_to / freeze_time), auto-reverted after each example.
+  config.include ActiveSupport::Testing::TimeHelpers
+  config.after { travel_back }
+
   # ViewComponent test configuration
   config.include ViewComponent::TestHelpers, type: :component
 

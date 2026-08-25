@@ -31,6 +31,10 @@ class Auth::RegistrationsController < ApplicationController
       log_otp(@user) if Rails.env.development?
 
       Analytics.track(@user, "sign_up_submitted", invited: accepted_space.present?)
+      Brevo.upsert_contact_later(
+        email: @user.email,
+        attributes: { FIRSTNAME: @user.first_name, LASTNAME: @user.last_name }.compact_blank
+      )
 
       session[:otp_user_id] = @user.id
       session[:otp_context] = "sign_up"
