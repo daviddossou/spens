@@ -9,6 +9,10 @@ RSpec.describe Budgets::UnplannedActivityQuery do
   let(:parent) { create(:transaction_type, space: space, kind: "expense") }
   let(:child) { create(:transaction_type, space: space, kind: "expense", parent: parent) }
 
+  # Anchor "now" inside the queried month so budget-entry factories (which default
+  # month: Date.current) land on the month under test.
+  before { travel_to(month + 14) }
+
   def query
     described_class.new(space: space, month: month).call
   end

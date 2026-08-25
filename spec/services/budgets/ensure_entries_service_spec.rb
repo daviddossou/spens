@@ -68,6 +68,10 @@ RSpec.describe Budgets::EnsureEntriesService do
   end
 
   describe "rollover" do
+    # The service only recomputes carry while the month is current or future, so
+    # anchor "now" inside the test month rather than the wall clock.
+    before { travel_to(month + 14) }
+
     let(:june) { month << 1 }
     let(:type) { create(:transaction_type, space: space, kind: "expense") }
     let!(:item) { create(:budget_item, space: space, rollover: true, amount: 500_000, starts_on: june, transaction_type: type) }
