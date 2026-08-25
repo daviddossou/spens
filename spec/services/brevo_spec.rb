@@ -40,9 +40,9 @@ RSpec.describe Brevo do
 
     it 'posts an upsert body and swallows errors' do
       allow(described_class).to receive(:enabled?).and_return(true)
-      allow(described_class).to receive(:config).and_return(enabled: true, api_key: 'k', list_ids: [7])
+      allow(described_class).to receive(:config).and_return(enabled: true, api_key: 'k', list_ids: [ 7 ])
       allow(described_class).to receive(:post_json) do |_url, body|
-        expect(body).to include(email: 'jane@example.com', updateEnabled: true, listIds: [7])
+        expect(body).to include(email: 'jane@example.com', updateEnabled: true, listIds: [ 7 ])
         instance_double(Net::HTTPCreated).tap { |r| allow(r).to receive(:is_a?).with(Net::HTTPSuccess).and_return(true) }
       end
 

@@ -1,0 +1,15 @@
+{
+  "ignored_warnings": [
+    {
+      "warning_type": "Unmaintained Dependency",
+      "warning_code": 130,
+      "fingerprint": "21ab0fe00fdd5899ffc405cff75aadb91b805ee996a614f7e27b08a287e9062d",
+      "check_name": "EOLRails",
+      "message": "Support for Rails 8.0.3 ends on 2026-10-07",
+      "file": "Gemfile.lock",
+      "line": 264,
+      "note": "Rails upgrade is tracked separately; this calendar-based warning should not fail every PR's CI."
+    }
+  ],
+  "brakeman_version": "8.0.5"
+}
