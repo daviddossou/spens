@@ -198,7 +198,46 @@ RSpec.describe QuickEntry::Parser do
 
     it "routes a transfer with unknown accounts to the manual form (not auto-create)" do
       expect(parse("transfer 10000 to savings")).not_to be_confident
-      expect(parse("lent 5000 to John")).not_to be_confident
+    end
+  end
+
+  describe "debts" do
+    it "extracts the counterparty and auto-creates a new lent debt" do
+      draft = parse("lent 5000 to John")
+      expect(draft.kind).to eq("debt_out")
+      expect(draft.amount).to eq(5000)
+      expect(draft.contact_name).to eq("John")
+      expect(draft.direction).to eq("lent")
+      expect(draft).to be_confident
+    end
+
+    it "extracts the counterparty for a borrowed debt (FR)" do
+      draft = parse("emprunté 10000 à Marie", locale: :fr)
+      expect(draft.kind).to eq("debt_in")
+      expect(draft.contact_name).to eq("Marie")
+      expect(draft.direction).to eq("borrowed")
+      expect(draft).to be_confident
+    end
+
+    it "does not swallow trailing words into the name" do
+      expect(parse("lent 5000 to John for rent").contact_name).to eq("John")
+    end
+
+    it "recognises the noun 'prêt' and captures the source account (FR)" do
+      create(:account, space: space, name: "Mobile Money")
+      draft = parse("35000 de prêt à Angélique de mon Mobile Money", locale: :fr)
+      expect(draft.kind).to eq("debt_out")
+      expect(draft.amount).to eq(35_000)
+      expect(draft.contact_name).to eq("Angélique")
+      expect(draft.account_name).to eq("Mobile Money")
+      expect(draft).to be_confident
+    end
+
+    it "prefills the form when no counterparty can be read" do
+      draft = parse("lent 5000")
+      expect(draft.contact_name).to be_nil
+      expect(draft.unresolved).to include(:debt)
+      expect(draft).not_to be_confident
     end
   end
 end

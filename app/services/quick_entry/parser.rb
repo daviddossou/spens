@@ -8,6 +8,12 @@ module QuickEntry
     ARTICLES = %w[le la les l un une mon ma mes ton ta tes son sa ses notre nos votre vos my the].freeze
     # Words tolerated between a fee amount and its keyword ("700 comme frais", "fee of 700").
     FEE_FILLERS = %w[de du d of as comme en pour].freeze
+    DEBT_KINDS = %w[debt_in debt_out].freeze
+    DEBT_DIRECTION = { "debt_out" => "lent", "debt_in" => "borrowed" }.freeze
+    # Prepositions that introduce the debt's counterparty ("to John", "à Jean", "from Marie").
+    PERSON_PREPS = %w[to from a au aux chez unto].freeze
+    # Words that end a name run, so we never swallow "…to John for rent" into the name.
+    NAME_STOPS = %w[for pour and et de du].freeze
 
     def self.parse(text, space:, locale: I18n.locale)
       new(text, space: space, locale: locale).parse
@@ -25,13 +31,72 @@ module QuickEntry
       @amount = detect_amount
       @fee = detect_fee(@amount)
 
-      transfer? ? transfer_draft : standard_draft
+      return transfer_draft if transfer?
+      return debt_draft if debt?
+
+      standard_draft
     end
 
     private
 
     def transfer?
       @kind == "transfer"
+    end
+
+    def debt?
+      DEBT_KINDS.include?(@kind)
+    end
+
+    # A debt keyword fixed the direction (lent → debt_out, borrowed → debt_in); pull the
+    # counterparty out of the text so a brand-new loan can auto-create without the LLM. No
+    # person found → prefill the debt form (unresolved: :debt) instead of guessing.
+    def debt_draft
+      person = detect_person
+
+      unresolved = []
+      unresolved << :amount if @amount.blank?
+      unresolved << :debt if person.blank?
+
+      Draft.new(
+        kind: @kind,
+        amount: @amount,
+        account_name: detect_account,
+        contact_name: person,
+        direction: DEBT_DIRECTION.fetch(@kind),
+        fee_amount: @fee,
+        transaction_date: detect_date,
+        description: @text.presence,
+        unresolved: unresolved
+      )
+    end
+
+    # The counterparty is the word after the last person-preposition ("…to John"), keeping a
+    # second word only when it reads as a proper name ("Jean Paul"). Original casing is kept
+    # for display; FindOrCreateDebtService matches case-insensitively.
+    def detect_person
+      toks = raw_tokens
+      low  = toks.map { |t| translit(t) }
+      idx  = low.rindex { |t| PERSON_PREPS.include?(t) }
+      return nil unless idx && idx + 1 < toks.size
+      return nil if name_stop?(low[idx + 1])
+
+      name = [ toks[idx + 1] ]
+      nxt  = toks[idx + 2]
+      name << nxt if nxt && capitalized?(nxt) && !name_stop?(low[idx + 2])
+      name.join(" ")
+    end
+
+    def name_stop?(tok)
+      tok.nil? || tok.empty? || ARTICLES.include?(tok) || NAME_STOPS.include?(tok) || number_token?(tok)
+    end
+
+    def capitalized?(tok)
+      tok.match?(/\A\p{Lu}/)
+    end
+
+    # Original-cased word tokens (keeping accents/apostrophes), for reading names back verbatim.
+    def raw_tokens
+      @raw_tokens ||= @text.split(/[^\p{L}\p{N}'’-]+/u).reject(&:empty?)
     end
 
     def transfer_draft

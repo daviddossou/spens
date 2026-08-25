@@ -18,12 +18,13 @@ module QuickEntry
       super
     end
 
-    # Enough to auto-create without review — only when the referenced entities already exist
-    # (a known debt, existing accounts). A new account/person needs the prefilled form.
+    # Enough to auto-create without review. Debts also auto-create a NEW counterparty when the
+    # direction is clear (a known debt links by id; a new one is created from name + direction on
+    # submit) — but never when the direction itself is unresolved. New accounts still need the form.
     def confident?
       case kind
       when *CATEGORY_KINDS then amount.present? && transaction_type_name.present?
-      when *DEBT_KINDS     then amount.present? && debt_id.present?
+      when *DEBT_KINDS     then amount.present? && (debt_id.present? || (contact_name.present? && direction.present?)) && unresolved.exclude?(:direction)
       when "transfer"      then amount.present? && from_account_name.present? && to_account_name.present?
       else false
       end
