@@ -1,30 +1,30 @@
 # frozen_string_literal: true
 
 module Budgets
-  # Keeps an account's savings-goal contribution plan in sync. When the account
-  # has a saving goal, a deadline, and money still to save, this maintains a
-  # source-less monthly transfer budget line ("put X into this account") that
-  # spreads the remaining amount evenly over the months up to the deadline and
-  # stops there (ends_on). Clearing the deadline, or reaching the goal, retires
-  # the line.
+  # Keeps a goal's contribution plan in sync. When the goal has a deadline and
+  # money still to save, this maintains a source-less monthly transfer budget
+  # line ("put X into this account") that spreads the remaining amount evenly
+  # over the months up to the deadline and stops there (ends_on). Clearing the
+  # deadline, or reaching the target, retires the line.
   class SyncGoalPlanService
-    def self.call(account) = new(account).call
+    def self.call(goal) = new(goal).call
 
-    def initialize(account)
-      @account = account
-      @space = account.space
+    def initialize(goal)
+      @goal = goal
+      @account = goal.account
+      @space = goal.space
     end
 
     def call
       line = goal_line
-      remaining = [ (@account.savings_goal_amount || 0.0) - (@account.balance || 0.0), 0.0 ].max
+      remaining = @goal.remaining.to_f
 
-      if @account.savings_goal_deadline.blank? || remaining <= 0
+      if @goal.deadline.blank? || remaining <= 0
         retire(line)
         return line
       end
 
-      months = months_until(@account.savings_goal_deadline)
+      months = months_until(@goal.deadline)
       monthly = (remaining / months).round(2)
       return retire(line) if monthly <= 0
 
@@ -34,7 +34,7 @@ module Budgets
         transaction_type: nil, debt: nil,
         amount: monthly, frequency: "monthly",
         starts_on: Date.current.beginning_of_month,
-        ends_on: @account.savings_goal_deadline, active: true
+        ends_on: @goal.deadline, active: true
       )
       line.save!
       RematerializeItem.call(line)
