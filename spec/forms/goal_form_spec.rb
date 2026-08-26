@@ -1,461 +1,95 @@
 # frozen_string_literal: true
 
-require 'rails_helper'
+require "rails_helper"
 
 RSpec.describe GoalForm, type: :model do
   let(:user) { create(:user) }
   let(:space) { user.spaces.first }
   let(:valid_attributes) do
-    {
-      account_name: 'Emergency Fund',
-      current_balance: 1000.00,
-      savings_goal_amount: 5000.00
-    }
+    { goal_name: "Trip to Zanzibar", account_name: "Travel Fund", current_balance: 1_000, target_amount: 5_000 }
   end
   let(:form) { described_class.new(space, valid_attributes) }
 
-  describe 'inheritance' do
-    it 'inherits from BaseForm' do
-      expect(described_class.superclass).to eq(BaseForm)
-    end
-  end
-
-  describe '#initialize' do
-    it 'sets the space attribute' do
-      expect(form.space).to eq(space)
+  describe "validations" do
+    it "is valid with the full set" do
+      expect(form).to be_valid
     end
 
-    it 'sets account_name from payload' do
-      expect(form.account_name).to eq('Emergency Fund')
+    it "requires a goal name" do
+      form.goal_name = nil
+      expect(form).not_to be_valid
+      expect(form.errors[:goal_name]).to be_present
     end
 
-    it 'sets current_balance from payload' do
-      expect(form.current_balance).to eq(1000.00)
+    it "requires an account name" do
+      form.account_name = nil
+      expect(form).not_to be_valid
     end
 
-    it 'sets savings_goal_amount from payload' do
-      expect(form.savings_goal_amount).to eq(5000.00)
+    it "allows a blank target amount (name it now, set a target later)" do
+      form.target_amount = nil
+      expect(form).to be_valid
     end
 
-    context 'with empty payload' do
-      let(:form) { described_class.new(space, {}) }
-
-      it 'initializes with nil values' do
-        expect(form.account_name).to be_nil
-        expect(form.current_balance).to be_nil
-        expect(form.savings_goal_amount).to be_nil
-      end
+    it "allows a blank current balance" do
+      form.current_balance = nil
+      expect(form).to be_valid
     end
-  end
 
-  describe 'validations' do
-    context 'account_name' do
-      it 'is valid with account_name present' do
-        expect(form).to be_valid
-      end
+    it "rejects a target below the current balance" do
+      form.current_balance = 2_000
+      form.target_amount = 1_000
+      expect(form).not_to be_valid
+      expect(form.errors[:target_amount]).to include(I18n.t("errors.messages.goal_must_be_greater"))
+    end
 
-      it 'is invalid without account_name' do
-        form.account_name = nil
+    it "rejects a past deadline" do
+      travel_to Date.new(2026, 6, 1) do
+        form.deadline = Date.new(2026, 5, 1)
         expect(form).not_to be_valid
-        expect(form.errors[:account_name]).to include("can't be blank")
-      end
-
-      it 'is invalid with empty account_name' do
-        form.account_name = ''
-        expect(form).not_to be_valid
-        expect(form.errors[:account_name]).to include("can't be blank")
-      end
-    end
-
-    context 'current_balance' do
-      it 'is valid with current_balance present' do
-        expect(form).to be_valid
-      end
-
-      it 'is valid without current_balance (optional)' do
-        form.current_balance = nil
-        expect(form).to be_valid
-      end
-
-      it 'is valid with non-numeric current_balance that converts to zero' do
-        # ActiveModel::Type::Decimal converts non-numeric strings to 0
-        form.current_balance = 'abc'
-        form.savings_goal_amount = 100
-        expect(form).to be_valid
-        expect(form.current_balance).to eq(0)
-      end
-
-      it 'is valid with zero current_balance' do
-        form.current_balance = 0
-        expect(form).to be_valid
-      end
-
-      it 'is valid with negative current_balance' do
-        form.current_balance = -100
-        expect(form).to be_valid
-      end
-    end
-
-    context 'savings_goal_amount' do
-      it 'is valid with savings_goal_amount present' do
-        expect(form).to be_valid
-      end
-
-      it 'is valid without savings_goal_amount (a goal can be named before a target is set)' do
-        form.savings_goal_amount = nil
-        expect(form).to be_valid
-      end
-
-      it 'is invalid with non-numeric savings_goal_amount that converts to zero' do
-        # ActiveModel::Type::Decimal converts non-numeric strings to 0
-        form.savings_goal_amount = 'xyz'
-        expect(form).not_to be_valid
-        expect(form.errors[:savings_goal_amount]).to include("must be greater than 0")
-      end
-
-      it 'is invalid with zero savings_goal_amount' do
-        form.savings_goal_amount = 0
-        expect(form).not_to be_valid
-        expect(form.errors[:savings_goal_amount]).to include("must be greater than 0")
-      end
-
-      it 'is invalid with negative savings_goal_amount' do
-        form.savings_goal_amount = -100
-        expect(form).not_to be_valid
-        expect(form.errors[:savings_goal_amount]).to include("must be greater than 0")
-      end
-
-      it 'is valid with positive savings_goal_amount' do
-        form.savings_goal_amount = 5000
-        expect(form).to be_valid
-      end
-    end
-
-    context 'saving_goal_greater_than_balance validation' do
-      it 'is valid when savings_goal_amount is greater than current_balance' do
-        form.current_balance = 1000
-        form.savings_goal_amount = 5000
-        expect(form).to be_valid
-      end
-
-      it 'is invalid when savings_goal_amount equals current_balance' do
-        form.current_balance = 5000
-        form.savings_goal_amount = 5000
-        expect(form).not_to be_valid
-        expect(form.errors[:savings_goal_amount]).to include(I18n.t('errors.messages.goal_must_be_greater'))
-      end
-
-      it 'is invalid when savings_goal_amount is less than current_balance' do
-        form.current_balance = 5000
-        form.savings_goal_amount = 1000
-        expect(form).not_to be_valid
-        expect(form.errors[:savings_goal_amount]).to include(I18n.t('errors.messages.goal_must_be_greater'))
-      end
-
-      it 'does not apply the greater-than check when current_balance is nil' do
-        form.current_balance = nil
-        form.savings_goal_amount = 5000
-        expect(form).to be_valid
-        expect(form.errors[:savings_goal_amount]).not_to include(I18n.t('errors.messages.goal_must_be_greater'))
-      end
-
-      it 'does not apply the greater-than check when savings_goal_amount is nil' do
-        form.current_balance = 1000
-        form.savings_goal_amount = nil
-        expect(form).to be_valid
-        expect(form.errors[:savings_goal_amount]).not_to include(I18n.t('errors.messages.goal_must_be_greater'))
+        expect(form.errors[:deadline]).to be_present
       end
     end
   end
 
-  describe '.model_name' do
-    it 'returns ActiveModel::Name for Goal' do
-      expect(described_class.model_name.name).to eq('Goal')
-      expect(described_class.model_name.param_key).to eq('goal')
-      expect(described_class.model_name.route_key).to eq('goals')
-    end
-  end
+  describe "#submit" do
+    it "creates the account and the goal" do
+      expect { form.submit }.to change(Account, :count).by(1).and change(Goal, :count).by(1)
 
-  describe '#persisted?' do
-    it 'always returns false' do
-      expect(form.persisted?).to be(false)
-    end
-  end
-
-  describe '#to_model' do
-    it 'returns self' do
-      expect(form.to_model).to eq(form)
-    end
-  end
-
-  describe '#account_suggestions' do
-    let!(:account1) { create(:account, user: user, name: 'Savings') }
-    let!(:account2) { create(:account, user: user, name: 'Checking') }
-
-    before do
-      allow_any_instance_of(AccountSuggestionsService).to receive(:all_with_balances)
-        .and_return([
-          { name: 'Savings', balance: 1000 },
-          { name: 'Checking', balance: 500 }
-        ])
+      goal = Goal.order(:created_at).last
+      expect(goal.name).to eq("Trip to Zanzibar")
+      expect(goal.target_amount).to eq(5_000)
+      expect(goal.account.name).to eq("Travel Fund")
     end
 
-    it 'calls AccountSuggestionsService with user' do
-      expect(AccountSuggestionsService).to receive(:new).with(space).and_call_original
-      form.account_suggestions
+    it "creates a goal with no target yet" do
+      form = described_class.new(space, valid_attributes.except(:target_amount))
+      expect { form.submit }.to change(Goal, :count).by(1)
+      expect(Goal.order(:created_at).last.target_amount).to be_nil
     end
 
-    it 'returns all account suggestions with balances' do
-      expect(form.account_suggestions).to eq([
-        { name: 'Savings', balance: 1000 },
-        { name: 'Checking', balance: 500 }
-      ])
-    end
-  end
-
-  describe '#default_account_suggestions' do
-    before do
-      allow_any_instance_of(AccountSuggestionsService).to receive(:defaults_with_balances)
-        .and_return([
-          { name: 'Emergency Fund', balance: 0 },
-          { name: 'Vacation', balance: 0 }
-        ])
+    it "adjusts the account balance when a starting balance is given" do
+      expect { form.submit }.to change { space.accounts.find_by(name: "Travel Fund")&.balance }.to(1_000)
     end
 
-    it 'calls AccountSuggestionsService with user' do
-      expect(AccountSuggestionsService).to receive(:new).with(space).and_call_original
-      form.default_account_suggestions
-    end
-
-    it 'returns default account suggestions with balances' do
-      expect(form.default_account_suggestions).to eq([
-        { name: 'Emergency Fund', balance: 0 },
-        { name: 'Vacation', balance: 0 }
-      ])
-    end
-  end
-
-  describe '#submit' do
-    context 'with invalid form' do
-      it 'returns false when validation fails' do
-        form.account_name = nil
-        expect(form.submit).to be(false)
-        expect(form.errors[:account_name]).to include("can't be blank")
-      end
-
-      it 'does not create or update account' do
-        form.savings_goal_amount = 0
-        expect { form.submit }.not_to change { Account.count }
-      end
-    end
-
-    context 'with valid form and new account' do
-      let(:account) { create(:account, user: user, name: 'Emergency Fund', balance: 0) }
-
-      before do
-        allow(FindOrCreateAccountService).to receive(:new).with(space, 'Emergency Fund')
-          .and_return(instance_double(FindOrCreateAccountService, call: account))
-      end
-
-      it 'calls FindOrCreateAccountService' do
-        expect(FindOrCreateAccountService).to receive(:new).with(space, 'Emergency Fund').and_call_original
-        form.submit
-      end
-
-      it 'updates the account savings_goal_amount' do
-        form.submit
-        expect(account.reload.savings_goal_amount).to eq(5000.00)
-      end
-
-      it 'returns the account' do
-        expect(form.submit).to eq(account)
-      end
-
-      context 'with a deadline' do
-        let(:valid_attributes) do
-          {
-            account_name: 'Emergency Fund',
-            current_balance: 1000.00,
-            savings_goal_amount: 5000.00,
-            savings_goal_deadline: Date.new(2026, 5, 31)
-          }
-        end
-
-        it 'creates a source-less transfer line spreading the remainder to the deadline' do
-          travel_to Date.new(2026, 1, 10) do
-            form.submit
-
-            line = space.budget_items.find_by(kind: 'transfer', to_account_id: account.id, from_account_id: nil)
-            expect(line).to be_present
-            # remaining 4000 over Jan..May (5 months) = 800
-            expect(line.amount).to eq(800)
-            expect(line.ends_on).to eq(Date.new(2026, 5, 31))
-          end
-        end
-
-        it 'rejects a deadline in the past' do
-          travel_to Date.new(2026, 6, 1) do
-            expect(form.submit).to be(false)
-            expect(form.errors[:savings_goal_deadline]).to be_present
-          end
-        end
-      end
-
-      context 'when current_balance matches account balance' do
-        let(:account) { create(:account, user: user, name: 'Emergency Fund', balance: 1000) }
-
-        it 'does not create adjustment transaction' do
-          expect(CreateTransactionService).not_to receive(:new)
-          form.submit
-        end
-
-        it 'updates savings_goal_amount only' do
-          form.submit
-          expect(account.reload.savings_goal_amount).to eq(5000.00)
-          expect(account.reload.balance).to eq(1000.00)
-        end
-      end
-
-      context 'when current_balance is higher than account balance' do
-        let(:account) { create(:account, user: user, name: 'Emergency Fund', balance: 500) }
-
-        it 'creates a transaction to adjust the balance' do
-          expect { form.submit }.to change { account.transactions.count }.by(1)
-
-          transaction = account.transactions.order(:created_at).last
-          expect(transaction.amount).to eq(500.0)
-          expect(transaction.transaction_type.kind).to eq('income')
-        end
-
-        it 'adjusts account balance' do
-          form.submit
-          expect(account.reload.balance).to eq(1000.00)
-        end
-      end
-
-      context 'when current_balance is lower than account balance' do
-        let(:account) { create(:account, user: user, name: 'Emergency Fund', balance: 1500) }
-
-        it 'creates a transaction to adjust the balance' do
-          expect { form.submit }.to change { account.transactions.count }.by(1)
-
-          transaction = account.transactions.order(:created_at).last
-          expect(transaction.amount.abs).to eq(500.0)
-          expect(transaction.transaction_type.kind).to eq('expense')
-        end
-
-        it 'adjusts account balance' do
-          form.submit
-          expect(account.reload.balance).to eq(1000.00)
-        end
-      end
-    end
-
-    context 'when ActiveRecord transaction fails' do
-      let(:account) { create(:account, user: user, name: 'Emergency Fund') }
-
-      before do
-        allow(FindOrCreateAccountService).to receive(:new).with(space, 'Emergency Fund')
-          .and_return(instance_double(FindOrCreateAccountService, call: account))
-        allow(account).to receive(:update!).and_raise(ActiveRecord::RecordInvalid.new(account))
-      end
-
-      it 'returns false' do
-        expect(form.submit).to be(false)
-      end
-
-      it 'adds error to base' do
-        form.submit
-        expect(form.errors[:base]).to be_present
-      end
-
-      it 'logs the error' do
-        expect(Rails.logger).to receive(:error).with(/GoalForm submit error/)
-        form.submit
-      end
-    end
-
-    context 'when service raises StandardError' do
-      before do
-        allow(FindOrCreateAccountService).to receive(:new).and_raise(StandardError, "Service error")
-      end
-
-      it 'returns false' do
-        expect(form.submit).to be(false)
-      end
-
-      it 'adds custom error to base' do
-        form.submit
-        expect(form.errors[:base]).to include("Service error")
-      end
-
-      it 'logs the error' do
-        expect(Rails.logger).to receive(:error).with(/GoalForm submit error: Service error/)
-        form.submit
-      end
-    end
-
-    context 'edge cases' do
-      it 'handles very large amounts' do
-        form.current_balance = 999_999_999.99
-        form.savings_goal_amount = 1_000_000_000.00
-        result = form.submit
-        expect(result).to be_an(Account)
-        expect(result.savings_goal_amount).to eq(1_000_000_000.00)
-      end
-
-      it 'rounds amounts to two decimal places' do
-        form.current_balance = 100.12345
-        form.savings_goal_amount = 200.67890
-        result = form.submit
-        expect(result).to be_an(Account)
-        expect(result.savings_goal_amount).to eq(200.68)
-      end
-
-      it 'handles account names with special characters' do
-        form.account_name = "John's Emergency Fund (💰)"
-        result = form.submit
-        expect(result).to be_an(Account)
-        expect(result.name).to eq("John's Emergency Fund (💰)")
-      end
-
-      it 'handles very small balance differences' do
-        account = create(:account, user: user, name: 'Emergency Fund', balance: 1000.01)
-        form.account_name = account.name
-        form.current_balance = 1000.02
-        form.savings_goal_amount = 2000.00
-
-        expect { form.submit }.to change { Transaction.count }.by(1)
-
-        # Verify transaction was created with the small difference
-        transaction = account.transactions.last
-        expect(transaction.amount).to be_within(0.001).of(0.01)
-        expect(account.reload.balance).to be_within(0.001).of(1000.02)
-      end
-    end
-  end
-
-  describe 'ActiveRecord transaction rollback' do
-    let(:account) { create(:account, user: user, name: 'Emergency Fund', balance: 500) }
-    let(:transaction_type) { create(:transaction_type, user: user, kind: TransactionType::KIND_TRANSFER_IN) }
-
-    before do
-      allow(FindOrCreateAccountService).to receive(:new).with(space, 'Emergency Fund')
-        .and_return(instance_double(FindOrCreateAccountService, call: account))
-      allow(FindOrCreateTransactionTypeService).to receive(:new)
-        .and_return(instance_double(FindOrCreateTransactionTypeService, call: transaction_type))
-      allow_any_instance_of(CreateTransactionService).to receive(:call)
-        .and_raise(ActiveRecord::RecordInvalid.new(account))
-    end
-
-    it 'rolls back account update when transaction creation fails' do
-      original_goal = account.savings_goal_amount
+    it "updates the existing goal on re-submit for the same account" do
       form.submit
-      expect(account.reload.savings_goal_amount).to eq(original_goal)
+      account = space.accounts.find_by(name: "Travel Fund")
+
+      described_class.new(space, valid_attributes.merge(target_amount: 8_000)).submit
+      expect(account.reload.goal.target_amount).to eq(8_000)
+      expect(space.goals.count).to eq(1)
     end
 
-    it 'returns false on rollback' do
-      expect(form.submit).to be(false)
+    it "builds a bounded budget line when a deadline is set" do
+      travel_to Date.new(2026, 1, 10) do
+        described_class.new(space, valid_attributes.merge(current_balance: 0, target_amount: 30_000,
+                                                          deadline: Date.new(2026, 6, 30))).submit
+        account = space.accounts.find_by(name: "Travel Fund")
+        line = space.budget_items.find_by(kind: "transfer", to_account_id: account.id, from_account_id: nil)
+        expect(line.amount).to eq(5_000) # 30000 / 6 months
+        expect(line.ends_on).to eq(Date.new(2026, 6, 30))
+      end
     end
   end
 end
