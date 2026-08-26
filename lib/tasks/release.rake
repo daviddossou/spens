@@ -6,6 +6,5 @@ namespace :release do
   desc "Run post-deploy tasks"
   task run_after: :environment do
     Rake::Task["transaction_types:sync_template_names"].invoke
-    Rake::Task["backfill:savings_goals_to_model"].invoke
   end
 end
