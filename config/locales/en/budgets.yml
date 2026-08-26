@@ -34,6 +34,8 @@ en:
       amount_placeholder: "0"
       frequency_label: "How often?"
       frequency_help: "Daily and weekly amounts are added up into one monthly line."
+      essential_label: "I can't do without it"
+      essential_help: "Checked by default. Uncheck if it's more of a treat or an extra."
       rollover_label: "Cumulative budget"
       rollover_help: "Whatever is left at the end of the month is added to next month's budget. Handy for bulk or spaced-out purchases."
       ends_on_label: "Ends on (optional)"
