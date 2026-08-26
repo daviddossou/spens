@@ -2,16 +2,13 @@
 #
 # Table name: accounts
 #
-#  id                    :uuid             not null, primary key
-#  balance               :float            default(0.0), not null
-#  name                  :string           not null
-#  savings_goal          :boolean          default(FALSE), not null
-#  savings_goal_amount   :decimal(15, 2)
-#  savings_goal_deadline :date
-#  created_at            :datetime         not null
-#  updated_at            :datetime         not null
-#  space_id              :uuid             not null, indexed
-#  user_id               :uuid             indexed
+#  id         :uuid             not null, primary key
+#  balance    :float            default(0.0), not null
+#  name       :string           not null
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#  space_id   :uuid             not null, indexed
+#  user_id    :uuid             indexed
 #
 # Indexes
 #
