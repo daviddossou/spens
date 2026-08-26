@@ -34,17 +34,19 @@ module Budgets
       @category_sums ||= month_scope.group(:transaction_type_id).sum(:amount)
     end
 
-    # Sum of the month's transfer_out legs leaving from_account whose partner
-    # leg landed on to_account.
+    # Sum of the month's transfer_out legs whose partner leg landed on
+    # to_account. With a source set, only legs leaving from_account count;
+    # a source-less line counts money into to_account from anywhere.
     def transfer_actual(item)
-      return 0 if item.from_account_id.blank? || item.to_account_id.blank?
+      return 0 if item.to_account_id.blank?
 
-      month_scope
-        .joins(:transaction_type)
-        .where(transaction_types: { kind: "transfer_out" }, account_id: item.from_account_id)
-        .where.not(transfer_group_id: nil)
-        .where(transfer_group_id: partner_groups_into(item.to_account_id))
-        .sum(:amount).abs.round(2)
+      scope = month_scope
+              .joins(:transaction_type)
+              .where(transaction_types: { kind: "transfer_out" })
+              .where.not(transfer_group_id: nil)
+              .where(transfer_group_id: partner_groups_into(item.to_account_id))
+      scope = scope.where(account_id: item.from_account_id) if item.from_account_id.present?
+      scope.sum(:amount).abs.round(2)
     end
 
     def partner_groups_into(account_id)

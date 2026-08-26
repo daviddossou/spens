@@ -60,7 +60,7 @@ module Budgets
     # Pair each transfer_out leg with its partner transfer_in leg to get the
     # (from, to) accounts, then keep the pairs no transfer budget line covers.
     def transfer_sums
-      sums = pair_sums(@month) { |pair| !covered_account_pairs.include?(pair) }
+      sums = pair_sums(@month) { |pair| !covered_pair?(pair) }
       prev = pair_sums(@month << 1) { |pair| sums.key?(pair) }
 
       accounts = @space.accounts.where(id: sums.keys.flatten.uniq).index_by(&:id)
@@ -91,9 +91,27 @@ module Budgets
             .where.not(transfer_group_id: nil)
     end
 
+    # A transfer is covered by an exact (from, to) budget pair, or by a
+    # source-less line on its destination ("into this account from anywhere").
+    def covered_pair?(pair)
+      _from, to = pair
+      covered_account_pairs.include?(pair) || covered_destinations.include?(to)
+    end
+
     def covered_account_pairs
-      @covered_account_pairs ||= entries.select { |e| e.kind == "transfer" }
-                                        .map { |e| [ e.budget_item.from_account_id, e.budget_item.to_account_id ] }
+      @covered_account_pairs ||= transfer_entries
+                                 .reject { |e| e.budget_item.from_account_id.nil? }
+                                 .map { |e| [ e.budget_item.from_account_id, e.budget_item.to_account_id ] }
+    end
+
+    def covered_destinations
+      @covered_destinations ||= transfer_entries
+                                .select { |e| e.budget_item.from_account_id.nil? }
+                                .map { |e| e.budget_item.to_account_id }
+    end
+
+    def transfer_entries
+      @transfer_entries ||= entries.select { |e| e.kind == "transfer" }
     end
 
     def entries
