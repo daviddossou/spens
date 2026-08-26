@@ -20,7 +20,7 @@ fr:
     registrations:
       new:
         sign_up: "S'inscrire"
-        sign_in_link: "se connecter à votre compte existant"
+        sign_in_link: "te connecter à ton compte existant"
         first_name: "Prénom"
         last_name: "Nom"
         email: "Email"
@@ -36,53 +36,53 @@ fr:
         password: "Mot de passe"
         password_confirmation: "Confirmation du mot de passe"
         current_password: "Mot de passe actuel"
-        current_password_help: "(nous avons besoin de votre mot de passe actuel pour confirmer les changements)"
-        leave_blank_if_no_change: "(laisser vide si vous ne voulez pas le changer)"
+        current_password_help: "(nous avons besoin de ton mot de passe actuel pour confirmer les changements)"
+        leave_blank_if_no_change: "(laisse vide si tu ne veux pas le changer)"
         characters_minimum: "%{count} caractères minimum"
         cancel_account: "Supprimer mon compte"
-        cancel_account_confirm: "Êtes-vous sûr ?"
+        cancel_account_confirm: "Es-tu sûr ?"
         save: "Enregistrer"
-      destroyed: "Au revoir ! Votre compte a été supprimé avec succès. Nous espérons vous revoir bientôt."
-      signed_up: "Bienvenue ! Vous vous êtes inscrit(e) avec succès."
-      signed_up_but_inactive: "Vous vous êtes inscrit(e) avec succès. Cependant, nous n'avons pas pu vous connecter car votre compte n'est pas encore activé."
-      signed_up_but_locked: "Vous vous êtes inscrit(e) avec succès. Cependant, nous n'avons pas pu vous connecter car votre compte est verrouillé."
-      signed_up_but_unconfirmed: "Un message avec un lien de confirmation a été envoyé à votre adresse email. Veuillez suivre le lien pour activer votre compte."
-      update_needs_confirmation: "Vous avez mis à jour votre compte avec succès, mais nous devons vérifier votre nouvelle adresse email. Veuillez consulter vos emails et suivre le lien de confirmation."
-      updated: "Votre compte a été mis à jour avec succès."
-      updated_but_not_signed_in: "Votre compte a été mis à jour avec succès, mais comme votre mot de passe a été modifié, vous devez vous reconnecter."
+      destroyed: "Au revoir ! Ton compte a été supprimé avec succès. Nous espérons te revoir bientôt."
+      signed_up: "Bienvenue ! Tu t'es inscrit(e) avec succès."
+      signed_up_but_inactive: "Tu t'es inscrit(e) avec succès. Cependant, nous n'avons pas pu te connecter car ton compte n'est pas encore activé."
+      signed_up_but_locked: "Tu t'es inscrit(e) avec succès. Cependant, nous n'avons pas pu te connecter car ton compte est verrouillé."
+      signed_up_but_unconfirmed: "Un message avec un lien de confirmation a été envoyé à ton adresse email. Suis le lien pour activer ton compte."
+      update_needs_confirmation: "Tu as mis à jour ton compte avec succès, mais nous devons vérifier ta nouvelle adresse email. Consulte tes emails et suis le lien de confirmation."
+      updated: "Ton compte a été mis à jour avec succès."
+      updated_but_not_signed_in: "Ton compte a été mis à jour avec succès, mais comme ton mot de passe a été modifié, tu dois te reconnecter."
 
     passwords:
       new:
         forgot_password_title: "Mot de passe oublié ?"
-        forgot_password_subtitle: "Entrez votre adresse email et nous vous enverrons les instructions de réinitialisation."
+        forgot_password_subtitle: "Entre ton adresse email et nous t'enverrons les instructions de réinitialisation."
         email: "Email"
         send_reset_instructions: "Envoyer les instructions"
       edit:
-        change_password: "Changer votre mot de passe"
+        change_password: "Changer ton mot de passe"
         new_password: "Nouveau mot de passe"
         password_confirmation: "Confirmation du mot de passe"
         characters_minimum: "caractères minimum"
-      no_token: "Vous ne pouvez pas accéder à cette page sans venir d'un email de réinitialisation de mot de passe. Si vous venez d'un tel email, assurez-vous d'utiliser l'URL complète fournie."
-      send_instructions: "Vous allez recevoir un email avec les instructions pour réinitialiser votre mot de passe dans quelques minutes."
-      send_paranoid_instructions: "Si votre adresse email existe dans notre base de données, vous recevrez un lien de récupération de mot de passe par email dans quelques minutes."
-      updated: "Votre mot de passe a été modifié avec succès. Vous êtes maintenant connecté(e)."
-      updated_not_active: "Votre mot de passe a été modifié avec succès."
+      no_token: "Tu ne peux pas accéder à cette page sans venir d'un email de réinitialisation de mot de passe. Si tu viens d'un tel email, assure-toi d'utiliser l'URL complète fournie."
+      send_instructions: "Tu vas recevoir un email avec les instructions pour réinitialiser ton mot de passe dans quelques minutes."
+      send_paranoid_instructions: "Si ton adresse email existe dans notre base de données, tu recevras un lien de récupération de mot de passe par email dans quelques minutes."
+      updated: "Ton mot de passe a été modifié avec succès. Tu es maintenant connecté(e)."
+      updated_not_active: "Ton mot de passe a été modifié avec succès."
 
     confirmations:
-      confirmed: "Votre adresse email a été confirmée avec succès."
-      send_instructions: "Vous allez recevoir un email avec les instructions pour confirmer votre adresse email dans quelques minutes."
-      send_paranoid_instructions: "Si votre adresse email existe dans notre base de données, vous recevrez un email avec les instructions pour confirmer votre adresse email dans quelques minutes."
+      confirmed: "Ton adresse email a été confirmée avec succès."
+      send_instructions: "Tu vas recevoir un email avec les instructions pour confirmer ton adresse email dans quelques minutes."
+      send_paranoid_instructions: "Si ton adresse email existe dans notre base de données, tu recevras un email avec les instructions pour confirmer ton adresse email dans quelques minutes."
 
     failure:
-      already_authenticated: "Vous êtes déjà connecté(e)."
-      inactive: "Votre compte n'est pas encore activé."
+      already_authenticated: "Tu es déjà connecté(e)."
+      inactive: "Ton compte n'est pas encore activé."
       invalid: "%{authentication_keys} ou mot de passe invalide."
-      locked: "Votre compte est verrouillé."
-      last_attempt: "Il vous reste une tentative avant que votre compte soit verrouillé."
+      locked: "Ton compte est verrouillé."
+      last_attempt: "Il te reste une tentative avant que ton compte soit verrouillé."
       not_found_in_database: "%{authentication_keys} ou mot de passe invalide."
-      timeout: "Votre session a expiré. Veuillez vous reconnecter pour continuer."
-      unauthenticated: "Vous devez vous connecter ou vous inscrire pour continuer."
-      unconfirmed: "Vous devez confirmer votre adresse email pour continuer."
+      timeout: "Ta session a expiré. Reconnecte-toi pour continuer."
+      unauthenticated: "Tu dois te connecter ou t'inscrire pour continuer."
+      unconfirmed: "Tu dois confirmer ton adresse email pour continuer."
 
     mailer:
       confirmation_instructions:
@@ -97,19 +97,19 @@ fr:
         subject: "Mot de passe modifié"
 
     omniauth_callbacks:
-      failure: "Impossible de vous authentifier via %{kind} car \"%{reason}\"."
-      success: "Authentification réussie via votre compte %{kind}."
+      failure: "Impossible de t'authentifier via %{kind} car \"%{reason}\"."
+      success: "Authentification réussie via ton compte %{kind}."
 
     unlocks:
-      send_instructions: "Vous allez recevoir un email avec les instructions pour déverrouiller votre compte dans quelques minutes."
-      send_paranoid_instructions: "Si votre compte existe, vous recevrez un email avec les instructions pour le déverrouiller dans quelques minutes."
-      unlocked: "Votre compte a été déverrouillé avec succès. Veuillez vous connecter pour continuer."
+      send_instructions: "Tu vas recevoir un email avec les instructions pour déverrouiller ton compte dans quelques minutes."
+      send_paranoid_instructions: "Si ton compte existe, tu recevras un email avec les instructions pour le déverrouiller dans quelques minutes."
+      unlocked: "Ton compte a été déverrouillé avec succès. Connecte-toi pour continuer."
 
     errors:
       messages:
-        already_confirmed: "a déjà été confirmé(e), veuillez essayer de vous connecter"
-        confirmation_period_expired: "doit être confirmé(e) dans les %{period}, veuillez en demander un nouveau"
-        expired: "a expiré, veuillez en demander un nouveau"
+        already_confirmed: "a déjà été confirmé(e), essaie de te connecter"
+        confirmation_period_expired: "doit être confirmé(e) dans les %{period}, demandes-en un nouveau"
+        expired: "a expiré, demandes-en un nouveau"
         not_found: "n'a pas été trouvé(e)"
         not_locked: "n'était pas verrouillé(e)"
         not_saved:

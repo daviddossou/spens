@@ -39,7 +39,7 @@ fr:
       ends_on_label: "Se termine le (optionnel)"
       ends_on_help: "Laissez vide pour continuer, ou choisissez une date d'arrêt — par exemple quand un prêt est remboursé."
       ends_on_before_starts_on: "doit venir après la date de début"
-      already_budgeted: "est déjà dans votre budget — modifiez cette ligne"
+      already_budgeted: "est déjà dans ton budget — modifie cette ligne"
     row:
       done_income: "Reçu"
       done_expense: "Payé"
@@ -55,7 +55,7 @@ fr:
       carried_html: "dont %{amount} reportés"
     index:
       title: "Budget"
-      subtitle: "Votre plan mensuel, prévu vs réel"
+      subtitle: "Ton plan mensuel, prévu vs réel"
       month_nav_label: "Changer de mois"
       previous_month: "Mois précédent"
       next_month: "Mois suivant"
@@ -69,17 +69,17 @@ fr:
       section_debt: "Dettes"
       goal_reached_html: "Objectif d'épargne %{amount} atteint"
       goal_on_track_html: "Objectif d'épargne %{amount} en bonne voie"
-      goal_short_html: "Il manque %{missing} pour votre objectif d'épargne de %{amount}"
+      goal_short_html: "Il manque %{missing} pour ton objectif d'épargne de %{amount}"
       view_summary: "Voir le bilan du mois"
       add_item: "Ajouter une ligne"
       add_first_item: "Ajouter une première ligne"
-      empty_title: "Planifiez votre mois"
-      empty_message: "Ajoutez ce que vous prévoyez de gagner et de dépenser. Nous le comparerons à la réalité au fil de vos transactions."
+      empty_title: "Planifie ton mois"
+      empty_message: "Ajoute ce que tu prévois de gagner et de dépenser. Nous le comparerons à la réalité au fil de tes transactions."
       no_entries_title: "Rien de prévu ce mois-ci"
-      no_entries_message: "Aucune de vos lignes de budget ne s'applique à ce mois."
+      no_entries_message: "Aucune de tes lignes de budget ne s'applique à ce mois."
     unplanned:
       title: "Hors plan"
-      hint: "Reçu, dépensé ou viré ce mois-ci en dehors de votre budget"
+      hint: "Reçu, dépensé ou viré ce mois-ci en dehors de ton budget"
       group_income: "Revenus"
       group_expense: "Dépenses"
       group_transfers: "Virements"
@@ -108,18 +108,18 @@ fr:
       subtitle_debt: "Planifier un paiement de dette"
       save: "Ajouter au budget"
     create:
-      success: "Ajouté à votre budget"
+      success: "Ajouté à ton budget"
     edit:
       title: "Modifier la ligne"
       subtitle: "Modifier %{name}"
       applies_forward: "Les changements s'appliquent à partir de ce mois. Les mois passés gardent leur historique."
       save: "Enregistrer"
       stop_budgeting: "Retirer du budget"
-      stop_confirmation: "Retirer cette ligne de votre budget ? Les mois passés gardent leur historique."
+      stop_confirmation: "Retirer cette ligne de ton budget ? Les mois passés gardent leur historique."
     update:
       success: "Ligne de budget mise à jour"
     destroy:
-      success: "Retirée de votre budget"
+      success: "Retirée de ton budget"
 
   budget_entries:
     edit:
