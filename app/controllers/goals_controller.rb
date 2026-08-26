@@ -5,7 +5,7 @@ class GoalsController < ApplicationController
   before_action :set_account, only: [ :show, :edit, :update ]
 
   def index
-    @accounts_with_goals = current_space.accounts.with_saving_goals.order(created_at: :desc)
+    @goals = current_space.goals.includes(:account).order(created_at: :desc)
   end
 
   def show
@@ -23,10 +23,11 @@ class GoalsController < ApplicationController
 
   def edit
     build_form(
+      goal_name: @account.goal&.name,
       account_name: @account.name,
       current_balance: @account.balance,
-      saving_goal: @account.saving_goal,
-      saving_goal_deadline: @account.saving_goal_deadline
+      target_amount: @account.goal&.target_amount,
+      deadline: @account.goal&.deadline
     )
   end
 
@@ -72,10 +73,11 @@ class GoalsController < ApplicationController
 
   def goal_params
     params.require(:goal).permit(
+      :goal_name,
       :account_name,
       :current_balance,
-      :saving_goal,
-      :saving_goal_deadline
+      :target_amount,
+      :deadline
     )
   end
 end

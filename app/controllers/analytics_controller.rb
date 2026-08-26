@@ -116,22 +116,22 @@ class AnalyticsController < ApplicationController
       .pluck(:name, :balance)
       .sort_by { |_, v| -v }.to_h
 
-    # Accounts with saving goals
-    @saving_accounts = @accounts.with_saving_goals.order(:name)
-    @total_saving_goal = @saving_accounts.sum(:saving_goal)
-    @total_saved = @saving_accounts.sum(:balance)
+    # Savings goals
+    @goals = current_space.goals.includes(:account).order(:name)
+    @total_saving_goal = @goals.sum("COALESCE(target_amount, 0)")
+    @total_saved = @goals.sum { |goal| goal.account.balance.to_f }
 
     # Monthly saving trend (line) — net amount going into accounts
     saving_tx = scoped_transactions.joins(:account)
     @saving_trend = group_by_period(saving_tx)
 
     # Goal progress data
-    @goals_progress = @saving_accounts.map do |account|
+    @goals_progress = @goals.map do |goal|
       {
-        name: account.name,
-        balance: account.balance,
-        goal: account.saving_goal,
-        progress: account.saving_goal > 0 ? ((account.balance / account.saving_goal) * 100).clamp(0, 100).round : 0
+        name: goal.name,
+        balance: goal.account.balance,
+        goal: goal.target_amount,
+        progress: goal.target_set? ? ((goal.account.balance / goal.target_amount) * 100).clamp(0, 100).round : 0
       }
     end
   end

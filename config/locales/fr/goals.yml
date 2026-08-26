@@ -11,11 +11,15 @@ fr:
       saved_label: "épargné"
       to_go_label: "restant"
       reached_label: "Atteint"
+      no_target: "Pas encore d'objectif — ajoute-le quand tu veux"
     new:
       title: "Nouvel objectif"
       subtitle: "Fixe un montant cible pour ton compte"
       save_goal: "Enregistrer"
     form:
+      goal_name_label: "Nom de l'objectif"
+      goal_name_placeholder: "ex. Voyage à Zanzibar, Matelas de sécurité"
+      goal_name_help: "Donne-lui un nom qui te motive"
       account_label: "Compte"
       account_placeholder: "Choisis un compte"
       account_help: "Choisis un compte existant ou crées-en un nouveau"

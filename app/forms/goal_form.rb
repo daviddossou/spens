@@ -3,19 +3,21 @@
 class GoalForm < BaseForm
   ##
   # Attributes
-  attr_accessor :space, :account
+  attr_accessor :space, :account, :goal
 
+  attribute :goal_name, :string
   attribute :account_name, :string
   attribute :current_balance, :decimal
-  attribute :saving_goal, :decimal
-  attribute :saving_goal_deadline, :date
+  attribute :target_amount, :decimal
+  attribute :deadline, :date
 
   ##
   # Validations
+  validates :goal_name, presence: true, length: { maximum: 100 }
   validates :account_name, presence: true
-  validates :current_balance, presence: true, numericality: true
-  validates :saving_goal, presence: true, numericality: { greater_than: 0 }
-  validate :saving_goal_greater_than_balance
+  validates :current_balance, numericality: true, allow_blank: true
+  validates :target_amount, numericality: { greater_than: 0 }, allow_blank: true
+  validate :target_greater_than_balance
   validate :deadline_in_the_future
 
   ##
@@ -30,16 +32,22 @@ class GoalForm < BaseForm
   # Instance Methods
   def initialize(space, payload = {})
     @space = space
+    @goal = Goal.find(payload[:id]) if payload[:id].present?
     super(
+      goal_name: payload[:goal_name],
       account_name: payload[:account_name],
       current_balance: payload[:current_balance],
-      saving_goal: payload[:saving_goal],
-      saving_goal_deadline: payload[:saving_goal_deadline]
+      target_amount: payload[:target_amount],
+      deadline: payload[:deadline]
     )
   end
 
   def persisted?
-    false
+    @goal.present?
+  end
+
+  def to_key
+    persisted? ? [ @goal.id ] : nil
   end
 
   def to_model
@@ -51,11 +59,11 @@ class GoalForm < BaseForm
 
     ActiveRecord::Base.transaction do
       @account = find_or_create_account
-      account.update!(saving_goal: saving_goal, saving_goal_deadline: saving_goal_deadline)
-      adjust_account_balance(account) if balance_changed?(account)
-      # Balance moved through the ledger; reload so the plan spreads the real remainder.
-      Budgets::SyncGoalPlanService.call(account.reload)
-      account
+      adjust_account_balance(account) if current_balance.present? && balance_changed?(account)
+      @goal = upsert_goal(account.reload)
+      # Balance settled through the ledger; the plan spreads the real remainder.
+      Budgets::SyncGoalPlanService.call(goal)
+      goal
     end
   rescue StandardError => e
     Rails.logger.error "GoalForm submit error: #{e.message}\n#{e.backtrace.join("\n")}"
@@ -73,17 +81,24 @@ class GoalForm < BaseForm
 
   private
 
-  def saving_goal_greater_than_balance
-    return unless saving_goal.present? && current_balance.present?
-    return if saving_goal > current_balance
+  def upsert_goal(account)
+    goal = @goal || space.goals.find_or_initialize_by(account: account)
+    goal.assign_attributes(name: goal_name, target_amount: target_amount, deadline: deadline)
+    goal.save!
+    goal
+  end
 
-    errors.add(:saving_goal, I18n.t("errors.messages.goal_must_be_greater"))
+  def target_greater_than_balance
+    return unless target_amount.present? && current_balance.present?
+    return if target_amount > current_balance
+
+    errors.add(:target_amount, I18n.t("errors.messages.goal_must_be_greater"))
   end
 
   def deadline_in_the_future
-    return if saving_goal_deadline.blank? || saving_goal_deadline > Date.current
+    return if deadline.blank? || deadline > Date.current
 
-    errors.add(:saving_goal_deadline, I18n.t("goals.errors.deadline_in_past"))
+    errors.add(:deadline, I18n.t("goals.errors.deadline_in_past"))
   end
 
   def find_or_create_account

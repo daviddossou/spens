@@ -7,13 +7,11 @@ class AccountForm < BaseForm
 
   attribute :account_name, :string
   attribute :current_balance, :decimal
-  attribute :saving_goal, :decimal, default: 0.0
 
   ##
   # Validations
   validates :account_name, presence: true, length: { maximum: 100 }
-  validates :current_balance, presence: true, numericality: true
-  validates :saving_goal, numericality: { greater_than_or_equal_to: 0 }, allow_blank: true
+  validates :current_balance, numericality: true, allow_blank: true
 
   ##
   # Class Methods
@@ -31,8 +29,7 @@ class AccountForm < BaseForm
 
     super(
       account_name: payload[:account_name],
-      current_balance: payload[:current_balance],
-      saving_goal: payload[:saving_goal] || 0.0
+      current_balance: payload[:current_balance]
     )
   end
 
@@ -73,13 +70,13 @@ class AccountForm < BaseForm
 
   def create_account
     @account = find_or_create_account
-    @account.update!(saving_goal: saving_goal || 0.0, user: user || @account.user)
-    adjust_account_balance(account) if balance_changed?(account)
+    @account.update!(user: user || @account.user)
+    adjust_account_balance(account) if current_balance.present? && balance_changed?(account)
   end
 
   def update_account
-    account.update!(name: account_name.strip, saving_goal: saving_goal || 0.0)
-    adjust_account_balance(account) if balance_changed?(account)
+    account.update!(name: account_name.strip)
+    adjust_account_balance(account) if current_balance.present? && balance_changed?(account)
   end
 
   def find_or_create_account

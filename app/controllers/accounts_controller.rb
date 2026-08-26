@@ -84,16 +84,14 @@ class AccountsController < ApplicationController
     {
       id: @account.id,
       account_name: @account.name,
-      current_balance: @account.balance,
-      saving_goal: @account.saving_goal
+      current_balance: @account.balance
     }
   end
 
   def account_params
     params.require(:account).permit(
       :account_name,
-      :current_balance,
-      :saving_goal
+      :current_balance
     )
   end
 end

@@ -2,15 +2,16 @@
 #
 # Table name: accounts
 #
-#  id                   :uuid             not null, primary key
-#  balance              :float            default(0.0), not null
-#  name                 :string           not null
-#  saving_goal          :float            default(0.0)
-#  saving_goal_deadline :date
-#  created_at           :datetime         not null
-#  updated_at           :datetime         not null
-#  space_id             :uuid             not null, indexed
-#  user_id              :uuid             indexed
+#  id                    :uuid             not null, primary key
+#  balance               :float            default(0.0), not null
+#  name                  :string           not null
+#  savings_goal          :boolean          default(FALSE), not null
+#  savings_goal_amount   :decimal(15, 2)
+#  savings_goal_deadline :date
+#  created_at            :datetime         not null
+#  updated_at            :datetime         not null
+#  space_id              :uuid             not null, indexed
+#  user_id               :uuid             indexed
 #
 # Indexes
 #
@@ -61,27 +62,6 @@ RSpec.describe Account, type: :model do
       end
     end
 
-    describe 'saving_goal validation' do
-      it { is_expected.to validate_presence_of(:saving_goal) }
-      it { is_expected.to validate_numericality_of(:saving_goal).is_greater_than_or_equal_to(0) }
-
-      it 'allows zero as saving_goal' do
-        account.saving_goal = 0
-        expect(account).to be_valid
-      end
-
-      it 'allows positive values' do
-        account.saving_goal = 1000.50
-        expect(account).to be_valid
-      end
-
-      it 'rejects negative values' do
-        account.saving_goal = -1
-        expect(account).not_to be_valid
-        expect(account.errors[:saving_goal]).to include('must be greater than or equal to 0')
-      end
-    end
-
     describe 'balance validation' do
       it { is_expected.to validate_presence_of(:balance) }
       it { is_expected.to validate_numericality_of(:balance) }
@@ -115,38 +95,26 @@ RSpec.describe Account, type: :model do
       account.save!
       expect(account.balance).to eq(0.0)
     end
-
-    it 'has a default saving_goal of 0.0' do
-      account = described_class.new(name: 'Test', space: create(:space))
-      account.save!
-      expect(account.saving_goal).to eq(0.0)
-    end
   end
 
   describe 'scopes' do
     describe '.with_saving_goals' do
       let(:user) { create(:user) }
       let(:space) { user.spaces.first }
-      let!(:account_with_goal) { create(:account, space: space, saving_goal: 5000.0) }
-      let!(:account_without_goal) { create(:account, space: space, saving_goal: 0.0) }
-      let!(:another_account_with_goal) { create(:account, space: space, saving_goal: 1000.0) }
+      let!(:account_with_goal) { create(:account, space: space).tap { |a| create(:goal, account: a, space: space) } }
+      let!(:account_without_goal) { create(:account, space: space) }
+      let!(:another_account_with_goal) { create(:account, space: space).tap { |a| create(:goal, account: a, space: space) } }
 
-      it 'returns accounts with non-zero saving goals' do
+      it 'returns accounts that have a goal' do
         expect(described_class.with_saving_goals).to include(account_with_goal, another_account_with_goal)
       end
 
-      it 'excludes accounts with zero saving goals' do
+      it 'excludes accounts without a goal' do
         expect(described_class.with_saving_goals).not_to include(account_without_goal)
       end
 
       it 'returns correct count for specific user accounts' do
         expect(user.accounts.with_saving_goals.count).to eq(2)
-      end
-
-      it 'includes accounts with negative saving goals if any exist' do
-        # Even though validation prevents this, test the scope behavior
-        account_with_goal.update_column(:saving_goal, -100.0)
-        expect(described_class.with_saving_goals).to include(account_with_goal)
       end
     end
   end

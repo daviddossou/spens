@@ -10,20 +10,21 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_08_25_212842) do
+ActiveRecord::Schema[8.0].define(version: 2026_08_26_012435) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
 
   create_table "accounts", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "name", null: false
-    t.float "saving_goal", default: 0.0
     t.float "balance", default: 0.0, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.uuid "space_id", null: false
     t.uuid "user_id"
-    t.date "saving_goal_deadline"
+    t.date "savings_goal_deadline"
+    t.decimal "savings_goal_amount", precision: 15, scale: 2
+    t.boolean "savings_goal", default: false, null: false
     t.index "lower((name)::text), space_id", name: "index_accounts_on_lower_name_and_space_id", unique: true
     t.index ["space_id"], name: "index_accounts_on_space_id"
     t.index ["user_id"], name: "index_accounts_on_user_id"
@@ -111,6 +112,18 @@ ActiveRecord::Schema[8.0].define(version: 2026_08_25_212842) do
     t.index ["space_id"], name: "index_debts_on_space_id"
     t.index ["status"], name: "index_debts_on_status"
     t.index ["user_id"], name: "index_debts_on_user_id"
+  end
+
+  create_table "goals", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "name", null: false
+    t.decimal "target_amount", precision: 15, scale: 2
+    t.date "deadline"
+    t.uuid "account_id", null: false
+    t.uuid "space_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["account_id"], name: "index_goals_on_account_id", unique: true
+    t.index ["space_id"], name: "index_goals_on_space_id"
   end
 
   create_table "invitations", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -303,6 +316,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_08_25_212842) do
   add_foreign_key "category_memories", "spaces"
   add_foreign_key "debts", "spaces"
   add_foreign_key "debts", "users"
+  add_foreign_key "goals", "accounts"
+  add_foreign_key "goals", "spaces"
   add_foreign_key "invitations", "spaces"
   add_foreign_key "invitations", "users", column: "invited_by_id"
   add_foreign_key "learned_aliases", "spaces"

@@ -8,8 +8,7 @@ RSpec.describe AccountForm, type: :model do
   let(:valid_attributes) do
     {
       account_name: 'My Savings',
-      current_balance: 1000.00,
-      saving_goal: 5000.00
+      current_balance: 1000.00
     }
   end
   let(:form) { described_class.new(space, valid_attributes) }
@@ -33,17 +32,12 @@ RSpec.describe AccountForm, type: :model do
       expect(form.current_balance).to eq(1000.00)
     end
 
-    it 'sets saving_goal from payload' do
-      expect(form.saving_goal).to eq(5000.00)
-    end
-
     context 'with empty payload' do
       let(:form) { described_class.new(space, {}) }
 
       it 'initializes with nil/default values' do
         expect(form.account_name).to be_nil
         expect(form.current_balance).to be_nil
-        expect(form.saving_goal).to eq(0.0)
       end
     end
 
@@ -91,10 +85,9 @@ RSpec.describe AccountForm, type: :model do
         expect(form).to be_valid
       end
 
-      it 'is invalid without current_balance' do
+      it 'is valid without current_balance (optional)' do
         form.current_balance = nil
-        expect(form).not_to be_valid
-        expect(form.errors[:current_balance]).to include("can't be blank")
+        expect(form).to be_valid
       end
 
       it 'is valid with zero current_balance' do
@@ -104,29 +97,6 @@ RSpec.describe AccountForm, type: :model do
 
       it 'is valid with negative current_balance' do
         form.current_balance = -100
-        expect(form).to be_valid
-      end
-    end
-
-    context 'saving_goal' do
-      it 'is valid with zero saving_goal' do
-        form.saving_goal = 0
-        expect(form).to be_valid
-      end
-
-      it 'is valid with positive saving_goal' do
-        form.saving_goal = 5000
-        expect(form).to be_valid
-      end
-
-      it 'is invalid with negative saving_goal' do
-        form.saving_goal = -100
-        expect(form).not_to be_valid
-        expect(form.errors[:saving_goal]).to be_present
-      end
-
-      it 'is valid with nil saving_goal (defaults to 0)' do
-        form.saving_goal = nil
         expect(form).to be_valid
       end
     end
@@ -229,11 +199,6 @@ RSpec.describe AccountForm, type: :model do
         form.submit
       end
 
-      it 'updates the account saving_goal' do
-        form.submit
-        expect(account.reload.saving_goal).to eq(5000.00)
-      end
-
       it 'returns the account' do
         expect(form.submit).to eq(account)
       end
@@ -283,13 +248,12 @@ RSpec.describe AccountForm, type: :model do
     end
 
     context 'updating an existing account' do
-      let!(:account) { create(:account, user: user, name: 'Old Name', balance: 500, saving_goal: 2000) }
+      let!(:account) { create(:account, user: user, name: 'Old Name', balance: 500) }
       let(:update_attributes) do
         {
           id: account.id,
           account_name: 'New Name',
-          current_balance: 800.00,
-          saving_goal: 3000.00
+          current_balance: 800.00
         }
       end
       let(:update_form) { described_class.new(space, update_attributes) }
@@ -297,11 +261,6 @@ RSpec.describe AccountForm, type: :model do
       it 'updates the account name' do
         update_form.submit
         expect(account.reload.name).to eq('New Name')
-      end
-
-      it 'updates the saving_goal' do
-        update_form.submit
-        expect(account.reload.saving_goal).to eq(3000.00)
       end
 
       it 'creates adjustment transaction for balance change' do
@@ -318,8 +277,7 @@ RSpec.describe AccountForm, type: :model do
           {
             id: account.id,
             account_name: 'New Name',
-            current_balance: 500.00,
-            saving_goal: 3000.00
+            current_balance: 500.00
           }
         end
 
