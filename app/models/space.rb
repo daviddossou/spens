@@ -36,6 +36,7 @@ class Space < ApplicationRecord
   has_many :members, through: :memberships, source: :user
   has_many :invitations, dependent: :destroy
   has_many :accounts, dependent: :destroy
+  has_many :goals, dependent: :destroy
   has_many :transaction_types, dependent: :destroy
   has_many :transactions, dependent: :destroy
   has_many :debts, dependent: :destroy
