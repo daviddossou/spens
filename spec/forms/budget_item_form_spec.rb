@@ -27,6 +27,20 @@ RSpec.describe BudgetItemForm do
     expect(space.budget_entries.for_month(month).sole.planned_amount).to eq(250_000)
   end
 
+  it "marks a line essential by default, and lets it be unchecked" do
+    expect(build_form.tap(&:submit).budget_item).to be_essential
+
+    form = build_form(transaction_type_name: "Streaming", essential: false)
+    expect(form.submit).to be true
+    expect(form.budget_item).not_to be_essential
+  end
+
+  it "keeps the essential flag on edit" do
+    item = build_form.tap(&:submit).budget_item
+    described_class.new(space, budget_item: item, essential: false).submit
+    expect(item.reload).not_to be_essential
+  end
+
   it "rejects invalid frequencies and duplicate active items" do
     expect(build_form(frequency: "irregular")).to be_invalid
 
