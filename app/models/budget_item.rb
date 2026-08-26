@@ -16,20 +16,21 @@
 #  updated_at          :datetime         not null
 #  debt_id             :uuid             indexed, indexed => [space_id, kind]
 #  from_account_id     :uuid             indexed, indexed => [space_id, to_account_id]
-#  space_id            :uuid             not null, indexed => [debt_id, kind], indexed => [from_account_id, to_account_id], indexed => [transaction_type_id], indexed
-#  to_account_id       :uuid             indexed => [space_id, from_account_id], indexed
+#  space_id            :uuid             not null, indexed => [debt_id, kind], indexed => [to_account_id], indexed => [from_account_id, to_account_id], indexed => [transaction_type_id], indexed
+#  to_account_id       :uuid             indexed => [space_id], indexed => [space_id, from_account_id], indexed
 #  transaction_type_id :uuid             indexed => [space_id], indexed
 #
 # Indexes
 #
-#  index_budget_items_on_debt_id                    (debt_id)
-#  index_budget_items_on_from_account_id            (from_account_id)
-#  index_budget_items_on_space_and_debt_active      (space_id,debt_id,kind) UNIQUE WHERE (active AND (debt_id IS NOT NULL))
-#  index_budget_items_on_space_and_transfer_active  (space_id,from_account_id,to_account_id) UNIQUE WHERE (active AND (from_account_id IS NOT NULL))
-#  index_budget_items_on_space_and_type_active      (space_id,transaction_type_id) UNIQUE WHERE (active AND (transaction_type_id IS NOT NULL))
-#  index_budget_items_on_space_id                   (space_id)
-#  index_budget_items_on_to_account_id              (to_account_id)
-#  index_budget_items_on_transaction_type_id        (transaction_type_id)
+#  index_budget_items_on_debt_id                          (debt_id)
+#  index_budget_items_on_from_account_id                  (from_account_id)
+#  index_budget_items_on_space_and_debt_active            (space_id,debt_id,kind) UNIQUE WHERE (active AND (debt_id IS NOT NULL))
+#  index_budget_items_on_space_and_dest_active_no_source  (space_id,to_account_id) UNIQUE WHERE (active AND (from_account_id IS NULL) AND (to_account_id IS NOT NULL))
+#  index_budget_items_on_space_and_transfer_active        (space_id,from_account_id,to_account_id) UNIQUE WHERE (active AND (from_account_id IS NOT NULL))
+#  index_budget_items_on_space_and_type_active            (space_id,transaction_type_id) UNIQUE WHERE (active AND (transaction_type_id IS NOT NULL))
+#  index_budget_items_on_space_id                         (space_id)
+#  index_budget_items_on_to_account_id                    (to_account_id)
+#  index_budget_items_on_transaction_type_id              (transaction_type_id)
 #
 # Foreign Keys
 #
@@ -77,10 +78,14 @@ class BudgetItem < ApplicationRecord
   validates :transaction_type_id, uniqueness: { scope: :space_id, conditions: -> { where(active: true) } },
                                   if: -> { active? && category_kind? }
 
-  validates :from_account, :to_account, presence: true, if: :transfer_kind?
+  # A transfer needs a destination; the source is optional — a source-less line
+  # means "money into this account from anywhere" (e.g. a savings-goal plan).
+  validates :to_account, presence: true, if: :transfer_kind?
   validate :different_transfer_accounts, if: :transfer_kind?
   validates :from_account_id, uniqueness: { scope: [ :space_id, :to_account_id ], conditions: -> { where(active: true) } },
-                              if: -> { active? && transfer_kind? }
+                              if: -> { active? && transfer_kind? && from_account_id.present? }
+  validates :to_account_id, uniqueness: { scope: :space_id, conditions: -> { where(active: true, from_account_id: nil) } },
+                            if: -> { active? && transfer_kind? && from_account_id.blank? }
 
   validates :debt, presence: true, if: :debt_kind?
   validates :debt_id, uniqueness: { scope: [ :space_id, :kind ], conditions: -> { where(active: true) } },
@@ -127,8 +132,11 @@ class BudgetItem < ApplicationRecord
 
   # What this line is called on the budget page.
   def display_name
+    # Two-ended transfer shows the flow ("Bank → Savings"); a source-less line
+    # (a savings-goal plan) just names its destination — the transfer icon and
+    # the Transfers section already say what it is.
     case kind
-    when "transfer" then "#{from_account&.name} → #{to_account&.name}"
+    when "transfer" then [ from_account&.name, to_account&.name ].compact.join(" → ")
     when *DEBT_KINDS then debt&.name
     else transaction_type&.name
     end

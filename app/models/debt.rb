@@ -3,6 +3,7 @@
 # Table name: debts
 #
 #  id               :uuid             not null, primary key
+#  deadline         :date
 #  direction        :string           default("lent"), not null
 #  name             :string           not null
 #  note             :text
@@ -58,6 +59,12 @@ class Debt < ApplicationRecord
   scope :borrowed, -> { where(direction: "borrowed") }
 
   ##
+  # Callbacks
+  # Close the debt automatically once it's fully reimbursed, wherever the totals
+  # were touched (the ledger, the debt form). update_column avoids re-entrancy.
+  after_save :settle_when_fully_reimbursed
+
+  ##
   # Methods
   def remaining_balance
     (total_lent || 0.0) - (total_reimbursed || 0.0)
@@ -65,5 +72,13 @@ class Debt < ApplicationRecord
 
   def mark_as_paid!
     update!(status: "paid")
+  end
+
+  private
+
+  def settle_when_fully_reimbursed
+    return unless ongoing? && total_lent.to_f.positive? && remaining_balance <= 0
+
+    update_column(:status, "paid") # rubocop:disable Rails/SkipsModelValidations
   end
 end
