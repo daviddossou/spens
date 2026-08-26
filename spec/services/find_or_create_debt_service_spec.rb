@@ -40,4 +40,16 @@ RSpec.describe FindOrCreateDebtService do
 
     expect { described_class.new(space, "Alice", "lent").call }.to change { space.debts.count }.by(1)
   end
+
+  it "starts a fresh debt when the only match is written off" do
+    closed = create(:debt, user: user, name: "Georges", direction: "lent", status: "written_off")
+
+    new_debt = nil
+    expect { new_debt = described_class.new(space, "Georges", "lent", user).call }
+      .to change { space.debts.count }.by(1)
+
+    expect(new_debt).not_to eq(closed)
+    expect(new_debt).to be_ongoing
+    expect(closed.reload).to be_written_off # the old one is untouched
+  end
 end

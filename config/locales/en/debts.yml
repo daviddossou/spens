@@ -28,6 +28,14 @@ en:
       written_off:
         lent: "Written off"
         borrowed: "Debt forgiven"
+    closed:
+      amount_label:
+        lent: "not recovered"
+        borrowed: "written off"
+        settled: "repaid"
+      detail:
+        lent: "%{moved} recovered of %{total}"
+        borrowed: "%{moved} repaid of %{total}"
     new:
       title:
         lent: "New Loan"

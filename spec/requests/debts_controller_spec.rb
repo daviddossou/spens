@@ -415,6 +415,16 @@ RSpec.describe DebtsController, type: :request do
       expect(response.body).to include(I18n.t('debts.status.written_off.lent'))
     end
 
+    it 'shows the closed-debt card (not the active progress) on the debt page' do
+      lent = create(:debt, user: user, name: 'Georges', direction: 'lent', total_lent: 50_000, total_reimbursed: 15_000)
+      post write_off_debt_path(id: lent.id)
+
+      get debt_path(id: lent.id)
+      expect(response.body).to include('debt-closed-card')                          # the closed summary, not the active card
+      expect(response.body).to include(I18n.t('debts.status.written_off.lent'))     # "Written off"
+      expect(response.body).to include(I18n.t('debts.closed.amount_label.lent'))    # "not recovered"
+    end
+
     it 'redirects with an alert when nothing is outstanding' do
       settled = create(:debt, user: user, total_lent: 1_000, total_reimbursed: 1_000)
       post write_off_debt_path(id: settled.id)

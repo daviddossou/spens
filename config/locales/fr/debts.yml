@@ -28,6 +28,14 @@ fr:
       written_off:
         lent: "Créance abandonnée"
         borrowed: "Dette effacée"
+    closed:
+      amount_label:
+        lent: "non récupérés"
+        borrowed: "effacés"
+        settled: "remboursés"
+      detail:
+        lent: "%{moved} récupéré sur %{total}"
+        borrowed: "%{moved} remboursé sur %{total}"
     new:
       title:
         lent: "Nouveau prêt"
