@@ -132,7 +132,7 @@ RSpec.describe TransactionType, type: :model do
   describe 'enum kind' do
     it 'defines expected kinds' do
       expect(described_class.kinds.keys).to contain_exactly(
-        'income', 'expense', 'debt_in', 'debt_out', 'transfer', 'transfer_in', 'transfer_out'
+        'income', 'expense', 'debt_in', 'debt_out', 'transfer', 'transfer_in', 'transfer_out', 'debt_writeoff'
       )
     end
 

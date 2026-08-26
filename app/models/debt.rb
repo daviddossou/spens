@@ -43,7 +43,8 @@ class Debt < ApplicationRecord
 
   enum :status, {
     ongoing: "ongoing",
-    paid: "paid"
+    paid: "paid",
+    written_off: "written_off" # no longer expected: a receivable that won't come back, or a debt forgiven
   }
 
   enum :direction, {
@@ -55,6 +56,7 @@ class Debt < ApplicationRecord
   # Scopes
   scope :ongoing, -> { where(status: "ongoing") }
   scope :paid, -> { where(status: "paid") }
+  scope :written_off, -> { where(status: "written_off") }
   scope :lent, -> { where(direction: "lent") }
   scope :borrowed, -> { where(direction: "borrowed") }
 
