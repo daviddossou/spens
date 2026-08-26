@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_08_26_012435) do
+ActiveRecord::Schema[8.0].define(version: 2026_08_26_022012) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -75,6 +75,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_08_26_012435) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.boolean "rollover", default: false, null: false
+    t.boolean "essential", default: true, null: false
     t.index ["debt_id"], name: "index_budget_items_on_debt_id"
     t.index ["from_account_id"], name: "index_budget_items_on_from_account_id"
     t.index ["space_id", "debt_id", "kind"], name: "index_budget_items_on_space_and_debt_active", unique: true, where: "(active AND (debt_id IS NOT NULL))"
