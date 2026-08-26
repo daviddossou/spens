@@ -13,6 +13,7 @@ class BudgetItemForm < BaseForm
   attribute :amount, :decimal
   attribute :frequency, :string, default: "monthly"
   attribute :rollover, :boolean, default: false
+  attribute :essential, :boolean, default: true
   attribute :starts_on, :date, default: -> { Date.current.beginning_of_month }
   attribute :ends_on, :date
 
@@ -48,6 +49,7 @@ class BudgetItemForm < BaseForm
       payload[:amount] ||= @budget_item.amount
       payload[:frequency] ||= @budget_item.frequency
       payload[:rollover] = @budget_item.rollover if payload[:rollover].nil?
+      payload[:essential] = @budget_item.essential if payload[:essential].nil?
       payload[:starts_on] ||= @budget_item.starts_on
       payload[:ends_on] ||= @budget_item.ends_on
     end
@@ -61,6 +63,7 @@ class BudgetItemForm < BaseForm
       amount: payload[:amount],
       frequency: payload[:frequency] || "monthly",
       rollover: payload[:rollover] || false,
+      essential: payload.fetch(:essential, true),
       starts_on: payload[:starts_on] || Date.current.beginning_of_month,
       ends_on: payload[:ends_on]
     )
@@ -100,7 +103,7 @@ class BudgetItemForm < BaseForm
     ActiveRecord::Base.transaction do
       attrs = resolved_references.merge(
         kind: kind, amount: amount, frequency: frequency, starts_on: starts_on.beginning_of_month,
-        ends_on: ends_on, rollover: (kind == "expense" && rollover)
+        ends_on: ends_on, rollover: (kind == "expense" && rollover), essential: essential
       )
 
       if editing?

@@ -70,6 +70,6 @@ class BudgetItemsController < ApplicationController
   end
 
   def budget_item_params
-    params.require(:budget_item).permit(:kind, :transaction_type_name, :from_account_name, :to_account_name, :contact_name, :amount, :frequency, :starts_on, :rollover)
+    params.require(:budget_item).permit(:kind, :transaction_type_name, :from_account_name, :to_account_name, :contact_name, :amount, :frequency, :starts_on, :ends_on, :rollover, :essential)
   end
 end
