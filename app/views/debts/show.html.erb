@@ -9,28 +9,43 @@
        data-controller="infinite-scroll"
        data-infinite-scroll-url-value="<%= debt_path(id: @debt.id) %>"
        data-infinite-scroll-page-value="<%= @has_more ? @page + 1 : 0 %>">
-    <%= render Ui::CommitmentCardComponent.new(
-      title: @debt.name,
-      current_value: @debt.total_reimbursed,
-      target_value: @debt.total_lent,
-      currency: current_space.currency,
-      accent: "warning",
-      progress_label: t('debts.index.repaid_label'),
-      complete_label: t('debts.index.settled_label'),
-      remaining_label: t('debts.index.remaining_label'),
-      no_target_label: t('debts.index.no_amount')
-    ) %>
+    <% if @debt.ongoing? %>
+      <%= render Ui::CommitmentCardComponent.new(
+        title: @debt.name,
+        current_value: @debt.total_reimbursed,
+        target_value: @debt.total_lent,
+        currency: current_space.currency,
+        accent: "warning",
+        progress_label: t('debts.index.repaid_label'),
+        complete_label: t('debts.index.settled_label'),
+        remaining_label: t('debts.index.remaining_label'),
+        no_target_label: t('debts.index.no_amount')
+      ) %>
+    <% else %>
+      <div class="debt-closed-card debt-closed-card--<%= @debt.status %>">
+        <span class="debt-closed-card__badge"><%= debt_status_label(@debt) %></span>
+        <div class="debt-closed-card__hero">
+          <span class="debt-closed-card__amount"><%= smart_format_money(closed_debt_amount(@debt), current_space.currency, sign: :never) %></span>
+          <span class="debt-closed-card__label"><%= closed_debt_amount_label(@debt) %></span>
+        </div>
+        <% if closed_debt_detail(@debt) %>
+          <p class="debt-closed-card__detail"><%= closed_debt_detail(@debt) %></p>
+        <% end %>
+      </div>
+    <% end %>
 
     <div class="commitment-actions">
       <div class="action-buttons">
-        <%= render Ui::ButtonComponent.new(
-          text: t('.add_transaction'),
-          url: new_transaction_path(debt_id: @debt.id, kind: @debt.direction == 'lent' ? 'debt_in' : 'debt_out'),
-          variant: :primary,
-          size: :lg,
-          full_width: true,
-          data: { turbo_frame: "modal" }
-        ) %>
+        <% if @debt.ongoing? %>
+          <%= render Ui::ButtonComponent.new(
+            text: t('.add_transaction'),
+            url: new_transaction_path(debt_id: @debt.id, kind: @debt.direction == 'lent' ? 'debt_in' : 'debt_out'),
+            variant: :primary,
+            size: :lg,
+            full_width: true,
+            data: { turbo_frame: "modal" }
+          ) %>
+        <% end %>
 
         <%= render Ui::ButtonComponent.new(
           text: t('.edit_debt'),
@@ -40,6 +55,17 @@
           full_width: true,
           data: { turbo_frame: "modal" }
         ) %>
+
+        <% if @debt.ongoing? %>
+          <%= render Ui::ButtonComponent.new(
+            text: t(".write_off.#{@debt.direction}"),
+            url: write_off_debt_path(id: @debt.id),
+            variant: :"outline-secondary",
+            size: :lg,
+            full_width: true,
+            data: { turbo_method: :post, turbo_confirm: t(".write_off_confirm.#{@debt.direction}") }
+          ) %>
+        <% end %>
       </div>
     </div>
 

@@ -52,3 +52,97 @@
   gap: 0.5rem;
   margin-top: 1.25rem;
 }
+
+/* ── Closed debts history (written off / settled) ─────────────────── */
+.debts-history {
+  margin-top: 2rem;
+}
+
+.debts-history__title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-bottom: 0.75rem;
+}
+
+.debts-history__list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.debt-history-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  text-decoration: none;
+  color: var(--text-muted);
+}
+
+.debt-history-row__name {
+  font-weight: 600;
+  color: var(--text-default);
+}
+
+.debt-history-row__status {
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 0.15rem 0.5rem;
+  border-radius: 9999px;
+  background: var(--border-light);
+  color: var(--text-muted);
+}
+
+.debt-history-row__amount {
+  margin-left: auto;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+/* ── Closed-debt summary card (written off / settled) ─────────────── */
+.debt-closed-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.debt-closed-card__badge {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.2rem 0.6rem;
+  border-radius: 9999px;
+  background: var(--border-light);
+  color: var(--text-muted);
+  margin-bottom: 1rem;
+}
+
+.debt-closed-card__hero {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.debt-closed-card__amount {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--text-default);
+  line-height: 1.15;
+}
+
+.debt-closed-card__label {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+}
+
+.debt-closed-card__detail {
+  margin-top: 0.75rem;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}

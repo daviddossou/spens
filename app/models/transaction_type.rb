@@ -62,7 +62,8 @@ class TransactionType < ApplicationRecord
     debt_out: "debt_out",         # user gives money, related to a debt/loan
     transfer: "transfer",         # General type for transfers
     transfer_in: "transfer_in",   # user receives money to some account from another account
-    transfer_out: "transfer_out"  # user gives money from some account to another account
+    transfer_out: "transfer_out", # user gives money from some account to another account
+    debt_writeoff: "debt_writeoff" # a debt no longer expected: written off / forgiven. Moves no money.
   }
 
   ##

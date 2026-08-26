@@ -9,7 +9,9 @@ class FindOrCreateDebtService
   end
 
   def call
-    existing = @space.debts
+    # Match only an OPEN debt — a written-off/settled one is history, so a new
+    # loan to the same person starts a fresh debt rather than reviving the old.
+    existing = @space.debts.ongoing
                      .where(direction: @direction)
                      .where("lower(name) = ?", @name.to_s.strip.downcase)
                      .first

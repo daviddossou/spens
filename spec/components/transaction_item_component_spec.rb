@@ -157,4 +157,21 @@ RSpec.describe TransactionItemComponent, type: :component do
       expect(rendered_content).to include("Transaction 3")
     end
   end
+
+  context "with a debt write-off (no money moved)" do
+    let(:writeoff_type) { create(:transaction_type, user: user, kind: "debt_writeoff", name: "Written off") }
+    let(:writeoff) do
+      create(:transaction, user: user, transaction_type: writeoff_type, account: nil,
+                           amount: 35_000, description: "Georges's debt written off")
+    end
+
+    it "renders the amount neutrally, with no + or - sign" do
+      render_inline(described_class.new(transaction: writeoff))
+
+      expect(rendered_content).to include("transaction-item__amount--neutral")
+      expect(rendered_content).to include("Written off")
+      # The amount shows with no leading sign (not "-35" or "+35").
+      expect(rendered_content).not_to match(/[-+]\s*35/)
+    end
+  end
 end

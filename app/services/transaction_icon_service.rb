@@ -24,6 +24,7 @@ class TransactionIconService
       icon_kind = case kind
       when "transfer" then "transfer_in"
       when "debt" then "debt_out"
+      when "debt_writeoff" then "debt_out"
       else kind
       end
 

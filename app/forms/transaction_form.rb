@@ -25,7 +25,7 @@ class TransactionForm < BaseForm
 
   ##
   # Validations
-  validates :kind, presence: true, inclusion: { in: %w[expense income transfer transfer_in transfer_out debt_in debt_out] }
+  validates :kind, presence: true, inclusion: { in: %w[expense income transfer transfer_in transfer_out debt_in debt_out debt_writeoff] }
   validates :amount, presence: true, numericality: { greater_than: 0 }
   validates :fee_amount, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
   validates :transaction_date, presence: true

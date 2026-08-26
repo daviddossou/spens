@@ -40,7 +40,18 @@ class TransactionItemComponent < ViewComponent::Base
   end
 
   def signed_amount
+    return transaction.amount.abs if neutral?
+
     income_kinds = %w[income debt_in transfer_in]
     income_kinds.include?(kind) ? transaction.amount.abs : -transaction.amount.abs
+  end
+
+  # A write-off moved no money, so it shows a plain amount with no +/- sign.
+  def neutral?
+    kind == "debt_writeoff"
+  end
+
+  def amount_sign
+    neutral? ? :never : :always
   end
 end

@@ -37,13 +37,18 @@ class Debt < ApplicationRecord
 
   ##
   # Validations & Enums
-  validates :name, presence: true, length: { maximum: 100 }, uniqueness: { scope: [ :space_id, :direction ] }
+  validates :name, presence: true, length: { maximum: 100 }
+  # Only one ONGOING debt per person+direction. Closed debts (settled/written off)
+  # are history: they neither block nor get reused when the same person is
+  # lent/borrowed from again.
+  validates :name, uniqueness: { scope: [ :space_id, :direction ], conditions: -> { where(status: "ongoing") } }, if: :ongoing?
   validates :status, presence: true
   validates :direction, presence: true
 
   enum :status, {
     ongoing: "ongoing",
-    paid: "paid"
+    paid: "paid",
+    written_off: "written_off" # no longer expected: a receivable that won't come back, or a debt forgiven
   }
 
   enum :direction, {
@@ -55,6 +60,7 @@ class Debt < ApplicationRecord
   # Scopes
   scope :ongoing, -> { where(status: "ongoing") }
   scope :paid, -> { where(status: "paid") }
+  scope :written_off, -> { where(status: "written_off") }
   scope :lent, -> { where(direction: "lent") }
   scope :borrowed, -> { where(direction: "borrowed") }
 

@@ -46,9 +46,11 @@ RSpec.describe DebtsController, type: :request do
         expect(response.body).not_to include('Bank')
       end
 
-      it 'does not display paid debts' do
+      it 'shows paid debts in the closed history, not the active list' do
         get debts_path
-        expect(response.body).not_to include('Charlie')
+        expect(response.body).to include('Charlie')
+        expect(assigns(:debts)).not_to include(paid_debt)
+        expect(assigns(:closed_debts)).to include(paid_debt)
       end
     end
 
@@ -388,6 +390,52 @@ RSpec.describe DebtsController, type: :request do
         other_debt.reload
         expect(other_debt.name).to eq(original_name)
       end
+    end
+  end
+
+  describe 'POST #write_off' do
+    it 'closes the debt and records a neutral write-off transaction' do
+      lent = create(:debt, user: user, name: 'Georges', direction: 'lent', total_lent: 50_000, total_reimbursed: 15_000)
+
+      expect { post write_off_debt_path(id: lent.id) }.to change { lent.reload.transactions.count }.by(1)
+
+      expect(lent.reload).to be_written_off
+      expect(response).to have_http_status(:see_other)
+      expect(space.debts.ongoing).not_to include(lent)
+      expect(lent.transactions.last.transaction_type.kind).to eq('debt_writeoff')
+    end
+
+    it 'keeps the written-off debt reachable in the closed history' do
+      lent = create(:debt, user: user, name: 'Georges', direction: 'lent', total_lent: 50_000, total_reimbursed: 15_000)
+      post write_off_debt_path(id: lent.id)
+
+      get debts_path(direction: 'lent')
+      expect(assigns(:closed_debts)).to include(lent.reload)
+      expect(response.body).to include('Georges')
+      expect(response.body).to include(I18n.t('debts.status.written_off.lent'))
+    end
+
+    it 'shows the closed-debt card (not the active progress) on the debt page' do
+      lent = create(:debt, user: user, name: 'Georges', direction: 'lent', total_lent: 50_000, total_reimbursed: 15_000)
+      post write_off_debt_path(id: lent.id)
+
+      get debt_path(id: lent.id)
+      expect(response.body).to include('debt-closed-card')                          # the closed summary, not the active card
+      expect(response.body).to include(I18n.t('debts.status.written_off.lent'))     # "Written off"
+      expect(response.body).to include(I18n.t('debts.closed.amount_label.lent'))    # "not recovered"
+    end
+
+    it 'redirects with an alert when nothing is outstanding' do
+      settled = create(:debt, user: user, total_lent: 1_000, total_reimbursed: 1_000)
+      post write_off_debt_path(id: settled.id)
+      expect(flash[:alert]).to eq(I18n.t('debts.write_off.error'))
+    end
+
+    it 'requires authentication' do
+      sign_out user
+      lent = create(:debt, user: user)
+      post write_off_debt_path(id: lent.id)
+      expect(response).to have_http_status(:redirect)
     end
   end
 end

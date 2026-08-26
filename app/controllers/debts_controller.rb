@@ -2,11 +2,14 @@
 
 class DebtsController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_debt, only: [ :show, :edit, :update ]
+  before_action :set_debt, only: [ :show, :edit, :update, :write_off ]
 
   def index
     @direction = params[:direction].presence_in(%w[lent borrowed]) || "lent"
-    @debts = current_space.debts.ongoing.where(direction: @direction).order(created_at: :desc)
+    scope = current_space.debts.where(direction: @direction)
+    @debts = scope.ongoing.order(created_at: :desc)
+    # Closed debts (settled or written off) stay reachable as history, out of the totals.
+    @closed_debts = scope.where.not(status: "ongoing").order(updated_at: :desc)
   end
 
   def show
@@ -53,6 +56,14 @@ class DebtsController < ApplicationController
     Rails.logger.error "Error in DebtsController#update: #{e.message}"
     Rails.logger.error e.backtrace.join("\n")
     redirect_to edit_debt_path(@debt), alert: t(".error"), status: :see_other
+  end
+
+  def write_off
+    if WriteOffDebtService.new(@debt, user: current_user).call
+      redirect_with_reload_to debt_path(id: @debt.id), notice: t(".success"), status: :see_other
+    else
+      redirect_to debt_path(id: @debt.id), alert: t(".error"), status: :see_other
+    end
   end
 
   private
