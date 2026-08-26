@@ -79,6 +79,18 @@
       ) %>
     </div>
 
+    <!-- Deadline (optional) -->
+    <div class="debt-form__field">
+      <%= render Forms::InputFieldComponent.new(
+        form: form,
+        field: :deadline,
+        type: :date_field,
+        label: t('.deadline_label'),
+        required: false,
+        help_text: t(".deadline_help.#{ form.object.direction }")
+      ) %>
+    </div>
+
     <!-- Note Field -->
     <div class="debt-form__field">
       <%= render Forms::InputFieldComponent.new(

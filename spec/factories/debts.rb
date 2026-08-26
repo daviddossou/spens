@@ -3,6 +3,7 @@
 # Table name: debts
 #
 #  id               :uuid             not null, primary key
+#  deadline         :date
 #  direction        :string           default("lent"), not null
 #  name             :string           not null
 #  note             :text

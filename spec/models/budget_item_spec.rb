@@ -16,20 +16,21 @@
 #  updated_at          :datetime         not null
 #  debt_id             :uuid             indexed, indexed => [space_id, kind]
 #  from_account_id     :uuid             indexed, indexed => [space_id, to_account_id]
-#  space_id            :uuid             not null, indexed => [debt_id, kind], indexed => [from_account_id, to_account_id], indexed => [transaction_type_id], indexed
-#  to_account_id       :uuid             indexed => [space_id, from_account_id], indexed
+#  space_id            :uuid             not null, indexed => [debt_id, kind], indexed => [to_account_id], indexed => [from_account_id, to_account_id], indexed => [transaction_type_id], indexed
+#  to_account_id       :uuid             indexed => [space_id], indexed => [space_id, from_account_id], indexed
 #  transaction_type_id :uuid             indexed => [space_id], indexed
 #
 # Indexes
 #
-#  index_budget_items_on_debt_id                    (debt_id)
-#  index_budget_items_on_from_account_id            (from_account_id)
-#  index_budget_items_on_space_and_debt_active      (space_id,debt_id,kind) UNIQUE WHERE (active AND (debt_id IS NOT NULL))
-#  index_budget_items_on_space_and_transfer_active  (space_id,from_account_id,to_account_id) UNIQUE WHERE (active AND (from_account_id IS NOT NULL))
-#  index_budget_items_on_space_and_type_active      (space_id,transaction_type_id) UNIQUE WHERE (active AND (transaction_type_id IS NOT NULL))
-#  index_budget_items_on_space_id                   (space_id)
-#  index_budget_items_on_to_account_id              (to_account_id)
-#  index_budget_items_on_transaction_type_id        (transaction_type_id)
+#  index_budget_items_on_debt_id                          (debt_id)
+#  index_budget_items_on_from_account_id                  (from_account_id)
+#  index_budget_items_on_space_and_debt_active            (space_id,debt_id,kind) UNIQUE WHERE (active AND (debt_id IS NOT NULL))
+#  index_budget_items_on_space_and_dest_active_no_source  (space_id,to_account_id) UNIQUE WHERE (active AND (from_account_id IS NULL) AND (to_account_id IS NOT NULL))
+#  index_budget_items_on_space_and_transfer_active        (space_id,from_account_id,to_account_id) UNIQUE WHERE (active AND (from_account_id IS NOT NULL))
+#  index_budget_items_on_space_and_type_active            (space_id,transaction_type_id) UNIQUE WHERE (active AND (transaction_type_id IS NOT NULL))
+#  index_budget_items_on_space_id                         (space_id)
+#  index_budget_items_on_to_account_id                    (to_account_id)
+#  index_budget_items_on_transaction_type_id              (transaction_type_id)
 #
 # Foreign Keys
 #
@@ -92,6 +93,33 @@ RSpec.describe BudgetItem do
       expect(item.occurs_in?(Date.new(2026, 9, 1))).to be true
       expect(item.occurs_in?(Date.new(2027, 8, 1))).to be false
       expect(item.occurs_in?(Date.new(2027, 9, 1))).to be true
+    end
+  end
+
+  describe "source-less transfer" do
+    let(:space) { create(:space) }
+    let(:savings) { create(:account, space: space, name: "Savings") }
+
+    it "is valid with only a destination account" do
+      item = build(:budget_item, space: space, kind: "transfer",
+                                 from_account: nil, to_account: savings, amount: 5_000)
+      expect(item).to be_valid
+    end
+
+    it "still requires a destination" do
+      item = build(:budget_item, space: space, kind: "transfer", from_account: nil, to_account: nil)
+      expect(item).not_to be_valid
+    end
+
+    it "allows only one active source-less line per destination" do
+      create(:budget_item, space: space, kind: "transfer", from_account: nil, to_account: savings, amount: 5_000)
+      dup = build(:budget_item, space: space, kind: "transfer", from_account: nil, to_account: savings, amount: 1_000)
+      expect(dup).not_to be_valid
+    end
+
+    it "labels the line with just the destination" do
+      item = build(:budget_item, space: space, kind: "transfer", from_account: nil, to_account: savings)
+      expect(item.display_name).to eq("Savings")
     end
   end
 

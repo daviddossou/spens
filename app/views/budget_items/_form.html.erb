@@ -133,6 +133,18 @@
   <p class="form-help-text"><%= t('budgets.form.frequency_help') %></p>
 </div>
 
+<div class="budget-item-form__ends-on">
+  <%= render Forms::InputFieldComponent.new(
+    form: f,
+    field: :ends_on,
+    type: :date_field,
+    label: t('budgets.form.ends_on_label'),
+    required: false,
+    value: @form.ends_on,
+    help_text: t('budgets.form.ends_on_help')
+  ) %>
+</div>
+
 <% if @form.kind == "expense" %>
   <div class="budget-item-form__rollover">
     <label class="budget-rollover">

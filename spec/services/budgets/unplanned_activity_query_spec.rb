@@ -93,4 +93,30 @@ RSpec.describe Budgets::UnplannedActivityQuery do
 
     expect(query[:transfers]).to eq([ { from: bank, to: cash, amount: 30_000, prev: 0 } ])
   end
+
+  it "treats a source-less transfer line as covering money into that destination from any source" do
+    bank = create(:account, space: space, name: "Bank")
+    savings = create(:account, space: space, name: "Savings")
+    mobile = create(:account, space: space, name: "Mobile Money")
+    t_out = create(:transaction_type, space: space, kind: "transfer_out", name: "Transfer out")
+    t_in = create(:transaction_type, space: space, kind: "transfer_in", name: "Transfer in")
+
+    # Savings-goal plan: a source-less line into Savings.
+    item = create(:budget_item, space: space, kind: "transfer", from_account: nil, to_account: savings, amount: 50_000)
+    create(:budget_entry, space: space, budget_item: item, kind: "transfer", transaction_type: nil)
+
+    # Two contributions into Savings from different sources — both covered.
+    g1 = SecureRandom.uuid
+    record(t_out, -45_000, account: bank, transfer_group_id: g1)
+    record(t_in, 45_000, account: savings, transfer_group_id: g1)
+    g2 = SecureRandom.uuid
+    record(t_out, -25_000, account: mobile, transfer_group_id: g2)
+    record(t_in, 25_000, account: savings, transfer_group_id: g2)
+    # A transfer to a different destination still surfaces.
+    g3 = SecureRandom.uuid
+    record(t_out, -10_000, account: bank, transfer_group_id: g3)
+    record(t_in, 10_000, account: mobile, transfer_group_id: g3)
+
+    expect(query[:transfers]).to eq([ { from: bank, to: mobile, amount: 10_000, prev: 0 } ])
+  end
 end

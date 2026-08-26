@@ -77,6 +77,10 @@ en:
       amount_reimbursed_help:
         lent: "How much has been repaid so far?"
         borrowed: "How much have you repaid so far?"
+      deadline_label: "Deadline (optional)"
+      deadline_help:
+        lent: "When should you be repaid the amount you lent?"
+        borrowed: "When do you need to repay the amount you borrowed?"
       note_label: "Note"
       note_placeholder: "Add details about this loan..."
       note_help: "Reason, terms, or other info"

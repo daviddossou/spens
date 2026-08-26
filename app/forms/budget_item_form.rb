@@ -14,6 +14,7 @@ class BudgetItemForm < BaseForm
   attribute :frequency, :string, default: "monthly"
   attribute :rollover, :boolean, default: false
   attribute :starts_on, :date, default: -> { Date.current.beginning_of_month }
+  attribute :ends_on, :date
 
   ##
   # Validations
@@ -21,6 +22,7 @@ class BudgetItemForm < BaseForm
   validates :amount, presence: true, numericality: { greater_than: 0 }
   validates :frequency, presence: true, inclusion: { in: BudgetItem::FREQUENCIES }
   validates :starts_on, presence: true
+  validate :ends_on_not_before_starts_on
 
   validates :transaction_type_name, presence: true, if: :category_kind?
   validates :from_account_name, :to_account_name, presence: true, if: :transfer_kind?
@@ -47,6 +49,7 @@ class BudgetItemForm < BaseForm
       payload[:frequency] ||= @budget_item.frequency
       payload[:rollover] = @budget_item.rollover if payload[:rollover].nil?
       payload[:starts_on] ||= @budget_item.starts_on
+      payload[:ends_on] ||= @budget_item.ends_on
     end
 
     super(
@@ -58,7 +61,8 @@ class BudgetItemForm < BaseForm
       amount: payload[:amount],
       frequency: payload[:frequency] || "monthly",
       rollover: payload[:rollover] || false,
-      starts_on: payload[:starts_on] || Date.current.beginning_of_month
+      starts_on: payload[:starts_on] || Date.current.beginning_of_month,
+      ends_on: payload[:ends_on]
     )
   end
 
@@ -96,7 +100,7 @@ class BudgetItemForm < BaseForm
     ActiveRecord::Base.transaction do
       attrs = resolved_references.merge(
         kind: kind, amount: amount, frequency: frequency, starts_on: starts_on.beginning_of_month,
-        rollover: (kind == "expense" && rollover)
+        ends_on: ends_on, rollover: (kind == "expense" && rollover)
       )
 
       if editing?
@@ -218,20 +222,13 @@ class BudgetItemForm < BaseForm
     errors.add(:to_account_name, I18n.t("errors.messages.different_account"))
   end
 
-  # Keep current and future entries in line with the (possibly changed) rule;
-  # past months are history and stay untouched.
+  def ends_on_not_before_starts_on
+    return if ends_on.blank? || starts_on.blank? || ends_on >= starts_on
+
+    errors.add(:ends_on, I18n.t("budgets.form.ends_on_before_starts_on"))
+  end
+
   def rematerialize_entries
-    current_month = Date.current.beginning_of_month
-
-    @budget_item.budget_entries.where(month: current_month..).find_each do |entry|
-      if @budget_item.occurs_in?(entry.month)
-        entry.update!(transaction_type: @budget_item.transaction_type, kind: @budget_item.kind,
-                      planned_amount: @budget_item.planned_amount_for(entry.month))
-      else
-        entry.destroy!
-      end
-    end
-
-    Budgets::EnsureEntriesService.new(space: space, month: current_month).call
+    Budgets::RematerializeItem.call(@budget_item)
   end
 end

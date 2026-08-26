@@ -36,6 +36,9 @@ fr:
       frequency_help: "Les montants journaliers et hebdomadaires sont cumulés en une ligne mensuelle."
       rollover_label: "Budget cumulatif"
       rollover_help: "Ce qui reste à la fin du mois s'ajoute au budget du mois suivant. Pratique pour les achats groupés ou espacés."
+      ends_on_label: "Se termine le (optionnel)"
+      ends_on_help: "Laissez vide pour continuer, ou choisissez une date d'arrêt — par exemple quand un prêt est remboursé."
+      ends_on_before_starts_on: "doit venir après la date de début"
       already_budgeted: "est déjà dans votre budget — modifiez cette ligne"
     row:
       done_income: "Reçu"
@@ -48,6 +51,7 @@ fr:
       over_by_html: "dépassé de %{amount}"
       left_html: "%{amount} restant"
       to_receive_html: "%{amount} à recevoir"
+      to_send_html: "%{amount} à envoyer"
       carried_html: "dont %{amount} reportés"
     index:
       title: "Budget"

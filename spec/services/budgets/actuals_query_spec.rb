@@ -62,6 +62,31 @@ RSpec.describe Budgets::ActualsQuery do
     expect(query.for_entry(entry)).to eq(80_000)
   end
 
+  it "sums money into the destination from anywhere for a source-less transfer line" do
+    savings = create(:account, space: space, name: "Savings")
+    bank = create(:account, space: space, name: "Bank")
+    cash = create(:account, space: space, name: "Cash")
+    t_out = create(:transaction_type, space: space, kind: "transfer_out", name: "Transfer out")
+    t_in = create(:transaction_type, space: space, kind: "transfer_in", name: "Transfer in")
+
+    item = create(:budget_item, space: space, kind: "transfer", from_account: nil, to_account: savings, amount: 30_000)
+    entry = create(:budget_entry, space: space, budget_item: item, kind: "transfer", transaction_type: nil)
+
+    # Two contributions into Savings from different sources — both count.
+    g1 = SecureRandom.uuid
+    record(t_out, -12_000, account: bank, transfer_group_id: g1)
+    record(t_in, 12_000, account: savings, transfer_group_id: g1)
+    g2 = SecureRandom.uuid
+    record(t_out, -8_000, account: cash, transfer_group_id: g2)
+    record(t_in, 8_000, account: savings, transfer_group_id: g2)
+    # A transfer into a different account must not count.
+    g3 = SecureRandom.uuid
+    record(t_out, -5_000, account: bank, transfer_group_id: g3)
+    record(t_in, 5_000, account: cash, transfer_group_id: g3)
+
+    expect(query.for_entry(entry)).to eq(20_000)
+  end
+
   it "sums the month's repayments on the budgeted debt, direction-scoped" do
     debt = create(:debt, space: space, direction: "lent", name: "Georges")
     debt_in_type = create(:transaction_type, space: space, kind: "debt_in", name: "Repayment in")

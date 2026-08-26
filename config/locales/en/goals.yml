@@ -23,6 +23,8 @@ en:
       current_balance_help: "How much is in this account right now?"
       saving_goal_label: "Target Amount"
       saving_goal_help: "How much do you want to save?"
+      deadline_label: "Deadline (optional)"
+      deadline_help: "When do you want to reach your target?"
       cancel: "Cancel"
     create:
       success: "Goal created!"
@@ -47,6 +49,7 @@ en:
       no_transactions: "No transactions yet"
     errors:
       not_found: "Goal not found"
+      deadline_in_past: "needs to be in the future"
     balance_adjustment_in_note: "Balance adjustment (increase)"
     balance_adjustment_in_description: "Balance adjustment for %{account_name}: +%{amount}"
     balance_adjustment_out_note: "Balance adjustment (decrease)"

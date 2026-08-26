@@ -273,6 +273,36 @@ RSpec.describe GoalForm, type: :model do
         expect(form.submit).to eq(account)
       end
 
+      context 'with a deadline' do
+        let(:valid_attributes) do
+          {
+            account_name: 'Emergency Fund',
+            current_balance: 1000.00,
+            saving_goal: 5000.00,
+            saving_goal_deadline: Date.new(2026, 5, 31)
+          }
+        end
+
+        it 'creates a source-less transfer line spreading the remainder to the deadline' do
+          travel_to Date.new(2026, 1, 10) do
+            form.submit
+
+            line = space.budget_items.find_by(kind: 'transfer', to_account_id: account.id, from_account_id: nil)
+            expect(line).to be_present
+            # remaining 4000 over Jan..May (5 months) = 800
+            expect(line.amount).to eq(800)
+            expect(line.ends_on).to eq(Date.new(2026, 5, 31))
+          end
+        end
+
+        it 'rejects a deadline in the past' do
+          travel_to Date.new(2026, 6, 1) do
+            expect(form.submit).to be(false)
+            expect(form.errors[:saving_goal_deadline]).to be_present
+          end
+        end
+      end
+
       context 'when current_balance matches account balance' do
         let(:account) { create(:account, user: user, name: 'Emergency Fund', balance: 1000) }
 

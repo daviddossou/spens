@@ -77,6 +77,10 @@ fr:
       amount_reimbursed_help:
         lent: "Combien a déjà été remboursé ?"
         borrowed: "Combien as-tu déjà remboursé ?"
+      deadline_label: "Échéance (optionnel)"
+      deadline_help:
+        lent: "Quand doit-on te rembourser le montant prêté ?"
+        borrowed: "Quand dois-tu rembourser le montant emprunté ?"
       note_label: "Note"
       note_placeholder: "Ajoute des détails..."
       note_help: "Raison, conditions ou autres infos"

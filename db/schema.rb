@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_07_30_162644) do
+ActiveRecord::Schema[8.0].define(version: 2026_08_25_212842) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -23,6 +23,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_30_162644) do
     t.datetime "updated_at", null: false
     t.uuid "space_id", null: false
     t.uuid "user_id"
+    t.date "saving_goal_deadline"
     t.index "lower((name)::text), space_id", name: "index_accounts_on_lower_name_and_space_id", unique: true
     t.index ["space_id"], name: "index_accounts_on_space_id"
     t.index ["user_id"], name: "index_accounts_on_user_id"
@@ -77,6 +78,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_30_162644) do
     t.index ["from_account_id"], name: "index_budget_items_on_from_account_id"
     t.index ["space_id", "debt_id", "kind"], name: "index_budget_items_on_space_and_debt_active", unique: true, where: "(active AND (debt_id IS NOT NULL))"
     t.index ["space_id", "from_account_id", "to_account_id"], name: "index_budget_items_on_space_and_transfer_active", unique: true, where: "(active AND (from_account_id IS NOT NULL))"
+    t.index ["space_id", "to_account_id"], name: "index_budget_items_on_space_and_dest_active_no_source", unique: true, where: "(active AND (from_account_id IS NULL) AND (to_account_id IS NOT NULL))"
     t.index ["space_id", "transaction_type_id"], name: "index_budget_items_on_space_and_type_active", unique: true, where: "(active AND (transaction_type_id IS NOT NULL))"
     t.index ["space_id"], name: "index_budget_items_on_space_id"
     t.index ["to_account_id"], name: "index_budget_items_on_to_account_id"
@@ -105,6 +107,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_30_162644) do
     t.datetime "updated_at", null: false
     t.uuid "space_id", null: false
     t.uuid "user_id"
+    t.date "deadline"
     t.index ["space_id"], name: "index_debts_on_space_id"
     t.index ["status"], name: "index_debts_on_status"
     t.index ["user_id"], name: "index_debts_on_user_id"

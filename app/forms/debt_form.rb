@@ -11,6 +11,7 @@ class DebtForm < BaseForm
   attribute :note, :string
   attribute :direction, :string, default: "lent"
   attribute :account_name, :string
+  attribute :deadline, :date
 
   ##
   # Validations
@@ -41,7 +42,8 @@ class DebtForm < BaseForm
       total_reimbursed: payload[:total_reimbursed] || 0.0,
       note: payload[:note],
       direction: payload[:direction] || "lent",
-      account_name: payload[:account_name]
+      account_name: payload[:account_name],
+      deadline: payload[:deadline]
     )
   end
 
@@ -60,6 +62,7 @@ class DebtForm < BaseForm
       create_or_update_debt
       create_debt_out_transaction
       create_debt_in_transaction
+      Budgets::SyncDebtPlanService.call(debt.reload)
       debt
     end
   rescue StandardError => e
@@ -101,7 +104,8 @@ class DebtForm < BaseForm
       name: contact_name,
       direction: direction,
       status: :ongoing,
-      note: note
+      note: note,
+      deadline: deadline
     }
 
     if @debt.nil?
