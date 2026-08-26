@@ -17,6 +17,9 @@ en:
       subtitle: "Set a target for your account"
       save_goal: "Save"
     form:
+      goal_name_label: "Goal name"
+      goal_name_placeholder: "e.g. Trip to Zanzibar, Safety cushion"
+      goal_name_help: "Give it a name that motivates you"
       account_label: "Account"
       account_placeholder: "Choose an account"
       account_help: "Pick an existing account or create a new one"

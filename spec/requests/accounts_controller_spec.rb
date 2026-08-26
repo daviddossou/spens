@@ -7,7 +7,7 @@ RSpec.describe AccountsController, type: :request do
 
   let(:user) { create(:user) }
   let(:space) { user.spaces.first }
-  let(:account) { create(:account, user: user, name: "Savings", balance: 1000.0, saving_goal: 5000.0) }
+  let(:account) { create(:account, user: user, name: "Savings", balance: 1000.0) }
 
   before do
     sign_in user, scope: :user
@@ -31,8 +31,8 @@ RSpec.describe AccountsController, type: :request do
     end
 
     context "when user has accounts with saving goals" do
-      let!(:account_with_goal) { create(:account, user: user, name: "Goal Account", saving_goal: 10000.0) }
-      let!(:account_without_goal) { create(:account, user: user, name: "No Goal", saving_goal: 0.0) }
+      let!(:account_with_goal) { create(:account, user: user, name: "Goal Account") }
+      let!(:account_without_goal) { create(:account, user: user, name: "No Goal") }
 
       it "displays both accounts" do
         get accounts_path
@@ -154,16 +154,14 @@ RSpec.describe AccountsController, type: :request do
     let(:valid_attributes) do
       {
         account_name: "New Account",
-        current_balance: 500.00,
-        savings_goal_amount: 2000.00
+        current_balance: 500.00
       }
     end
 
     let(:invalid_attributes) do
       {
         account_name: "",
-        current_balance: 100.00,
-        savings_goal_amount: 0.00
+        current_balance: 100.00
       }
     end
 
@@ -183,12 +181,6 @@ RSpec.describe AccountsController, type: :request do
       it "sets a success notice" do
         post accounts_path, params: { account: valid_attributes }
         expect(flash[:notice]).to eq(I18n.t("accounts.create.success"))
-      end
-
-      it "sets the correct saving goal" do
-        post accounts_path, params: { account: valid_attributes }
-        created_account = Account.find_by(name: "New Account", space: space)
-        expect(created_account.savings_goal_amount).to eq(2000.00)
       end
 
       it "adjusts the balance if different from zero" do
@@ -212,9 +204,9 @@ RSpec.describe AccountsController, type: :request do
           }.not_to change(Account, :count)
         end
 
-        it "updates the saving goal" do
+        it "updates the existing account's balance" do
           post accounts_path, params: { account: valid_attributes.merge(account_name: "Existing Account", current_balance: 1500.00) }
-          expect(existing_account.reload.savings_goal_amount).to eq(2000.00)
+          expect(existing_account.reload.balance).to eq(1500.00)
         end
       end
     end
@@ -253,16 +245,14 @@ RSpec.describe AccountsController, type: :request do
     let(:valid_update_attributes) do
       {
         account_name: "Updated Savings",
-        current_balance: 1500.00,
-        savings_goal_amount: 6000.00
+        current_balance: 1500.00
       }
     end
 
     let(:invalid_update_attributes) do
       {
         account_name: "",
-        current_balance: 100.00,
-        savings_goal_amount: 0.00
+        current_balance: 100.00
       }
     end
 
@@ -270,7 +260,6 @@ RSpec.describe AccountsController, type: :request do
       it "updates the account" do
         patch account_path(id: account.id), params: { account: valid_update_attributes }
         expect(account.reload.name).to eq("Updated Savings")
-        expect(account.reload.savings_goal_amount).to eq(6000.00)
       end
 
       it "redirects to the account show page" do

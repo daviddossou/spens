@@ -6,7 +6,7 @@
 #  balance               :float            default(0.0), not null
 #  name                  :string           not null
 #  savings_goal          :boolean          default(FALSE), not null
-#  savings_goal_amount   :float
+#  savings_goal_amount   :decimal(15, 2)
 #  savings_goal_deadline :date
 #  created_at            :datetime         not null
 #  updated_at            :datetime         not null
@@ -25,25 +25,24 @@
 #  fk_rails_...  (user_id => users.id)
 #
 class Account < ApplicationRecord
-  rounds_money :balance, :savings_goal_amount
+  rounds_money :balance
 
   ##
   # Associations
   belongs_to :space
   belongs_to :user, optional: true
   has_many :transactions, dependent: :destroy
+  has_one :goal, dependent: :destroy
 
   ##
   # Validations
   validates :name, presence: true, length: { maximum: 100 }, uniqueness: { scope: :space_id, case_sensitive: false }
-  # The target amount is optional (nil until the user sets one); the savings_goal
-  # boolean is what marks the account as a goal.
-  validates :savings_goal_amount, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
   validates :balance, presence: true, numericality: true
 
   ##
   # Scopes
-  scope :with_saving_goals, -> { where(savings_goal: true) }
+  # An account is a savings account when it has a goal attached.
+  scope :with_saving_goals, -> { joins(:goal) }
 
   ##
   # Class Methods

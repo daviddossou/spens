@@ -213,9 +213,12 @@ RSpec.describe AnalyticsController, type: :request do
 
     describe "savings data" do
       before do
-        create(:account, user: user, name: "Savings", balance: 2000.0, saving_goal: 5000.0)
-        create(:account, user: user, name: "Checking", balance: 1000.0, saving_goal: 0.0)
-        create(:account, user: user, name: "Emergency", balance: 500.0, saving_goal: 1000.0)
+        space = user.spaces.first
+        savings = create(:account, user: user, name: "Savings", balance: 2000.0)
+        create(:goal, space: space, account: savings, name: "Savings", target_amount: 5000.0)
+        create(:account, user: user, name: "Checking", balance: 1000.0)
+        emergency = create(:account, user: user, name: "Emergency", balance: 500.0)
+        create(:goal, space: space, account: emergency, name: "Emergency", target_amount: 1000.0)
       end
 
       it "calculates total balance" do

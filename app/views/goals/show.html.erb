@@ -1,4 +1,4 @@
-<% content_for :title, @account.name %>
+<% content_for :title, (@account.goal&.name || @account.name) %>
 
 <div class="page-container page-container--narrow">
   <header class="page-header">
@@ -10,9 +10,9 @@
        data-infinite-scroll-url-value="<%= goal_path(id: @account.id) %>"
        data-infinite-scroll-page-value="<%= @has_more ? @page + 1 : 0 %>">
     <%= render Ui::CommitmentCardComponent.new(
-      title: @account.name,
+      title: @account.goal&.name || @account.name,
       current_value: @account.balance,
-      target_value: @account.savings_goal_amount,
+      target_value: @account.goal&.target_amount,
       currency: current_space.currency,
       accent: "primary",
       progress_label: t('goals.index.saved_label'),
