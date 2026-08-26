@@ -17,14 +17,14 @@ module Budgets
 
     def call
       line = goal_line
-      remaining = [ (@account.saving_goal || 0.0) - (@account.balance || 0.0), 0.0 ].max
+      remaining = [ (@account.savings_goal_amount || 0.0) - (@account.balance || 0.0), 0.0 ].max
 
-      if @account.saving_goal_deadline.blank? || remaining <= 0
+      if @account.savings_goal_deadline.blank? || remaining <= 0
         retire(line)
         return line
       end
 
-      months = months_until(@account.saving_goal_deadline)
+      months = months_until(@account.savings_goal_deadline)
       monthly = (remaining / months).round(2)
       return retire(line) if monthly <= 0
 
@@ -34,7 +34,7 @@ module Budgets
         transaction_type: nil, debt: nil,
         amount: monthly, frequency: "monthly",
         starts_on: Date.current.beginning_of_month,
-        ends_on: @account.saving_goal_deadline, active: true
+        ends_on: @account.savings_goal_deadline, active: true
       )
       line.save!
       RematerializeItem.call(line)

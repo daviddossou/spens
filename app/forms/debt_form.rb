@@ -16,7 +16,8 @@ class DebtForm < BaseForm
   ##
   # Validations
   validates :contact_name, presence: true, length: { maximum: 100 }
-  validates :total_lent, presence: true, numericality: { greater_than: 0 }
+  # Amount is optional at creation — name the person now, fill the amount later.
+  validates :total_lent, numericality: { greater_than: 0 }, allow_blank: true
   validates :total_reimbursed, numericality: { greater_than_or_equal_to: 0 }, allow_blank: true
   validate :reimbursed_not_exceeding_lent
   validate :total_lent_not_less_than_existing, if: -> { debt.present? }
@@ -82,7 +83,8 @@ class DebtForm < BaseForm
   private
 
   def reimbursed_not_exceeding_lent
-    return if total_lent.present? && total_reimbursed.present? && total_reimbursed <= total_lent
+    return if total_lent.blank? || total_reimbursed.blank?
+    return if total_reimbursed <= total_lent
 
     errors.add(:total_reimbursed, I18n.t("debts.errors.reimbursed_exceeds_lent"))
   end

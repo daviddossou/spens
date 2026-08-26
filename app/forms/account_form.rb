@@ -7,13 +7,13 @@ class AccountForm < BaseForm
 
   attribute :account_name, :string
   attribute :current_balance, :decimal
-  attribute :saving_goal, :decimal, default: 0.0
+  attribute :savings_goal_amount, :decimal
 
   ##
   # Validations
   validates :account_name, presence: true, length: { maximum: 100 }
-  validates :current_balance, presence: true, numericality: true
-  validates :saving_goal, numericality: { greater_than_or_equal_to: 0 }, allow_blank: true
+  validates :current_balance, numericality: true, allow_blank: true
+  validates :savings_goal_amount, numericality: { greater_than_or_equal_to: 0 }, allow_blank: true
 
   ##
   # Class Methods
@@ -32,7 +32,7 @@ class AccountForm < BaseForm
     super(
       account_name: payload[:account_name],
       current_balance: payload[:current_balance],
-      saving_goal: payload[:saving_goal] || 0.0
+      savings_goal_amount: payload[:savings_goal_amount]
     )
   end
 
@@ -73,13 +73,21 @@ class AccountForm < BaseForm
 
   def create_account
     @account = find_or_create_account
-    @account.update!(saving_goal: saving_goal || 0.0, user: user || @account.user)
-    adjust_account_balance(account) if balance_changed?(account)
+    @account.update!(savings_goal_amount: savings_goal_amount, savings_goal: savings_goal_flag(@account),
+                     user: user || @account.user)
+    adjust_account_balance(account) if current_balance.present? && balance_changed?(account)
   end
 
   def update_account
-    account.update!(name: account_name.strip, saving_goal: saving_goal || 0.0)
-    adjust_account_balance(account) if balance_changed?(account)
+    account.update!(name: account_name.strip, savings_goal_amount: savings_goal_amount,
+                    savings_goal: savings_goal_flag(account))
+    adjust_account_balance(account) if current_balance.present? && balance_changed?(account)
+  end
+
+  # Setting a target marks the account as a goal; never silently un-flag one that
+  # already is (a targetless goal created via the goals flow stays a goal).
+  def savings_goal_flag(account)
+    account.savings_goal? || savings_goal_amount.to_f.positive?
   end
 
   def find_or_create_account

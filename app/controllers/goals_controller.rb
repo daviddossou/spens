@@ -25,8 +25,8 @@ class GoalsController < ApplicationController
     build_form(
       account_name: @account.name,
       current_balance: @account.balance,
-      saving_goal: @account.saving_goal,
-      saving_goal_deadline: @account.saving_goal_deadline
+      savings_goal_amount: @account.savings_goal_amount,
+      savings_goal_deadline: @account.savings_goal_deadline
     )
   end
 
@@ -74,8 +74,8 @@ class GoalsController < ApplicationController
     params.require(:goal).permit(
       :account_name,
       :current_balance,
-      :saving_goal,
-      :saving_goal_deadline
+      :savings_goal_amount,
+      :savings_goal_deadline
     )
   end
 end
