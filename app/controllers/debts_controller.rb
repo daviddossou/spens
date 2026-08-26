@@ -6,7 +6,10 @@ class DebtsController < ApplicationController
 
   def index
     @direction = params[:direction].presence_in(%w[lent borrowed]) || "lent"
-    @debts = current_space.debts.ongoing.where(direction: @direction).order(created_at: :desc)
+    scope = current_space.debts.where(direction: @direction)
+    @debts = scope.ongoing.order(created_at: :desc)
+    # Closed debts (settled or written off) stay reachable as history, out of the totals.
+    @closed_debts = scope.where.not(status: "ongoing").order(updated_at: :desc)
   end
 
   def show

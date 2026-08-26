@@ -9,6 +9,12 @@
        data-controller="infinite-scroll"
        data-infinite-scroll-url-value="<%= debt_path(id: @debt.id) %>"
        data-infinite-scroll-page-value="<%= @has_more ? @page + 1 : 0 %>">
+    <% unless @debt.ongoing? %>
+      <div class="debt-status-banner debt-status-banner--<%= @debt.status %>">
+        <%= debt_status_label(@debt) %>
+      </div>
+    <% end %>
+
     <%= render Ui::CommitmentCardComponent.new(
       title: @debt.name,
       current_value: @debt.total_reimbursed,
@@ -23,14 +29,16 @@
 
     <div class="commitment-actions">
       <div class="action-buttons">
-        <%= render Ui::ButtonComponent.new(
-          text: t('.add_transaction'),
-          url: new_transaction_path(debt_id: @debt.id, kind: @debt.direction == 'lent' ? 'debt_in' : 'debt_out'),
-          variant: :primary,
-          size: :lg,
-          full_width: true,
-          data: { turbo_frame: "modal" }
-        ) %>
+        <% if @debt.ongoing? %>
+          <%= render Ui::ButtonComponent.new(
+            text: t('.add_transaction'),
+            url: new_transaction_path(debt_id: @debt.id, kind: @debt.direction == 'lent' ? 'debt_in' : 'debt_out'),
+            variant: :primary,
+            size: :lg,
+            full_width: true,
+            data: { turbo_frame: "modal" }
+          ) %>
+        <% end %>
 
         <%= render Ui::ButtonComponent.new(
           text: t('.edit_debt'),

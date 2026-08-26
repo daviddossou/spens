@@ -22,6 +22,12 @@ en:
       repaid_label: "repaid"
       settled_label: "Settled"
       no_amount: "No amount yet — add it when you're ready"
+      closed_title: "Closed"
+    status:
+      settled: "Settled"
+      written_off:
+        lent: "Written off"
+        borrowed: "Debt forgiven"
     new:
       title:
         lent: "New Loan"

@@ -33,7 +33,7 @@
           ) %>
         <% end %>
       </div>
-    <% else %>
+    <% elsif @closed_debts.empty? %>
       <div class="empty-state">
         <svg class="empty-state__icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>
@@ -41,6 +41,21 @@
         <h3><%= t(".no_debts_title.#{@direction}") %></h3>
         <p><%= t(".no_debts_message.#{@direction}") %></p>
       </div>
+    <% end %>
+
+    <% if @closed_debts.any? %>
+      <section class="debts-history">
+        <h2 class="debts-history__title"><%= t(".closed_title") %></h2>
+        <div class="debts-history__list">
+          <% @closed_debts.each do |debt| %>
+            <%= link_to debt_path(id: debt.id), class: "debt-history-row" do %>
+              <span class="debt-history-row__name"><%= debt.name %></span>
+              <span class="debt-history-row__status"><%= debt_status_label(debt) %></span>
+              <span class="debt-history-row__amount"><%= smart_format_money(debt.total_lent, current_space.currency, sign: :never) %></span>
+            <% end %>
+          <% end %>
+        </div>
+      </section>
     <% end %>
   </div>
 </div>

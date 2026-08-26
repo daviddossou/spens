@@ -52,3 +52,65 @@
   gap: 0.5rem;
   margin-top: 1.25rem;
 }
+
+/* ── Closed debts history (written off / settled) ─────────────────── */
+.debts-history {
+  margin-top: 2rem;
+}
+
+.debts-history__title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-bottom: 0.75rem;
+}
+
+.debts-history__list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.debt-history-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  text-decoration: none;
+  color: var(--text-muted);
+}
+
+.debt-history-row__name {
+  font-weight: 600;
+  color: var(--text-default);
+}
+
+.debt-history-row__status {
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 0.15rem 0.5rem;
+  border-radius: 9999px;
+  background: var(--border-light);
+  color: var(--text-muted);
+}
+
+.debt-history-row__amount {
+  margin-left: auto;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+/* ── Closed-debt status banner on the detail page ─────────────────── */
+.debt-status-banner {
+  text-align: center;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  padding: 0.5rem 0.75rem;
+  border-radius: 9999px;
+  margin-bottom: 1rem;
+  background: var(--border-light);
+  color: var(--text-muted);
+}

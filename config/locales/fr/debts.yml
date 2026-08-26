@@ -22,6 +22,12 @@ fr:
       repaid_label: "remboursé"
       settled_label: "Soldé"
       no_amount: "Pas encore de montant — ajoute-le quand tu veux"
+      closed_title: "Clôturées"
+    status:
+      settled: "Soldé"
+      written_off:
+        lent: "Créance abandonnée"
+        borrowed: "Dette effacée"
     new:
       title:
         lent: "Nouveau prêt"
