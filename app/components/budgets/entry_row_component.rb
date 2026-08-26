@@ -62,9 +62,14 @@ module Budgets
       end
     end
 
-    # "Left" reads as money still to spend; incoming money is still to receive.
+    # "Left" reads as money still to spend; incoming money is still to receive;
+    # a debt I owe is money still to send.
     def left_label_key
-      %w[income debt_in].include?(entry.kind) ? "to_receive_html" : "left_html"
+      case entry.kind
+      when "income", "debt_in" then "to_receive_html"
+      when "debt_out" then "to_send_html"
+      else "left_html"
+      end
     end
 
     def bar_class

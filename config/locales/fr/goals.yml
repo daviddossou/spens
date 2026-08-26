@@ -23,6 +23,8 @@ fr:
       current_balance_help: "Combien y a-t-il dans ce compte ?"
       saving_goal_label: "Montant cible"
       saving_goal_help: "Combien veux-tu épargner ?"
+      deadline_label: "Échéance (optionnel)"
+      deadline_help: "Quand souhaites-tu atteindre le montant cible ?"
       cancel: "Annuler"
     create:
       success: "Objectif créé !"
@@ -47,6 +49,7 @@ fr:
       no_transactions: "Aucune transaction"
     errors:
       not_found: "Objectif introuvable"
+      deadline_in_past: "doit être dans le futur"
     balance_adjustment_in_note: "Ajustement du solde (augmentation)"
     balance_adjustment_in_description: "Ajustement du solde pour %{account_name}: +%{amount}"
     balance_adjustment_out_note: "Ajustement du solde (diminution)"

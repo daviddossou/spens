@@ -60,4 +60,16 @@
         help_text: t('.saving_goal_help')
       ) %>
     </div>
+
+    <!-- Deadline (optional) -->
+    <div class="goal-form__field">
+      <%= render Forms::InputFieldComponent.new(
+        form: form,
+        field: :saving_goal_deadline,
+        type: :date_field,
+        label: t('.deadline_label'),
+        required: false,
+        help_text: t('.deadline_help')
+      ) %>
+    </div>
   </div>

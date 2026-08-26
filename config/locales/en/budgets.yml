@@ -36,6 +36,9 @@ en:
       frequency_help: "Daily and weekly amounts are added up into one monthly line."
       rollover_label: "Cumulative budget"
       rollover_help: "Whatever is left at the end of the month is added to next month's budget. Handy for bulk or spaced-out purchases."
+      ends_on_label: "Ends on (optional)"
+      ends_on_help: "Leave empty to keep it going, or set a date to stop it — like when a loan is fully repaid."
+      ends_on_before_starts_on: "needs to come after the start date"
       already_budgeted: "is already in your budget — edit that line instead"
     row:
       done_income: "Received"
@@ -48,6 +51,7 @@ en:
       over_by_html: "over by %{amount}"
       left_html: "%{amount} left"
       to_receive_html: "%{amount} to receive"
+      to_send_html: "%{amount} to send"
       carried_html: "incl. %{amount} carried over"
     index:
       title: "Budget"
