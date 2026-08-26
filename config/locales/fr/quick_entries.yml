@@ -3,7 +3,7 @@ fr:
     new:
       title: "Ajout rapide"
     form:
-      subtitle: "Décrivez votre transaction"
+      subtitle: "Décris ta transaction"
       placeholder: "ex. 2000 zem, ou 5k provisions à Carrefour"
       examples: "Dites juste le montant et à quoi ça servait — on s'occupe du reste."
       submit: "Ajouter"

@@ -26,7 +26,7 @@ fr:
     validations:
       invalid_goal: "%{goals} n'est pas un objectif financier valide"
     errors:
-      generic: "Une erreur est survenue. Veuillez réessayer."
+      generic: "Une erreur est survenue. Réessaie."
     financial_goals:
       show:
         title: "Quels sont tes principaux objectifs financiers ?"
