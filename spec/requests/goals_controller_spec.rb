@@ -158,7 +158,7 @@ RSpec.describe GoalsController, type: :request do
       {
         account_name: 'New Savings Account',
         current_balance: 500.00,
-        saving_goal: 2000.00
+        savings_goal_amount: 2000.00
       }
     end
 
@@ -166,7 +166,7 @@ RSpec.describe GoalsController, type: :request do
       {
         account_name: '',
         current_balance: 100.00,
-        saving_goal: 50.00 # Less than current_balance
+        savings_goal_amount: 50.00 # Less than current_balance
       }
     end
 
@@ -192,7 +192,7 @@ RSpec.describe GoalsController, type: :request do
         it "sets the correct saving goal" do
           post goals_path, params: { goal: valid_attributes }
           account = Account.find_by(name: 'New Savings Account', space: space)
-          expect(account.saving_goal).to eq(2000.00)
+          expect(account.savings_goal_amount).to eq(2000.00)
         end
 
         it "adjusts the balance if different from current balance" do
@@ -213,29 +213,29 @@ RSpec.describe GoalsController, type: :request do
 
         it "does not create a new account" do
           expect {
-            post goals_path, params: { goal: { account_name: 'Existing Account', current_balance: 1500.00, saving_goal: 4000.00 } }
+            post goals_path, params: { goal: { account_name: 'Existing Account', current_balance: 1500.00, savings_goal_amount: 4000.00 } }
           }.not_to change(Account, :count)
         end
 
         it "updates the saving goal" do
-          post goals_path, params: { goal: { account_name: 'Existing Account', current_balance: 1500.00, saving_goal: 4000.00 } }
-          expect(existing_account.reload.saving_goal).to eq(4000.00)
+          post goals_path, params: { goal: { account_name: 'Existing Account', current_balance: 1500.00, savings_goal_amount: 4000.00 } }
+          expect(existing_account.reload.savings_goal_amount).to eq(4000.00)
         end
 
         it "adjusts the balance if different from current balance" do
-          post goals_path, params: { goal: { account_name: 'Existing Account', current_balance: 1500.00, saving_goal: 4000.00 } }
+          post goals_path, params: { goal: { account_name: 'Existing Account', current_balance: 1500.00, savings_goal_amount: 4000.00 } }
           expect(existing_account.reload.balance).to eq(1500.00)
         end
 
         it "creates a new transaction to adjust the balance if needed" do
           expect {
-            post goals_path, params: { goal: { account_name: 'Existing Account', current_balance: 1500.00, saving_goal: 4000.00 } }
+            post goals_path, params: { goal: { account_name: 'Existing Account', current_balance: 1500.00, savings_goal_amount: 4000.00 } }
           }.to change(Transaction, :count).by(1)
         end
 
         it "doesn't create a transaction if balance is unchanged" do
           expect {
-            post goals_path, params: { goal: { account_name: 'Existing Account', current_balance: 1000.00, saving_goal: 4000.00 } }
+            post goals_path, params: { goal: { account_name: 'Existing Account', current_balance: 1000.00, savings_goal_amount: 4000.00 } }
           }.not_to change(Transaction, :count)
         end
       end
@@ -260,36 +260,36 @@ RSpec.describe GoalsController, type: :request do
           expect(response).to have_http_status(:unprocessable_entity)
         end
 
-        it "fails without current_balance" do
+        it "creates the goal without current_balance (optional)" do
           attributes = valid_attributes.dup
           attributes.delete(:current_balance)
-          post goals_path, params: { goal: attributes }
-          expect(response).to have_http_status(:unprocessable_entity)
+          expect { post goals_path, params: { goal: attributes } }.to change(Account, :count).by(1)
+          expect(response).to have_http_status(:see_other)
         end
 
-        it "fails without saving_goal" do
+        it "creates the goal without a target amount (set it later)" do
           attributes = valid_attributes.dup
-          attributes.delete(:saving_goal)
-          post goals_path, params: { goal: attributes }
-          expect(response).to have_http_status(:unprocessable_entity)
+          attributes.delete(:savings_goal_amount)
+          expect { post goals_path, params: { goal: attributes } }.to change(Account, :count).by(1)
+          expect(response).to have_http_status(:see_other)
         end
       end
 
       context "validation errors" do
-        it "fails when saving_goal is not greater than current_balance" do
-          attributes = valid_attributes.merge(current_balance: 2000.00, saving_goal: 1000.00)
+        it "fails when savings_goal_amount is not greater than current_balance" do
+          attributes = valid_attributes.merge(current_balance: 2000.00, savings_goal_amount: 1000.00)
           post goals_path, params: { goal: attributes }
           expect(response).to have_http_status(:unprocessable_entity)
         end
 
-        it "fails when saving_goal is zero" do
-          attributes = valid_attributes.merge(saving_goal: 0)
+        it "fails when savings_goal_amount is zero" do
+          attributes = valid_attributes.merge(savings_goal_amount: 0)
           post goals_path, params: { goal: attributes }
           expect(response).to have_http_status(:unprocessable_entity)
         end
 
-        it "fails when saving_goal is negative" do
-          attributes = valid_attributes.merge(saving_goal: -100)
+        it "fails when savings_goal_amount is negative" do
+          attributes = valid_attributes.merge(savings_goal_amount: -100)
           post goals_path, params: { goal: attributes }
           expect(response).to have_http_status(:unprocessable_entity)
         end
@@ -318,7 +318,7 @@ RSpec.describe GoalsController, type: :request do
       {
         account_name: account.name,
         current_balance: 1500.00,
-        saving_goal: 6000.00
+        savings_goal_amount: 6000.00
       }
     end
 
@@ -326,14 +326,14 @@ RSpec.describe GoalsController, type: :request do
       {
         account_name: account.name,
         current_balance: 5000.00,
-        saving_goal: 1000.00 # Less than current_balance
+        savings_goal_amount: 1000.00 # Less than current_balance
       }
     end
 
     context "with valid parameters" do
       it "updates the account goal" do
         patch goal_path(id: account.id), params: { goal: valid_update_attributes }
-        expect(account.reload.saving_goal).to eq(6000.00)
+        expect(account.reload.savings_goal_amount).to eq(6000.00)
       end
 
       it "redirects to the goal show page" do
@@ -354,9 +354,9 @@ RSpec.describe GoalsController, type: :request do
 
     context "with invalid parameters" do
       it "does not update the account" do
-        original_goal = account.saving_goal
+        original_goal = account.savings_goal_amount
         patch goal_path(id: account.id), params: { goal: invalid_update_attributes }
-        expect(account.reload.saving_goal).to eq(original_goal)
+        expect(account.reload.savings_goal_amount).to eq(original_goal)
       end
 
       it "returns unprocessable entity status" do
@@ -375,9 +375,9 @@ RSpec.describe GoalsController, type: :request do
       end
 
       it "does not update the account" do
-        original_goal = other_account.saving_goal
+        original_goal = other_account.savings_goal_amount
         patch goal_path(id: other_account.id), params: { goal: valid_update_attributes }
-        expect(other_account.reload.saving_goal).to eq(original_goal)
+        expect(other_account.reload.savings_goal_amount).to eq(original_goal)
       end
     end
 
@@ -391,9 +391,9 @@ RSpec.describe GoalsController, type: :request do
 
       it "does not update the account" do
         sign_out user
-        original_goal = account.saving_goal
+        original_goal = account.savings_goal_amount
         patch goal_path(id: account.id), params: { goal: valid_update_attributes }
-        expect(account.reload.saving_goal).to eq(original_goal)
+        expect(account.reload.savings_goal_amount).to eq(original_goal)
       end
     end
   end
@@ -404,7 +404,7 @@ RSpec.describe GoalsController, type: :request do
         goal: {
           account_name: 'Test Account',
           current_balance: 100.00,
-          saving_goal: 500.00,
+          savings_goal_amount: 500.00,
           unpermitted_param: 'should be filtered'
         }
       }
@@ -419,13 +419,13 @@ RSpec.describe GoalsController, type: :request do
       {
         account_name: 'Edge Case Account',
         current_balance: 100.00,
-        saving_goal: 500.00
+        savings_goal_amount: 500.00
       }
     end
 
     context "with very large amounts" do
       it "handles large goal values" do
-        attributes = base_attributes.merge(current_balance: 1_000_000.00, saving_goal: 999_999_999.99)
+        attributes = base_attributes.merge(current_balance: 1_000_000.00, savings_goal_amount: 999_999_999.99)
         post goals_path, params: { goal: attributes }
         account = Account.find_by(name: 'Edge Case Account', space: space)
         expect(response).to redirect_to("#{goal_path(id: account.id)}?format=html")
@@ -445,7 +445,7 @@ RSpec.describe GoalsController, type: :request do
 
     context "with decimal precision" do
       it "handles many decimal places" do
-        attributes = base_attributes.merge(current_balance: 100.123456, saving_goal: 500.789012)
+        attributes = base_attributes.merge(current_balance: 100.123456, savings_goal_amount: 500.789012)
         post goals_path, params: { goal: attributes }
         account = Account.find_by(name: 'Edge Case Account', space: space)
         expect(response).to redirect_to("#{goal_path(id: account.id)}?format=html")
@@ -458,7 +458,7 @@ RSpec.describe GoalsController, type: :request do
 
       it "finds existing account regardless of case" do
         expect {
-          post goals_path, params: { goal: base_attributes.merge(account_name: 'SAVINGS ACCOUNT', saving_goal: 2000.00) }
+          post goals_path, params: { goal: base_attributes.merge(account_name: 'SAVINGS ACCOUNT', savings_goal_amount: 2000.00) }
         }.not_to change(Account, :count)
       end
     end

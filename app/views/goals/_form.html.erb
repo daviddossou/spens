@@ -49,10 +49,10 @@
     <div class="goal-form__field">
       <%= render Forms::InputFieldComponent.new(
         form: form,
-        field: :saving_goal,
+        field: :savings_goal_amount,
         type: :number_field,
         label: t('.saving_goal_label'),
-        required: true,
+        required: false,
         prepend: get_currency_symbol(current_space.currency),
         step: "0.01",
         min: "0",
@@ -65,7 +65,7 @@
     <div class="goal-form__field">
       <%= render Forms::InputFieldComponent.new(
         form: form,
-        field: :saving_goal_deadline,
+        field: :savings_goal_deadline,
         type: :date_field,
         label: t('.deadline_label'),
         required: false,

@@ -12,11 +12,11 @@ module Ui
   # Labels are passed in already localized by the caller.
   class CommitmentCardComponent < ViewComponent::Base
     attr_reader :title, :current_value, :target_value, :currency, :url,
-                :accent, :progress_label, :complete_label, :remaining_label
+                :accent, :progress_label, :complete_label, :remaining_label, :no_target_label
 
     def initialize(title:, current_value:, target_value:, currency:, url: nil,
                    accent: "primary", progress_label: "done",
-                   complete_label: "Complete", remaining_label: "left")
+                   complete_label: "Complete", remaining_label: "left", no_target_label: nil)
       @title = title
       @current_value = current_value.to_f
       @target_value = target_value.to_f
@@ -26,6 +26,12 @@ module Ui
       @progress_label = progress_label
       @complete_label = complete_label
       @remaining_label = remaining_label
+      @no_target_label = no_target_label
+    end
+
+    # No target yet: the card shows the current amount, not progress toward a goal.
+    def target_set?
+      target_value.positive?
     end
 
     def percentage

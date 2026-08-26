@@ -9,7 +9,7 @@ RSpec.describe GoalForm, type: :model do
     {
       account_name: 'Emergency Fund',
       current_balance: 1000.00,
-      saving_goal: 5000.00
+      savings_goal_amount: 5000.00
     }
   end
   let(:form) { described_class.new(space, valid_attributes) }
@@ -33,8 +33,8 @@ RSpec.describe GoalForm, type: :model do
       expect(form.current_balance).to eq(1000.00)
     end
 
-    it 'sets saving_goal from payload' do
-      expect(form.saving_goal).to eq(5000.00)
+    it 'sets savings_goal_amount from payload' do
+      expect(form.savings_goal_amount).to eq(5000.00)
     end
 
     context 'with empty payload' do
@@ -43,7 +43,7 @@ RSpec.describe GoalForm, type: :model do
       it 'initializes with nil values' do
         expect(form.account_name).to be_nil
         expect(form.current_balance).to be_nil
-        expect(form.saving_goal).to be_nil
+        expect(form.savings_goal_amount).to be_nil
       end
     end
   end
@@ -72,16 +72,15 @@ RSpec.describe GoalForm, type: :model do
         expect(form).to be_valid
       end
 
-      it 'is invalid without current_balance' do
+      it 'is valid without current_balance (optional)' do
         form.current_balance = nil
-        expect(form).not_to be_valid
-        expect(form.errors[:current_balance]).to include("can't be blank")
+        expect(form).to be_valid
       end
 
       it 'is valid with non-numeric current_balance that converts to zero' do
         # ActiveModel::Type::Decimal converts non-numeric strings to 0
         form.current_balance = 'abc'
-        form.saving_goal = 100
+        form.savings_goal_amount = 100
         expect(form).to be_valid
         expect(form.current_balance).to eq(0)
       end
@@ -97,75 +96,74 @@ RSpec.describe GoalForm, type: :model do
       end
     end
 
-    context 'saving_goal' do
-      it 'is valid with saving_goal present' do
+    context 'savings_goal_amount' do
+      it 'is valid with savings_goal_amount present' do
         expect(form).to be_valid
       end
 
-      it 'is invalid without saving_goal' do
-        form.saving_goal = nil
-        expect(form).not_to be_valid
-        expect(form.errors[:saving_goal]).to include("can't be blank")
+      it 'is valid without savings_goal_amount (a goal can be named before a target is set)' do
+        form.savings_goal_amount = nil
+        expect(form).to be_valid
       end
 
-      it 'is invalid with non-numeric saving_goal that converts to zero' do
+      it 'is invalid with non-numeric savings_goal_amount that converts to zero' do
         # ActiveModel::Type::Decimal converts non-numeric strings to 0
-        form.saving_goal = 'xyz'
+        form.savings_goal_amount = 'xyz'
         expect(form).not_to be_valid
-        expect(form.errors[:saving_goal]).to include("must be greater than 0")
+        expect(form.errors[:savings_goal_amount]).to include("must be greater than 0")
       end
 
-      it 'is invalid with zero saving_goal' do
-        form.saving_goal = 0
+      it 'is invalid with zero savings_goal_amount' do
+        form.savings_goal_amount = 0
         expect(form).not_to be_valid
-        expect(form.errors[:saving_goal]).to include("must be greater than 0")
+        expect(form.errors[:savings_goal_amount]).to include("must be greater than 0")
       end
 
-      it 'is invalid with negative saving_goal' do
-        form.saving_goal = -100
+      it 'is invalid with negative savings_goal_amount' do
+        form.savings_goal_amount = -100
         expect(form).not_to be_valid
-        expect(form.errors[:saving_goal]).to include("must be greater than 0")
+        expect(form.errors[:savings_goal_amount]).to include("must be greater than 0")
       end
 
-      it 'is valid with positive saving_goal' do
-        form.saving_goal = 5000
+      it 'is valid with positive savings_goal_amount' do
+        form.savings_goal_amount = 5000
         expect(form).to be_valid
       end
     end
 
     context 'saving_goal_greater_than_balance validation' do
-      it 'is valid when saving_goal is greater than current_balance' do
+      it 'is valid when savings_goal_amount is greater than current_balance' do
         form.current_balance = 1000
-        form.saving_goal = 5000
+        form.savings_goal_amount = 5000
         expect(form).to be_valid
       end
 
-      it 'is invalid when saving_goal equals current_balance' do
+      it 'is invalid when savings_goal_amount equals current_balance' do
         form.current_balance = 5000
-        form.saving_goal = 5000
+        form.savings_goal_amount = 5000
         expect(form).not_to be_valid
-        expect(form.errors[:saving_goal]).to include(I18n.t('errors.messages.goal_must_be_greater'))
+        expect(form.errors[:savings_goal_amount]).to include(I18n.t('errors.messages.goal_must_be_greater'))
       end
 
-      it 'is invalid when saving_goal is less than current_balance' do
+      it 'is invalid when savings_goal_amount is less than current_balance' do
         form.current_balance = 5000
-        form.saving_goal = 1000
+        form.savings_goal_amount = 1000
         expect(form).not_to be_valid
-        expect(form.errors[:saving_goal]).to include(I18n.t('errors.messages.goal_must_be_greater'))
+        expect(form.errors[:savings_goal_amount]).to include(I18n.t('errors.messages.goal_must_be_greater'))
       end
 
-      it 'does not validate when current_balance is nil' do
+      it 'does not apply the greater-than check when current_balance is nil' do
         form.current_balance = nil
-        form.saving_goal = 5000
-        expect(form).not_to be_valid
-        expect(form.errors[:saving_goal]).not_to include(I18n.t('errors.messages.goal_must_be_greater'))
+        form.savings_goal_amount = 5000
+        expect(form).to be_valid
+        expect(form.errors[:savings_goal_amount]).not_to include(I18n.t('errors.messages.goal_must_be_greater'))
       end
 
-      it 'does not validate when saving_goal is nil' do
+      it 'does not apply the greater-than check when savings_goal_amount is nil' do
         form.current_balance = 1000
-        form.saving_goal = nil
-        expect(form).not_to be_valid
-        expect(form.errors[:saving_goal]).not_to include(I18n.t('errors.messages.goal_must_be_greater'))
+        form.savings_goal_amount = nil
+        expect(form).to be_valid
+        expect(form.errors[:savings_goal_amount]).not_to include(I18n.t('errors.messages.goal_must_be_greater'))
       end
     end
   end
@@ -246,7 +244,7 @@ RSpec.describe GoalForm, type: :model do
       end
 
       it 'does not create or update account' do
-        form.saving_goal = 0
+        form.savings_goal_amount = 0
         expect { form.submit }.not_to change { Account.count }
       end
     end
@@ -264,9 +262,9 @@ RSpec.describe GoalForm, type: :model do
         form.submit
       end
 
-      it 'updates the account saving_goal' do
+      it 'updates the account savings_goal_amount' do
         form.submit
-        expect(account.reload.saving_goal).to eq(5000.00)
+        expect(account.reload.savings_goal_amount).to eq(5000.00)
       end
 
       it 'returns the account' do
@@ -278,8 +276,8 @@ RSpec.describe GoalForm, type: :model do
           {
             account_name: 'Emergency Fund',
             current_balance: 1000.00,
-            saving_goal: 5000.00,
-            saving_goal_deadline: Date.new(2026, 5, 31)
+            savings_goal_amount: 5000.00,
+            savings_goal_deadline: Date.new(2026, 5, 31)
           }
         end
 
@@ -298,7 +296,7 @@ RSpec.describe GoalForm, type: :model do
         it 'rejects a deadline in the past' do
           travel_to Date.new(2026, 6, 1) do
             expect(form.submit).to be(false)
-            expect(form.errors[:saving_goal_deadline]).to be_present
+            expect(form.errors[:savings_goal_deadline]).to be_present
           end
         end
       end
@@ -311,9 +309,9 @@ RSpec.describe GoalForm, type: :model do
           form.submit
         end
 
-        it 'updates saving_goal only' do
+        it 'updates savings_goal_amount only' do
           form.submit
-          expect(account.reload.saving_goal).to eq(5000.00)
+          expect(account.reload.savings_goal_amount).to eq(5000.00)
           expect(account.reload.balance).to eq(1000.00)
         end
       end
@@ -400,18 +398,18 @@ RSpec.describe GoalForm, type: :model do
     context 'edge cases' do
       it 'handles very large amounts' do
         form.current_balance = 999_999_999.99
-        form.saving_goal = 1_000_000_000.00
+        form.savings_goal_amount = 1_000_000_000.00
         result = form.submit
         expect(result).to be_an(Account)
-        expect(result.saving_goal).to eq(1_000_000_000.00)
+        expect(result.savings_goal_amount).to eq(1_000_000_000.00)
       end
 
       it 'rounds amounts to two decimal places' do
         form.current_balance = 100.12345
-        form.saving_goal = 200.67890
+        form.savings_goal_amount = 200.67890
         result = form.submit
         expect(result).to be_an(Account)
-        expect(result.saving_goal).to eq(200.68)
+        expect(result.savings_goal_amount).to eq(200.68)
       end
 
       it 'handles account names with special characters' do
@@ -425,7 +423,7 @@ RSpec.describe GoalForm, type: :model do
         account = create(:account, user: user, name: 'Emergency Fund', balance: 1000.01)
         form.account_name = account.name
         form.current_balance = 1000.02
-        form.saving_goal = 2000.00
+        form.savings_goal_amount = 2000.00
 
         expect { form.submit }.to change { Transaction.count }.by(1)
 
@@ -451,9 +449,9 @@ RSpec.describe GoalForm, type: :model do
     end
 
     it 'rolls back account update when transaction creation fails' do
-      original_goal = account.saving_goal
+      original_goal = account.savings_goal_amount
       form.submit
-      expect(account.reload.saving_goal).to eq(original_goal)
+      expect(account.reload.savings_goal_amount).to eq(original_goal)
     end
 
     it 'returns false on rollback' do

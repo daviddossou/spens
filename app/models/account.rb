@@ -2,15 +2,16 @@
 #
 # Table name: accounts
 #
-#  id                   :uuid             not null, primary key
-#  balance              :float            default(0.0), not null
-#  name                 :string           not null
-#  saving_goal          :float            default(0.0)
-#  saving_goal_deadline :date
-#  created_at           :datetime         not null
-#  updated_at           :datetime         not null
-#  space_id             :uuid             not null, indexed
-#  user_id              :uuid             indexed
+#  id                    :uuid             not null, primary key
+#  balance               :float            default(0.0), not null
+#  name                  :string           not null
+#  savings_goal          :boolean          default(FALSE), not null
+#  savings_goal_amount   :float
+#  savings_goal_deadline :date
+#  created_at            :datetime         not null
+#  updated_at            :datetime         not null
+#  space_id              :uuid             not null, indexed
+#  user_id               :uuid             indexed
 #
 # Indexes
 #
@@ -24,7 +25,7 @@
 #  fk_rails_...  (user_id => users.id)
 #
 class Account < ApplicationRecord
-  rounds_money :balance, :saving_goal
+  rounds_money :balance, :savings_goal_amount
 
   ##
   # Associations
@@ -35,12 +36,14 @@ class Account < ApplicationRecord
   ##
   # Validations
   validates :name, presence: true, length: { maximum: 100 }, uniqueness: { scope: :space_id, case_sensitive: false }
-  validates :saving_goal, presence: true, numericality: { greater_than_or_equal_to: 0 }
+  # The target amount is optional (nil until the user sets one); the savings_goal
+  # boolean is what marks the account as a goal.
+  validates :savings_goal_amount, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
   validates :balance, presence: true, numericality: true
 
   ##
   # Scopes
-  scope :with_saving_goals, -> { where.not(saving_goal: 0) }
+  scope :with_saving_goals, -> { where(savings_goal: true) }
 
   ##
   # Class Methods

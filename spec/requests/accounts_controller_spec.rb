@@ -155,7 +155,7 @@ RSpec.describe AccountsController, type: :request do
       {
         account_name: "New Account",
         current_balance: 500.00,
-        saving_goal: 2000.00
+        savings_goal_amount: 2000.00
       }
     end
 
@@ -163,7 +163,7 @@ RSpec.describe AccountsController, type: :request do
       {
         account_name: "",
         current_balance: 100.00,
-        saving_goal: 0.00
+        savings_goal_amount: 0.00
       }
     end
 
@@ -188,7 +188,7 @@ RSpec.describe AccountsController, type: :request do
       it "sets the correct saving goal" do
         post accounts_path, params: { account: valid_attributes }
         created_account = Account.find_by(name: "New Account", space: space)
-        expect(created_account.saving_goal).to eq(2000.00)
+        expect(created_account.savings_goal_amount).to eq(2000.00)
       end
 
       it "adjusts the balance if different from zero" do
@@ -214,7 +214,7 @@ RSpec.describe AccountsController, type: :request do
 
         it "updates the saving goal" do
           post accounts_path, params: { account: valid_attributes.merge(account_name: "Existing Account", current_balance: 1500.00) }
-          expect(existing_account.reload.saving_goal).to eq(2000.00)
+          expect(existing_account.reload.savings_goal_amount).to eq(2000.00)
         end
       end
     end
@@ -254,7 +254,7 @@ RSpec.describe AccountsController, type: :request do
       {
         account_name: "Updated Savings",
         current_balance: 1500.00,
-        saving_goal: 6000.00
+        savings_goal_amount: 6000.00
       }
     end
 
@@ -262,7 +262,7 @@ RSpec.describe AccountsController, type: :request do
       {
         account_name: "",
         current_balance: 100.00,
-        saving_goal: 0.00
+        savings_goal_amount: 0.00
       }
     end
 
@@ -270,7 +270,7 @@ RSpec.describe AccountsController, type: :request do
       it "updates the account" do
         patch account_path(id: account.id), params: { account: valid_update_attributes }
         expect(account.reload.name).to eq("Updated Savings")
-        expect(account.reload.saving_goal).to eq(6000.00)
+        expect(account.reload.savings_goal_amount).to eq(6000.00)
       end
 
       it "redirects to the account show page" do

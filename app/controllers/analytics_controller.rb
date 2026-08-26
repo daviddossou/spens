@@ -118,7 +118,7 @@ class AnalyticsController < ApplicationController
 
     # Accounts with saving goals
     @saving_accounts = @accounts.with_saving_goals.order(:name)
-    @total_saving_goal = @saving_accounts.sum(:saving_goal)
+    @total_saving_goal = @saving_accounts.sum("COALESCE(savings_goal_amount, 0)")
     @total_saved = @saving_accounts.sum(:balance)
 
     # Monthly saving trend (line) — net amount going into accounts
@@ -130,8 +130,8 @@ class AnalyticsController < ApplicationController
       {
         name: account.name,
         balance: account.balance,
-        goal: account.saving_goal,
-        progress: account.saving_goal > 0 ? ((account.balance / account.saving_goal) * 100).clamp(0, 100).round : 0
+        goal: account.savings_goal_amount,
+        progress: account.savings_goal_amount.to_f > 0 ? ((account.balance / account.savings_goal_amount) * 100).clamp(0, 100).round : 0
       }
     end
   end

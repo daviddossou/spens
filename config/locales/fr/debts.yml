@@ -21,6 +21,7 @@ fr:
       remaining_label: "restant"
       repaid_label: "remboursé"
       settled_label: "Soldé"
+      no_amount: "Pas encore de montant — ajoute-le quand tu veux"
     new:
       title:
         lent: "Nouveau prêt"

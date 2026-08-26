@@ -7,15 +7,15 @@ class GoalForm < BaseForm
 
   attribute :account_name, :string
   attribute :current_balance, :decimal
-  attribute :saving_goal, :decimal
-  attribute :saving_goal_deadline, :date
+  attribute :savings_goal_amount, :decimal
+  attribute :savings_goal_deadline, :date
 
   ##
   # Validations
   validates :account_name, presence: true
-  validates :current_balance, presence: true, numericality: true
-  validates :saving_goal, presence: true, numericality: { greater_than: 0 }
-  validate :saving_goal_greater_than_balance
+  validates :current_balance, numericality: true, allow_blank: true
+  validates :savings_goal_amount, numericality: { greater_than: 0 }, allow_blank: true
+  validate :goal_greater_than_balance
   validate :deadline_in_the_future
 
   ##
@@ -33,8 +33,8 @@ class GoalForm < BaseForm
     super(
       account_name: payload[:account_name],
       current_balance: payload[:current_balance],
-      saving_goal: payload[:saving_goal],
-      saving_goal_deadline: payload[:saving_goal_deadline]
+      savings_goal_amount: payload[:savings_goal_amount],
+      savings_goal_deadline: payload[:savings_goal_deadline]
     )
   end
 
@@ -51,8 +51,11 @@ class GoalForm < BaseForm
 
     ActiveRecord::Base.transaction do
       @account = find_or_create_account
-      account.update!(saving_goal: saving_goal, saving_goal_deadline: saving_goal_deadline)
-      adjust_account_balance(account) if balance_changed?(account)
+      # Creating through the goal flow marks the account as a savings goal, even
+      # before a target amount is set.
+      account.update!(savings_goal: true, savings_goal_amount: savings_goal_amount,
+                      savings_goal_deadline: savings_goal_deadline)
+      adjust_account_balance(account) if current_balance.present? && balance_changed?(account)
       # Balance moved through the ledger; reload so the plan spreads the real remainder.
       Budgets::SyncGoalPlanService.call(account.reload)
       account
@@ -73,17 +76,17 @@ class GoalForm < BaseForm
 
   private
 
-  def saving_goal_greater_than_balance
-    return unless saving_goal.present? && current_balance.present?
-    return if saving_goal > current_balance
+  def goal_greater_than_balance
+    return unless savings_goal_amount.present? && current_balance.present?
+    return if savings_goal_amount > current_balance
 
-    errors.add(:saving_goal, I18n.t("errors.messages.goal_must_be_greater"))
+    errors.add(:savings_goal_amount, I18n.t("errors.messages.goal_must_be_greater"))
   end
 
   def deadline_in_the_future
-    return if saving_goal_deadline.blank? || saving_goal_deadline > Date.current
+    return if savings_goal_deadline.blank? || savings_goal_deadline > Date.current
 
-    errors.add(:saving_goal_deadline, I18n.t("goals.errors.deadline_in_past"))
+    errors.add(:savings_goal_deadline, I18n.t("goals.errors.deadline_in_past"))
   end
 
   def find_or_create_account
