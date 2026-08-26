@@ -122,10 +122,9 @@ RSpec.describe DebtForm, type: :model do
         expect(form).to be_valid
       end
 
-      it 'is invalid without total_lent' do
+      it 'is valid without total_lent (name the person now, add the amount later)' do
         form.total_lent = nil
-        expect(form).not_to be_valid
-        expect(form.errors[:total_lent]).to include("can't be blank")
+        expect(form).to be_valid
       end
 
       it 'is invalid with zero total_lent' do
@@ -203,12 +202,11 @@ RSpec.describe DebtForm, type: :model do
         expect(form.errors[:total_reimbursed]).to include(I18n.t('debts.errors.reimbursed_exceeds_lent'))
       end
 
-      it 'validates even when total_lent is nil' do
+      it 'skips the reimbursed-vs-lent check when total_lent is blank' do
         form.total_lent = nil
         form.total_reimbursed = 500
-        expect(form).not_to be_valid
-        # Should have error about total_lent being blank, not about reimbursed exceeding
-        expect(form.errors[:total_lent]).to include("can't be blank")
+        expect(form).to be_valid
+        expect(form.errors[:total_reimbursed]).not_to include(I18n.t('debts.errors.reimbursed_exceeds_lent'))
       end
     end
 

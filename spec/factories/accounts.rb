@@ -2,15 +2,16 @@
 #
 # Table name: accounts
 #
-#  id                   :uuid             not null, primary key
-#  balance              :float            default(0.0), not null
-#  name                 :string           not null
-#  saving_goal          :float            default(0.0)
-#  saving_goal_deadline :date
-#  created_at           :datetime         not null
-#  updated_at           :datetime         not null
-#  space_id             :uuid             not null, indexed
-#  user_id              :uuid             indexed
+#  id                    :uuid             not null, primary key
+#  balance               :float            default(0.0), not null
+#  name                  :string           not null
+#  savings_goal          :boolean          default(FALSE), not null
+#  savings_goal_amount   :float
+#  savings_goal_deadline :date
+#  created_at            :datetime         not null
+#  updated_at            :datetime         not null
+#  space_id              :uuid             not null, indexed
+#  user_id               :uuid             indexed
 #
 # Indexes
 #
@@ -27,11 +28,19 @@ FactoryBot.define do
   factory :account do
     transient do
       user { nil }
+      # Back-compat shorthand: `saving_goal: 5000` sets the amount and flags the
+      # account as a savings goal.
+      saving_goal { nil }
     end
 
     sequence(:name) { |n| "Account #{n}" }
     balance { 0.0 }
-    saving_goal { 0.0 }
+    savings_goal_amount { saving_goal }
+    savings_goal { saving_goal.to_f.positive? }
+
+    trait :savings do
+      savings_goal { true }
+    end
 
     space do
       if user

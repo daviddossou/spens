@@ -6,7 +6,8 @@ RSpec.describe Budgets::SyncGoalPlanService do
   let(:space) { create(:space) }
 
   def build_account(balance:, goal:, deadline:)
-    create(:account, space: space, balance: balance, saving_goal: goal, saving_goal_deadline: deadline)
+    create(:account, :savings, space: space, balance: balance,
+                     savings_goal_amount: goal, savings_goal_deadline: deadline)
   end
 
   def goal_line(account)
@@ -43,7 +44,7 @@ RSpec.describe Budgets::SyncGoalPlanService do
       account = build_account(balance: 0, goal: 30_000, deadline: Date.new(2026, 6, 30))
       described_class.call(account)
 
-      account.update!(saving_goal_deadline: nil)
+      account.update!(savings_goal_deadline: nil)
       described_class.call(account)
 
       expect(goal_line(account)).not_to be_active

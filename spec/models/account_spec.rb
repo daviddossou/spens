@@ -2,15 +2,16 @@
 #
 # Table name: accounts
 #
-#  id                   :uuid             not null, primary key
-#  balance              :float            default(0.0), not null
-#  name                 :string           not null
-#  saving_goal          :float            default(0.0)
-#  saving_goal_deadline :date
-#  created_at           :datetime         not null
-#  updated_at           :datetime         not null
-#  space_id             :uuid             not null, indexed
-#  user_id              :uuid             indexed
+#  id                    :uuid             not null, primary key
+#  balance               :float            default(0.0), not null
+#  name                  :string           not null
+#  savings_goal          :boolean          default(FALSE), not null
+#  savings_goal_amount   :float
+#  savings_goal_deadline :date
+#  created_at            :datetime         not null
+#  updated_at            :datetime         not null
+#  space_id              :uuid             not null, indexed
+#  user_id               :uuid             indexed
 #
 # Indexes
 #
@@ -61,24 +62,28 @@ RSpec.describe Account, type: :model do
       end
     end
 
-    describe 'saving_goal validation' do
-      it { is_expected.to validate_presence_of(:saving_goal) }
-      it { is_expected.to validate_numericality_of(:saving_goal).is_greater_than_or_equal_to(0) }
+    describe 'savings_goal_amount validation' do
+      it { is_expected.to validate_numericality_of(:savings_goal_amount).is_greater_than_or_equal_to(0).allow_nil }
 
-      it 'allows zero as saving_goal' do
-        account.saving_goal = 0
+      it 'allows a nil amount (no target set yet)' do
+        account.savings_goal_amount = nil
+        expect(account).to be_valid
+      end
+
+      it 'allows zero' do
+        account.savings_goal_amount = 0
         expect(account).to be_valid
       end
 
       it 'allows positive values' do
-        account.saving_goal = 1000.50
+        account.savings_goal_amount = 1000.50
         expect(account).to be_valid
       end
 
       it 'rejects negative values' do
-        account.saving_goal = -1
+        account.savings_goal_amount = -1
         expect(account).not_to be_valid
-        expect(account.errors[:saving_goal]).to include('must be greater than or equal to 0')
+        expect(account.errors[:savings_goal_amount]).to include('must be greater than or equal to 0')
       end
     end
 
@@ -116,10 +121,16 @@ RSpec.describe Account, type: :model do
       expect(account.balance).to eq(0.0)
     end
 
-    it 'has a default saving_goal of 0.0' do
+    it 'defaults savings_goal_amount to nil (no target set)' do
       account = described_class.new(name: 'Test', space: create(:space))
       account.save!
-      expect(account.saving_goal).to eq(0.0)
+      expect(account.savings_goal_amount).to be_nil
+    end
+
+    it 'defaults the savings_goal flag to false' do
+      account = described_class.new(name: 'Test', space: create(:space))
+      account.save!
+      expect(account.savings_goal?).to be(false)
     end
   end
 
@@ -128,14 +139,14 @@ RSpec.describe Account, type: :model do
       let(:user) { create(:user) }
       let(:space) { user.spaces.first }
       let!(:account_with_goal) { create(:account, space: space, saving_goal: 5000.0) }
-      let!(:account_without_goal) { create(:account, space: space, saving_goal: 0.0) }
+      let!(:account_without_goal) { create(:account, space: space) }
       let!(:another_account_with_goal) { create(:account, space: space, saving_goal: 1000.0) }
 
-      it 'returns accounts with non-zero saving goals' do
+      it 'returns accounts flagged as savings goals' do
         expect(described_class.with_saving_goals).to include(account_with_goal, another_account_with_goal)
       end
 
-      it 'excludes accounts with zero saving goals' do
+      it 'excludes accounts not flagged as savings goals' do
         expect(described_class.with_saving_goals).not_to include(account_without_goal)
       end
 
@@ -143,10 +154,9 @@ RSpec.describe Account, type: :model do
         expect(user.accounts.with_saving_goals.count).to eq(2)
       end
 
-      it 'includes accounts with negative saving goals if any exist' do
-        # Even though validation prevents this, test the scope behavior
-        account_with_goal.update_column(:saving_goal, -100.0)
-        expect(described_class.with_saving_goals).to include(account_with_goal)
+      it 'includes a flagged goal even without a target amount set' do
+        targetless = create(:account, :savings, space: space)
+        expect(described_class.with_saving_goals).to include(targetless)
       end
     end
   end
