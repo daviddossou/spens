@@ -60,7 +60,7 @@ fr:
       edited: "Modifié"
       deleted: "Supprimé"
     kinds:
-      transfer: "Virement"
+      transfer: "Transfert"
       debt_in: "Dette (emprunté)"
       debt_out: "Dette (prêté)"
     counts:
@@ -158,7 +158,7 @@ fr:
       subtitle: "Correspondances expression → catégorie en attente d'examen."
     learned_keywords:
       title: "Mots-clés de type"
-      subtitle: "Correspondances verbe → virement/dette en attente d'examen."
+      subtitle: "Correspondances verbe → transfert/dette en attente d'examen."
     users:
       title: "Utilisateurs"
       search: "Rechercher par e-mail…"
