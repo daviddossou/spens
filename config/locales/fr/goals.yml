@@ -11,6 +11,7 @@ fr:
       saved_label: "épargné"
       to_go_label: "restant"
       reached_label: "Atteint"
+      no_target: "Pas encore d'objectif — ajoute-le quand tu veux"
     new:
       title: "Nouvel objectif"
       subtitle: "Fixe un montant cible pour ton compte"

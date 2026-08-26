@@ -11,6 +11,7 @@ en:
       saved_label: "saved"
       to_go_label: "to go"
       reached_label: "Reached"
+      no_target: "No target yet — add one when you're ready"
     new:
       title: "New Savings Goal"
       subtitle: "Set a target for your account"

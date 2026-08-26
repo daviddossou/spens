@@ -12,12 +12,13 @@
     <%= render Ui::CommitmentCardComponent.new(
       title: @account.name,
       current_value: @account.balance,
-      target_value: @account.saving_goal,
+      target_value: @account.savings_goal_amount,
       currency: current_space.currency,
       accent: "primary",
       progress_label: t('goals.index.saved_label'),
       complete_label: t('goals.index.reached_label'),
-      remaining_label: t('goals.index.to_go_label')
+      remaining_label: t('goals.index.to_go_label'),
+      no_target_label: t('goals.index.no_target')
     ) %>
 
     <div class="commitment-actions">

@@ -21,6 +21,7 @@ en:
       remaining_label: "left"
       repaid_label: "repaid"
       settled_label: "Settled"
+      no_amount: "No amount yet — add it when you're ready"
     new:
       title:
         lent: "New Loan"
