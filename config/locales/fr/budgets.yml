@@ -17,7 +17,7 @@ fr:
       kind_label: "Type"
       kind_income: "Revenu"
       kind_expense: "Dépense"
-      kind_transfer: "Virement"
+      kind_transfer: "Transfert"
       kind_debt: "Dette"
       from_account_label: "Depuis le compte"
       from_account_placeholder: "ex. Banque"
@@ -45,7 +45,7 @@ fr:
     row:
       done_income: "Reçu"
       done_expense: "Payé"
-      done_transfer: "Viré"
+      done_transfer: "Transféré"
       done_debt_in: "Reçu"
       done_debt_out: "Payé"
       in_progress: "En cours"
@@ -67,7 +67,7 @@ fr:
       planned_expenses: "Dépenses prévues"
       section_income: "Revenus"
       section_expense: "Dépenses"
-      section_transfer: "Virements"
+      section_transfer: "Transferts"
       section_debt: "Dettes"
       goal_reached_html: "Objectif d'épargne %{amount} atteint"
       goal_on_track_html: "Objectif d'épargne %{amount} en bonne voie"
@@ -81,10 +81,10 @@ fr:
       no_entries_message: "Aucune de tes lignes de budget ne s'applique à ce mois."
     unplanned:
       title: "Hors plan"
-      hint: "Reçu, dépensé ou viré ce mois-ci en dehors de ton budget"
+      hint: "Reçu, dépensé ou transféré ce mois-ci en dehors de ton budget"
       group_income: "Revenus"
       group_expense: "Dépenses"
-      group_transfers: "Virements"
+      group_transfers: "Transferts"
       plan_it: "Ajouter au budget"
       show_more: "Voir les %{count} autres"
       off_plan_html: "Hors plan : %{amounts}"
@@ -106,7 +106,7 @@ fr:
     new:
       title: "Nouvelle ligne de budget"
       subtitle_category: "Planifier un revenu ou une dépense"
-      subtitle_transfer: "Planifier un virement récurrent"
+      subtitle_transfer: "Planifier un transfert récurrent"
       subtitle_debt: "Planifier un paiement de dette"
       save: "Ajouter au budget"
     create:
