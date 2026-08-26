@@ -14,20 +14,21 @@
 #  updated_at          :datetime         not null
 #  debt_id             :uuid             indexed, indexed => [space_id, kind]
 #  from_account_id     :uuid             indexed, indexed => [space_id, to_account_id]
-#  space_id            :uuid             not null, indexed => [debt_id, kind], indexed => [from_account_id, to_account_id], indexed => [transaction_type_id], indexed
-#  to_account_id       :uuid             indexed => [space_id, from_account_id], indexed
+#  space_id            :uuid             not null, indexed => [debt_id, kind], indexed => [to_account_id], indexed => [from_account_id, to_account_id], indexed => [transaction_type_id], indexed
+#  to_account_id       :uuid             indexed => [space_id], indexed => [space_id, from_account_id], indexed
 #  transaction_type_id :uuid             indexed => [space_id], indexed
 #
 # Indexes
 #
-#  index_budget_items_on_debt_id                    (debt_id)
-#  index_budget_items_on_from_account_id            (from_account_id)
-#  index_budget_items_on_space_and_debt_active      (space_id,debt_id,kind) UNIQUE WHERE (active AND (debt_id IS NOT NULL))
-#  index_budget_items_on_space_and_transfer_active  (space_id,from_account_id,to_account_id) UNIQUE WHERE (active AND (from_account_id IS NOT NULL))
-#  index_budget_items_on_space_and_type_active      (space_id,transaction_type_id) UNIQUE WHERE (active AND (transaction_type_id IS NOT NULL))
-#  index_budget_items_on_space_id                   (space_id)
-#  index_budget_items_on_to_account_id              (to_account_id)
-#  index_budget_items_on_transaction_type_id        (transaction_type_id)
+#  index_budget_items_on_debt_id                          (debt_id)
+#  index_budget_items_on_from_account_id                  (from_account_id)
+#  index_budget_items_on_space_and_debt_active            (space_id,debt_id,kind) UNIQUE WHERE (active AND (debt_id IS NOT NULL))
+#  index_budget_items_on_space_and_dest_active_no_source  (space_id,to_account_id) UNIQUE WHERE (active AND (from_account_id IS NULL) AND (to_account_id IS NOT NULL))
+#  index_budget_items_on_space_and_transfer_active        (space_id,from_account_id,to_account_id) UNIQUE WHERE (active AND (from_account_id IS NOT NULL))
+#  index_budget_items_on_space_and_type_active            (space_id,transaction_type_id) UNIQUE WHERE (active AND (transaction_type_id IS NOT NULL))
+#  index_budget_items_on_space_id                         (space_id)
+#  index_budget_items_on_to_account_id                    (to_account_id)
+#  index_budget_items_on_transaction_type_id              (transaction_type_id)
 #
 # Foreign Keys
 #
