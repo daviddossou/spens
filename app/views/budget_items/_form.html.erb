@@ -146,6 +146,16 @@
 </div>
 
 <% if @form.kind == "expense" %>
+  <div class="budget-item-form__essential">
+    <label class="budget-rollover">
+      <%= f.check_box :essential, class: "budget-rollover__input" %>
+      <span class="budget-rollover__text">
+        <span class="budget-rollover__label"><%= t('budgets.form.essential_label') %></span>
+        <span class="budget-rollover__help"><%= t('budgets.form.essential_help') %></span>
+      </span>
+    </label>
+  </div>
+
   <div class="budget-item-form__rollover">
     <label class="budget-rollover">
       <%= f.check_box :rollover, class: "budget-rollover__input" %>

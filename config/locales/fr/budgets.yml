@@ -34,6 +34,8 @@ fr:
       amount_placeholder: "0"
       frequency_label: "À quelle fréquence ?"
       frequency_help: "Les montants journaliers et hebdomadaires sont cumulés en une ligne mensuelle."
+      essential_label: "Je ne peux pas m'en passer"
+      essential_help: "Coché par défaut. Décoche si c'est plutôt un petit plaisir ou un extra."
       rollover_label: "Budget cumulatif"
       rollover_help: "Ce qui reste à la fin du mois s'ajoute au budget du mois suivant. Pratique pour les achats groupés ou espacés."
       ends_on_label: "Se termine le (optionnel)"
