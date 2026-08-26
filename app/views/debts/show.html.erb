@@ -40,6 +40,17 @@
           full_width: true,
           data: { turbo_frame: "modal" }
         ) %>
+
+        <% if @debt.ongoing? %>
+          <%= render Ui::ButtonComponent.new(
+            text: t(".write_off.#{@debt.direction}"),
+            url: write_off_debt_path(id: @debt.id),
+            variant: :"outline-secondary",
+            size: :lg,
+            full_width: true,
+            data: { turbo_method: :post, turbo_confirm: t(".write_off_confirm.#{@debt.direction}") }
+          ) %>
+        <% end %>
       </div>
     </div>
 

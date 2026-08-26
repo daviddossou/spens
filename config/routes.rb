@@ -44,7 +44,9 @@ Rails.application.routes.draw do
     resources :goals, only: [ :index, :show, :new, :create, :edit, :update, :destroy ]
 
     # Debts
-    resources :debts, only: [ :index, :show, :new, :create, :edit, :update ]
+    resources :debts, only: [ :index, :show, :new, :create, :edit, :update ] do
+      member { post :write_off }
+    end
 
     # Accounts
     resources :accounts, only: [ :index, :show, :new, :create, :edit, :update, :destroy ]
