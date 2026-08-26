@@ -23,6 +23,17 @@ RSpec.describe BudgetItemsController, type: :request do
       expect(space.budget_items.active.count).to eq(1)
     end
 
+    it "persists the essential flag and end date from the form" do
+      post budget_items_path, params: { budget_item: {
+        kind: "expense", transaction_type_name: "Streaming", amount: 5_000,
+        frequency: "monthly", starts_on: month, ends_on: month >> 3, essential: "0"
+      } }
+
+      item = space.budget_items.order(:created_at).last
+      expect(item.essential).to be(false)
+      expect(item.ends_on).to eq((month >> 3).to_date)
+    end
+
     it "re-renders on validation failure" do
       post budget_items_path, params: { budget_item: { kind: "expense", transaction_type_name: "", amount: "" } }
       expect(response).to have_http_status(:unprocessable_entity)
