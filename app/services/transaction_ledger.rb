@@ -29,6 +29,10 @@ class TransactionLedger
     private
 
     def post(effect, sign)
+      # A write-off moves no money: it neither touches an account balance nor the
+      # debt's running totals (the debt is closed by its status, not by a payment).
+      return if effect.type&.debt_writeoff?
+
       adjust_account_balance(effect.account, effect.amount * sign)
       adjust_debt_total(effect.debt, effect.type, effect.amount, sign)
     end
