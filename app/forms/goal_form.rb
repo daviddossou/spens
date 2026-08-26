@@ -8,6 +8,7 @@ class GoalForm < BaseForm
   attribute :account_name, :string
   attribute :current_balance, :decimal
   attribute :saving_goal, :decimal
+  attribute :saving_goal_deadline, :date
 
   ##
   # Validations
@@ -15,6 +16,7 @@ class GoalForm < BaseForm
   validates :current_balance, presence: true, numericality: true
   validates :saving_goal, presence: true, numericality: { greater_than: 0 }
   validate :saving_goal_greater_than_balance
+  validate :deadline_in_the_future
 
   ##
   # Class Methods
@@ -31,7 +33,8 @@ class GoalForm < BaseForm
     super(
       account_name: payload[:account_name],
       current_balance: payload[:current_balance],
-      saving_goal: payload[:saving_goal]
+      saving_goal: payload[:saving_goal],
+      saving_goal_deadline: payload[:saving_goal_deadline]
     )
   end
 
@@ -48,8 +51,10 @@ class GoalForm < BaseForm
 
     ActiveRecord::Base.transaction do
       @account = find_or_create_account
-      account.update!(saving_goal: saving_goal)
+      account.update!(saving_goal: saving_goal, saving_goal_deadline: saving_goal_deadline)
       adjust_account_balance(account) if balance_changed?(account)
+      # Balance moved through the ledger; reload so the plan spreads the real remainder.
+      Budgets::SyncGoalPlanService.call(account.reload)
       account
     end
   rescue StandardError => e
@@ -73,6 +78,12 @@ class GoalForm < BaseForm
     return if saving_goal > current_balance
 
     errors.add(:saving_goal, I18n.t("errors.messages.goal_must_be_greater"))
+  end
+
+  def deadline_in_the_future
+    return if saving_goal_deadline.blank? || saving_goal_deadline > Date.current
+
+    errors.add(:saving_goal_deadline, I18n.t("goals.errors.deadline_in_past"))
   end
 
   def find_or_create_account

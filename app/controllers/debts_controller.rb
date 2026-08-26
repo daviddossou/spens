@@ -75,7 +75,8 @@ class DebtsController < ApplicationController
       total_lent: @debt.total_lent,
       total_reimbursed: @debt.total_reimbursed,
       note: @debt.note,
-      direction: @debt.direction
+      direction: @debt.direction,
+      deadline: @debt.deadline
     }
   end
 
@@ -87,7 +88,8 @@ class DebtsController < ApplicationController
       :total_reimbursed,
       :note,
       :direction,
-      :account_name
+      :account_name,
+      :deadline
     )
   end
 end
