@@ -95,6 +95,12 @@ fr:
       add_transaction: "Ajouter une transaction"
       quick_add: "Ajout rapide"
       edit_debt: "Modifier"
+      write_off:
+        lent: "Je n'y compte plus"
+        borrowed: "Je ne dois plus rien"
+      write_off_confirm:
+        lent: "Clôturer cette créance ? Elle sortira de tes totaux mais restera dans ton historique."
+        borrowed: "Clôturer cette dette ? Elle sortira de tes totaux mais restera dans ton historique."
       note_title: "Note"
       recent_transactions: "Transactions récentes"
       no_transactions: "Aucune transaction"
@@ -104,6 +110,9 @@ fr:
     update:
       success: "Mis à jour !"
       error: "Impossible de modifier"
+    write_off:
+      success: "C'est réglé — sorti de tes totaux, gardé dans ton historique."
+      error: "Impossible de clôturer cette dette"
     errors:
       not_found: "Introuvable"
       reimbursed_exceeds_lent: "Le montant remboursé ne peut pas dépasser le total"
@@ -116,6 +125,9 @@ fr:
       debt_out:
         lent: "Argent prêté"
         borrowed: "Remboursement de dette"
+      debt_writeoff:
+        lent: "Créance abandonnée"
+        borrowed: "Dette effacée"
     transaction_description:
       debt_in:
         lent: "Remboursé par %{contact_name}"
@@ -123,3 +135,6 @@ fr:
       debt_out:
         lent: "Prêté à %{contact_name}"
         borrowed: "Remboursé à %{contact_name}"
+      debt_writeoff:
+        lent: "Créance de %{contact_name} abandonnée"
+        borrowed: "Dette envers %{contact_name} effacée"

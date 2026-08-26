@@ -95,6 +95,12 @@ en:
       add_transaction: "Add Transaction"
       quick_add: "Quick add"
       edit_debt: "Edit"
+      write_off:
+        lent: "Write it off"
+        borrowed: "It's forgiven"
+      write_off_confirm:
+        lent: "Close this receivable? It leaves your totals but stays in your history."
+        borrowed: "Close this debt? It leaves your totals but stays in your history."
       note_title: "Note"
       recent_transactions: "Recent Transactions"
       no_transactions: "No transactions yet"
@@ -104,6 +110,9 @@ en:
     update:
       success: "Updated!"
       error: "Could not update this loan"
+    write_off:
+      success: "Done — it's off your totals, still in your history."
+      error: "Couldn't close this debt"
     errors:
       not_found: "Not found"
       reimbursed_exceeds_lent: "Repaid amount can't be more than the total"
@@ -116,6 +125,9 @@ en:
       debt_out:
         lent: "Money lent"
         borrowed: "Loan repayment"
+      debt_writeoff:
+        lent: "Written off"
+        borrowed: "Debt forgiven"
     transaction_description:
       debt_in:
         lent: "Repaid by %{contact_name}"
@@ -123,3 +135,6 @@ en:
       debt_out:
         lent: "Lent to %{contact_name}"
         borrowed: "Paid back to %{contact_name}"
+      debt_writeoff:
+        lent: "%{contact_name}'s debt written off"
+        borrowed: "Debt to %{contact_name} forgiven"
