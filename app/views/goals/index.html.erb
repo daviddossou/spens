@@ -6,15 +6,15 @@
   </header>
 
   <div class="page-content">
-    <% if @accounts_with_goals.any? %>
+    <% if @goals.any? %>
       <div class="goals-list">
-        <% @accounts_with_goals.each do |account| %>
+        <% @goals.each do |goal| %>
           <%= render Ui::CommitmentCardComponent.new(
-            title: account.name,
-            current_value: account.balance,
-            target_value: account.savings_goal_amount,
+            title: goal.name,
+            current_value: goal.account.balance,
+            target_value: goal.target_amount,
             currency: current_space.currency,
-            url: goal_path(id: account.id),
+            url: goal_path(id: goal.account.id),
             accent: "primary",
             progress_label: t('.saved_label'),
             complete_label: t('.reached_label'),

@@ -38,20 +38,4 @@
         help_text: t('.current_balance_help')
       ) %>
     </div>
-
-    <!-- Saving Goal Field (Optional) -->
-    <div class="account-form__field">
-      <%= render Forms::InputFieldComponent.new(
-        form: form,
-        field: :savings_goal_amount,
-        type: :number_field,
-        label: t('.saving_goal_label'),
-        required: false,
-        prepend: get_currency_symbol(current_space.currency),
-        step: "0.01",
-        min: "0",
-        placeholder: "0.00",
-        help_text: t('.saving_goal_help')
-      ) %>
-    </div>
   </div>

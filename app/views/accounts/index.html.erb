@@ -12,7 +12,7 @@
           <%= link_to account_path(id: account.id), class: "account-card" do %>
             <div class="account-card__info">
               <h3 class="account-card__name"><%= account.name %></h3>
-              <% if account.savings_goal? %>
+              <% if account.goal.present? %>
                 <span class="account-card__goal-badge"><%= t('.has_goal') %></span>
               <% end %>
             </div>
