@@ -390,4 +390,30 @@ RSpec.describe DebtsController, type: :request do
       end
     end
   end
+
+  describe 'POST #write_off' do
+    it 'closes the debt and records a neutral write-off transaction' do
+      lent = create(:debt, user: user, name: 'Georges', direction: 'lent', total_lent: 50_000, total_reimbursed: 15_000)
+
+      expect { post write_off_debt_path(id: lent.id) }.to change { lent.reload.transactions.count }.by(1)
+
+      expect(lent.reload).to be_written_off
+      expect(response).to have_http_status(:see_other)
+      expect(space.debts.ongoing).not_to include(lent)
+      expect(lent.transactions.last.transaction_type.kind).to eq('debt_writeoff')
+    end
+
+    it 'redirects with an alert when nothing is outstanding' do
+      settled = create(:debt, user: user, total_lent: 1_000, total_reimbursed: 1_000)
+      post write_off_debt_path(id: settled.id)
+      expect(flash[:alert]).to eq(I18n.t('debts.write_off.error'))
+    end
+
+    it 'requires authentication' do
+      sign_out user
+      lent = create(:debt, user: user)
+      post write_off_debt_path(id: lent.id)
+      expect(response).to have_http_status(:redirect)
+    end
+  end
 end
