@@ -8,6 +8,7 @@
 #  active              :boolean          default(TRUE), not null
 #  amount              :decimal(15, 2)   not null
 #  ends_on             :date
+#  essential           :boolean          default(TRUE), not null
 #  frequency           :string           not null
 #  kind                :string           not null, indexed => [space_id, debt_id]
 #  rollover            :boolean          default(FALSE), not null
