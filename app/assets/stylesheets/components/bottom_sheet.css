@@ -30,13 +30,13 @@
 .bottom-sheet__panel {
   position: relative;
   background: var(--bg-surface, #ffffff);
-  border-radius: 1rem 1rem 0 0;
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
   max-height: 92vh;
   display: flex;
   flex-direction: column;
   transform: translateY(100%);
   transition: transform 0.3s cubic-bezier(0.32, 0.72, 0, 1);
-  box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.12);
+  box-shadow: var(--shadow-nav);
   /* Account for Android gesture navigation bar / iOS home indicator */
   padding-bottom: env(safe-area-inset-bottom, 0);
 }

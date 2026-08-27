@@ -5,7 +5,7 @@
   align-items: center;
   justify-content: center;
   border: 2px solid transparent;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -15,7 +15,7 @@
 
 .btn:focus {
   outline: none;
-  box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.2);
+  box-shadow: var(--shadow-focus);
 }
 
 /* Button Variants */

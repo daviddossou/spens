@@ -70,6 +70,17 @@
   --color-text-secondary: #5b606e;
   --color-muted-on-dark: #9197B9;
   --color-border-soft: #e2e3e9;
+  --color-surface-sunken: #f6f7fb; /* soft grey inset panels */
+  --color-surface-sunken-2: #f1f2f6;
+  --color-canvas-bilan: #f3f4f8; /* finished-month page canvas */
+  --color-banner-track: #e6e8f2; /* segmented mode banner track */
+  --color-separator: #eff0f4;
+  --color-separator-2: #f4f5f8;
+  --color-amber-ink: #8a4f00; /* text on amber fills */
+  --color-amber-ink-soft: #96601a;
+  --color-neutral-pill: #e4e6ee; /* inactive icon pill / segment */
+  --color-primary-tint: #eef0f8; /* softest indigo wash for info encarts */
+  --color-primary-ink: #3d4a8f; /* readable indigo text on the tint */
   --color-border-input: #d9dadf;
   --color-violet: #7A3FB5;
   --color-violet-20: #e5dcf2;
@@ -123,4 +134,40 @@
   --hover-warning: var(--color-warning);
 
   --focus-ring: var(--color-primary);
+
+  /* ── Radius scale (DESIGN.md §5) ───────────────────────────── */
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 1rem;
+  --radius-full: 9999px;
+
+  /* ── Spacing scale (DESIGN.md §Spacing) ────────────────────── */
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 0.75rem;
+  --space-lg: 1rem;
+  --space-xl: 1.5rem;
+
+  /* ── Elevation (DESIGN.md §4) — soft, diffuse, never outlining ─ */
+  --shadow-resting: 0 2px 8px rgba(0, 0, 0, 0.04);
+  --shadow-raised: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --shadow-nav: 0 -4px 24px rgba(0, 0, 0, 0.12);
+  --shadow-focus: 0 0 0 3px rgba(var(--color-primary-rgb), 0.2);
+
+  /* ── Typography scale (DESIGN.md §3) ───────────────────────── */
+  --font-size-hero: 2.375rem; /* 38px — the page's single glanceable money figure */
+  --font-size-display: 1.75rem;
+  --font-size-headline: 1.25rem;
+  --font-size-title: 1rem;
+  --font-size-body: 0.875rem;
+  --font-size-label: 0.75rem;
+
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  --tracking-display: -0.02em;
+  --tracking-headline: -0.01em;
 }

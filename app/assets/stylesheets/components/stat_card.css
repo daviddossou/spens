@@ -3,12 +3,12 @@
 /* Base card */
 .stat-card {
   background: var(--bg-surface);
-  border-radius: 0.75rem;
+  border-radius: var(--radius-lg);
   padding: 0.875rem 1rem;
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  box-shadow: var(--shadow-resting);
 }
 
 .stat-card__label {
@@ -61,7 +61,7 @@
 /* ── Hero variant: the one glanceable number ───────────────────── */
 .stat-card--hero {
   position: relative;
-  border-radius: 1rem;
+  border-radius: var(--radius-xl);
   padding: 1.25rem 1.25rem 1.375rem;
   gap: 0.5rem;
   background: var(--bg-surface);
@@ -101,8 +101,8 @@
   display: flex;
   flex-direction: column;
   background: var(--bg-surface);
-  border-radius: 0.75rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-resting);
 }
 
 /* No overflow:hidden on .stat-cards — it would clip the smart-money
@@ -151,7 +151,7 @@
   display: block;
   color: inherit;
   text-decoration: none;
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
 }
 /* Same tappable-row affordance as the transactions list */
 .stat-card-link > .stat-card {
@@ -181,9 +181,9 @@
 }
 .stat-card-link:hover .stat-card,
 .stat-card-link:focus-visible .stat-card {
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-raised);
 }
 .stat-card-link:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 3px rgba(63, 81, 181, 0.2);
+  box-shadow: var(--shadow-focus);
 }
