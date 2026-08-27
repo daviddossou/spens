@@ -109,12 +109,20 @@ class BudgetItemForm < BaseForm
       if editing?
         @budget_item.update!(attrs)
       else
-        if duplicate_active_item?(attrs)
+        existing = existing_active_item(attrs)
+        if existing && starts_on.beginning_of_month < existing.starts_on
+          # The category already has a rule, but it starts later than the month
+          # being added — so this isn't a duplicate, it's extending the same rule
+          # backward to cover the earlier month. Move its start (and adopt the
+          # freshly entered values) rather than blocking.
+          existing.update!(attrs)
+          @budget_item = existing
+        elsif existing
           add_custom_error(duplicate_error_field, I18n.t("budgets.form.already_budgeted"))
           raise ActiveRecord::Rollback
+        else
+          @budget_item = space.budget_items.create!(attrs)
         end
-
-        @budget_item = space.budget_items.create!(attrs)
       end
 
       rematerialize_entries
@@ -163,6 +171,18 @@ class BudgetItemForm < BaseForm
     end
   end
 
+  # Per-person ongoing balance and who owes whom, so the debt branch can state
+  # the current state ("You owe X") and auto-derive when the debt clears.
+  def debt_summaries_by_name
+    space.debts.ongoing.each_with_object({}) do |debt, acc|
+      balance = debt.remaining_balance.to_f
+      next unless balance.positive?
+
+      key = debt.name.to_s.strip.downcase
+      acc[key] = { balance: balance, direction: debt.direction } if !acc[key] || balance > acc[key][:balance]
+    end
+  end
+
   def frequency_options
     BudgetItem::FREQUENCIES.map { |f| [ I18n.t("budgets.frequencies.#{f}"), f ] }
   end
@@ -196,17 +216,19 @@ class BudgetItemForm < BaseForm
     end
   end
 
-  def duplicate_active_item?(attrs)
+  # The active rule (if any) this line would collide with — one per category /
+  # transfer pair / debt, by the same uniqueness the model enforces.
+  def existing_active_item(attrs)
     scope = space.budget_items.active
     scope = scope.where.not(id: @budget_item.id) if editing?
 
     case kind
     when "transfer"
-      scope.exists?(from_account: attrs[:from_account], to_account: attrs[:to_account])
+      scope.find_by(from_account: attrs[:from_account], to_account: attrs[:to_account])
     when *BudgetItem::DEBT_KINDS
-      scope.exists?(debt: attrs[:debt], kind: kind)
+      scope.find_by(debt: attrs[:debt], kind: kind)
     else
-      scope.exists?(transaction_type: attrs[:transaction_type])
+      scope.find_by(transaction_type: attrs[:transaction_type])
     end
   end
 

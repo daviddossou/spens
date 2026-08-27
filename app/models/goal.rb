@@ -23,9 +23,6 @@
 #  fk_rails_...  (account_id => accounts.id)
 #  fk_rails_...  (space_id => spaces.id)
 #
-# A savings goal: a motivating name, an optional target amount and deadline, and
-# the account that holds the money. One goal per account — the account is the
-# goal's pot, so progress is measured against its balance.
 class Goal < ApplicationRecord
   rounds_money :target_amount
 

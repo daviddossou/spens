@@ -45,7 +45,7 @@ Rails.application.routes.draw do
 
     # Debts
     resources :debts, only: [ :index, :show, :new, :create, :edit, :update ] do
-      member { post :write_off }
+      member { post :write_off, to: "debts/write_offs#create" }
     end
 
     # Accounts
@@ -53,6 +53,8 @@ Rails.application.routes.draw do
 
     # Monthly budget (forecast + past-month summary), its recurring items and per-month entries
     resources :budgets, only: [ :index ] do
+      # The finished-month view is now the Budget page in Bilan mode; the old
+      # /summary URL redirects to the same month on index (see controller).
       collection { get :summary }
     end
     resources :budget_items, only: [ :new, :create, :edit, :update, :destroy ]

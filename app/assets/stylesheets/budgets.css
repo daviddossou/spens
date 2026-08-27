@@ -1,20 +1,82 @@
 /* Budget Styles */
 
+/* Bilan (finished month) sits on a cooler canvas so it can never be mistaken
+   for an editable month. */
+.budget-page--bilan {
+  background: var(--color-canvas-bilan);
+}
+
 /* Month navigator */
 .budget-month-nav {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 0.5rem;
-  margin-bottom: 1rem;
+  margin-bottom: var(--space-md);
+}
+
+.budget-month-nav__heading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.125rem;
+  min-width: 0;
 }
 
 .budget-month-nav__title {
-  font-size: 1.25rem;
-  font-weight: 600;
+  font-size: 1.125rem;
+  font-weight: var(--font-weight-bold);
   letter-spacing: -0.01em;
   color: var(--color-dark);
   text-align: center;
+}
+
+.budget-month-nav__subtitle {
+  font-size: var(--font-size-label);
+  color: var(--color-muted-strong);
+  text-align: center;
+}
+
+/* Mode banner: Plan · En cours · Bilan segmented control */
+.budget-mode-nav {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0;
+  background: var(--color-banner-track);
+  border-radius: 11px;
+  padding: 4px;
+  margin-bottom: var(--space-xl);
+}
+
+.budget-mode-nav__seg {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 7px 0;
+  border-radius: var(--radius-md);
+  font-size: 12px;
+  font-weight: var(--font-weight-medium);
+  color: var(--color-muted-strong);
+  text-decoration: none;
+  text-align: center;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.budget-mode-nav__seg--active {
+  background: var(--color-primary);
+  color: var(--color-white);
+  font-weight: var(--font-weight-semibold);
+}
+
+/* A reading this month can't offer (no realised yet, or nothing in progress) */
+.budget-mode-nav__seg--disabled {
+  color: var(--color-slate-gray);
+  cursor: default;
+}
+
+/* Finished month: the active segment goes ink, matching the darker canvas. */
+.budget-page--bilan .budget-mode-nav__seg--active {
+  background: var(--color-charcoal-black);
 }
 
 .budget-month-nav__arrow {
@@ -28,7 +90,7 @@
   line-height: 1;
   color: var(--color-secondary);
   background: var(--color-white);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  box-shadow: var(--shadow-resting);
   text-decoration: none;
   transition: background-color 0.2s ease;
 }
@@ -42,28 +104,49 @@
   pointer-events: none;
 }
 
-/* Hero: projected net */
+/* Hero card: the one number the month is about, on its own white surface */
 .budget-hero {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.25rem;
-  padding: 1.25rem 1rem 1.5rem;
+  gap: var(--space-xs);
+  padding: var(--space-xl) var(--space-lg);
   text-align: center;
+  background: var(--color-white);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-resting);
+  margin-bottom: var(--space-xl);
 }
 
 .budget-hero__label {
-  font-size: 0.75rem;
-  font-weight: 500;
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-medium);
   color: var(--color-muted-strong);
 }
 
+.budget-hero__suffix {
+  color: var(--color-primary);
+  font-weight: var(--font-weight-semibold);
+}
+
+/* Off-plan spending in the En cours subline — attention amber, not alarm red */
+.budget-hero__offplan-amount {
+  color: var(--color-warning-dark);
+  font-weight: var(--font-weight-semibold);
+}
+
+/* Finished month: the suffix rides on the dark hero card, so keep it light. */
+.budget-page--bilan .budget-hero__suffix {
+  color: var(--color-white);
+}
+
 .budget-hero__value {
-  font-size: 1.75rem;
-  font-weight: 700;
-  line-height: 1.15;
-  letter-spacing: -0.02em;
+  font-size: var(--font-size-hero);
+  font-weight: var(--font-weight-bold);
+  line-height: 1.05;
+  letter-spacing: -0.03em;
   color: var(--color-success-dark);
+  font-variant-numeric: tabular-nums;
 }
 
 .budget-hero__value--negative {
@@ -75,12 +158,12 @@
   color: var(--color-muted-strong);
 }
 
-/* Planned totals pair */
+/* Planned totals pair (read-only summary view) */
 .budget-totals {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 0.75rem;
-  margin-bottom: 1.5rem;
+  gap: var(--space-md);
+  margin-bottom: var(--space-xl);
 }
 
 .budget-totals > * {
@@ -91,13 +174,418 @@
 .budget-totals .stat-card--compact {
   flex-direction: column;
   align-items: flex-start;
-  gap: 0.25rem;
+  gap: var(--space-xs);
 }
 
 /* The global compact rule draws a divider under every non-last card (meant for
    vertical lists); side-by-side cards need none. Extra selector wins the tie. */
 .budget-totals .stat-card--compact.stat-card--compact {
   border-bottom: none;
+}
+
+/* Vital / Confort card: how the month's expenses split between the floor you
+   can't skip (Vital, indigo) and what's adjustable (Confort, light indigo). */
+.vital-confort {
+  background: var(--color-white);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-resting);
+  padding: var(--space-lg);
+  margin-bottom: var(--space-xl);
+}
+
+.vital-confort__header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-md);
+  margin-bottom: var(--space-md);
+}
+
+.vital-confort__title {
+  font-size: var(--font-size-title);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-dark);
+}
+
+.vital-confort__total {
+  font-size: var(--font-size-label);
+  color: var(--color-muted-strong);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* Shared bar. font-size:0 kills whitespace between the inline-block segments so
+   the split fills pack flush from the left and honor their width %. */
+.vital-confort__bar {
+  height: 12px;
+  background: var(--color-separator);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  font-size: 0;
+  white-space: nowrap;
+}
+
+.vital-confort__bar-fill {
+  display: inline-block;
+  vertical-align: top;
+  height: 100%;
+}
+
+.vital-confort__bar-fill--vital {
+  background: var(--color-primary);
+}
+
+.vital-confort__bar-fill--confort {
+  background: var(--color-primary-20);
+}
+
+/* Plan mode: legend under the single split bar */
+.vital-confort__legend {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-md);
+  margin-top: var(--space-md);
+}
+
+.vital-confort__key {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-dark);
+}
+
+.vital-confort__key strong {
+  font-variant-numeric: tabular-nums;
+}
+
+.vital-confort__dot {
+  width: 0.625rem;
+  height: 0.625rem;
+  border-radius: var(--radius-full);
+  flex-shrink: 0;
+}
+
+.vital-confort__key--vital .vital-confort__dot {
+  background: var(--color-primary);
+}
+
+.vital-confort__key--confort .vital-confort__dot {
+  background: var(--color-primary-20);
+}
+
+/* En cours mode: two tracked bars stacked */
+.vital-confort__track + .vital-confort__track {
+  margin-top: var(--space-md);
+}
+
+.vital-confort__track-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-md);
+  margin-bottom: 0.375rem;
+}
+
+.vital-confort__track-label {
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-dark);
+}
+
+.vital-confort__track-amounts {
+  font-size: var(--font-size-body);
+  color: var(--color-dark);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.vital-confort__track-amounts strong {
+  font-weight: var(--font-weight-semibold);
+}
+
+.vital-confort__track-planned {
+  color: var(--color-muted-strong);
+}
+
+/* En cours footer: what's left to spend + a daily pace */
+.vital-confort__footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.125rem var(--space-sm);
+  margin-top: var(--space-md);
+  padding-top: var(--space-md);
+  border-top: 1px solid var(--color-separator);
+}
+
+.vital-confort__reste-label {
+  font-size: var(--font-size-body);
+  color: var(--color-muted-strong);
+}
+
+.vital-confort__reste-value {
+  margin-left: auto;
+  font-size: var(--font-size-headline);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-dark);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* Verbose currencies (FCFA) push the daily pace onto its own right-aligned
+   line rather than breaking the amount. */
+.vital-confort__reste-rate {
+  flex-basis: 100%;
+  text-align: right;
+  font-size: var(--font-size-label);
+  color: var(--color-muted-strong);
+  white-space: nowrap;
+}
+
+/* Empty state — no plan yet: title, starters, goal encart */
+.budget-start {
+  padding-top: var(--space-sm);
+}
+
+.budget-start__title {
+  font-size: var(--font-size-headline);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: var(--tracking-headline);
+  color: var(--color-dark);
+}
+
+.budget-start__body {
+  margin-top: var(--space-sm);
+  font-size: var(--font-size-body);
+  line-height: 1.5;
+  color: var(--color-muted-strong);
+  text-wrap: pretty;
+}
+
+.budget-start__label {
+  margin: var(--space-xl) 0 var(--space-md);
+  font-size: var(--font-size-label);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-muted-strong);
+}
+
+.budget-start__templates {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.budget-start__template {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-lg);
+  background: var(--color-white);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-resting);
+  text-decoration: none;
+  transition: box-shadow 0.2s ease;
+}
+
+.budget-start__template:hover {
+  box-shadow: var(--shadow-raised);
+}
+
+.budget-start__template-text {
+  min-width: 0;
+}
+
+.budget-start__template-title {
+  display: block;
+  font-size: var(--font-size-title);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-dark);
+}
+
+.budget-start__template-sub {
+  display: block;
+  margin-top: 0.125rem;
+  font-size: var(--font-size-label);
+  color: var(--color-muted-strong);
+}
+
+.budget-start__template-plus {
+  flex-shrink: 0;
+  margin-left: auto;
+  font-size: 1.25rem;
+  font-weight: var(--font-weight-medium);
+  color: var(--color-primary);
+}
+
+.budget-start__goal {
+  margin-top: var(--space-xl);
+  padding: var(--space-lg);
+  background: var(--color-primary-tint);
+  border-radius: var(--radius-lg);
+  font-size: var(--font-size-body);
+  line-height: 1.5;
+  color: var(--color-primary-ink);
+  text-wrap: pretty;
+}
+
+/* Empty state — lines exist but none fall this month */
+.budget-void {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--space-sm);
+  padding: var(--space-xl) var(--space-lg);
+  background: var(--color-white);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-resting);
+  margin-top: var(--space-sm);
+}
+
+.budget-void__mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  border-radius: var(--radius-full);
+  background: var(--color-surface-sunken-2);
+  margin-bottom: var(--space-xs);
+}
+
+.budget-void__square {
+  width: 16px;
+  height: 16px;
+  border: 2px dashed var(--color-slate-gray);
+  border-radius: 3px;
+}
+
+.budget-void__title {
+  font-size: var(--font-size-headline);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: var(--tracking-headline);
+  color: var(--color-dark);
+}
+
+.budget-void__body {
+  font-size: var(--font-size-body);
+  line-height: 1.5;
+  color: var(--color-muted-strong);
+  text-wrap: pretty;
+}
+
+/* Hors-plan card: amber-headed account of off-plan spending (En cours) */
+.hors-plan {
+  background: var(--color-white);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-resting);
+  overflow: hidden;
+  margin-bottom: var(--space-xl);
+}
+
+.hors-plan__header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-md) var(--space-lg);
+  background: var(--color-warning-20);
+}
+
+.hors-plan__header-text {
+  min-width: 0;
+}
+
+.hors-plan__title {
+  font-size: 0.8125rem;
+  font-weight: var(--font-weight-bold);
+  color: var(--color-amber-ink);
+}
+
+.hors-plan__subtitle {
+  font-size: 0.71875rem;
+  color: var(--color-amber-ink-soft);
+}
+
+.hors-plan__count {
+  flex-shrink: 0;
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: var(--radius-full);
+  background: var(--color-warning-dark);
+  color: var(--color-white);
+  font-size: var(--font-size-label);
+  font-weight: var(--font-weight-bold);
+  font-variant-numeric: tabular-nums;
+}
+
+.hors-plan__list {
+  list-style: none;
+}
+
+.hors-plan__row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-md) var(--space-lg);
+}
+
+.hors-plan__row + .hors-plan__row {
+  border-top: 1px solid var(--color-separator-2);
+}
+
+.hors-plan__row-text {
+  min-width: 0;
+}
+
+.hors-plan__name {
+  display: block;
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-dark);
+  overflow-wrap: break-word;
+}
+
+.hors-plan__meta {
+  font-size: var(--font-size-label);
+  color: var(--color-muted-strong);
+}
+
+/* Plan-it pill: promote a recurring off-plan category into the budget */
+.hors-plan__action {
+  flex-shrink: 0;
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  padding: 0.4375rem 0.875rem;
+  border-radius: var(--radius-full);
+  background: var(--color-primary);
+  color: var(--color-white);
+  font-size: var(--font-size-label);
+  font-weight: var(--font-weight-semibold);
+  text-decoration: none;
+  transition: background-color 0.2s ease;
+}
+
+.hors-plan__action:hover {
+  background: var(--color-primary-dark);
+}
+
+/* One-off marker: outline pill, no action yet (dismissal deferred) */
+.hors-plan__action--muted,
+.hors-plan__action--muted:hover {
+  background: transparent;
+  border: 1px solid var(--color-border-input);
+  color: var(--color-secondary);
+  padding: 0.375rem 0.8125rem;
 }
 
 /* Sections */
@@ -117,6 +605,7 @@
   align-items: baseline;
   justify-content: space-between;
   gap: 0.5rem;
+  margin-bottom: var(--space-md);
 }
 
 .budget-section__header .budget-section__title {
@@ -124,10 +613,22 @@
 }
 
 .budget-section__total {
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: var(--color-danger-dark);
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-muted-strong);
   white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+/* An empty section states itself instead of disappearing */
+.budget-section__empty {
+  padding: var(--space-md) var(--space-lg);
+  background: var(--color-white);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-resting);
+  font-size: var(--font-size-body);
+  color: var(--color-muted-strong);
+  text-align: center;
 }
 
 .budget-subgroup {
@@ -247,29 +748,45 @@
   margin: 0.125rem 0 0.75rem;
 }
 
+/* The section's lines are one connected card: a single white surface with
+   hairline dividers between rows, not separate floating cards. No overflow:hidden
+   here — it would clip the smart-money tooltip; the end rows round themselves. */
 .budget-section__list {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  background: var(--color-white);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-resting);
+}
+
+.budget-section__list > .budget-row:first-child {
+  border-top-left-radius: var(--radius-lg);
+  border-top-right-radius: var(--radius-lg);
+}
+
+.budget-section__list > .budget-row:last-child {
+  border-bottom-left-radius: var(--radius-lg);
+  border-bottom-right-radius: var(--radius-lg);
 }
 
 /* Entry row */
 .budget-row {
   display: block;
   padding: 0.875rem 1rem;
-  background: var(--color-white);
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.budget-row + .budget-row {
+  border-top: 1px solid var(--color-separator);
 }
 
 .budget-row--link {
   text-decoration: none;
   color: inherit;
-  transition: box-shadow 0.2s ease;
+  transition: background-color 0.2s ease;
 }
 
 .budget-row--link:hover {
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  background: var(--color-surface-sunken);
 }
 
 .budget-row__main {
@@ -281,18 +798,31 @@
 
 .budget-row__heading {
   display: flex;
-  align-items: baseline;
-  gap: 0.5rem;
+  flex-direction: column;
+  gap: 0.125rem;
+  min-width: 0;
+}
+
+.budget-row__name-row {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
   min-width: 0;
 }
 
 .budget-row__name {
-  font-size: 0.875rem;
-  font-weight: 600;
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-semibold);
   color: var(--color-dark);
   /* break-word wraps whole words to the next line; anywhere split names
      mid-word ("Geo rges") once full-number amounts widened the right side. */
   overflow-wrap: break-word;
+}
+
+/* Vital · mensuel — the line's classification and rhythm */
+.budget-row__meta-line {
+  font-size: var(--font-size-label);
+  color: var(--color-muted-strong);
 }
 
 .budget-row__icon {
@@ -328,9 +858,10 @@
 }
 
 .budget-row__actual {
-  font-size: 0.875rem;
-  font-weight: 600;
+  font-size: var(--font-size-title);
+  font-weight: var(--font-weight-bold);
   color: var(--color-dark);
+  font-variant-numeric: tabular-nums;
 }
 
 .budget-row__actual--over {
@@ -338,22 +869,38 @@
 }
 
 .budget-row__planned {
-  font-size: 0.75rem;
+  font-size: var(--font-size-label);
+  color: var(--color-muted-strong);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Plan mode: only the planned figure, at full weight (no actual to compare). */
+.budget-row__planned-only {
+  font-size: var(--font-size-title);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-dark);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Vital / Confort tag on the right of the status line */
+.budget-row__tag {
+  flex-shrink: 0;
+  font-size: var(--font-size-label);
   color: var(--color-muted-strong);
 }
 
 /* Progress bar */
 .budget-row__bar {
-  height: 6px;
+  height: 7px;
   margin: 0.5rem 0 0.375rem;
-  background: var(--color-off-white);
-  border-radius: 9999px;
+  background: var(--color-secondary-20);
+  border-radius: var(--radius-full);
   overflow: hidden;
 }
 
 .budget-row__bar-fill {
   height: 100%;
-  border-radius: 9999px;
+  border-radius: var(--radius-full);
   background: var(--color-primary);
 }
 
@@ -369,17 +916,73 @@
   background: var(--color-info);
 }
 
+/* En cours goal bar: pacing toward the savings goal, with a "today" marker */
+.budget-goalbar {
+  width: 100%;
+  margin-top: var(--space-md);
+}
+
+.budget-goalbar__track {
+  position: relative;
+  height: 8px;
+  background: var(--color-separator);
+  border-radius: var(--radius-full);
+  overflow: visible;
+}
+
+.budget-goalbar__fill {
+  height: 100%;
+  background: var(--color-success);
+  border-radius: var(--radius-full);
+}
+
+/* Vertical ink tick showing how far into the month we are — it overhangs the
+   track top and bottom so it reads against the fill. */
+.budget-goalbar__today {
+  position: absolute;
+  top: -3px;
+  bottom: -3px;
+  width: 2px;
+  background: var(--color-charcoal-black);
+  transform: translateX(-1px);
+}
+
+.budget-goalbar__legend {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-md);
+  margin-top: 0.375rem;
+  font-size: var(--font-size-label);
+  color: var(--color-muted-strong);
+}
+
+.budget-goalbar__over {
+  color: var(--color-success-dark);
+  font-weight: var(--font-weight-medium);
+}
+
+.budget-goalbar__today-label {
+  flex-shrink: 0;
+}
+
+/* Plan-mode goal verdict as a filled pill: whether the plan reaches the goal */
 .budget-hero__goal {
-  font-size: 0.75rem;
-  font-weight: 500;
-  margin-top: 0.25rem;
+  display: inline-block;
+  margin-top: var(--space-sm);
+  padding: 0.4375rem 0.875rem;
+  border-radius: var(--radius-full);
+  font-size: 12px;
+  font-weight: var(--font-weight-semibold);
 }
 
 .budget-hero__goal--on-track {
+  background: var(--color-success-20);
   color: var(--color-success-dark);
 }
 
 .budget-hero__goal--short {
+  background: var(--color-warning-20);
   color: var(--color-warning-dark);
 }
 
@@ -432,7 +1035,31 @@
 .budget-item-form {
   display: flex;
   flex-direction: column;
-  gap: 0.875rem;
+  gap: 1.25rem;
+}
+
+/* Stack the form's title over its subtitle — overriding the sheet's default
+   single-line, vertically-centred header layout. */
+
+.budget-item-form__title {
+  font-size: var(--font-size-headline);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: var(--tracking-headline);
+  color: var(--color-dark);
+}
+
+.budget-item-form__subtitle {
+  margin-top: 0.125rem;
+  font-size: var(--font-size-body);
+  color: var(--color-muted-strong);
+}
+
+/* Field labels (Category, With whom?) read as prompts — same title weight as
+   "Vital or comfort?" and the advanced settings, not small field captions. */
+.budget-item-form .form-label {
+  font-size: var(--font-size-title);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-dark);
 }
 
 .budget-item-form__kind .kind-selector {
@@ -445,3 +1072,501 @@
   gap: 0.5rem;
   margin-top: 1.25rem;
 }
+
+
+/* ── Amount hero ─────────────────────────────────────────────── */
+.budget-amount {
+  text-align: center;
+  padding: 0.5rem 0 0.25rem;
+}
+
+.budget-amount__field {
+  display: inline-flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 0.375rem;
+  max-width: 100%;
+}
+
+.budget-amount__input {
+  font-size: 2.75rem;
+  font-weight: var(--font-weight-bold);
+  letter-spacing: -0.02em;
+  color: var(--color-dark);
+  border: none;
+  background: transparent;
+  text-align: right;
+  padding: 0;
+  width: auto;
+  min-width: 1.5ch;
+  field-sizing: content; /* grows with the number; harmless where unsupported */
+  font-variant-numeric: tabular-nums;
+}
+
+.budget-amount__input:focus {
+  outline: none;
+}
+
+/* Hide the number spinners — the amount is typed, not stepped. */
+.budget-amount__input::-webkit-outer-spin-button,
+.budget-amount__input::-webkit-inner-spin-button {
+  appearance: none;
+  margin: 0;
+}
+
+.budget-amount__input {
+  -moz-appearance: textfield;
+}
+
+.budget-amount__currency {
+  font-size: 1.375rem;
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-slate-gray);
+}
+
+.budget-amount__period {
+  display: block;
+  margin-top: 0.25rem;
+  font-size: var(--font-size-body);
+  color: var(--color-muted-strong);
+}
+
+/* ── Transfer: one linked De / Vers block ────────────────────── */
+/* No overflow:hidden — it would clip the tom-select dropdown; the block's own
+   radius rounds the corners and the rows inside are transparent. */
+.transfer-block {
+  background: var(--color-white);
+  border: 1.5px solid var(--color-border-input);
+  border-radius: var(--radius-lg);
+}
+
+/* The prefix overlays the field so the field itself spans the full block width —
+   otherwise the tom-select dropdown aligns to a narrow cell and breaks out. */
+.transfer-block__row {
+  position: relative;
+}
+
+.transfer-block__row + .transfer-block__row {
+  border-top: 1px solid var(--color-separator);
+}
+
+.transfer-block__prefix {
+  position: absolute;
+  left: var(--space-lg);
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
+  pointer-events: none;
+  font-size: 11px;
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-slate-gray);
+}
+
+.transfer-block__field {
+  min-width: 0;
+}
+
+/* The block is the frame — strip each field's own chrome and leave room on the
+   left for the prefix. */
+.transfer-block .form-field {
+  margin-bottom: 0 !important;
+}
+
+.transfer-block .form-label-wrapper {
+  display: none;
+}
+
+.transfer-block .form-input,
+.transfer-block .ts-control,
+.transfer-block .ts-wrapper.single .ts-control {
+  border: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  padding: 0.5rem var(--space-lg) 0.5rem 3rem !important;
+}
+
+/* ── Debt: balance, sentence cards, auto clear-date ──────────── */
+.budget-item-form__debt {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.debt-balance {
+  font-size: var(--font-size-body);
+  color: var(--color-muted-strong);
+}
+
+.debt-cards {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.debt-card {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-md) var(--space-lg);
+  background: var(--color-white);
+  border: 1.5px solid var(--color-border-soft);
+  border-radius: 11px;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.debt-card--selected {
+  border-color: var(--color-warning-dark);
+  background: #fff8ee;
+}
+
+.debt-card__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 26px;
+  height: 26px;
+  border-radius: var(--radius-full);
+  background: var(--color-neutral-pill);
+  color: var(--color-muted-strong);
+}
+
+.debt-card__icon svg {
+  width: 0.9rem;
+  height: 0.9rem;
+}
+
+.debt-card--selected .debt-card__icon {
+  background: var(--color-warning-dark);
+  color: var(--color-white);
+}
+
+.debt-card__text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  min-width: 0;
+}
+
+.debt-card__title {
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-dark);
+}
+
+.debt-card--selected .debt-card__title {
+  color: var(--color-amber-ink);
+}
+
+.debt-card__effect {
+  font-size: var(--font-size-label);
+  color: var(--color-muted-strong);
+}
+
+.debt-card--selected .debt-card__effect {
+  color: var(--color-amber-ink-soft);
+}
+
+/* Auto-computed clear date: the recurring line ends when the debt is settled */
+.debt-settled {
+  font-size: var(--font-size-label);
+  color: var(--color-primary-ink);
+}
+
+/* ── Transfer: nil-impact note ───────────────────────────────── */
+.transfer-impact {
+  padding: var(--space-lg);
+  background: var(--color-surface-sunken);
+  border-radius: var(--radius-lg);
+}
+
+.transfer-impact__title {
+  display: block;
+  font-size: var(--font-size-title);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-dark);
+  margin-bottom: var(--space-xs);
+}
+
+.transfer-impact__body {
+  font-size: var(--font-size-body);
+  line-height: 1.55;
+  color: var(--color-muted-strong);
+  text-wrap: pretty;
+}
+
+/* ── Vital / Confort choice ──────────────────────────────────── */
+.vc-choice__question {
+  display: block;
+  font-size: var(--font-size-title);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-dark);
+  margin-bottom: var(--space-md);
+}
+
+.vc-choice__cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-md);
+}
+
+.vc-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: var(--space-md) var(--space-lg);
+  border: 1.5px solid var(--color-border-soft);
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.vc-card__input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.vc-card__title {
+  font-size: var(--font-size-title);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-dark);
+}
+
+.vc-card__sub {
+  font-size: var(--font-size-label);
+  color: var(--color-muted-strong);
+}
+
+.vc-card:has(.vc-card__input:checked) {
+  border-color: var(--color-primary);
+  background: var(--color-primary-tint);
+}
+
+.vc-card:has(.vc-card__input:checked) .vc-card__title {
+  color: var(--color-primary);
+}
+
+.vc-card:has(.vc-card__input:focus-visible) {
+  box-shadow: var(--shadow-focus);
+}
+
+/* ── "Edit" disclosure (frequency / end / rollover) ──────────── */
+.budget-modify {
+  border-top: 1px solid var(--color-separator);
+  border-bottom: 1px solid var(--color-separator);
+  padding: var(--space-md) 0;
+}
+
+.budget-modify__summary {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-md);
+  cursor: pointer;
+  list-style: none;
+}
+
+.budget-modify__summary::-webkit-details-marker {
+  display: none;
+}
+
+.budget-modify__text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  min-width: 0;
+}
+
+.budget-modify__main {
+  font-size: var(--font-size-title);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-dark);
+}
+
+.budget-modify__aside {
+  font-size: var(--font-size-label);
+  color: var(--color-muted-strong);
+}
+
+.budget-modify__toggle {
+  flex-shrink: 0;
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-primary);
+}
+
+.budget-modify__toggle::after {
+  content: " ▾";
+}
+
+.budget-modify[open] .budget-modify__toggle::after {
+  content: " ▴";
+}
+
+/* When open, the settings replace the summary line. */
+.budget-modify[open] .budget-modify__text {
+  display: none;
+}
+
+.budget-modify__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xl);
+  padding-top: var(--space-lg);
+}
+
+.budget-setting__q {
+  display: block;
+  font-size: var(--font-size-title);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-dark);
+}
+
+.budget-setting__sub {
+  display: block;
+  margin-bottom: var(--space-md);
+  font-size: var(--font-size-label);
+  color: var(--color-muted-strong);
+}
+
+.budget-setting__date {
+  margin-top: var(--space-md);
+}
+
+/* Segmented control (frequency, end choice) */
+.seg-group {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-xs);
+  background: var(--color-surface-sunken);
+  border-radius: 11px;
+  padding: 4px;
+}
+
+/* Binary choice as two outlined buttons (e.g. "Until when?") — distinct from
+   the grey-track segmented control used for frequency. */
+.pill-choice {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-md);
+}
+
+.pill {
+  padding: 0.75rem;
+  border: 1.5px solid var(--color-border-soft);
+  border-radius: var(--radius-lg);
+  background: var(--color-white);
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-dark);
+  cursor: pointer;
+  transition: border-color 0.2s ease, background-color 0.2s ease, color 0.2s ease;
+}
+
+.pill--active {
+  border-color: var(--color-primary);
+  background: var(--color-primary-tint);
+  color: var(--color-primary);
+  font-weight: var(--font-weight-semibold);
+}
+
+.seg {
+  padding: 0.625rem 0;
+  border: none;
+  background: transparent;
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-muted-strong);
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.seg--active {
+  background: var(--color-primary);
+  color: var(--color-white);
+  font-weight: var(--font-weight-semibold);
+}
+
+/* Rollover toggle */
+.budget-toggle {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-lg);
+  cursor: pointer;
+}
+
+.budget-toggle__text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  min-width: 0;
+}
+
+.budget-toggle__label {
+  font-size: var(--font-size-title);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-dark);
+}
+
+.budget-toggle__sub {
+  font-size: var(--font-size-label);
+  color: var(--color-muted-strong);
+}
+
+.budget-toggle__switch {
+  position: relative;
+  flex-shrink: 0;
+  width: 44px;
+  height: 26px;
+}
+
+.budget-toggle__input {
+  position: absolute;
+  opacity: 0;
+  width: 44px;
+  height: 26px;
+  margin: 0;
+  cursor: pointer;
+}
+
+.budget-toggle__track {
+  display: block;
+  width: 44px;
+  height: 26px;
+  border-radius: var(--radius-full);
+  background: var(--color-secondary-20);
+  transition: background-color 0.2s ease;
+}
+
+.budget-toggle__track::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 20px;
+  height: 20px;
+  border-radius: var(--radius-full);
+  background: var(--color-white);
+  box-shadow: var(--shadow-resting);
+  transition: transform 0.2s ease;
+}
+
+.budget-toggle__input:checked ~ .budget-toggle__track {
+  background: var(--color-primary);
+}
+
+.budget-toggle__input:checked ~ .budget-toggle__track::after {
+  transform: translateX(18px);
+}
+
+.budget-toggle__input:focus-visible ~ .budget-toggle__track {
+  box-shadow: var(--shadow-focus);
+}
+

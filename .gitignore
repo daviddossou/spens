@@ -54,3 +54,8 @@ PRODUCT.md
 
 # VS Code workspace file
 *.code-workspace
+
+# Generated Spens guide artifacts (kept out of the repo)
+/guide-spens-autonome.html
+/guide-spens.pdf
+/README-generer-le-pdf.md

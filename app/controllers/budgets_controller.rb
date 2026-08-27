@@ -9,13 +9,58 @@ class BudgetsController < ApplicationController
     load_budget_data
   end
 
-  # Read-only balance-sheet view for a finished month.
+  # Legacy finished-month route: fold into the Budget page (Bilan mode).
   def summary
-    Budgets::EnsureEntriesService.new(space: current_space, month: @month).call
-    load_budget_data
+    redirect_to budgets_path(month: params[:month]), status: :moved_permanently
   end
 
   private
+
+  # Each month has a default mode from its position in time, and a set of modes
+  # it can be *read* as. The banner is a viewpoint selector on the SAME month —
+  # it never navigates — so a `view` param overrides the default, clamped to the
+  # readings that make sense: a future month has no "realised" to show, a closed
+  # month has no "in progress".
+  def load_mode_data
+    current_bom = Date.current.beginning_of_month
+
+    if @month > current_bom
+      default_mode = :plan
+      @allowed_modes = [ :plan ]
+    elsif @month < current_bom
+      default_mode = :bilan
+      @allowed_modes = [ :plan, :bilan ]
+    else
+      default_mode = :en_cours
+      @allowed_modes = [ :plan, :en_cours, :bilan ]
+    end
+
+    requested = params[:view]&.to_sym
+    @mode = @allowed_modes.include?(requested) ? requested : default_mode
+
+    # Editable only when it's the current-or-future month and not being read as a
+    # (hypothetical or closed) balance sheet.
+    @editable = @mode != :bilan && @month >= current_bom
+
+    # The month's contextual subtitle is about the month itself, not the reading.
+    @month_position = @month > current_bom ? :future : (@month < current_bom ? :past : :current)
+    @days_in_month = @month.end_of_month.day
+    case @month_position
+    when :future
+      @days_until = (@month - Date.current).to_i
+    when :current
+      @day_of_month = Date.current.day
+      @days_remaining = @days_in_month - @day_of_month
+    end
+
+    # The one hero figure — « Épargne du mois » — reads differently per mode:
+    # planned (the plan), à ce stade (the projection minus off-plan), finale.
+    @hero_value = case @mode
+    when :plan then @projected_net
+    when :bilan then @actual_net
+    else @projected_outcome + @offplan_net
+    end
+  end
 
   def set_month
     @month = begin
@@ -50,6 +95,19 @@ class BudgetsController < ApplicationController
     @planned_expense = expense_entries.sum(&:planned_amount)
     @projected_net = @planned_income - @planned_expense
 
+    # Vital / Confort: the expense section split by whether a line is essential.
+    # Vital is the floor you can't skip; Confort is what's adjustable. This is a
+    # breakdown of planned expenses — not income minus the floor (that's savings).
+    essential_expense = @sections[:expense].select { |e| e.budget_item.essential }
+    comfort_expense = @sections[:expense].reject { |e| e.budget_item.essential }
+    @planned_vital = essential_expense.sum(&:planned_amount)
+    @planned_confort = comfort_expense.sum(&:planned_amount)
+    @planned_expense_total = @planned_vital + @planned_confort
+    @actual_vital = essential_expense.sum { |e| @actuals_by_entry[e] }
+    @actual_confort = comfort_expense.sum { |e| @actuals_by_entry[e] }
+    # What's left to spend against the whole expense plan, and a daily pace.
+    @reste_a_depenser = @planned_expense_total - (@actual_vital + @actual_confort)
+
     @actual_income = income_entries.sum { |e| @actuals_by_entry[e] }
     @actual_expense = expense_entries.sum { |e| @actuals_by_entry[e] }
     @actual_net = @actual_income - @actual_expense
@@ -66,7 +124,15 @@ class BudgetsController < ApplicationController
 
     @unplanned = Budgets::UnplannedActivityQuery.new(space: current_space, month: @month).call
 
+    # Off-plan movements shift the projection: unplanned income lifts it,
+    # unplanned spending (the common case) drags it down.
+    @unplanned_income_total = @unplanned[:income].values.sum { |s| s[:amount] }
+    @unplanned_expense_total = @unplanned[:expense].values.sum { |s| s[:amount] }
+    @offplan_net = @unplanned_income_total - @unplanned_expense_total
+
     @savings_goal = current_space.monthly_savings_goal.to_f
     @has_items = current_space.budget_items.active.exists?
+
+    load_mode_data
   end
 end

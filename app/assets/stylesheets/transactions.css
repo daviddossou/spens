@@ -6,8 +6,149 @@
   gap: 0.875rem;
 }
 
+/* Inside the sheet, the header sticks at the top (the × already floats over it)
+   and the CTA sticks at the bottom — the context and action never scroll away.
+   The stacked layout itself is shared in bottom_sheet.css. */
+.bottom-sheet__body .page-header.transaction-form__header {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  margin: 0 -1.25rem;
+  padding: 0.75rem 2.75rem 0.75rem 1.25rem;
+  background: var(--color-white);
+  border-bottom: 1px solid var(--color-separator);
+}
+
+.bottom-sheet__body .transaction-form__actions {
+  position: sticky;
+  bottom: 0;
+  z-index: 3;
+  margin: 1.25rem -1.25rem -1.5rem;
+  padding: 0.75rem 1.25rem calc(0.75rem + env(safe-area-inset-bottom, 0));
+  background: var(--color-white);
+  border-top: 1px solid var(--color-separator);
+  box-shadow: 0 -4px 16px rgba(40, 42, 51, 0.05);
+}
+
+.transaction-form__title {
+  font-size: var(--font-size-headline);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: var(--tracking-headline);
+  color: var(--color-dark);
+}
+
+.transaction-form__subtitle {
+  font-size: var(--font-size-body);
+  color: var(--color-muted-strong);
+}
+
+/* Field labels read as prompts, matching the budget-line form. */
+.transaction-form .form-label {
+  font-size: var(--font-size-title);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-dark);
+}
+
+/* Debt: four sentence cards + the resulting balance line */
+.transaction-form__debt-cards {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.debt-what {
+  font-size: var(--font-size-title);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-dark);
+}
+
+.debt-after {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-md);
+  padding: var(--space-md) var(--space-lg);
+  background: var(--color-surface-sunken);
+  border-radius: var(--radius-lg);
+}
+
+.debt-after__label {
+  font-size: var(--font-size-body);
+  color: var(--color-muted-strong);
+}
+
+.debt-after__value {
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-dark);
+  white-space: nowrap;
+}
+
+/* Optional-detail rows: label on the left, a quiet hint on the right. */
+.tx-detail__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-md);
+  margin-bottom: var(--space-sm);
+}
+
+.tx-detail__head .form-label {
+  margin-bottom: 0;
+}
+
+.tx-detail__hint {
+  font-size: var(--font-size-body);
+  color: var(--color-muted-strong);
+}
+
+/* The detail field's own label is replaced by the head row above. */
+.tx-detail .form-label-wrapper {
+  display: none;
+}
+
+.tx-detail .form-field {
+  margin-bottom: 0;
+}
+
+.tx-detail__date-field {
+  margin-top: var(--space-md);
+}
+
+.pill-choice--three {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.transaction-form__transfer .transfer-block {
+  margin-top: var(--space-sm);
+}
+
+/* Both accounts' current balances, in one quiet line under the block. */
+.transfer-balances {
+  margin-top: var(--space-md);
+  font-size: var(--font-size-label);
+  color: var(--color-muted-strong);
+}
+
 .transaction-form .form-field {
   margin-bottom: 0.5rem !important;
+}
+
+/* Amount is the form's hero: the sheet's first job is capturing a number fast,
+   so it gets Display weight and a prominent currency addon, not a row-height
+   input equal to every other field. */
+.transaction-form__amount .form-input-group .form-input {
+  font-size: var(--font-size-display);
+  font-weight: var(--font-weight-bold);
+  padding: 0.5rem 0.75rem;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+
+.transaction-form__amount .form-input-addon--prepend {
+  font-size: var(--font-size-headline);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-muted-strong);
 }
 
 /* Kind Selector */
@@ -71,7 +212,7 @@
   padding: 0.875rem 0.5rem;
   background: rgba(var(--kind-accent-rgb), 0.07);
   border: 1.5px solid rgba(var(--kind-accent-rgb), 0.4);
-  border-radius: 0.875rem;
+  border-radius: var(--radius-lg);
   text-decoration: none;
   color: var(--text-dark);
   transition: border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
@@ -138,6 +279,42 @@
   text-align: center;
 }
 
+/* Mono variant: one active (accent), three neutral — nothing competes with the
+   chosen type. Used by the budget-line form. */
+.kind-selector--mono .kind-option {
+  background: var(--color-surface-sunken);
+  border-color: transparent;
+}
+
+.kind-selector--mono .kind-option:hover {
+  border-color: transparent;
+}
+
+.kind-selector--mono .kind-option__icon {
+  background: var(--color-neutral-pill);
+  color: var(--color-muted-strong);
+}
+
+.kind-selector--mono .kind-option__label {
+  color: var(--color-muted-strong);
+}
+
+.kind-selector--mono .kind-option--selected {
+  background: rgba(var(--kind-accent-rgb), 0.08);
+  border-color: var(--kind-accent);
+  box-shadow: none;
+}
+
+.kind-selector--mono .kind-option--selected .kind-option__icon {
+  background: var(--kind-accent);
+  color: var(--color-white);
+}
+
+.kind-selector--mono .kind-option--selected .kind-option__label {
+  color: var(--kind-accent);
+  font-weight: var(--font-weight-semibold);
+}
+
 /* Per-kind semantic icon colors (icons use stroke: currentColor). */
 .kind-option__icon--expense {
   background: var(--color-danger-20);
@@ -201,6 +378,7 @@
   gap: 0.5rem;
   margin-top: 1.25rem;
 }
+
 
 /* Responsive - Tablet */
 @media (max-width: 768px) {

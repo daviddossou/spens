@@ -21,11 +21,6 @@
 #
 #  fk_rails_...  (space_id => spaces.id)
 #
-# A space's description→category memory: the full set of significant tokens a saved or
-# corrected transaction paired with a taxonomy category ({metro, train, ticket} ->
-# public_transport). Unlike LearnedAlias (one exact phrase), memories are matched by
-# closest token overlap, so word order, subsets and extra noise don't break recall.
-# Space-scoped only; last correction wins per token set.
 class CategoryMemory < ApplicationRecord
   MAX_TOKENS = 8
 

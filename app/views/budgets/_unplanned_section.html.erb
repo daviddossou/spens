@@ -1,67 +1,62 @@
+<%# Hors-plan card (En cours): money that moved outside the plan this month —
+    the honest account of what's widening the gap with the hero's projection.
+    Recurring off-plan categories offer "Plan it"; one-offs just state themselves.
+    (The "One-off" dismiss action is a deferred product decision — see README.) %>
 <%
   month_slug = @month.strftime("%Y-%m")
   plan_amount = ->(amount) { amount % 1 == 0 ? amount.to_i : amount }
-  visible_limit = 4
-
   prev_month_name = l(@month << 1, format: "%B")
 
-  groups = {
-    income: @unplanned[:income].map do |type, sums|
-      { label: type.name, amount: sums[:amount], prev: sums[:prev],
-        path: new_budget_item_path(month: month_slug, kind: "income", transaction_type_name: type.name, amount: plan_amount.call(sums[:amount])) }
-    end,
-    expense: @unplanned[:expense].map do |type, sums|
-      { label: type.name, amount: sums[:amount], prev: sums[:prev],
-        path: new_budget_item_path(month: month_slug, kind: "expense", transaction_type_name: type.name, amount: plan_amount.call(sums[:amount])) }
-    end,
-    transfers: @unplanned[:transfers].map do |transfer|
-      { label: "#{transfer[:from]&.name} → #{transfer[:to]&.name}", amount: transfer[:amount], prev: transfer[:prev],
-        path: (transfer[:from] && transfer[:to] ? new_budget_item_path(month: month_slug, kind: "transfer",
-                                                                       from_account_name: transfer[:from].name,
-                                                                       to_account_name: transfer[:to].name,
-                                                                       amount: plan_amount.call(transfer[:amount])) : nil) }
-    end
-  }
+  rows = []
+  @unplanned[:expense].each do |type, sums|
+    rows << { name: type.name, amount: sums[:amount], recurring: sums[:prev].to_f.positive?,
+              path: new_budget_item_path(month: month_slug, kind: "expense", transaction_type_name: type.name, amount: plan_amount.call(sums[:amount])) }
+  end
+  @unplanned[:income].each do |type, sums|
+    rows << { name: type.name, amount: sums[:amount], sign: :in, recurring: sums[:prev].to_f.positive?,
+              path: new_budget_item_path(month: month_slug, kind: "income", transaction_type_name: type.name, amount: plan_amount.call(sums[:amount])) }
+  end
+  @unplanned[:transfers].each do |transfer|
+    rows << { name: "#{transfer[:from]&.name} → #{transfer[:to]&.name}", amount: transfer[:amount], sign: :neutral, recurring: false, path: nil }
+  end
 
-  group_totals = {
-    income: smart_format_money(@unplanned[:income].values.sum { |s| s[:amount] }, current_space.currency, sign: :always),
-    expense: smart_format_money(-@unplanned[:expense].values.sum { |s| s[:amount] }, current_space.currency, sign: :always),
-    transfers: smart_format_money(@unplanned[:transfers].sum { |t| t[:amount] }, current_space.currency)
-  }
+  expense_total = @unplanned[:expense].values.sum { |s| s[:amount] }
 %>
 
-<% if groups.values.any?(&:any?) %>
-  <section class="budget-section">
-    <div class="budget-section__header">
-      <h3 class="budget-section__title"><%= t('budgets.unplanned.title') %></h3>
-    </div>
-    <p class="budget-section__hint"><%= t('budgets.unplanned.hint') %></p>
-
-    <% groups.each do |group, rows| %>
-      <% next if rows.empty? %>
-      <div class="budget-subgroup">
-        <div class="budget-subgroup__header">
-          <h4 class="budget-subgroup__label"><%= t("budgets.unplanned.group_#{group}") %></h4>
-          <span class="budget-subgroup__total budget-subgroup__total--<%= group %>"><%= group_totals[group] %></span>
-        </div>
-
-        <% visible, hidden = rows.size > visible_limit ? [ rows.first(3), rows.drop(3) ] : [ rows, [] ] %>
-        <div class="budget-section__list">
-          <% visible.each do |row| %>
-            <%= render "budgets/unplanned_row", row: row, read_only: read_only, prev_month_name: prev_month_name %>
-          <% end %>
-        </div>
-        <% if hidden.any? %>
-          <details class="budget-more">
-            <summary class="budget-more__summary"><%= t('budgets.unplanned.show_more', count: hidden.size) %></summary>
-            <div class="budget-section__list">
-              <% hidden.each do |row| %>
-                <%= render "budgets/unplanned_row", row: row, read_only: read_only, prev_month_name: prev_month_name %>
-              <% end %>
-            </div>
-          </details>
-        <% end %>
+<% if rows.any? %>
+  <div class="hors-plan">
+    <div class="hors-plan__header">
+      <div class="hors-plan__header-text">
+        <p class="hors-plan__title"><%= t('budgets.unplanned.card_title_html', amount: smart_format_money(expense_total, current_space.currency)) %></p>
+        <p class="hors-plan__subtitle"><%= t('budgets.unplanned.card_subtitle') %></p>
       </div>
-    <% end %>
-  </section>
+      <span class="hors-plan__count" aria-hidden="true"><%= rows.size %></span>
+    </div>
+
+    <ul class="hors-plan__list">
+      <% rows.each do |row| %>
+        <li class="hors-plan__row">
+          <div class="hors-plan__row-text">
+            <span class="hors-plan__name"><%= row[:name] %></span>
+            <span class="hors-plan__meta">
+              <% amount_str = smart_format_money(row[:amount], current_space.currency, sign: (row[:sign] == :in ? :always : :auto)) %>
+              <% if row[:recurring] %>
+                <%= t('budgets.unplanned.meta_recurring_html', amount: amount_str, month: prev_month_name) %>
+              <% else %>
+                <%= t('budgets.unplanned.meta_once_html', amount: amount_str) %>
+              <% end %>
+            </span>
+          </div>
+          <% if row[:recurring] && row[:path] && !read_only %>
+            <%= link_to t('budgets.unplanned.plan_it_pill'), row[:path],
+                        class: "hors-plan__action", data: { turbo_frame: "modal" } %>
+          <% else %>
+            <%# One-off: labelled as such. Dismissing it from the list (keeping it
+                in totals) is a deferred backend decision — see README. %>
+            <span class="hors-plan__action hors-plan__action--muted"><%= t('budgets.unplanned.one_off_pill') %></span>
+          <% end %>
+        </li>
+      <% end %>
+    </ul>
+  </div>
 <% end %>

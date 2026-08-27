@@ -5,13 +5,33 @@ module Budgets
   # matching transaction), a slim progress bar, and a fulfillment state derived
   # from the cumulative actual reaching the planned amount.
   class EntryRowComponent < ViewComponent::Base
-    attr_reader :entry, :actual, :currency, :read_only
+    attr_reader :entry, :actual, :currency, :read_only, :mode
 
-    def initialize(entry:, actual:, currency:, read_only: false)
+    def initialize(entry:, actual:, currency:, read_only: false, mode: :en_cours)
       @entry = entry
       @actual = actual.to_f
       @currency = currency
       @read_only = read_only
+      @mode = mode
+    end
+
+    # Plan mode is forward-looking: no actuals, bars or status — a line just
+    # states what it plans to be. Showing 0 € realised would read as "behind".
+    def plan_mode?
+      mode == :plan
+    end
+
+    # Expense lines carry a Vital / Confort tag (essential or adjustable);
+    # income, transfers and debts don't split that way.
+    def essential_label
+      return nil unless entry.kind == "expense"
+
+      t("budgets.index.#{entry.budget_item&.essential ? 'vital_label' : 'confort_label'}")
+    end
+
+    # Meta subline under the name: the Vital/Confort tag and the frequency.
+    def meta_line
+      [ essential_label, frequency_label ].compact.join(" · ")
     end
 
     def planned

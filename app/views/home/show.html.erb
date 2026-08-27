@@ -24,7 +24,7 @@
                   "aria-label": savings_goal.present? ? t('.stats.edit_goal') : t('.stats.set_goal') do %>
         <%= render Ui::StatCardComponent.new(
           label: t('.stats.saved_this_month'),
-          sublabel: savings_goal.present? ? t('.stats.goal_sublabel', goal: strip_tags(smart_format_money(savings_goal, @currency))) : t('.stats.set_goal_sublabel'),
+          sublabel: savings_goal.present? ? t('.stats.goal_sublabel', goal: strip_tags(smart_format_money(savings_goal, @currency)).gsub("&nbsp;", " ")) : t('.stats.set_goal_sublabel'),
           value: @saved_this_month,
           currency: @currency,
           variant: :compact,
