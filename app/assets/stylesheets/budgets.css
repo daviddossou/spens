@@ -1040,15 +1040,6 @@
 
 /* Stack the form's title over its subtitle — overriding the sheet's default
    single-line, vertically-centred header layout. */
-.page-header.budget-item-form__header,
-.bottom-sheet__body .page-header.budget-item-form__header {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  text-align: left;
-  gap: 0.125rem;
-  padding-right: 2.75rem;
-}
 
 .budget-item-form__title {
   font-size: var(--font-size-headline);

@@ -6,20 +6,9 @@
   gap: 0.875rem;
 }
 
-/* Stacked header (title over subtitle), overriding the sheet's single-line
-   centred default. */
-.page-header.transaction-form__header,
-.bottom-sheet__body .page-header.transaction-form__header {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  text-align: left;
-  gap: 0.125rem;
-  padding-right: 2.75rem;
-}
-
 /* Inside the sheet, the header sticks at the top (the × already floats over it)
-   and the CTA sticks at the bottom — the context and action never scroll away. */
+   and the CTA sticks at the bottom — the context and action never scroll away.
+   The stacked layout itself is shared in bottom_sheet.css. */
 .bottom-sheet__body .page-header.transaction-form__header {
   position: sticky;
   top: 0;

@@ -107,6 +107,20 @@
   min-height: 0;
 }
 
+/* Sheet form header: title stacked over subtitle, left-aligned, with room for
+   the floating close button — overriding the sheet's single-line centred default. */
+.page-header.budget-item-form__header,
+.page-header.transaction-form__header,
+.bottom-sheet__body .page-header.budget-item-form__header,
+.bottom-sheet__body .page-header.transaction-form__header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  gap: 0.125rem;
+  padding-right: 2.75rem;
+}
+
 /* Every sheet form's primary CTA: chunky and thumb-friendly, and it must not
    shrink on small screens the way btn-lg otherwise does. */
 .transaction-form__actions .btn-lg,
