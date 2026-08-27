@@ -1,212 +1,123 @@
 import { Controller } from "@hotwired/stimulus"
 
-// Connects to data-controller="debt-fields"
-//
-// Drives the person-first debt flow inside the unified transaction form:
-//   pick a person -> (infer or choose a direction) -> pick an intent.
-// It writes the hidden `kind` and `direction` fields the backend consumes and
-// swaps the two intent labels client-side, so no per-keystroke server round-trip
-// is needed. The person field (a tom-select) notifies us via a `tom-select:change`
-// event wired as the `onPersonChange` action.
+// The debt branch of the transaction form: pick a person, then choose from four
+// written-out sentences (lend / get repaid / borrow / repay). Each card writes
+// the hidden `kind` and `direction` the backend consumes, shows the monthly
+// effect live, and the resulting balance with that person. Hidden until a person
+// is chosen — one question at a time.
 export default class extends Controller {
   static targets = [
-    "kindInput",
-    "directionInput",
-    "directionPicker",
-    "directionOption",
-    "intents",
-    "intentOption",
-    "feeField"
+    "kindInput", "directionInput", "cards", "card", "cardTitle", "cardEffect",
+    "after", "afterLabel", "afterValue", "feeField"
   ]
-
   static values = {
-    intentLabels: Object, // { lent: { debt_in, debt_out }, borrowed: { ... } }
-    debtsByName: Object,   // { "emmanuel": ["lent"], "eve": ["lent","borrowed"] }
+    debtsByName: Object,
+    balances: Object,
+    currency: String,
+    locale: String,
     contactName: String,
-    locked: Boolean
+    locked: Boolean,
+    labels: Object
   }
 
   connect() {
-    // Only the debt category renders the intents; bail out for expense/income/transfer.
-    if (!this.hasIntentsTarget) return
+    if (!this.hasCardsTarget) return
 
-    this.currentName = this.contactNameValue || ""
-    const direction = this.directionInputTarget.value
-    this.syncFee()
-
-    if (this.lockedValue) {
-      // Opened from a specific debt: direction is fixed by that debt, both actions are valid.
-      this.hidePicker()
-      this.renderIntents(direction)
-      this.selectIntentByKind(this.kindInputTarget.value)
-    } else if (direction && this.directionExists(this.currentName, direction)) {
-      // Existing debt with this direction. The picker stays visible (preselected) so a
-      // wrong guess — e.g. from quick entry / AI — can always be corrected without
-      // deleting the transaction.
-      this.showPicker()
-      this.markDirectionByValue(direction)
-      this.renderIntents(direction)
-      this.selectIntentByKind(this.kindInputTarget.value)
-    } else if (direction) {
-      // New debt: only the opening action is possible, so no intent choice.
-      this.showPicker()
-      this.markDirectionByValue(direction)
-      this.hideIntents()
-      this.kindInputTarget.value = this.openingKind(direction)
-      this.syncFee()
-    } else if (this.currentName) {
-      // A person is filled in but no direction yet (new or both-directions name).
-      this.showPicker()
-      this.hideIntents()
-    } else {
-      this.hidePicker()
-      this.hideIntents()
+    this.name = this.contactNameValue || ""
+    this.amountInput = this.element.querySelector(".budget-amount__input")
+    if (this.amountInput) {
+      this.onAmount = () => this.render()
+      this.amountInput.addEventListener("input", this.onAmount)
     }
+    this.render()
+    this.syncFee()
+  }
+
+  disconnect() {
+    if (this.amountInput && this.onAmount) this.amountInput.removeEventListener("input", this.onAmount)
   }
 
   onPersonChange(event) {
-    // tom-select emits a custom event with detail.value; a plain text input
-    // (no existing debts to autocomplete) fires a native change instead.
-    const raw = event.detail?.value ?? event.target?.value ?? ""
-    const name = raw.trim()
-    this.currentName = name
-    this.directionInputTarget.value = ""
-    this.clearDirectionSelection()
-
-    if (!name) {
-      this.hidePicker()
-      this.hideIntents()
-      return
-    }
-
-    const directions = this.debtsByNameValue[name.toLowerCase()] || []
-
-    if (directions.length === 1) {
-      // Existing person with a single relationship: infer the direction, but keep the
-      // picker visible (preselected) so an inference mistake stays correctable.
-      this.directionInputTarget.value = directions[0]
-      this.showPicker()
-      this.markDirectionByValue(directions[0])
-      this.renderIntents(directions[0])
-      this.selectDefaultIntent()
-    } else {
-      // New person (0) or a name used both ways (2): let the user choose.
-      this.showPicker()
-      this.hideIntents()
-    }
+    this.name = (event.detail?.value ?? event.target?.value ?? "").trim()
+    this.render()
   }
 
-  selectDirection(event) {
-    const direction = event.currentTarget.dataset.direction
-    this.directionInputTarget.value = direction
-    this.markDirectionSelected(event.currentTarget)
-
-    if (this.directionExists(this.currentName, direction)) {
-      // The person already has a debt in this direction: both actions are valid.
-      this.renderIntents(direction)
-      this.selectDefaultIntent()
-    } else {
-      // Brand-new debt: the first transaction can only open it (lent => money
-      // lent, borrowed => money borrowed). There's nothing to repay yet, so we
-      // skip the intent choice and set the opening action directly.
-      this.hideIntents()
-      this.kindInputTarget.value = this.openingKind(direction)
-      this.syncFee()
-    }
+  selectCard(event) {
+    const card = event.currentTarget
+    this.kindInputTarget.value = card.dataset.kind
+    this.directionInputTarget.value = card.dataset.direction
+    this.cardTargets.forEach((c) => {
+      const on = c === card
+      c.classList.toggle("debt-card--selected", on)
+      c.setAttribute("aria-checked", String(on))
+    })
+    this.syncFee()
+    this.render()
   }
 
-  selectIntent(event) {
-    this.applyIntent(event.currentTarget)
-  }
+  render() {
+    const visible = this.lockedValue || this.name.trim().length > 0
+    this.cardsTarget.classList.toggle("hidden", !visible)
 
-  // --- helpers ---------------------------------------------------------------
+    const name = this.name.trim() || this.labelsValue.someone
+    const amount = this.#amount()
+    const amountText = this.#money(amount)
+    const bal = this.balancesValue[this.name.trim().toLowerCase()] || { lent: 0, borrowed: 0 }
 
-  // Does the typed person already have a debt in this direction?
-  directionExists(name, direction) {
-    return (this.debtsByNameValue[(name || "").toLowerCase()] || []).includes(direction)
-  }
-
-  // The only possible first transaction for a new debt: lending opens a "lent"
-  // debt (debt_out / Money Lent), borrowing opens a "borrowed" one (debt_in /
-  // Money Borrowed).
-  openingKind(direction) {
-    return direction === "lent" ? "debt_out" : "debt_in"
-  }
-
-  markDirectionByValue(direction) {
-    const btn = this.directionOptionTargets.find((b) => b.dataset.direction === direction)
-    if (btn) this.markDirectionSelected(btn)
-  }
-
-  renderIntents(direction) {
-    if (!direction) {
-      this.hideIntents()
-      return
-    }
-
-    const labels = this.intentLabelsValue[direction] || {}
-    this.intentOptionTargets.forEach((btn) => {
-      const kind = btn.dataset.kind
-      if (labels[kind]) {
-        const labelEl = btn.querySelector("[data-label]") || btn
-        labelEl.textContent = labels[kind]
+    this.cardTargets.forEach((card) => {
+      const v = card.dataset.variant
+      const title = card.querySelector('[data-debt-fields-target="cardTitle"]')
+      const effect = card.querySelector('[data-debt-fields-target="cardEffect"]')
+      if (title) title.textContent = this.labelsValue.titles[v].replace("%{name}", name)
+      if (effect) {
+        const result = v === "lent_out" ? bal.lent + amount : v === "borrowed_in" ? bal.borrowed + amount : null
+        effect.textContent = this.labelsValue.effects[v]
+          .replace("%{amount}", amountText)
+          .replace("%{name}", name)
+          .replace("%{result}", result == null ? "" : this.#money(result))
       }
     })
-    this.showIntents()
+
+    this.#renderAfter(name, amount, bal)
   }
 
-  selectDefaultIntent() {
-    const first = this.intentOptionTargets[0]
-    if (first) this.applyIntent(first)
+  #renderAfter(name, amount, bal) {
+    if (!this.hasAfterTarget) return
+    const selected = this.cardTargets.find((c) => c.classList.contains("debt-card--selected"))
+    if (!selected || amount <= 0) {
+      this.afterTarget.hidden = true
+      return
+    }
+
+    let lent = bal.lent
+    let borrowed = bal.borrowed
+    switch (selected.dataset.variant) {
+      case "lent_out": lent += amount; break
+      case "lent_in": lent = Math.max(0, lent - amount); break
+      case "borrowed_in": borrowed += amount; break
+      case "borrowed_out": borrowed = Math.max(0, borrowed - amount); break
+    }
+    const net = lent - borrowed
+
+    this.afterLabelTarget.textContent = this.labelsValue.after_label.replace("%{name}", name)
+    if (net > 0) this.afterValueTarget.textContent = this.labelsValue.after_they_owe.replace("%{name}", name).replace("%{amount}", this.#money(net))
+    else if (net < 0) this.afterValueTarget.textContent = this.labelsValue.after_you_owe.replace("%{amount}", this.#money(-net))
+    else this.afterValueTarget.textContent = this.labelsValue.after_settled
+    this.afterTarget.hidden = false
   }
 
-  selectIntentByKind(kind) {
-    const match = this.intentOptionTargets.find((btn) => btn.dataset.kind === kind)
-    this.applyIntent(match || this.intentOptionTargets[0])
-  }
-
-  applyIntent(btn) {
-    if (!btn) return
-    this.kindInputTarget.value = btn.dataset.kind
-    this.intentOptionTargets.forEach((b) =>
-      b.classList.toggle("kind-option--selected", b === btn)
-    )
-    this.syncFee()
-  }
-
-  // Among debt kinds, a fee only applies to debt_out (money leaving).
+  // A fee only applies to money leaving (debt_out).
   syncFee() {
     if (!this.hasFeeFieldTarget) return
-
-    const applicable = this.kindInputTarget.value === "debt_out"
-    this.feeFieldTarget.classList.toggle("hidden", !applicable)
+    this.feeFieldTarget.classList.toggle("hidden", this.kindInputTarget.value !== "debt_out")
   }
 
-  markDirectionSelected(btn) {
-    this.directionOptionTargets.forEach((b) =>
-      b.classList.toggle("kind-option--selected", b === btn)
-    )
+  #amount() {
+    const v = parseFloat(this.amountInput?.value)
+    return v > 0 ? v : 0
   }
 
-  clearDirectionSelection() {
-    this.directionOptionTargets.forEach((b) =>
-      b.classList.remove("kind-option--selected")
-    )
-  }
-
-  showPicker() {
-    if (this.hasDirectionPickerTarget) this.directionPickerTarget.classList.remove("hidden")
-  }
-
-  hidePicker() {
-    if (this.hasDirectionPickerTarget) this.directionPickerTarget.classList.add("hidden")
-  }
-
-  showIntents() {
-    if (this.hasIntentsTarget) this.intentsTarget.classList.remove("hidden")
-  }
-
-  hideIntents() {
-    if (this.hasIntentsTarget) this.intentsTarget.classList.add("hidden")
+  #money(n) {
+    return `${Number(n).toLocaleString(this.hasLocaleValue ? this.localeValue : undefined)} ${this.currencyValue}`
   }
 }

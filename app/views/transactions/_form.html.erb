@@ -7,10 +7,30 @@
       data: {
         controller: "transaction-form debt-fields kind-switch",
         action: "tom-select:change->transaction-form#keepTypedText",
-        debt_fields_intent_labels_value: debt_intent_label_map.to_json,
+        transaction_form_currency_value: get_currency_symbol(current_space.currency),
+        transaction_form_locale_value: I18n.locale,
+        transaction_form_date_today_value: t('transactions.form.date_hint_today'),
+        transaction_form_date_yesterday_value: t('transactions.form.date_hint_yesterday'),
+        transaction_form_balances_value: current_space.accounts.map { |a| [ a.name, a.balance ] }.to_h.to_json,
+        transaction_form_cta_template_value: t('transactions.form.cta_save_amount', amount: '%{amount}'),
+        transaction_form_cta_empty_value: (@form.editing? ? t('transactions.edit.update_transaction') : t('transactions.form.cta_need_amount')),
         debt_fields_debts_by_name_value: @form.debts_by_name.to_json,
+        debt_fields_balances_value: @form.debt_balances_by_name.to_json,
+        debt_fields_currency_value: get_currency_symbol(current_space.currency),
+        debt_fields_locale_value: I18n.locale,
         debt_fields_contact_name_value: @form.contact_name,
-        debt_fields_locked_value: @form.debt_id.present?
+        debt_fields_locked_value: @form.debt_id.present?,
+        debt_fields_labels_value: {
+          someone: t('transactions.form.debt_someone'),
+          titles: { lent_out: t('transactions.form.debt_lent_out_title'), lent_in: t('transactions.form.debt_lent_in_title'),
+                    borrowed_in: t('transactions.form.debt_borrowed_in_title'), borrowed_out: t('transactions.form.debt_borrowed_out_title') },
+          effects: { lent_out: t('transactions.form.debt_lent_out_effect'), lent_in: t('transactions.form.debt_lent_in_effect'),
+                     borrowed_in: t('transactions.form.debt_borrowed_in_effect'), borrowed_out: t('transactions.form.debt_borrowed_out_effect') },
+          after_label: t('transactions.form.debt_after_label'),
+          after_they_owe: t('transactions.form.debt_after_they_owe'),
+          after_you_owe: t('transactions.form.debt_after_you_owe'),
+          after_settled: t('transactions.form.debt_after_settled')
+        }.to_json
       } do |f| %>
     <%= render "shared/form_errors", object: @form %>
 
@@ -21,7 +41,7 @@
     <!-- Kind Selector (hidden when opened from a specific debt — the kind is fixed) -->
     <% unless @form.debt_id.present? %>
       <div class="transaction-form__kind">
-        <div class="kind-selector kind-selector--quad" role="radiogroup" aria-label="<%= t('transactions.form.kind_label', default: 'Type') %>">
+        <div class="kind-selector kind-selector--quad kind-selector--mono" role="radiogroup" aria-label="<%= t('transactions.form.kind_label', default: 'Type') %>">
           <% transaction_top_level_options(@form).each do |opt| %>
             <%= link_to transaction_kind_switch_path(@form, opt[:kind]),
                         data: { turbo_frame: "transaction_form", action: "kind-switch#switch" },
@@ -38,54 +58,50 @@
       </div>
     <% end %>
 
-    <!-- Amount Field (Required) -->
-    <div class="transaction-form__amount">
-      <%= render Forms::InputFieldComponent.new(
-        form: f,
-        field: :amount,
-        type: :number_field,
-        label: t('transactions.form.amount_label'),
-        required: true,
-        prepend: get_currency_symbol(current_space.currency),
-        step: "0.01",
-        min: "0.01",
-        placeholder: t('transactions.form.amount_placeholder'),
-        autofocus: true
-      ) %>
+    <!-- Amount hero: entered on the phone's numeric keyboard, focused by default -->
+    <div class="budget-amount transaction-form__amount">
+      <div class="budget-amount__field">
+        <%= f.number_field :amount, class: "budget-amount__input",
+              value: (@form.amount && (@form.amount % 1 == 0 ? @form.amount.to_i : @form.amount.to_f)),
+              step: "0.01", min: "0.01", inputmode: "decimal", autofocus: true,
+              placeholder: t('transactions.form.amount_placeholder'),
+              aria: { label: t('transactions.form.amount_label') },
+              data: { transaction_form_target: "amount", action: "input->transaction-form#syncCta" } %>
+        <span class="budget-amount__currency"><%= get_currency_symbol(current_space.currency) %></span>
+      </div>
     </div>
 
     <!-- Transfer Mode: From and To Accounts -->
     <% if @form.kind == 'transfer' %>
-      <div class="transaction-form__transfer-accounts">
-        <div class="transaction-form__from-account">
-          <%= render Forms::InputFieldComponent.new(
-            form: f,
-            field: :from_account_name,
-            label: t('transactions.form.from_account_label'),
-            required: true,
-            autocomplete: true,
-            autocomplete_options: @form.account_suggestions,
-            default_autocomplete_options: @form.default_account_suggestions,
-            allow_create: true,
-            placeholder: t('transactions.form.from_account_placeholder'),
-            field_data: { tom_select_currency_value: get_currency_symbol(current_space.currency) }
-          ) %>
+      <div class="transaction-form__transfer">
+        <span class="form-label"><%= t('transactions.form.accounts_label') %></span>
+        <div class="transfer-block">
+          <div class="transfer-block__row">
+            <span class="transfer-block__prefix"><%= t('budgets.form.transfer_from') %></span>
+            <div class="transfer-block__field">
+              <%= render Forms::InputFieldComponent.new(
+                form: f, field: :from_account_name, label: "", required: true,
+                autocomplete: true, autocomplete_options: @form.account_suggestions,
+                default_autocomplete_options: @form.default_account_suggestions, allow_create: true,
+                placeholder: t('transactions.form.from_account_placeholder'),
+                field_data: { tom_select_currency_value: get_currency_symbol(current_space.currency),
+                              action: "tom-select:change->transaction-form#syncBalances" }) %>
+            </div>
+          </div>
+          <div class="transfer-block__row">
+            <span class="transfer-block__prefix"><%= t('budgets.form.transfer_to') %></span>
+            <div class="transfer-block__field">
+              <%= render Forms::InputFieldComponent.new(
+                form: f, field: :to_account_name, label: "", required: true,
+                autocomplete: true, autocomplete_options: @form.account_suggestions,
+                default_autocomplete_options: @form.default_account_suggestions, allow_create: true,
+                placeholder: t('transactions.form.to_account_placeholder'),
+                field_data: { tom_select_currency_value: get_currency_symbol(current_space.currency),
+                              action: "tom-select:change->transaction-form#syncBalances" }) %>
+            </div>
+          </div>
         </div>
-
-        <div class="transaction-form__to-account">
-          <%= render Forms::InputFieldComponent.new(
-            form: f,
-            field: :to_account_name,
-            label: t('transactions.form.to_account_label'),
-            required: true,
-            autocomplete: true,
-            autocomplete_options: @form.account_suggestions,
-            default_autocomplete_options: @form.default_account_suggestions,
-            allow_create: true,
-            placeholder: t('transactions.form.to_account_placeholder'),
-            field_data: { tom_select_currency_value: get_currency_symbol(current_space.currency) }
-          ) %>
-        </div>
+        <p class="transfer-balances" data-transaction-form-target="balances" hidden></p>
       </div>
     <% elsif @form.debt_transaction? %>
       <!-- Debt Mode: person-first. Pick who, infer/choose direction, pick intent. -->
@@ -108,35 +124,35 @@
         </div>
       <% end %>
 
-      <!-- Direction picker (always shown once a person is set, preselected when inferable,
-           so a wrong quick-entry/AI guess stays correctable) -->
-      <div class="transaction-form__debt-direction kind-selector hidden"
-           data-debt-fields-target="directionPicker" role="radiogroup"
-           aria-label="<%= t('transactions.form.direction_label') %>">
-        <% [["lent", t('transactions.form.direction_lent')], ["borrowed", t('transactions.form.direction_borrowed')]].each do |dir, label| %>
-          <button type="button" class="kind-option kind-option--choice"
-                  data-debt-fields-target="directionOption"
-                  data-direction="<%= dir %>"
-                  data-action="click->debt-fields#selectDirection">
-            <span class="kind-option__label"><%= label %></span>
-          </button>
-        <% end %>
-      </div>
-
-      <!-- Intent cards (the 2 actions for the resolved direction) -->
-      <% intent_direction = @form.direction.presence || "lent" %>
-      <div class="transaction-form__debt-intents kind-selector<%= ' hidden' unless @form.direction.present? || @form.debt_id.present? %>"
-           data-debt-fields-target="intents" role="radiogroup"
-           aria-label="<%= t('transactions.form.kind_label', default: 'Type') %>">
-        <% debt_direction_intent_options(intent_direction).each do |io| %>
-          <button type="button"
-                  class="kind-option kind-option--<%= io[:kind] %> <%= 'kind-option--selected' if @form.kind == io[:kind] %>"
-                  data-debt-fields-target="intentOption"
-                  data-kind="<%= io[:kind] %>"
-                  data-action="click->debt-fields#selectIntent">
-            <span class="kind-option__label" data-label><%= io[:label] %></span>
-          </button>
-        <% end %>
+      <!-- What happened? Four sentences, each writing out where the money goes
+           and what the balance becomes. Hidden until a person is chosen. -->
+      <div class="transaction-form__debt-cards<%= ' hidden' unless @form.contact_name.present? || @form.debt_id.present? %>"
+           data-debt-fields-target="cards">
+        <span class="debt-what"><%= t('transactions.form.debt_what') %></span>
+        <div class="debt-cards" role="radiogroup" aria-label="<%= t('transactions.form.debt_what') %>">
+          <% [
+               [ "debt_out", "lent", "lent_out", "expense" ],
+               [ "debt_in", "lent", "lent_in", "income" ],
+               [ "debt_in", "borrowed", "borrowed_in", "income" ],
+               [ "debt_out", "borrowed", "borrowed_out", "expense" ]
+             ].each do |kind, direction, variant, icon| %>
+            <% selected = @form.kind == kind && (@form.direction.blank? || @form.direction == direction) %>
+            <button type="button" class="debt-card<%= ' debt-card--selected' if selected %>"
+                    data-debt-fields-target="card" data-kind="<%= kind %>" data-direction="<%= direction %>"
+                    data-variant="<%= variant %>" data-action="click->debt-fields#selectCard"
+                    role="radio" aria-checked="<%= selected.to_s %>">
+              <span class="debt-card__icon debt-card__icon--<%= icon %>" aria-hidden="true"><%= transaction_icon_svg(icon) %></span>
+              <span class="debt-card__text">
+                <span class="debt-card__title" data-debt-fields-target="cardTitle"></span>
+                <span class="debt-card__effect" data-debt-fields-target="cardEffect"></span>
+              </span>
+            </button>
+          <% end %>
+        </div>
+        <div class="debt-after" data-debt-fields-target="after" hidden>
+          <span class="debt-after__label" data-debt-fields-target="afterLabel"></span>
+          <span class="debt-after__value" data-debt-fields-target="afterValue"></span>
+        </div>
       </div>
 
       <!-- Account (optional) -->
@@ -154,21 +170,7 @@
         ) %>
       </div>
     <% else %>
-      <!-- Regular Mode: Single Account and Transaction Type -->
-      <div class="transaction-form__account">
-        <%= render Forms::InputFieldComponent.new(
-          form: f,
-          field: :account_name,
-          label: t('transactions.form.account_label'),
-          autocomplete: true,
-          autocomplete_options: @form.account_suggestions,
-          default_autocomplete_options: @form.default_account_suggestions,
-          allow_create: true,
-          placeholder: t('transactions.form.account_placeholder'),
-          field_data: { tom_select_currency_value: get_currency_symbol(current_space.currency) }
-        ) %>
-      </div>
-
+      <!-- Regular Mode: category first (what), then account -->
       <div class="transaction-form__transaction-type">
         <%= render Forms::InputFieldComponent.new(
           form: f,
@@ -180,6 +182,20 @@
           default_autocomplete_options: @form.default_transaction_type_options,
           allow_create: true,
           placeholder: t('transactions.form.transaction_type_placeholder')
+        ) %>
+      </div>
+
+      <div class="transaction-form__account">
+        <%= render Forms::InputFieldComponent.new(
+          form: f,
+          field: :account_name,
+          label: t('transactions.form.account_label'),
+          autocomplete: true,
+          autocomplete_options: @form.account_suggestions,
+          default_autocomplete_options: @form.default_account_suggestions,
+          allow_create: true,
+          placeholder: t('transactions.form.account_placeholder'),
+          field_data: { tom_select_currency_value: get_currency_symbol(current_space.currency) }
         ) %>
       </div>
     <% end %>
@@ -198,68 +214,66 @@
     </div>
 
     <!-- Optional Fields (expanded when an existing fee needs editing) -->
+    <%
+      today = Date.current
+      tx_date = @form.transaction_date || today
+      date_mode = tx_date == today ? "today" : (tx_date == today - 1 ? "yesterday" : "other")
+    %>
     <div class="transaction-form__optional-fields<%= ' hidden' unless @form.fee_amount.present? %>"
          data-transaction-form-target="optionalFields"
          data-expanded="<%= @form.fee_amount.present? %>">
-      <div class="transaction-form__description">
+
+      <div class="tx-detail transaction-form__description">
+        <div class="tx-detail__head">
+          <span class="form-label"><%= t('transactions.form.description_label') %></span>
+          <span class="tx-detail__hint"><%= t('transactions.form.optional_hint') %></span>
+        </div>
         <%= render Forms::InputFieldComponent.new(
-          form: f,
-          field: :description,
-          label: t('transactions.form.description_label'),
-          help_text: t('transactions.form.description_help'),
-          placeholder: t('transactions.form.description_placeholder'),
-          required: false
-        ) %>
+          form: f, field: :description, label: "",
+          placeholder: t('transactions.form.description_placeholder'), required: false) %>
+      </div>
+
+      <div class="tx-detail transaction-form__date">
+        <div class="tx-detail__head">
+          <span class="form-label"><%= t('transactions.form.date_label') %></span>
+          <span class="tx-detail__hint" data-transaction-form-target="dateHint"></span>
+        </div>
+        <div class="pill-choice pill-choice--three">
+          <% [ [ "today", t('transactions.form.date_today') ], [ "yesterday", t('transactions.form.date_yesterday') ], [ "other", t('transactions.form.date_other') ] ].each do |mode, label| %>
+            <button type="button" class="pill<%= ' pill--active' if mode == date_mode %>"
+                    data-transaction-form-target="datePill" data-date-mode="<%= mode %>"
+                    data-action="transaction-form#setDate"><%= label %></button>
+          <% end %>
+        </div>
+        <div class="tx-detail__date-field<%= ' hidden' unless date_mode == 'other' %>" data-transaction-form-target="dateField">
+          <%= f.date_field :transaction_date, value: tx_date, class: "form-input",
+                data: { transaction_form_target: "dateInput", action: "transaction-form#onDateInput" } %>
+        </div>
       </div>
 
       <% if @form.fee_applicable? || @form.debt_transaction? %>
-        <div class="transaction-form__fee<%= ' hidden' unless @form.fee_applicable? %>" data-debt-fields-target="feeField">
+        <div class="tx-detail transaction-form__fee<%= ' hidden' unless @form.fee_applicable? %>" data-debt-fields-target="feeField">
+          <div class="tx-detail__head">
+            <span class="form-label"><%= t('transactions.form.fee_amount_label') %></span>
+            <span class="tx-detail__hint"><%= t('transactions.form.fee_hint') %></span>
+          </div>
           <%= render Forms::InputFieldComponent.new(
-            form: f,
-            field: :fee_amount,
-            type: :number_field,
-            label: t('transactions.form.fee_amount_label'),
-            help_text: t('transactions.form.fee_help'),
-            required: false,
-            prepend: get_currency_symbol(current_space.currency),
-            step: "0.01",
-            min: "0",
-            placeholder: t('transactions.form.fee_amount_placeholder')
-          ) %>
+            form: f, field: :fee_amount, type: :number_field, label: "", required: false,
+            prepend: get_currency_symbol(current_space.currency), step: "0.01", min: "0",
+            placeholder: t('transactions.form.fee_amount_placeholder')) %>
         </div>
       <% end %>
-
-      <div class="transaction-form__date">
-        <%= render Forms::InputFieldComponent.new(
-          form: f,
-          field: :transaction_date,
-          type: :date_field,
-          label: t('transactions.form.date_label'),
-          required: false
-        ) %>
-      </div>
-
-      <div class="transaction-form__note">
-        <%= render Forms::InputFieldComponent.new(
-          form: f,
-          field: :note,
-          type: :text_area,
-          label: t('transactions.form.note_label'),
-          help_text: t('transactions.form.note_help'),
-          rows: 3,
-          placeholder: t('transactions.form.note_placeholder')
-        ) %>
-      </div>
     </div>
 
-    <!-- Submit Button -->
+    <!-- Submit: carries the amount, and names what's missing when empty -->
     <div class="transaction-form__actions">
       <%= render Ui::ButtonComponent.new(
-        text: @form.editing? ? t('transactions.edit.update_transaction') : t('transactions.form.save_transaction'),
+        text: @form.editing? ? t('transactions.edit.update_transaction') : t('transactions.form.cta_need_amount'),
         type: :submit,
         variant: :primary,
         size: :lg,
-        full_width: true
+        full_width: true,
+        data: { transaction_form_target: "cta" }
       ) %>
     </div>
   <% end %>

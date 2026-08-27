@@ -3,15 +3,14 @@
 <%= turbo_frame_tag "modal" do %>
   <div class="page-container page-container--narrow">
     <%= turbo_frame_tag "transaction_form" do %>
-      <header class="page-header">
-        <% if @form.debt_id.present? %>
-          <%# Opened from a specific debt: both actions are shown, so the prompt stays generic. %>
-          <p class="page-header__subtitle"><%= t(".subtitle.from_debt") %></p>
-        <% elsif @form.debt_transaction? && @form.contact_name.blank? %>
-          <p class="page-header__subtitle"><%= t(".subtitle.debt") %></p>
-        <% else %>
-          <p class="page-header__subtitle"><%= t(".subtitle.#{@form.kind}") %></p>
-        <% end %>
+      <%
+        title_key = @form.debt_transaction? ? (@form.debt_id.present? ? "from_debt" : "debt") : @form.kind
+        type_key = @form.kind == "transfer" ? "transfer" : (@form.debt_transaction? ? "debt" : (@form.kind == "income" ? "income" : "expense"))
+        tx_date = l(@form.transaction_date || Date.current, format: "%-d %B")
+      %>
+      <header class="page-header transaction-form__header">
+        <h2 class="transaction-form__title"><%= t(".subtitle.#{title_key}") %></h2>
+        <p class="transaction-form__subtitle"><%= t(".new_subtitle_html", type: t(".new_type_#{type_key}"), date: tx_date) %></p>
       </header>
 
       <div class="page-content">

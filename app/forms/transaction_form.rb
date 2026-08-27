@@ -192,6 +192,16 @@ class TransactionForm < BaseForm
     end
   end
 
+  # Per-person ongoing balances by direction, so the debt cards can state the
+  # resulting balance ("they'll owe you X") live.
+  def debt_balances_by_name
+    space.debts.ongoing.each_with_object({}) do |debt, acc|
+      key = debt.name.to_s.strip.downcase
+      acc[key] ||= { "lent" => 0.0, "borrowed" => 0.0 }
+      acc[key][debt.direction] += debt.remaining_balance.to_f
+    end
+  end
+
   ##
   # Predicates / resolution
   def debt_transaction?

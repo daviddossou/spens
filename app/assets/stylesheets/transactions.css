@@ -6,6 +6,141 @@
   gap: 0.875rem;
 }
 
+/* Stacked header (title over subtitle), overriding the sheet's single-line
+   centred default. */
+.page-header.transaction-form__header,
+.bottom-sheet__body .page-header.transaction-form__header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  gap: 0.125rem;
+  padding-right: 2.75rem;
+}
+
+/* Inside the sheet, the header sticks at the top (the × already floats over it)
+   and the CTA sticks at the bottom — the context and action never scroll away. */
+.bottom-sheet__body .page-header.transaction-form__header {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  margin: 0 -1.25rem;
+  padding: 0.75rem 2.75rem 0.75rem 1.25rem;
+  background: var(--color-white);
+  border-bottom: 1px solid var(--color-separator);
+}
+
+.bottom-sheet__body .transaction-form__actions {
+  position: sticky;
+  bottom: 0;
+  z-index: 3;
+  margin: 1.25rem -1.25rem -1.5rem;
+  padding: 0.75rem 1.25rem calc(0.75rem + env(safe-area-inset-bottom, 0));
+  background: var(--color-white);
+  border-top: 1px solid var(--color-separator);
+  box-shadow: 0 -4px 16px rgba(40, 42, 51, 0.05);
+}
+
+.transaction-form__title {
+  font-size: var(--font-size-headline);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: var(--tracking-headline);
+  color: var(--color-dark);
+}
+
+.transaction-form__subtitle {
+  font-size: var(--font-size-body);
+  color: var(--color-muted-strong);
+}
+
+/* Field labels read as prompts, matching the budget-line form. */
+.transaction-form .form-label {
+  font-size: var(--font-size-title);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-dark);
+}
+
+/* Debt: four sentence cards + the resulting balance line */
+.transaction-form__debt-cards {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.debt-what {
+  font-size: var(--font-size-title);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-dark);
+}
+
+.debt-after {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-md);
+  padding: var(--space-md) var(--space-lg);
+  background: var(--color-surface-sunken);
+  border-radius: var(--radius-lg);
+}
+
+.debt-after__label {
+  font-size: var(--font-size-body);
+  color: var(--color-muted-strong);
+}
+
+.debt-after__value {
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-dark);
+  white-space: nowrap;
+}
+
+/* Optional-detail rows: label on the left, a quiet hint on the right. */
+.tx-detail__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-md);
+  margin-bottom: var(--space-sm);
+}
+
+.tx-detail__head .form-label {
+  margin-bottom: 0;
+}
+
+.tx-detail__hint {
+  font-size: var(--font-size-body);
+  color: var(--color-muted-strong);
+}
+
+/* The detail field's own label is replaced by the head row above. */
+.tx-detail .form-label-wrapper {
+  display: none;
+}
+
+.tx-detail .form-field {
+  margin-bottom: 0;
+}
+
+.tx-detail__date-field {
+  margin-top: var(--space-md);
+}
+
+.pill-choice--three {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.transaction-form__transfer .transfer-block {
+  margin-top: var(--space-sm);
+}
+
+/* Both accounts' current balances, in one quiet line under the block. */
+.transfer-balances {
+  margin-top: var(--space-md);
+  font-size: var(--font-size-label);
+  color: var(--color-muted-strong);
+}
+
 .transaction-form .form-field {
   margin-bottom: 0.5rem !important;
 }
@@ -253,6 +388,17 @@
   flex-direction: column;
   gap: 0.5rem;
   margin-top: 1.25rem;
+}
+
+/* The sheet's primary CTA stays chunky and thumb-friendly, and must not shrink
+   on small screens the way btn-lg otherwise does. */
+.transaction-form__actions .btn-lg {
+  min-height: 3.25rem;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  line-height: 1.5;
+  align-items: center;
+  justify-content: center;
 }
 
 /* Responsive - Tablet */

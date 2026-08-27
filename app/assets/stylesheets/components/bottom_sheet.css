@@ -79,7 +79,8 @@
   border-radius: 50%;
   -webkit-tap-highlight-color: transparent;
   transition: background-color 0.15s ease;
-  z-index: 1;
+  /* Above a sticky sheet header so it never gets covered. */
+  z-index: 5;
 }
 
 .bottom-sheet__close:hover {
