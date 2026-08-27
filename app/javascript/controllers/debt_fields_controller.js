@@ -1,4 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
+import { formatMoney } from "lib/money"
 
 // The debt branch of the transaction form: pick a person, then choose from four
 // written-out sentences (lend / get repaid / borrow / repay). Each card writes
@@ -118,6 +119,6 @@ export default class extends Controller {
   }
 
   #money(n) {
-    return `${Number(n).toLocaleString(this.hasLocaleValue ? this.localeValue : undefined)} ${this.currencyValue}`
+    return formatMoney(n, this.currencyValue, this.hasLocaleValue ? this.localeValue : undefined)
   }
 }

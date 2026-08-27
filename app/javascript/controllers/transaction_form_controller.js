@@ -1,4 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
+import { formatMoney } from "lib/money"
 
 // Connects to data-controller="transaction-form"
 export default class extends Controller {
@@ -78,7 +79,7 @@ export default class extends Controller {
     const from = nameOf("from_account_name")
     const to = nameOf("to_account_name")
     const parts = []
-    const fmt = (n) => `${Number(n).toLocaleString(this.hasLocaleValue ? this.localeValue : undefined)} ${this.currencyValue}`
+    const fmt = (n) => formatMoney(n, this.currencyValue, this.hasLocaleValue ? this.localeValue : undefined)
     if (from && this.balancesValue[from] != null) parts.push(`${from} ${fmt(this.balancesValue[from])}`)
     if (to && this.balancesValue[to] != null) parts.push(`${to} ${fmt(this.balancesValue[to])}`)
 
@@ -97,7 +98,7 @@ export default class extends Controller {
 
     const raw = this.hasAmountTarget ? parseFloat(this.amountTarget.value) : NaN
     if (raw > 0) {
-      const value = `${raw.toLocaleString(this.hasLocaleValue ? this.localeValue : undefined)} ${this.currencyValue}`
+      const value = formatMoney(raw, this.currencyValue, this.hasLocaleValue ? this.localeValue : undefined)
       this.ctaTarget.textContent = this.ctaTemplateValue.replace("%{amount}", value)
       this.ctaTarget.disabled = false
     } else {

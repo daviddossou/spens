@@ -1,4 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
+import { formatMoney } from "lib/money"
 
 // Drives the budget-line form's advanced settings: frequency segments, the
 // "no end / until a date" choice, the rollover toggle, and — crucially — the
@@ -84,7 +85,7 @@ export default class extends Controller {
         const planned = raw
         const spent = Math.round(planned * 0.625)
         const carried = planned + (planned - spent)
-        const fmt = (n) => `${n.toLocaleString(loc)} ${this.currencyValue}`
+        const fmt = (n) => formatMoney(n, this.currencyValue, loc)
         this.rolloverExampleTarget.textContent = this.rolloverExampleValue
           .replace("%{planned}", fmt(planned))
           .replace("%{spent}", fmt(spent))
@@ -99,9 +100,8 @@ export default class extends Controller {
     if (this.hasCtaTarget && this.hasCtaTemplateValue) {
       const raw = this.hasAmountTarget ? parseFloat(this.amountTarget.value) : NaN
       if (raw > 0) {
-        const amount = raw.toLocaleString(this.hasLocaleValue ? this.localeValue : undefined)
         const short = this.periodShortValue[freq] || this.periodShortValue.monthly || ""
-        const value = `${amount} ${this.currencyValue}/${short}`
+        const value = `${formatMoney(raw, this.currencyValue, this.hasLocaleValue ? this.localeValue : undefined)}/${short}`
         this.ctaTarget.textContent = this.ctaTemplateValue.replace("%{value}", value)
       } else {
         this.ctaTarget.textContent = this.ctaEmptyValue

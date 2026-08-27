@@ -1,4 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
+import { formatMoney } from "lib/money"
 
 // Drives the debt branch of the budget-line form. The money direction is two
 // written-out sentences ("I repay Georges" / "Georges repays me") with the
@@ -59,7 +60,7 @@ export default class extends Controller {
   render() {
     const name = this.name.trim() || this.labelsValue.someone
     const amount = this.#amount()
-    const amountText = `${(amount > 0 ? amount : 0).toLocaleString(this.localeValue || "fr")} ${this.currencyValue}`
+    const amountText = formatMoney(amount > 0 ? amount : 0, this.currencyValue, this.localeValue || "fr")
 
     this.cardTitleTargets.forEach((el) => {
       const tpl = this.labelsValue[el.closest(".debt-card").dataset.title]
@@ -72,7 +73,7 @@ export default class extends Controller {
 
     const summary = this.summariesValue[this.name.trim().toLowerCase()]
     if (summary && summary.balance > 0) {
-      const balText = `${summary.balance.toLocaleString(this.localeValue || "fr")} ${this.currencyValue}`
+      const balText = formatMoney(summary.balance, this.currencyValue, this.localeValue || "fr")
       const tpl = summary.direction === "borrowed" ? this.labelsValue.you_owe : this.labelsValue.owes_you
       this.balanceTarget.textContent = tpl.replace("%{amount}", balText).replace("%{name}", name)
       this.balanceTarget.hidden = false
