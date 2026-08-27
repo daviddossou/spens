@@ -10,6 +10,23 @@
   margin-bottom: 0.5rem !important;
 }
 
+/* Amount is the form's hero: the sheet's first job is capturing a number fast,
+   so it gets Display weight and a prominent currency addon, not a row-height
+   input equal to every other field. */
+.transaction-form__amount .form-input-group .form-input {
+  font-size: var(--font-size-display);
+  font-weight: var(--font-weight-bold);
+  padding: 0.5rem 0.75rem;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+
+.transaction-form__amount .form-input-addon--prepend {
+  font-size: var(--font-size-headline);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-muted-strong);
+}
+
 /* Kind Selector */
 .transaction-form__kind {
   margin-top: 1.5rem;
@@ -71,7 +88,7 @@
   padding: 0.875rem 0.5rem;
   background: rgba(var(--kind-accent-rgb), 0.07);
   border: 1.5px solid rgba(var(--kind-accent-rgb), 0.4);
-  border-radius: 0.875rem;
+  border-radius: var(--radius-lg);
   text-decoration: none;
   color: var(--text-dark);
   transition: border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
@@ -136,6 +153,42 @@
   font-weight: 600;
   line-height: 1.2;
   text-align: center;
+}
+
+/* Mono variant: one active (accent), three neutral — nothing competes with the
+   chosen type. Used by the budget-line form. */
+.kind-selector--mono .kind-option {
+  background: var(--color-surface-sunken);
+  border-color: transparent;
+}
+
+.kind-selector--mono .kind-option:hover {
+  border-color: transparent;
+}
+
+.kind-selector--mono .kind-option__icon {
+  background: var(--color-neutral-pill);
+  color: var(--color-muted-strong);
+}
+
+.kind-selector--mono .kind-option__label {
+  color: var(--color-muted-strong);
+}
+
+.kind-selector--mono .kind-option--selected {
+  background: rgba(var(--kind-accent-rgb), 0.08);
+  border-color: var(--kind-accent);
+  box-shadow: none;
+}
+
+.kind-selector--mono .kind-option--selected .kind-option__icon {
+  background: var(--kind-accent);
+  color: var(--color-white);
+}
+
+.kind-selector--mono .kind-option--selected .kind-option__label {
+  color: var(--kind-accent);
+  font-weight: var(--font-weight-semibold);
 }
 
 /* Per-kind semantic icon colors (icons use stroke: currentColor). */

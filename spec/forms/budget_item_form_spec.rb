@@ -41,13 +41,26 @@ RSpec.describe BudgetItemForm do
     expect(item.reload).not_to be_essential
   end
 
-  it "rejects invalid frequencies and duplicate active items" do
+  it "rejects invalid frequencies and duplicate active items in the same month" do
     expect(build_form(frequency: "irregular")).to be_invalid
 
     build_form.submit
     dup = build_form
     expect(dup.submit).to be false
     expect(dup.errors[:transaction_type_name]).to be_present
+  end
+
+  it "extends an existing rule backward when the same category is added to an earlier month" do
+    build_form(starts_on: month >> 1).submit
+    expect(space.budget_items.active.count).to eq(1)
+
+    earlier = build_form(starts_on: month)
+    expect(earlier.submit).to be true
+    # No second rule was created — the existing one moved its start back.
+    expect(space.budget_items.active.count).to eq(1)
+    expect(space.budget_items.active.sole.starts_on).to eq(month)
+    # The earlier month now materializes the line.
+    expect(space.budget_entries.for_month(month)).to be_present
   end
 
   it "on edit, updates current and future entries" do

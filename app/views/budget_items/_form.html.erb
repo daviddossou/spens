@@ -2,167 +2,257 @@
 
 <%= f.hidden_field :starts_on %>
 
-<% unless @form.editing? %>
-  <% tiles = [
-       { value: "income", kind: "income" },
-       { value: "expense", kind: "expense" },
-       { value: "transfer", kind: "transfer" },
-       { value: "debt", kind: "debt_in" }
-     ] %>
-  <div class="budget-item-form__kind">
-    <div class="kind-selector kind-selector--quad" role="radiogroup" aria-label="<%= t('budgets.form.kind_label') %>">
-      <% tiles.each do |tile| %>
-        <% selected = tile[:value] == "debt" ? @form.debt_kind? : @form.kind == tile[:value] %>
-        <%= link_to new_budget_item_path(kind: tile[:kind], month: params[:month].presence),
-                    role: "radio",
-                    "aria-checked": selected.to_s,
-                    class: "kind-option kind-option--#{tile[:value]}#{' kind-option--selected' if selected}" do %>
-          <span class="kind-option__icon kind-option__icon--<%= tile[:value] %>" aria-hidden="true">
-            <%= transaction_icon_svg(tile[:value]) %>
-          </span>
-          <span class="kind-option__label"><%= t("budgets.form.kind_#{tile[:value]}") %></span>
-        <% end %>
-      <% end %>
-    </div>
-  </div>
-<% end %>
+<%
+  currency_symbol = get_currency_symbol(current_space.currency)
+  freqs = %w[monthly quarterly yearly]
+  current_freq = freqs.include?(@form.frequency) ? @form.frequency : "monthly"
+  period_labels = freqs.index_with { |fr| t("budgets.form.per_#{fr}") }
+  period_short = freqs.index_with { |fr| t("budgets.form.per_short_#{fr}") }
+  summary_freq = freqs.index_with { |fr| t("budgets.form.summary_#{fr}") }
+  summary_end = { never: t("budgets.form.summary_never"), date: t("budgets.form.summary_until") }
+  summary_rollover = { on: t("budgets.form.summary_rollover_on"), off: t("budgets.form.summary_rollover_off") }
+%>
 
-<% if @form.category_kind? %>
-  <%= f.hidden_field :kind %>
-  <div class="budget-item-form__type">
-    <%= render Forms::InputFieldComponent.new(
-      form: f,
-      field: :transaction_type_name,
-      label: t('budgets.form.type_label'),
-      required: true,
-      autocomplete: true,
-      autocomplete_options: @form.transaction_type_options,
-      default_autocomplete_options: @form.default_transaction_type_options,
-      allow_create: true,
-      placeholder: t('budgets.form.type_placeholder')
-    ) %>
-  </div>
-<% elsif @form.transfer_kind? %>
-  <%= f.hidden_field :kind %>
-  <div class="budget-item-form__transfer">
-    <%= render Forms::InputFieldComponent.new(
-      form: f,
-      field: :from_account_name,
-      label: t('budgets.form.from_account_label'),
-      required: true,
-      autocomplete: true,
-      autocomplete_options: @form.account_suggestions,
-      default_autocomplete_options: @form.default_account_suggestions,
-      allow_create: true,
-      placeholder: t('budgets.form.from_account_placeholder'),
-      field_data: { tom_select_currency_value: get_currency_symbol(current_space.currency) }
-    ) %>
+<div class="budget-item-form" data-controller="budget-line"
+     data-budget-line-period-labels-value="<%= period_labels.to_json %>"
+     data-budget-line-period-short-value="<%= period_short.to_json %>"
+     data-budget-line-summary-freq-value="<%= summary_freq.to_json %>"
+     data-budget-line-summary-end-value="<%= summary_end.to_json %>"
+     data-budget-line-summary-rollover-value="<%= summary_rollover.to_json %>"
+     data-budget-line-currency-value="<%= currency_symbol %>"
+     data-budget-line-locale-value="<%= I18n.locale %>"
+     data-budget-line-rollover-example-value="<%= t('budgets.form.rollover_example_line') %>"
+     data-budget-line-rollover-empty-value="<%= t('budgets.form.rollover_example_empty') %>"
+     data-budget-line-next-month-value="<%= l(@form.starts_on >> 1, format: '%B') %>"
+     data-budget-line-cta-template-value="<%= t('budgets.form.cta_add_plan_amount', value: '%{value}') %>"
+     data-budget-line-cta-empty-value="<%= @form.editing? ? t('budget_items.edit.save') : t('budgets.form.cta_add_plan') %>">
 
-    <%= render Forms::InputFieldComponent.new(
-      form: f,
-      field: :to_account_name,
-      label: t('budgets.form.to_account_label'),
-      required: true,
-      autocomplete: true,
-      autocomplete_options: @form.account_suggestions,
-      default_autocomplete_options: @form.default_account_suggestions,
-      allow_create: true,
-      placeholder: t('budgets.form.to_account_placeholder'),
-      field_data: { tom_select_currency_value: get_currency_symbol(current_space.currency) }
-    ) %>
-  </div>
-<% else %>
-  <div class="budget-item-form__debt"
-       data-controller="budget-debt"
-       data-budget-debt-kinds-by-name-value="<%= @form.debt_kinds_by_name.to_json %>">
-    <%= f.hidden_field :kind, data: { budget_debt_target: "kindInput" } %>
-
-    <%= render Forms::InputFieldComponent.new(
-      form: f,
-      field: :contact_name,
-      label: t('budgets.form.contact_label'),
-      required: true,
-      autocomplete: true,
-      autocomplete_options: @form.debt_person_suggestions,
-      allow_create: true,
-      placeholder: t('budgets.form.contact_placeholder'),
-      field_data: { action: "tom-select:change->budget-debt#onPersonChange change->budget-debt#onPersonChange" }
-    ) %>
-
-    <div class="form-field">
-      <span class="form-label"><%= t('budgets.form.direction_label') %></span>
-      <div class="kind-selector" role="radiogroup" aria-label="<%= t('budgets.form.direction_label') %>">
-        <% @form.debt_direction_options.each do |label, kind| %>
-          <button type="button" class="kind-option kind-option--choice"
-                  role="radio" aria-checked="<%= (@form.kind == kind).to_s %>"
-                  data-budget-debt-target="option"
-                  data-kind="<%= kind %>"
-                  data-action="click->budget-debt#select">
-            <span class="kind-option__label"><%= label %></span>
-          </button>
+  <%# Type selector — one active (coloured), three neutral. %>
+  <% unless @form.editing? %>
+    <% tiles = [
+         { value: "expense", kind: "expense" },
+         { value: "income", kind: "income" },
+         { value: "transfer", kind: "transfer" },
+         { value: "debt", kind: "debt_in" }
+       ] %>
+    <div class="budget-item-form__kind">
+      <div class="kind-selector kind-selector--quad kind-selector--mono" role="radiogroup" aria-label="<%= t('budgets.form.kind_label') %>">
+        <% tiles.each do |tile| %>
+          <% selected = tile[:value] == "debt" ? @form.debt_kind? : @form.kind == tile[:value] %>
+          <%= link_to new_budget_item_path(kind: tile[:kind], month: params[:month].presence),
+                      role: "radio", "aria-checked": selected.to_s,
+                      class: "kind-option kind-option--#{tile[:value]}#{' kind-option--selected' if selected}" do %>
+            <span class="kind-option__icon kind-option__icon--<%= tile[:value] %>" aria-hidden="true">
+              <%= transaction_icon_svg(tile[:value]) %>
+            </span>
+            <span class="kind-option__label"><%= t("budgets.form.kind_#{tile[:value]}") %></span>
+          <% end %>
         <% end %>
       </div>
     </div>
+  <% end %>
+
+  <%# Amount as the hero: enter the number first, big and centred. %>
+  <div class="budget-amount">
+    <div class="budget-amount__field">
+      <%= f.number_field :amount, class: "budget-amount__input",
+            value: (@form.amount && (@form.amount % 1 == 0 ? @form.amount.to_i : @form.amount.to_f)),
+            step: "0.01", min: "0.01", inputmode: "decimal",
+            placeholder: t("budgets.form.amount_placeholder"),
+            autofocus: !@form.editing?,
+            aria: { label: t("budgets.form.amount_label") },
+            data: { budget_line_target: "amount", action: "input->budget-line#syncSummary" } %>
+      <span class="budget-amount__currency"><%= currency_symbol %></span>
+    </div>
+    <span class="budget-amount__period" data-budget-line-target="periodLabel"><%= period_labels[current_freq] %></span>
   </div>
-<% end %>
 
-<div class="budget-item-form__amount">
-  <%= render Forms::InputFieldComponent.new(
-    form: f,
-    field: :amount,
-    type: :number_field,
-    label: t('budgets.form.amount_label'),
-    required: true,
-    value: @form.amount && (@form.amount % 1 == 0 ? @form.amount.to_i : @form.amount.to_f),
-    prepend: get_currency_symbol(current_space.currency),
-    step: "0.01",
-    min: "0.01",
-    placeholder: t('budgets.form.amount_placeholder')
-  ) %>
-</div>
+  <%# Category / transfer / debt — what the line is about. %>
+  <% if @form.category_kind? %>
+    <%= f.hidden_field :kind %>
+    <div class="budget-item-form__type">
+      <%= render Forms::InputFieldComponent.new(
+        form: f, field: :transaction_type_name, label: t('budgets.form.type_label'), required: true,
+        autocomplete: true, autocomplete_options: @form.transaction_type_options,
+        default_autocomplete_options: @form.default_transaction_type_options,
+        allow_create: true, placeholder: t('budgets.form.type_placeholder')) %>
+    </div>
+  <% elsif @form.transfer_kind? %>
+    <%= f.hidden_field :kind %>
+    <div class="transfer-block">
+      <div class="transfer-block__row">
+        <span class="transfer-block__prefix"><%= t('budgets.form.transfer_from') %></span>
+        <div class="transfer-block__field">
+          <%= render Forms::InputFieldComponent.new(
+            form: f, field: :from_account_name, label: "", required: true,
+            autocomplete: true, autocomplete_options: @form.account_suggestions,
+            default_autocomplete_options: @form.default_account_suggestions, allow_create: true,
+            placeholder: t('budgets.form.from_account_placeholder'),
+            field_data: { tom_select_currency_value: currency_symbol }) %>
+        </div>
+      </div>
+      <div class="transfer-block__row">
+        <span class="transfer-block__prefix"><%= t('budgets.form.transfer_to') %></span>
+        <div class="transfer-block__field">
+          <%= render Forms::InputFieldComponent.new(
+            form: f, field: :to_account_name, label: "", required: true,
+            autocomplete: true, autocomplete_options: @form.account_suggestions,
+            default_autocomplete_options: @form.default_account_suggestions, allow_create: true,
+            placeholder: t('budgets.form.to_account_placeholder'),
+            field_data: { tom_select_currency_value: currency_symbol }) %>
+        </div>
+      </div>
+    </div>
+  <% else %>
+    <%
+      debt_labels = {
+        someone: t('budgets.form.debt_someone'),
+        i_repay: t('budgets.form.debt_i_repay'), they_repay: t('budgets.form.debt_they_repay'),
+        effect_out: t('budgets.form.debt_effect_out'), effect_in: t('budgets.form.debt_effect_in'),
+        you_owe: t('budgets.form.debt_you_owe'), owes_you: t('budgets.form.debt_owes_you'),
+        settled: t('budgets.form.debt_settled_html')
+      }
+    %>
+    <div class="budget-item-form__debt" data-controller="budget-debt"
+         data-budget-debt-kinds-by-name-value="<%= @form.debt_kinds_by_name.to_json %>"
+         data-budget-debt-summaries-value="<%= @form.debt_summaries_by_name.to_json %>"
+         data-budget-debt-currency-value="<%= currency_symbol %>"
+         data-budget-debt-starts-on-value="<%= @form.starts_on.strftime('%Y-%m-%d') %>"
+         data-budget-debt-locale-value="<%= I18n.locale %>"
+         data-budget-debt-current-name-value="<%= @form.contact_name %>"
+         data-budget-debt-labels-value="<%= debt_labels.to_json %>">
+      <%= f.hidden_field :kind, data: { budget_debt_target: "kindInput" } %>
 
-<div class="budget-item-form__frequency">
-  <%= render Forms::SelectFieldComponent.new(
-    form: f,
-    field: :frequency,
-    label: t('budgets.form.frequency_label'),
-    options: @form.frequency_options,
-    required: true,
-    selected: @form.frequency
-  ) %>
-  <p class="form-help-text"><%= t('budgets.form.frequency_help') %></p>
-</div>
+      <%= render Forms::InputFieldComponent.new(
+        form: f, field: :contact_name, label: t('budgets.form.debt_who'), required: true,
+        autocomplete: true, autocomplete_options: @form.debt_person_suggestions, allow_create: true,
+        placeholder: t('budgets.form.contact_placeholder'),
+        field_data: { action: "tom-select:change->budget-debt#onPersonChange change->budget-debt#onPersonChange" }) %>
 
-<div class="budget-item-form__ends-on">
-  <%= render Forms::InputFieldComponent.new(
-    form: f,
-    field: :ends_on,
-    type: :date_field,
-    label: t('budgets.form.ends_on_label'),
-    required: false,
-    value: @form.ends_on,
-    help_text: t('budgets.form.ends_on_help')
-  ) %>
-</div>
+      <p class="debt-balance" data-budget-debt-target="balance" hidden></p>
 
-<% if @form.kind == "expense" %>
-  <div class="budget-item-form__essential">
-    <label class="budget-rollover">
-      <%= f.check_box :essential, class: "budget-rollover__input" %>
-      <span class="budget-rollover__text">
-        <span class="budget-rollover__label"><%= t('budgets.form.essential_label') %></span>
-        <span class="budget-rollover__help"><%= t('budgets.form.essential_help') %></span>
+      <%# Four sentences reduced to two cards — the money direction is written out
+          and the effect shown live. %>
+      <div class="debt-cards" role="radiogroup" aria-label="<%= t('budgets.form.direction_label') %>">
+        <% [ [ "debt_out", "i_repay", "effect_out", "expense" ], [ "debt_in", "they_repay", "effect_in", "income" ] ].each do |kind, title_key, effect_key, icon| %>
+          <button type="button" class="debt-card<%= ' debt-card--selected' if @form.kind == kind %>"
+                  data-budget-debt-target="card" data-kind="<%= kind %>" data-effect="<%= effect_key %>"
+                  data-title="<%= title_key %>" data-action="click->budget-debt#selectCard"
+                  role="radio" aria-checked="<%= (@form.kind == kind).to_s %>">
+            <span class="debt-card__icon debt-card__icon--<%= icon %>" aria-hidden="true"><%= transaction_icon_svg(icon) %></span>
+            <span class="debt-card__text">
+              <span class="debt-card__title" data-budget-debt-target="cardTitle"></span>
+              <span class="debt-card__effect" data-budget-debt-target="cardEffect"></span>
+            </span>
+          </button>
+        <% end %>
+      </div>
+
+      <%# The app knows the balance, so once you set a monthly amount it works out
+          when the debt clears and ends the recurring line there on its own. %>
+      <p class="debt-settled" data-budget-debt-target="settled" hidden></p>
+    </div>
+  <% end %>
+
+  <%# Vital or comfort? — an explicit choice, not a buried checkbox (expense only). %>
+  <% if @form.kind == "expense" %>
+    <div class="vc-choice">
+      <span class="vc-choice__question"><%= t('budgets.form.vital_confort_question') %></span>
+      <div class="vc-choice__cards">
+        <% [ [ true, "vital" ], [ false, "confort" ] ].each do |val, key| %>
+          <label class="vc-card">
+            <%= f.radio_button :essential, val, class: "vc-card__input" %>
+            <span class="vc-card__title"><%= t("budgets.form.#{key}_card_title") %></span>
+            <span class="vc-card__sub"><%= t("budgets.form.#{key}_card_sub") %></span>
+          </label>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+
+  <%# Advanced settings, folded away but announcing what's active. %>
+  <details class="budget-modify">
+    <summary class="budget-modify__summary">
+      <span class="budget-modify__text">
+        <span class="budget-modify__main" data-budget-line-target="summaryMain"></span>
+        <% if @form.kind == "expense" %>
+          <span class="budget-modify__aside" data-budget-line-target="summaryRollover"></span>
+        <% elsif @form.debt_kind? %>
+          <span class="budget-modify__aside"><%= t('budgets.form.debt_vital_note') %></span>
+        <% end %>
       </span>
-    </label>
-  </div>
+      <span class="budget-modify__toggle"><%= t('budgets.form.modify') %></span>
+    </summary>
 
-  <div class="budget-item-form__rollover">
-    <label class="budget-rollover">
-      <%= f.check_box :rollover, class: "budget-rollover__input" %>
-      <span class="budget-rollover__text">
-        <span class="budget-rollover__label"><%= t('budgets.form.rollover_label') %></span>
-        <span class="budget-rollover__help"><%= t('budgets.form.rollover_help') %></span>
-      </span>
-    </label>
+    <div class="budget-modify__body">
+      <%= f.hidden_field :frequency, value: current_freq, data: { budget_line_target: "frequency" } %>
+
+      <%# Each setting is one label and its control — no definitions. %>
+      <div class="budget-setting">
+        <span class="budget-setting__q"><%= t('budgets.form.freq_question') %></span>
+        <div class="seg-group">
+          <% freqs.each do |fr| %>
+            <button type="button" class="seg<%= ' seg--active' if fr == current_freq %>"
+                    data-budget-line-target="freqSeg" data-frequency="<%= fr %>"
+                    data-action="budget-line#setFrequency"><%= t("budgets.form.freq_#{fr}") %></button>
+          <% end %>
+        </div>
+      </div>
+
+      <div class="budget-setting">
+        <span class="budget-setting__q"><%= t('budgets.form.end_question') %></span>
+        <div class="pill-choice">
+          <button type="button" class="pill<%= ' pill--active' if @form.ends_on.blank? %>"
+                  data-budget-line-target="endSeg" data-end="never"
+                  data-action="budget-line#setEnd"><%= t('budgets.form.end_never') %></button>
+          <button type="button" class="pill<%= ' pill--active' if @form.ends_on.present? %>"
+                  data-budget-line-target="endSeg" data-end="date"
+                  data-action="budget-line#setEnd"><%= t('budgets.form.end_dated') %></button>
+        </div>
+        <div class="budget-setting__date<%= ' hidden' if @form.ends_on.blank? %>" data-budget-line-target="endField">
+          <%= f.date_field :ends_on, value: @form.ends_on, class: "form-input",
+                data: { budget_line_target: "endInput", action: "budget-line#syncSummary" } %>
+        </div>
+      </div>
+
+      <% if @form.kind == "expense" %>
+        <label class="budget-toggle">
+          <span class="budget-toggle__text">
+            <span class="budget-toggle__label"><%= t('budgets.form.rollover_toggle_label') %></span>
+            <%# The numeric example replaces the explanation paragraph. %>
+            <span class="budget-toggle__sub" data-budget-line-target="rolloverExample"></span>
+          </span>
+          <span class="budget-toggle__switch">
+            <%= f.check_box :rollover, class: "budget-toggle__input",
+                  data: { budget_line_target: "rollover", action: "budget-line#syncSummary" } %>
+            <span class="budget-toggle__track" aria-hidden="true"></span>
+          </span>
+        </label>
+      <% end %>
+    </div>
+  </details>
+
+  <%# A transfer moves money between your accounts — it changes neither spending
+      nor savings, so its impact is spelled out as nil. %>
+  <% if @form.transfer_kind? %>
+    <div class="transfer-impact">
+      <span class="transfer-impact__title"><%= t('budgets.form.transfer_impact_title') %></span>
+      <p class="transfer-impact__body"><%= t('budgets.form.transfer_impact_body_html') %></p>
+    </div>
+  <% end %>
+
+  <div class="budget-item-form__actions">
+    <%= render Ui::ButtonComponent.new(
+      text: @form.editing? ? t('budget_items.edit.save') : t('budgets.form.cta_add_plan'),
+      type: :submit, variant: :primary, size: :lg, full_width: true,
+      data: { budget_line_target: "cta" }) %>
+
+    <% if @form.editing? %>
+      <%= render Ui::ButtonComponent.new(
+        text: t('budget_items.edit.stop_budgeting'),
+        url: budget_item_path(id: @budget_item.id, month: params[:month].presence),
+        variant: :danger, size: :lg, full_width: true, method: :delete,
+        data: { "turbo-confirm" => t('budget_items.edit.stop_confirmation') }) %>
+    <% end %>
   </div>
-<% end %>
+</div>

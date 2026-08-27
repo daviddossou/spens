@@ -2,23 +2,17 @@
 
 <%= turbo_frame_tag "modal" do %>
   <div class="page-container page-container--narrow">
-    <header class="page-header">
-      <p class="page-header__subtitle"><%= t(".subtitle_#{@form.transfer_kind? ? 'transfer' : (@form.debt_kind? ? 'debt' : 'category')}") %></p>
+    <% raw_month = l(@form.starts_on, format: "%B") %>
+    <% month_label = I18n.locale == :fr ? "#{raw_month.match?(/\A[aeiouâàéèêëîïôûùhy]/i) ? "d'" : "de "}#{raw_month}" : raw_month.capitalize %>
+    <% sub_key = @form.transfer_kind? ? "transfer" : (@form.debt_kind? ? "debt" : (@form.kind == "income" ? "income" : "expense")) %>
+    <header class="page-header budget-item-form__header">
+      <h2 class="budget-item-form__title"><%= t(".new_title") %></h2>
+      <p class="budget-item-form__subtitle"><%= t(".new_subtitle_#{sub_key}", month: month_label) %></p>
     </header>
 
     <div class="page-content">
-      <%= form_with model: @form, url: budget_items_path(month: params[:month].presence), method: :post, class: "budget-item-form" do |f| %>
+      <%= form_with model: @form, url: budget_items_path(month: params[:month].presence), method: :post do |f| %>
         <%= render 'form', f: f %>
-
-        <div class="budget-item-form__actions">
-          <%= render Ui::ButtonComponent.new(
-            text: t('.save'),
-            type: :submit,
-            variant: :primary,
-            size: :lg,
-            full_width: true
-          ) %>
-        </div>
       <% end %>
     </div>
   </div>

@@ -1,5 +1,11 @@
 en:
   activemodel:
+    attributes:
+      budget_item:
+        transaction_type_name: "Category"
+        from_account_name: "From account"
+        to_account_name: "To account"
+        contact_name: "Person"
     errors:
       messages:
         blank: "can't be blank"

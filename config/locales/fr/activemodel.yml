@@ -1,5 +1,11 @@
 fr:
   activemodel:
+    attributes:
+      budget_item:
+        transaction_type_name: "Catégorie"
+        from_account_name: "Compte source"
+        to_account_name: "Compte destination"
+        contact_name: "Personne"
     errors:
       messages:
         blank: "ne peut pas être vide"
