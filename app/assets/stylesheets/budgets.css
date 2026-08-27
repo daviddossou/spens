@@ -1082,16 +1082,6 @@
   margin-top: 1.25rem;
 }
 
-/* The sheet's primary CTA stays chunky and thumb-friendly — it must not shrink
-   on small screens the way btn-lg otherwise does. */
-.budget-item-form__actions .btn-lg {
-  min-height: 3.25rem;
-  padding: 0.75rem 1.5rem;
-  font-size: 1rem;
-  line-height: 1.5;
-  align-items: center;
-  justify-content: center;
-}
 
 /* ── Amount hero ─────────────────────────────────────────────── */
 .budget-amount {
