@@ -1,113 +1,179 @@
 <% content_for :title, t('.title') %>
 
-<div class="page-container page-container--narrow">
-  <header class="page-header">
-    <p class="page-header__subtitle"><%= t('.subtitle') %></p>
-  </header>
-
-  <div class="page-content <%= 'budget-page--with-fab' unless @past_month %>">
+<div class="page-container page-container--narrow budget-page--<%= @mode %>">
+  <div class="page-content <%= 'budget-page--with-fab' if @editable %>">
     <nav class="budget-month-nav" aria-label="<%= t('.month_nav_label') %>">
       <%= link_to budgets_path(month: (@month << 1).strftime("%Y-%m")), class: "budget-month-nav__arrow",
                   "aria-label": t('.previous_month') do %>&lsaquo;<% end %>
-      <h2 class="budget-month-nav__title"><%= l(@month, format: :month_year).capitalize %></h2>
+      <div class="budget-month-nav__heading">
+        <h2 class="budget-month-nav__title"><%= l(@month, format: :month_year).capitalize %></h2>
+        <p class="budget-month-nav__subtitle">
+          <% case @month_position
+             when :future %><%= t('.subtitle_plan', count: @days_until) %>
+          <% when :current %><%= t('.subtitle_en_cours', day: @day_of_month, total: @days_in_month, remaining: @days_remaining) %>
+          <% else %><%= t('.subtitle_bilan', total: @days_in_month) %>
+          <% end %>
+        </p>
+      </div>
       <%= link_to budgets_path(month: (@month >> 1).strftime("%Y-%m")), class: "budget-month-nav__arrow",
                   "aria-label": t('.next_month') do %>&rsaquo;<% end %>
     </nav>
 
+    <%# Viewpoint selector on the SAME month: it never navigates, only changes the
+        reading. Modes that have nothing to show for this month are disabled. %>
+    <nav class="budget-mode-nav" role="tablist" aria-label="<%= t('.mode_nav_label') %>">
+      <% [ :plan, :en_cours, :bilan ].each do |mode| %>
+        <% if @allowed_modes.include?(mode) %>
+          <%= link_to budgets_path(month: @month.strftime("%Y-%m"), view: mode),
+                      role: "tab", "aria-selected": (@mode == mode).to_s,
+                      class: "budget-mode-nav__seg#{' budget-mode-nav__seg--active' if @mode == mode}" do %>
+            <%= t(".mode_#{mode}") %>
+          <% end %>
+        <% else %>
+          <span class="budget-mode-nav__seg budget-mode-nav__seg--disabled" role="tab" aria-disabled="true"><%= t(".mode_#{mode}") %></span>
+        <% end %>
+      <% end %>
+    </nav>
+
     <% if @sections.values.flatten.any? %>
       <div class="budget-hero">
-        <span class="budget-hero__label"><%= t('.projected_net') %></span>
-        <span class="budget-hero__value <%= 'budget-hero__value--negative' if @projected_net.negative? %>">
-          <%= smart_format_money(@projected_net, current_space.currency, sign: :always) %>
+        <span class="budget-hero__label">
+          <%= t('.hero_label') %> · <span class="budget-hero__suffix"><%= t(".hero_suffix_#{@mode}") %></span>
         </span>
-        <span class="budget-hero__sublabel"><%= t('.actual_so_far_html', amount: smart_format_money(@actual_net, current_space.currency, sign: :always)) %></span>
-        <% if @unplanned[:income].any? || @unplanned[:expense].any? %>
-          <span class="budget-hero__offplan">
-            <%= t('budgets.unplanned.off_plan_html',
-                  amounts: safe_join([ (smart_format_money(@unplanned[:income].values.sum { |s| s[:amount] }, current_space.currency, sign: :always) if @unplanned[:income].any?),
-                                       (smart_format_money(-@unplanned[:expense].values.sum { |s| s[:amount] }, current_space.currency, sign: :always) if @unplanned[:expense].any?) ].compact, " / ")) %>
-          </span>
+        <span class="budget-hero__value <%= 'budget-hero__value--negative' if @hero_value.negative? %>">
+          <%= smart_format_money(@hero_value, current_space.currency, sign: :always) %>
+        </span>
+        <% if @mode == :plan %>
+          <span class="budget-hero__sublabel"><%= t('.hero_flow_html',
+                income: smart_format_money(@planned_income, current_space.currency),
+                expense: smart_format_money(@planned_expense, current_space.currency)) %></span>
+        <% elsif @mode == :en_cours %>
+          <span class="budget-hero__sublabel"><%= t('.hero_sub_en_cours_html',
+                planned: smart_format_money(@projected_net, current_space.currency),
+                offplan: content_tag(:span, smart_format_money(@offplan_net, current_space.currency, sign: :always),
+                                     class: ("budget-hero__offplan-amount" if @offplan_net.negative?))) %></span>
+        <% else %>
+          <span class="budget-hero__sublabel"><%= t('.actual_so_far_html', amount: smart_format_money(@actual_net, current_space.currency, sign: :always)) %></span>
         <% end %>
-        <% if @savings_goal.positive? %>
-          <span class="budget-hero__goal <%= @projected_outcome >= @savings_goal ? 'budget-hero__goal--on-track' : 'budget-hero__goal--short' %>">
-            <% if @actual_net >= @savings_goal %>
-              ✓ <%= t('.goal_reached_html', amount: smart_format_money(@savings_goal, current_space.currency)) %>
-            <% elsif @projected_outcome >= @savings_goal %>
-              <%= t('.goal_on_track_html', amount: smart_format_money(@savings_goal, current_space.currency)) %>
-            <% else %>
-              <%= t('.goal_short_html', amount: smart_format_money(@savings_goal, current_space.currency),
-                                        missing: smart_format_money(@savings_goal - @projected_outcome, current_space.currency)) %>
-            <% end %>
+        <% if @savings_goal.positive? && @mode == :en_cours %>
+          <%# Goal bar with a "today" marker: am I pacing to hit the goal by month end? %>
+          <% goal_pct = [ [ (@hero_value / @savings_goal * 100).round, 0 ].max, 100 ].min %>
+          <% today_pct = [ (@day_of_month.to_f / @days_in_month * 100).round, 100 ].min %>
+          <% over = @hero_value >= @savings_goal %>
+          <% delta = (@hero_value - @savings_goal).abs %>
+          <div class="budget-goalbar">
+            <div class="budget-goalbar__track">
+              <div class="budget-goalbar__fill" style="width: <%= goal_pct %>%;"></div>
+              <div class="budget-goalbar__today" style="left: <%= today_pct %>%;" aria-hidden="true"></div>
+            </div>
+            <div class="budget-goalbar__legend">
+              <span class="<%= 'budget-goalbar__over' if over %>">
+                <%= over ? t('.goal_bar_over_html', amount: smart_format_money(@savings_goal, current_space.currency), delta: smart_format_money(delta, current_space.currency)) \
+                         : t('.goal_bar_short_html', amount: smart_format_money(@savings_goal, current_space.currency), delta: smart_format_money(delta, current_space.currency)) %>
+              </span>
+              <span class="budget-goalbar__today-label"><%= t('.today') %></span>
+            </div>
+          </div>
+        <% elsif @savings_goal.positive? && @mode == :plan %>
+          <% over = @hero_value >= @savings_goal %>
+          <% delta = (@hero_value - @savings_goal).abs %>
+          <span class="budget-hero__goal <%= over ? 'budget-hero__goal--on-track' : 'budget-hero__goal--short' %>">
+            <%= over ? t('.goal_plan_over_html', amount: smart_format_money(@savings_goal, current_space.currency), delta: smart_format_money(delta, current_space.currency)) \
+                     : t('.goal_plan_short_html', amount: smart_format_money(@savings_goal, current_space.currency), delta: smart_format_money(delta, current_space.currency)) %>
           </span>
         <% end %>
       </div>
 
-      <div class="budget-totals">
-        <%= render Ui::StatCardComponent.new(
-          label: t('.planned_income'),
-          value: smart_format_money(@planned_income, current_space.currency),
-          variant: :compact
-        ) %>
-        <%= render Ui::StatCardComponent.new(
-          label: t('.planned_expenses'),
-          value: smart_format_money(@planned_expense, current_space.currency),
-          variant: :compact
-        ) %>
-      </div>
-
-      <% if @past_month %>
-        <div class="budget-summary-link">
-          <%= link_to t('.view_summary'), summary_budgets_path(month: @month.strftime("%Y-%m")), class: "link-button" %>
-        </div>
+      <% if @planned_expense_total.positive? && @mode != :bilan %>
+        <%= render "vital_confort", mode: @mode %>
       <% end %>
 
-      <% @sections.each do |section, entries| %>
-        <% next if entries.empty? %>
+      <%# Off-plan spending sits above the line sections in the live month —
+          it's what explains the gap between plan and reality. %>
+      <% if @mode == :en_cours %>
+        <%= render "unplanned_section", read_only: false %>
+      <% end %>
+
+      <%# All four sections always show, each with its total; an empty one states
+          itself rather than vanishing, so the shape of the plan stays legible. %>
+      <% short_month = l(@month, format: "%B") %>
+      <% [ :income, :expense, :transfer, :debt ].each do |section| %>
+        <% entries = @sections[section] %>
+        <% planned = entries.sum(&:planned_amount) %>
+        <% actual = entries.sum { |e| @actuals_by_entry[e] } %>
         <section class="budget-section">
-          <h3 class="budget-section__title"><%= t(".section_#{section}") %></h3>
-          <div class="budget-section__list">
-            <% entries.each do |entry| %>
-              <%= render Budgets::EntryRowComponent.new(
-                entry: entry,
-                actual: @actuals_by_entry[entry] || 0,
-                currency: current_space.currency,
-                read_only: @past_month
-              ) %>
-            <% end %>
+          <div class="budget-section__header">
+            <h3 class="budget-section__title"><%= t(".section_#{section}") %></h3>
+            <span class="budget-section__total">
+              <% if @mode == :plan %>
+                <%= smart_format_money(planned, current_space.currency) %>
+              <% else %>
+                <%= smart_format_money(actual, current_space.currency) %> / <%= smart_format_money(planned, current_space.currency) %>
+              <% end %>
+            </span>
           </div>
+          <% if entries.any? %>
+            <div class="budget-section__list">
+              <% entries.each do |entry| %>
+                <%= render Budgets::EntryRowComponent.new(
+                  entry: entry,
+                  actual: @actuals_by_entry[entry] || 0,
+                  currency: current_space.currency,
+                  read_only: !@editable,
+                  mode: @mode
+                ) %>
+              <% end %>
+            </div>
+          <% else %>
+            <p class="budget-section__empty"><%= t(".section_empty_#{section}", month: short_month) %></p>
+          <% end %>
         </section>
       <% end %>
-
-      <%= render "unplanned_section", read_only: @past_month %>
-    <% elsif @has_items %>
-      <div class="empty-state budget-empty">
-        <h3><%= t('.no_entries_title') %></h3>
-        <p><%= t('.no_entries_message') %></p>
-        <% if @past_month %>
-          <%= link_to t('.view_summary'), summary_budgets_path(month: @month.strftime("%Y-%m")), class: "link-button" %>
-        <% end %>
-      </div>
     <% else %>
-      <div class="empty-state budget-empty">
-        <svg class="empty-state__icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
-        </svg>
-        <h3><%= t('.empty_title') %></h3>
-        <p><%= t('.empty_message') %></p>
-        <% unless @past_month %>
-          <%= render Ui::ButtonComponent.new(
-            text: t('.add_first_item'),
-            url: new_budget_item_path(month: @month.strftime("%Y-%m")),
-            variant: :primary,
-            size: :lg,
-            data: { turbo_frame: "modal" }
-          ) %>
-        <% end %>
-      </div>
+      <% month_name = l(@month, format: "%B").capitalize %>
+      <% if @has_items %>
+        <%# Lines exist elsewhere, none fall this month. %>
+        <div class="budget-void">
+          <span class="budget-void__mark" aria-hidden="true"><span class="budget-void__square"></span></span>
+          <h3 class="budget-void__title"><%= t('.no_entries_title', month: month_name) %></h3>
+          <p class="budget-void__body"><%= t('.no_entries_message', month: month_name) %></p>
+          <% if @editable %>
+            <%= link_to t('.no_entries_create', month: month_name),
+                        new_budget_item_path(month: @month.strftime("%Y-%m")),
+                        class: "link-button", data: { turbo_frame: "modal" } %>
+          <% end %>
+        </div>
+      <% else %>
+        <%# No plan at all yet — offer ways to start. %>
+        <div class="budget-start">
+          <h3 class="budget-start__title"><%= t('.empty_title', month: month_name) %></h3>
+          <p class="budget-start__body"><%= t('.empty_message') %></p>
+
+          <p class="budget-start__label"><%= t('.empty_templates_label') %></p>
+          <div class="budget-start__templates">
+            <% [ [ :household, t('.template_household'), t('.template_household_sub') ],
+                 [ :from_tx, t('.template_from_tx'), t('.template_from_tx_sub') ],
+                 [ :blank, t('.template_blank'), t('.template_blank_sub') ] ].each do |_key, title, sub| %>
+              <%= link_to new_budget_item_path(month: @month.strftime("%Y-%m")),
+                          class: "budget-start__template", data: { turbo_frame: "modal" } do %>
+                <span class="budget-start__template-text">
+                  <span class="budget-start__template-title"><%= title %></span>
+                  <span class="budget-start__template-sub"><%= sub %></span>
+                </span>
+                <span class="budget-start__template-plus" aria-hidden="true">+</span>
+              <% end %>
+            <% end %>
+          </div>
+
+          <% if @savings_goal.positive? %>
+            <p class="budget-start__goal"><%= t('.goal_encart_html', amount: smart_format_money(@savings_goal, current_space.currency)) %></p>
+          <% end %>
+        </div>
+      <% end %>
     <% end %>
   </div>
 </div>
 
-<% unless @past_month %>
+<% if @editable %>
   <%= render Ui::FabComponent.new(url: new_budget_item_path(month: @month.strftime("%Y-%m")), label: t('.add_item')) %>
 <% end %>

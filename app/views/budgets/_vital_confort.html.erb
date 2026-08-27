@@ -1,0 +1,61 @@
+<%# Vital / Confort: how the month's expenses split between the floor you can't
+    skip and what's adjustable. Plan shows one planned bar; En cours shows the
+    two tracked against plan plus what's left to spend. %>
+<% pct = ->(part, whole) { whole.to_f.positive? ? [ (part.to_f / whole * 100).round, 100 ].min : 0 } %>
+<div class="vital-confort">
+  <div class="vital-confort__header">
+    <h3 class="vital-confort__title"><%= t('budgets.index.vital_confort_title') %></h3>
+    <span class="vital-confort__total">
+      <% if mode == :plan %>
+        <%= t('budgets.index.vital_confort_total_html', amount: smart_format_money(@planned_expense_total, current_space.currency)) %>
+      <% else %>
+        <%= t('budgets.index.vital_confort_progress_html',
+              actual: smart_format_money(@actual_vital + @actual_confort, current_space.currency),
+              planned: smart_format_money(@planned_expense_total, current_space.currency)) %>
+      <% end %>
+    </span>
+  </div>
+
+  <% if mode == :plan %>
+    <%# One bar, split vital (indigo) vs confort (light indigo). %>
+    <div class="vital-confort__bar" role="img"
+         aria-label="<%= t('budgets.index.vital_label') %> <%= smart_format_money(@planned_vital, current_space.currency) %>, <%= t('budgets.index.confort_label') %> <%= smart_format_money(@planned_confort, current_space.currency) %>">
+      <div class="vital-confort__bar-fill vital-confort__bar-fill--vital" style="width: <%= pct.call(@planned_vital, @planned_expense_total) %>%;"></div>
+      <div class="vital-confort__bar-fill vital-confort__bar-fill--confort" style="width: <%= pct.call(@planned_confort, @planned_expense_total) %>%;"></div>
+    </div>
+    <div class="vital-confort__legend">
+      <span class="vital-confort__key vital-confort__key--vital">
+        <span class="vital-confort__dot"></span><%= t('budgets.index.vital_label') %>
+        <strong><%= smart_format_money(@planned_vital, current_space.currency) %></strong>
+      </span>
+      <span class="vital-confort__key vital-confort__key--confort">
+        <span class="vital-confort__dot"></span><%= t('budgets.index.confort_label') %>
+        <strong><%= smart_format_money(@planned_confort, current_space.currency) %></strong>
+      </span>
+    </div>
+  <% else %>
+    <%# Two tracked bars: vital, then confort. %>
+    <% [ [ :vital, @actual_vital, @planned_vital ], [ :confort, @actual_confort, @planned_confort ] ].each do |key, actual, planned| %>
+      <div class="vital-confort__track">
+        <div class="vital-confort__track-head">
+          <span class="vital-confort__track-label"><%= t("budgets.index.#{key}_label") %></span>
+          <span class="vital-confort__track-amounts">
+            <strong><%= smart_format_money(actual, current_space.currency) %></strong>
+            <span class="vital-confort__track-planned">/ <%= smart_format_money(planned, current_space.currency) %></span>
+          </span>
+        </div>
+        <div class="vital-confort__bar">
+          <div class="vital-confort__bar-fill vital-confort__bar-fill--<%= key %>" style="width: <%= pct.call(actual, planned) %>%;"></div>
+        </div>
+      </div>
+    <% end %>
+
+    <div class="vital-confort__footer">
+      <span class="vital-confort__reste-label"><%= t('budgets.index.reste_label') %></span>
+      <span class="vital-confort__reste-value"><%= smart_format_money(@reste_a_depenser, current_space.currency) %></span>
+      <% if @days_remaining.to_i.positive? && @reste_a_depenser.positive? %>
+        <span class="vital-confort__reste-rate"><%= t('budgets.index.per_day_html', amount: smart_format_money(@reste_a_depenser / @days_remaining, current_space.currency)) %></span>
+      <% end %>
+    </div>
+  <% end %>
+</div>
