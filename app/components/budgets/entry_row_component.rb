@@ -7,7 +7,7 @@ module Budgets
   class EntryRowComponent < ViewComponent::Base
     attr_reader :entry, :actual, :currency, :read_only, :mode
 
-    def initialize(entry:, actual:, currency:, read_only: false, mode: :en_cours)
+    def initialize(entry:, actual:, currency:, read_only: false, mode: :live)
       @entry = entry
       @actual = actual.to_f
       @currency = currency

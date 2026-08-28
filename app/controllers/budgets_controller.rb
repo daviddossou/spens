@@ -28,11 +28,11 @@ class BudgetsController < ApplicationController
       default_mode = :plan
       @allowed_modes = [ :plan ]
     elsif @month < current_bom
-      default_mode = :bilan
-      @allowed_modes = [ :plan, :bilan ]
+      default_mode = :wrap_up
+      @allowed_modes = [ :plan, :wrap_up ]
     else
-      default_mode = :en_cours
-      @allowed_modes = [ :plan, :en_cours, :bilan ]
+      default_mode = :live
+      @allowed_modes = [ :plan, :live, :wrap_up ]
     end
 
     requested = params[:view]&.to_sym
@@ -40,7 +40,7 @@ class BudgetsController < ApplicationController
 
     # Editable only when it's the current-or-future month and not being read as a
     # (hypothetical or closed) balance sheet.
-    @editable = @mode != :bilan && @month >= current_bom
+    @editable = @mode != :wrap_up && @month >= current_bom
 
     # The month's contextual subtitle is about the month itself, not the reading.
     @month_position = @month > current_bom ? :future : (@month < current_bom ? :past : :current)
@@ -57,7 +57,7 @@ class BudgetsController < ApplicationController
     # planned (the plan), à ce stade (the projection minus off-plan), finale.
     @hero_value = case @mode
     when :plan then @projected_net
-    when :bilan then @actual_net
+    when :wrap_up then @actual_net
     else @projected_outcome + @offplan_net
     end
   end
