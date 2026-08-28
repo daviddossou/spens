@@ -15,7 +15,7 @@
           <%= link_to t("debts.edit.title.#{@debt.direction}"), edit_debt_path(id: @debt.id),
                 class: "header-menu__item", data: { turbo_frame: "modal" } %>
           <% if @debt.ongoing? %>
-            <%= link_to write_off_debt_path(id: @debt.id),
+            <%= link_to debt_write_off_path(debt_id: @debt.id),
                   class: "header-menu__item header-menu__item--danger",
                   data: { turbo_method: :post, turbo_confirm: t(".write_off_confirm.#{@debt.direction}") } do %>
               <span class="header-menu__item-label"><%= t(".write_off.#{@debt.direction}") %></span>
@@ -33,7 +33,36 @@
        data-controller="infinite-scroll"
        data-infinite-scroll-url-value="<%= debt_path(id: @debt.id) %>"
        data-infinite-scroll-page-value="<%= @has_more ? @page + 1 : 0 %>">
-    <% if @debt.ongoing? %>
+    <% if @debt.ongoing? && @relation.two_way? %>
+      <%# One relation, two sides: the hero gives the net and its direction, with
+          both gross totals below and a one-tap way to offset them. %>
+      <div class="debt-hero debt-hero--<%= @relation.net_direction %>">
+        <p class="debt-hero__label"><%= t("debts.hero.#{@relation.net_direction}", name: @debt.name) %></p>
+        <p class="debt-hero__amount"><%= smart_format_money(@relation.net_amount, current_space.currency, sign: :never) %></p>
+        <p class="debt-hero__progress"><%= t(".net_hero_sub") %></p>
+        <div class="debt-subtotals">
+          <div class="debt-subtotals__cell">
+            <span class="debt-subtotals__label"><%= t(".subtotal_owed") %></span>
+            <span class="debt-subtotals__value debt-subtotals__value--lent"><%= smart_format_money(@relation.owed_to_me, current_space.currency, sign: :never) %></span>
+          </div>
+          <div class="debt-subtotals__divider"></div>
+          <div class="debt-subtotals__cell">
+            <span class="debt-subtotals__label"><%= t(".subtotal_i_owe") %></span>
+            <span class="debt-subtotals__value debt-subtotals__value--borrowed"><%= smart_format_money(@relation.i_owe, current_space.currency, sign: :never) %></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="debt-compensate">
+        <div class="debt-compensate__text">
+          <p class="debt-compensate__title"><%= t(".compensate_title", amount: smart_format_money(@relation.offsettable, current_space.currency, sign: :never, threshold: Float::INFINITY)) %></p>
+          <p class="debt-compensate__sub"><%= t(".compensate_sub.#{@relation.net_direction}", net: smart_format_money(@relation.net_amount, current_space.currency, sign: :never, threshold: Float::INFINITY)) %></p>
+        </div>
+        <%= link_to t(".compensate_button"), debt_compensation_path(debt_id: @debt.id),
+              class: "btn btn-primary debt-compensate__btn",
+              data: { turbo_method: :post, turbo_confirm: t(".compensate_confirm") } %>
+      </div>
+    <% elsif @debt.ongoing? %>
       <%= render Debts::HeroComponent.new(debt: @debt, currency: current_space.currency) %>
     <% elsif @debt.written_off? %>
       <%# A write-off is a dated decision, not a deletion: the amount is struck
@@ -55,9 +84,9 @@
           <p class="debt-reactivate__title"><%= t(".reactivate_title.#{@debt.direction}", name: @debt.name) %></p>
           <p class="debt-reactivate__sub"><%= t(".reactivate_sub.#{@debt.direction}") %></p>
         </div>
-        <%= link_to t(".reactivate_button"), reactivate_debt_path(id: @debt.id),
+        <%= link_to t(".reactivate_button"), debt_write_off_path(debt_id: @debt.id),
               class: "btn btn-outline-primary debt-reactivate__btn",
-              data: { turbo_method: :post } %>
+              data: { turbo_method: :delete } %>
       </div>
     <% else %>
       <div class="debt-closed-card debt-closed-card--<%= @debt.status %>">
@@ -72,7 +101,7 @@
       </div>
     <% end %>
 
-    <% if (schedule = debt_schedule(@debt)) %>
+    <% if @relation.single? && (schedule = debt_schedule(@debt)) %>
       <!-- The échéancier the app can compute from balance + deadline, replacing a
            hand-typed "60k/month" note and tying the debt to its budget line. -->
       <div class="debt-schedule">
@@ -140,4 +169,6 @@
 </div>
 
 <%= render Ui::FabComponent.new(url: new_quick_entry_path, label: t('.quick_add'), icon: :bolt, secondary: true) %>
-<%= render Ui::FabComponent.new(url: new_transaction_path(debt_id: @debt.id, kind: @debt.direction == 'lent' ? 'debt_in' : 'debt_out'), label: t('.add_transaction')) %>
+<%# One button: the prequalified transaction sheet — the person is known, the
+    repayment is preselected, and all four intents stay one tap away. %>
+<%= render Ui::FabComponent.new(url: new_transaction_path(contact_name: @debt.name, kind: @relation.repayment_kind, direction: @relation.repayment_direction, person_locked: 1), label: t('.add_transaction')) %>
