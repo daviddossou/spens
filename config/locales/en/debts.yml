@@ -7,6 +7,9 @@ en:
       section_lent: "Owed to you"
       section_borrowed: "You owe"
       section_hint: "highest first"
+      two_way: "Two-way"
+      two_way_sub_html: "They owe you %{owed} · you owe them %{i_owe}"
+      net_label: "net"
       people_count:
         one: "%{count} person"
         other: "%{count} people"
@@ -117,6 +120,15 @@ en:
       quick_add: "Quick add"
       edit_debt: "Edit"
       more_actions: "More actions"
+      net_hero_sub: "after offsetting both sides"
+      subtotal_owed: "They owe you"
+      subtotal_i_owe: "You owe them"
+      compensate_title: "Offset %{amount} on both sides"
+      compensate_sub:
+        borrowed: "Settle in one move: only %{net} left to pay back."
+        lent: "Settle in one move: only %{net} left to receive."
+      compensate_button: "Offset"
+      compensate_confirm: "Offset both sides? A dated movement is recorded on each side; nothing is deleted."
       write_off_hint:
         lent: "Consider that %{name} no longer owes you"
         borrowed: "Consider that you no longer owe %{name}"
@@ -158,6 +170,11 @@ en:
     write_off:
       success: "Done — it's off your totals, still in your history."
       error: "Couldn't close this debt"
+    compensate:
+      movement: "Offset with %{name}"
+      success: "Offset — a dated movement on each side."
+      error: "Couldn't offset this relation"
+
     reactivate:
       success: "Reactivated — back in your totals."
       error: "Couldn't reactivate this debt"

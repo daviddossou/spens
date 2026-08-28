@@ -5,19 +5,22 @@ class DebtsController < ApplicationController
   before_action :set_debt, only: [ :show, :edit, :update ]
 
   def index
-    # One list, two sections: a relation's direction colors its amount rather than
-    # hiding half the list behind a tab. Highest remaining balance first.
-    ongoing = current_space.debts.ongoing.order(Arel.sql("total_lent - total_reimbursed DESC"))
-    @lent_debts = ongoing.lent
-    @borrowed_debts = ongoing.borrowed
-    @total_owed_to_me = @lent_debts.sum("total_lent - total_reimbursed")
-    @total_i_owe = @borrowed_debts.sum("total_lent - total_reimbursed")
+    # One card per person: both directions fold into a net relation, sectioned by
+    # the side the net lands on, highest first. The two totals sum the nets.
+    relations = DebtRelation.all_ongoing(current_space).select { |r| r.net_amount.positive? }
+    @owed_to_me = relations.select { |r| r.net_direction == "lent" }.sort_by { |r| -r.net_amount }
+    @i_owe = relations.select { |r| r.net_direction == "borrowed" }.sort_by { |r| -r.net_amount }
+    @total_owed_to_me = @owed_to_me.sum(&:net_amount)
+    @total_i_owe = @i_owe.sum(&:net_amount)
     # Closed debts (settled or written off) stay reachable as history, out of the totals.
     @closed_debts = current_space.debts.where.not(status: "ongoing").order(updated_at: :desc)
   end
 
   def show
-    load_transactions_timeline(@debt.transactions)
+    # The page is the relation, not one folder: a two-way person shows a net hero
+    # and a merged timeline across both directions.
+    @relation = DebtRelation.for(@debt)
+    load_transactions_timeline(@relation.transactions)
 
     respond_to do |format|
       format.html
@@ -26,7 +29,8 @@ class DebtsController < ApplicationController
   end
 
   def new
-    build_form(direction: params[:direction] || "lent")
+    # Can be opened prequalified from a person's page (contact_name prefilled).
+    build_form(direction: params[:direction] || "lent", contact_name: params[:contact_name])
   end
 
   def create

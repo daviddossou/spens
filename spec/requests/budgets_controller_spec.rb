@@ -68,18 +68,18 @@ RSpec.describe BudgetsController, type: :request do
       get budgets_path(month: (month >> 1).strftime("%Y-%m"))
       expect(assigns(:mode)).to eq(:plan)
       get budgets_path(month: month.strftime("%Y-%m"))
-      expect(assigns(:mode)).to eq(:en_cours)
+      expect(assigns(:mode)).to eq(:live)
       get budgets_path(month: (month << 1).strftime("%Y-%m"))
-      expect(assigns(:mode)).to eq(:bilan)
+      expect(assigns(:mode)).to eq(:wrap_up)
     end
 
     it "exposes only the readings that make sense for the month" do
       get budgets_path(month: (month >> 1).strftime("%Y-%m"))
       expect(assigns(:allowed_modes)).to eq([ :plan ])
       get budgets_path(month: month.strftime("%Y-%m"))
-      expect(assigns(:allowed_modes)).to eq([ :plan, :en_cours, :bilan ])
+      expect(assigns(:allowed_modes)).to eq([ :plan, :live, :wrap_up ])
       get budgets_path(month: (month << 1).strftime("%Y-%m"))
-      expect(assigns(:allowed_modes)).to eq([ :plan, :bilan ])
+      expect(assigns(:allowed_modes)).to eq([ :plan, :wrap_up ])
     end
 
     it "honors an allowed view override without changing the month" do
@@ -89,7 +89,7 @@ RSpec.describe BudgetsController, type: :request do
     end
 
     it "clamps a view the month can't offer back to its default" do
-      get budgets_path(month: (month >> 1).strftime("%Y-%m"), view: "bilan")
+      get budgets_path(month: (month >> 1).strftime("%Y-%m"), view: "wrap_up")
       expect(assigns(:mode)).to eq(:plan)
     end
   end

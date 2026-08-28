@@ -1,0 +1,40 @@
+<%
+  currency = current_space.currency
+  debt = relation.primary_debt
+  # A single relation still shows repayment progress; a two-way one shows the net.
+  pct = debt.total_lent.to_f.positive? ? [ [ (debt.total_reimbursed.to_f / debt.total_lent * 100).round, 100 ].min, 0 ].max : 0
+  partial = relation.single? && pct.positive? && pct < 100
+%>
+<%= link_to debt_path(id: debt.id), class: "debt-relation" do %>
+  <span class="debt-relation__avatar debt-relation__avatar--<%= relation.net_direction %>"><%= relation.initials %></span>
+
+  <span class="debt-relation__body">
+    <span class="debt-relation__head">
+      <span class="debt-relation__name"><%= relation.name %></span>
+      <% if relation.two_way? %>
+        <span class="debt-relation__tag"><%= t("debts.index.two_way") %></span>
+      <% end %>
+    </span>
+
+    <% if relation.two_way? %>
+      <span class="debt-relation__sub">
+        <%= t("debts.index.two_way_sub_html",
+              owed: smart_format_money(relation.owed_to_me, currency, sign: :never),
+              i_owe: smart_format_money(relation.i_owe, currency, sign: :never)) %>
+      </span>
+    <% elsif partial %>
+      <span class="debt-relation__bar">
+        <span class="debt-relation__bar-fill debt-relation__bar-fill--<%= relation.net_direction %>" style="width: <%= pct %>%;"></span>
+      </span>
+    <% end %>
+  </span>
+
+  <span class="debt-relation__amount-col">
+    <span class="debt-relation__amount debt-relation__amount--<%= relation.net_direction %>">
+      <%= smart_format_money(relation.net_amount, currency, sign: :never) %>
+    </span>
+    <% if relation.two_way? %>
+      <span class="debt-relation__amount-sub"><%= t("debts.index.net_label") %></span>
+    <% end %>
+  </span>
+<% end %>

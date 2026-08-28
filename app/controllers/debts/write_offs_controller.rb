@@ -17,7 +17,7 @@ module Debts
     end
 
     # Undo a write-off — the debt comes back as ongoing for its remaining balance.
-    def reactivate
+    def destroy
       if ReactivateDebtService.new(@debt, user: current_user).call
         redirect_with_reload_to debt_path(id: @debt.id), notice: t("debts.reactivate.success"), status: :see_other
       else
@@ -28,7 +28,7 @@ module Debts
     private
 
     def set_debt
-      @debt = current_space.debts.find(params[:id])
+      @debt = current_space.debts.find(params[:debt_id])
     rescue ActiveRecord::RecordNotFound
       redirect_to debts_path, alert: t("debts.errors.not_found")
     end

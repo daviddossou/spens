@@ -64,6 +64,122 @@
   color: var(--text-muted);
 }
 
+/* ── Relation row: one card per person (avatar + net, or double-sens) ── */
+.debt-relation {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.875rem 1.125rem;
+  background: var(--bg-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  text-decoration: none;
+}
+
+.debt-relation__avatar {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-label);
+  font-weight: var(--font-weight-bold);
+}
+
+.debt-relation__avatar--lent {
+  background: var(--color-success-20);
+  color: var(--color-success-dark);
+}
+
+.debt-relation__avatar--borrowed {
+  background: var(--color-primary-20);
+  color: var(--color-primary);
+}
+
+.debt-relation__body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.debt-relation__head {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.debt-relation__name {
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-dark);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.debt-relation__tag {
+  flex-shrink: 0;
+  font-size: var(--font-size-label);
+  font-weight: var(--font-weight-medium);
+  padding: 0.1rem 0.45rem;
+  border-radius: var(--radius-full);
+  background: var(--color-warning-20);
+  color: var(--color-warning-dark);
+}
+
+.debt-relation__sub {
+  font-size: var(--font-size-label);
+  color: var(--text-muted);
+}
+
+.debt-relation__bar {
+  display: block;
+  height: 5px;
+  border-radius: var(--radius-full);
+  background: var(--border-light);
+  overflow: hidden;
+}
+
+.debt-relation__bar-fill {
+  display: block;
+  height: 100%;
+  border-radius: var(--radius-full);
+}
+.debt-relation__bar-fill--lent {
+  background: var(--color-success);
+}
+.debt-relation__bar-fill--borrowed {
+  background: var(--color-primary);
+}
+
+.debt-relation__amount-col {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.1rem;
+}
+
+.debt-relation__amount {
+  font-size: var(--font-size-headline);
+  font-weight: var(--font-weight-bold);
+  font-variant-numeric: tabular-nums;
+}
+.debt-relation__amount--lent {
+  color: var(--color-success-dark);
+}
+.debt-relation__amount--borrowed {
+  color: var(--color-primary);
+}
+
+.debt-relation__amount-sub {
+  font-size: var(--font-size-label);
+  color: var(--text-muted);
+}
+
 /* ── Direction sections ───────────────────────────────────────────── */
 .debts-section {
   margin-bottom: 1.75rem;
@@ -610,6 +726,76 @@
   font-weight: 700;
   color: var(--text-dark);
   font-variant-numeric: tabular-nums;
+}
+
+/* ── Two-way relation: gross sub-totals under the net hero ──────────── */
+.debt-subtotals {
+  display: flex;
+  align-items: stretch;
+  gap: 1rem;
+  width: 100%;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-light);
+}
+
+.debt-subtotals__cell {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+}
+
+.debt-subtotals__divider {
+  width: 1px;
+  background: var(--border-light);
+}
+
+.debt-subtotals__label {
+  font-size: var(--font-size-label);
+  color: var(--text-muted);
+}
+
+.debt-subtotals__value {
+  font-size: var(--font-size-title);
+  font-weight: var(--font-weight-bold);
+  font-variant-numeric: tabular-nums;
+}
+.debt-subtotals__value--lent {
+  color: var(--color-success-dark);
+}
+.debt-subtotals__value--borrowed {
+  color: var(--color-primary);
+}
+
+/* Offset card — cancel the smaller side against the larger. */
+.debt-compensate {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: 1.25rem 0;
+  padding: 1rem 1.125rem;
+  background: var(--color-primary-tint);
+  border-radius: var(--radius-lg);
+}
+
+.debt-compensate__title {
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-dark);
+}
+
+.debt-compensate__sub {
+  margin-top: 0.1rem;
+  font-size: var(--font-size-label);
+  color: var(--text-muted);
+}
+
+.debt-compensate__btn {
+  flex-shrink: 0;
+  padding: 0.5rem 1.25rem;
+  white-space: nowrap;
 }
 
 /* ── Repayment schedule (échéancier) ──────────────────────────────── */
