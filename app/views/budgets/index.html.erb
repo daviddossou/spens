@@ -149,20 +149,17 @@
           <h3 class="budget-start__title"><%= t('.empty_title', month: month_name) %></h3>
           <p class="budget-start__body"><%= t('.empty_message') %></p>
 
-          <p class="budget-start__label"><%= t('.empty_templates_label') %></p>
-          <div class="budget-start__templates">
-            <% [ [ :household, t('.template_household'), t('.template_household_sub') ],
-                 [ :from_tx, t('.template_from_tx'), t('.template_from_tx_sub') ],
-                 [ :blank, t('.template_blank'), t('.template_blank_sub') ] ].each do |_key, title, sub| %>
-              <%= link_to new_budget_item_path(month: @month.strftime("%Y-%m")),
-                          class: "budget-start__template", data: { turbo_frame: "modal" } do %>
-                <span class="budget-start__template-text">
-                  <span class="budget-start__template-title"><%= title %></span>
-                  <span class="budget-start__template-sub"><%= sub %></span>
-                </span>
-                <span class="budget-start__template-plus" aria-hidden="true">+</span>
-              <% end %>
-            <% end %>
+          <%# Template starters (Household / From transactions) aren't built yet —
+              they all opened a blank form — so the empty state offers the one
+              honest action for now. TODO: restore the template picker once the
+              starters actually prefill lines. %>
+          <div class="budget-start__cta">
+            <%= render Ui::ButtonComponent.new(
+              text: t('.add_first_item'),
+              url: new_budget_item_path(month: @month.strftime("%Y-%m")),
+              variant: :primary, size: :lg, full_width: true,
+              data: { turbo_frame: "modal" }
+            ) %>
           </div>
 
           <% if @savings_goal.positive? %>

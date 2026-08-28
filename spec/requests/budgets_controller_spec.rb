@@ -15,7 +15,7 @@ RSpec.describe BudgetsController, type: :request do
     it "shows the empty state when no items exist" do
       get budgets_path
       expect(response).to have_http_status(:success)
-      expect(response.body).to include(I18n.t("budgets.index.empty_templates_label"))
+      expect(response.body).to include(I18n.t("budgets.index.add_first_item"))
     end
 
     it "materializes and shows the month's entries with totals" do

@@ -380,6 +380,10 @@
   gap: var(--space-md);
 }
 
+.budget-start__cta {
+  margin-top: var(--space-lg);
+}
+
 .budget-start__template {
   display: flex;
   align-items: center;
