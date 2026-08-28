@@ -22,6 +22,11 @@ export default class extends Controller {
     locale: String,
     ctaTemplate: String,
     ctaEmpty: String,
+    kind: String,             // category | transfer | debt — which fields are required
+    ctaNoCategory: String,
+    ctaNoFromAccount: String,
+    ctaNoToAccount: String,
+    ctaNoPerson: String,
     rolloverExample: String,
     rolloverEmpty: String,
     nextMonth: String
@@ -96,17 +101,48 @@ export default class extends Controller {
       }
     }
 
-    // The CTA carries the amount + cadence: "Add 80 €/month to plan".
+    // The CTA replaces red asterisks: it stays disabled and names the next
+    // missing field (amount, then the kind's own required field) until the line
+    // is complete, then becomes "Add 80 €/month to plan".
     if (this.hasCtaTarget && this.hasCtaTemplateValue) {
-      const raw = this.hasAmountTarget ? parseFloat(this.amountTarget.value) : NaN
-      if (raw > 0) {
-        const short = this.periodShortValue[freq] || this.periodShortValue.monthly || ""
-        const value = `${formatMoney(raw, this.currencyValue, this.hasLocaleValue ? this.localeValue : undefined)}/${short}`
-        this.ctaTarget.textContent = this.ctaTemplateValue.replace("%{value}", value)
-      } else {
-        this.ctaTarget.textContent = this.ctaEmptyValue
-      }
+      const state = this.#ctaState(freq)
+      this.ctaTarget.textContent = state.text
+      this.ctaTarget.disabled = state.disabled
+      // ButtonComponent also renders a `disabled` class server-side, so toggle it
+      // in step or an enabled button would keep the greyed style.
+      this.ctaTarget.classList.toggle("disabled", state.disabled)
     }
+  }
+
+  #ctaState(freq) {
+    const raw = this.hasAmountTarget ? parseFloat(this.amountTarget.value) : NaN
+    if (!(raw > 0)) return { text: this.ctaEmptyValue, disabled: true }
+
+    const missing = this.#missingRequired()
+    if (missing) return { text: missing, disabled: true }
+
+    const short = this.periodShortValue[freq] || this.periodShortValue.monthly || ""
+    const value = `${formatMoney(raw, this.currencyValue, this.hasLocaleValue ? this.localeValue : undefined)}/${short}`
+    return { text: this.ctaTemplateValue.replace("%{value}", value), disabled: false }
+  }
+
+  // The kind's own required field(s): a category to name, both transfer accounts,
+  // or the person a debt is with. Returns the "name what's missing" label or null.
+  #missingRequired() {
+    const val = (name) => this.element.querySelector(`[name="budget_item[${name}]"]`)?.value?.trim()
+    switch (this.kindValue) {
+      case "category":
+        if (!val("transaction_type_name")) return this.ctaNoCategoryValue
+        break
+      case "transfer":
+        if (!val("from_account_name")) return this.ctaNoFromAccountValue
+        if (!val("to_account_name")) return this.ctaNoToAccountValue
+        break
+      case "debt":
+        if (!val("contact_name")) return this.ctaNoPersonValue
+        break
+    }
+    return null
   }
 
   #formatDate(value) {

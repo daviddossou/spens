@@ -17,7 +17,7 @@ fr:
       kind_label: "Type"
       kind_income: "Revenu"
       kind_expense: "Dépense"
-      kind_transfer: "Virement"
+      kind_transfer: "Transfert"
       kind_debt: "Dette"
       from_account_label: "Depuis le compte"
       from_account_placeholder: "ex. Banque"
@@ -91,13 +91,17 @@ fr:
       # Bouton dynamique
       cta_add_plan: "Ajouter au plan"
       cta_add_plan_amount: "Ajouter %{value} au plan"
+      cta_no_category: "Choisis une catégorie"
+      cta_no_from_account: "Choisis le compte de départ"
+      cta_no_to_account: "Choisis le compte d'arrivée"
+      cta_no_person: "Indique un nom"
       per_short_monthly: "mois"
       per_short_quarterly: "trimestre"
       per_short_yearly: "an"
     row:
       done_income: "Reçu"
       done_expense: "Payé"
-      done_transfer: "Viré"
+      done_transfer: "Transféré"
       done_debt_in: "Reçu"
       done_debt_out: "Payé"
       in_progress: "En cours"
@@ -107,6 +111,10 @@ fr:
       to_receive_html: "%{amount} à recevoir"
       to_send_html: "%{amount} à envoyer"
       carried_html: "dont %{amount} reportés"
+      debt_to_receive: "À recevoir"
+      debt_to_repay: "À rembourser"
+      exception_pill: "Ce mois"
+      usually_html: "habituellement %{amount}"
     index:
       title: "Budget"
       subtitle: "Ton plan mensuel, prévu vs réel"
@@ -179,7 +187,7 @@ fr:
       no_entries_create: "Créer une ligne pour %{month}"
     unplanned:
       title: "Hors plan"
-      hint: "Reçu, dépensé ou viré ce mois-ci en dehors de ton budget"
+      hint: "Reçu, dépensé ou transféré ce mois-ci en dehors de ton budget"
       group_income: "Revenus"
       group_expense: "Dépenses"
       group_transfers: "Transferts"
@@ -216,7 +224,7 @@ fr:
       new_subtitle_transfer: "Transfert récurrent · à partir %{month}"
       new_subtitle_debt: "Remboursement récurrent · à partir %{month}"
       subtitle_category: "Planifier un revenu ou une dépense"
-      subtitle_transfer: "Planifier un virement récurrent"
+      subtitle_transfer: "Planifier un transfert récurrent"
       subtitle_debt: "Planifier un paiement de dette"
       save: "Ajouter au budget"
     create:
@@ -235,14 +243,36 @@ fr:
 
   budget_entries:
     edit:
-      title: "Ajuster ce mois"
-      subtitle: "%{type} — %{month}"
-      planned_amount_label: "Montant prévu pour ce mois"
-      override_help: "Seul ce mois change. La règle récurrente reste la même."
-      save: "Enregistrer"
-      edit_rule: "Modifier la règle récurrente"
+      kind:
+        expense: "Dépense"
+        income: "Revenu"
+        transfer: "Transfert"
+        debt: "Dette"
+      more_actions: "Plus d'actions"
+      remove: "Retirer du budget"
+      remove_hint: "À partir %{from_prep} · %{month} garde sa dépense"
+      remove_confirm: "Retirer cette ligne à partir du mois prochain ? Les mois passés gardent leur historique."
+      amount_aria: "Montant"
+      per_month: "par mois"
+      exception_posted: "Exception posée le %{date}"
+      revert_title: "Revenir à %{amount}"
+      revert_sub: "La règle reprend dès ce mois"
+      revert_button: "Rétablir"
+      scope_q: "Ce changement vaut pour"
+      scope_month_sub: "Ce mois seulement"
+      scope_rule_title: "Chaque mois"
+      scope_rule_sub: "À partir %{month_prep}"
+      note_month: "Ta règle reste %{amount} chaque mois. %{month} y revient tout seul."
+      note_rule_bounded: "%{from} à %{to}, le montant passe à "
+      note_rule_open: "À partir %{from_prep}, le montant passe à "
+      note_rule_tail: ". Les mois d'avant gardent leur historique."
+      cta_month: "Enregistrer"
+      cta_rule: "Enregistrer la règle"
     update:
       success: "Mois mis à jour"
+      rule_success: "Règle mise à jour"
+    revert:
+      reverted: "Retour à la règle"
 
   navigation:
     bottom_nav:
