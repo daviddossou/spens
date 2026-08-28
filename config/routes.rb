@@ -45,10 +45,11 @@ Rails.application.routes.draw do
 
     # Debts
     resources :debts, only: [ :index, :show, :new, :create, :edit, :update ] do
-      member do
-        post :write_off, to: "debts/write_offs#create"
-        post :reactivate, to: "debts/write_offs#reactivate"
-      end
+      # Each lifecycle action is its own resource (SRP): create the write-off to
+      # stop counting on a debt, destroy it to bring it back; create a
+      # compensation to offset a two-way relation.
+      resource :write_off, only: [ :create, :destroy ], module: :debts
+      resource :compensation, only: :create, module: :debts
     end
 
     # Accounts

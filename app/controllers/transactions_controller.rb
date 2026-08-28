@@ -62,6 +62,11 @@ class TransactionsController < ApplicationController
 
     @form = TransactionForm.new(current_space, merged)
     @form.user = current_user
+
+    # Opened from a person's page: the "who" is known, so the field hides and the
+    # cards lock open. Keep the relation for the header balance line.
+    @person_locked = merged[:person_locked].present? && merged[:contact_name].present?
+    @relation = DebtRelation.new(space: current_space, name: merged[:contact_name]) if @person_locked
   end
 
   def build_form_for_edit(payload = {})
@@ -73,7 +78,7 @@ class TransactionsController < ApplicationController
   # Top-level params carried across a kind switch. Read directly (not via permit)
   # so the nested :transaction isn't logged as unpermitted on create/update.
   CARRIED_PARAM_KEYS = %i[
-    kind account_id debt_id direction contact_name
+    kind account_id debt_id direction contact_name person_locked
     amount account_name from_account_name to_account_name note description
   ].freeze
 

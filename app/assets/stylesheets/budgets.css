@@ -2,8 +2,8 @@
 
 /* Bilan (finished month) sits on a cooler canvas so it can never be mistaken
    for an editable month. */
-.budget-page--bilan {
-  background: var(--color-canvas-bilan);
+.budget-page--wrap_up {
+  background: var(--color-canvas-wrap-up);
 }
 
 /* Month navigator */
@@ -75,7 +75,7 @@
 }
 
 /* Finished month: the active segment goes ink, matching the darker canvas. */
-.budget-page--bilan .budget-mode-nav__seg--active {
+.budget-page--wrap_up .budget-mode-nav__seg--active {
   background: var(--color-charcoal-black);
 }
 
@@ -136,7 +136,7 @@
 }
 
 /* Finished month: the suffix rides on the dark hero card, so keep it light. */
-.budget-page--bilan .budget-hero__suffix {
+.budget-page--wrap_up .budget-hero__suffix {
   color: var(--color-white);
 }
 

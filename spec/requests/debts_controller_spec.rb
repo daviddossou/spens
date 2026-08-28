@@ -34,16 +34,16 @@ RSpec.describe DebtsController, type: :request do
       expect(response).to be_successful
     end
 
-    it 'shows both directions on the one page, split into their sections' do
+    it 'shows both sides on the one page, one relation per person' do
       get debts_path
       expect(response.body).to include('Alice')
       expect(response.body).to include('Bob')
       expect(response.body).to include('Bank')
-      expect(assigns(:lent_debts)).to include(lent_debt1, lent_debt2)
-      expect(assigns(:borrowed_debts)).to include(borrowed_debt1)
+      expect(assigns(:owed_to_me).map(&:name)).to include('Alice', 'Bob')
+      expect(assigns(:i_owe).map(&:name)).to include('Bank')
     end
 
-    it 'exposes each direction total from ongoing remaining balances' do
+    it 'sums each side from the net of its relations' do
       get debts_path
       expect(assigns(:total_owed_to_me)).to eq(lent_debt1.remaining_balance + lent_debt2.remaining_balance)
       expect(assigns(:total_i_owe)).to eq(borrowed_debt1.remaining_balance)
@@ -52,8 +52,8 @@ RSpec.describe DebtsController, type: :request do
     it 'shows paid debts in the closed history, not the active sections' do
       get debts_path
       expect(response.body).to include('Charlie')
-      expect(assigns(:lent_debts)).not_to include(paid_debt)
-      expect(assigns(:borrowed_debts)).not_to include(paid_debt)
+      expect(assigns(:owed_to_me).map(&:name)).not_to include('Charlie')
+      expect(assigns(:i_owe).map(&:name)).not_to include('Charlie')
       expect(assigns(:closed_debts)).to include(paid_debt)
     end
 
@@ -379,7 +379,7 @@ RSpec.describe DebtsController, type: :request do
     it 'closes the debt and records a neutral write-off transaction' do
       lent = create(:debt, user: user, name: 'Georges', direction: 'lent', total_lent: 50_000, total_reimbursed: 15_000)
 
-      expect { post write_off_debt_path(id: lent.id) }.to change { lent.reload.transactions.count }.by(1)
+      expect { post debt_write_off_path(debt_id: lent.id) }.to change { lent.reload.transactions.count }.by(1)
 
       expect(lent.reload).to be_written_off
       expect(response).to have_http_status(:see_other)
@@ -389,7 +389,7 @@ RSpec.describe DebtsController, type: :request do
 
     it 'keeps the written-off debt reachable in the closed history' do
       lent = create(:debt, user: user, name: 'Georges', direction: 'lent', total_lent: 50_000, total_reimbursed: 15_000)
-      post write_off_debt_path(id: lent.id)
+      post debt_write_off_path(debt_id: lent.id)
 
       get debts_path(direction: 'lent')
       expect(assigns(:closed_debts)).to include(lent.reload)
@@ -399,7 +399,7 @@ RSpec.describe DebtsController, type: :request do
 
     it 'shows the abandoned decision (struck amount + reactivate) on the debt page' do
       lent = create(:debt, user: user, name: 'Georges', direction: 'lent', total_lent: 50_000, total_reimbursed: 15_000)
-      post write_off_debt_path(id: lent.id)
+      post debt_write_off_path(debt_id: lent.id)
 
       get debt_path(id: lent.id)
       expect(response.body).to include('debt-abandoned')                            # the dated decision, not the active card
@@ -410,14 +410,14 @@ RSpec.describe DebtsController, type: :request do
 
     it 'redirects with an alert when nothing is outstanding' do
       settled = create(:debt, user: user, total_lent: 1_000, total_reimbursed: 1_000)
-      post write_off_debt_path(id: settled.id)
+      post debt_write_off_path(debt_id: settled.id)
       expect(flash[:alert]).to eq(I18n.t('debts.write_off.error'))
     end
 
     it 'requires authentication' do
       sign_out user
       lent = create(:debt, user: user)
-      post write_off_debt_path(id: lent.id)
+      post debt_write_off_path(debt_id: lent.id)
       expect(response).to have_http_status(:redirect)
     end
   end

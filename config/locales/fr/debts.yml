@@ -7,6 +7,9 @@ fr:
       section_lent: "On te doit"
       section_borrowed: "Tu dois"
       section_hint: "du plus élevé"
+      two_way: "Double sens"
+      two_way_sub_html: "Il te doit %{owed} · tu lui dois %{i_owe}"
+      net_label: "net"
       people_count:
         one: "%{count} personne"
         other: "%{count} personnes"
@@ -117,6 +120,15 @@ fr:
       quick_add: "Ajout rapide"
       edit_debt: "Modifier"
       more_actions: "Plus d'actions"
+      net_hero_sub: "après compensation des deux sens"
+      subtotal_owed: "Il te doit"
+      subtotal_i_owe: "Tu lui dois"
+      compensate_title: "Compenser %{amount} des deux côtés"
+      compensate_sub:
+        borrowed: "Solde d'un coup : il ne restera que %{net} à rendre."
+        lent: "Solde d'un coup : il ne restera que %{net} à recevoir."
+      compensate_button: "Compenser"
+      compensate_confirm: "Compenser les deux sens ? Un mouvement daté est enregistré de chaque côté, rien n'est supprimé."
       write_off_hint:
         lent: "Considérer que %{name} ne te doit plus rien"
         borrowed: "Considérer que tu ne dois plus rien à %{name}"
@@ -158,6 +170,11 @@ fr:
     write_off:
       success: "C'est réglé — sorti de tes totaux, gardé dans ton historique."
       error: "Impossible de clôturer cette dette"
+    compensate:
+      movement: "Compensation avec %{name}"
+      success: "Compensé — un mouvement daté de chaque côté."
+      error: "Impossible de compenser cette relation"
+
     reactivate:
       success: "C'est réactivé — de retour dans tes totaux."
       error: "Impossible de réactiver cette dette"

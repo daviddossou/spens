@@ -10,8 +10,8 @@
         <p class="budget-month-nav__subtitle">
           <% case @month_position
              when :future %><%= t('.subtitle_plan', count: @days_until) %>
-          <% when :current %><%= t('.subtitle_en_cours', day: @day_of_month, total: @days_in_month, remaining: @days_remaining) %>
-          <% else %><%= t('.subtitle_bilan', total: @days_in_month) %>
+          <% when :current %><%= t('.subtitle_live', day: @day_of_month, total: @days_in_month, remaining: @days_remaining) %>
+          <% else %><%= t('.subtitle_wrap_up', total: @days_in_month) %>
           <% end %>
         </p>
       </div>
@@ -22,7 +22,7 @@
     <%# Viewpoint selector on the SAME month: it never navigates, only changes the
         reading. Modes that have nothing to show for this month are disabled. %>
     <nav class="budget-mode-nav" role="tablist" aria-label="<%= t('.mode_nav_label') %>">
-      <% [ :plan, :en_cours, :bilan ].each do |mode| %>
+      <% [ :plan, :live, :wrap_up ].each do |mode| %>
         <% if @allowed_modes.include?(mode) %>
           <%= link_to budgets_path(month: @month.strftime("%Y-%m"), view: mode),
                       role: "tab", "aria-selected": (@mode == mode).to_s,
@@ -47,15 +47,15 @@
           <span class="budget-hero__sublabel"><%= t('.hero_flow_html',
                 income: smart_format_money(@planned_income, current_space.currency),
                 expense: smart_format_money(@planned_expense, current_space.currency)) %></span>
-        <% elsif @mode == :en_cours %>
-          <span class="budget-hero__sublabel"><%= t('.hero_sub_en_cours_html',
+        <% elsif @mode == :live %>
+          <span class="budget-hero__sublabel"><%= t('.hero_sub_live_html',
                 planned: smart_format_money(@projected_net, current_space.currency),
                 offplan: content_tag(:span, smart_format_money(@offplan_net, current_space.currency, sign: :always),
                                      class: ("budget-hero__offplan-amount" if @offplan_net.negative?))) %></span>
         <% else %>
           <span class="budget-hero__sublabel"><%= t('.actual_so_far_html', amount: smart_format_money(@actual_net, current_space.currency, sign: :always)) %></span>
         <% end %>
-        <% if @savings_goal.positive? && @mode == :en_cours %>
+        <% if @savings_goal.positive? && @mode == :live %>
           <%# Goal bar with a "today" marker: am I pacing to hit the goal by month end? %>
           <% goal_pct = [ [ (@hero_value / @savings_goal * 100).round, 0 ].max, 100 ].min %>
           <% today_pct = [ (@day_of_month.to_f / @days_in_month * 100).round, 100 ].min %>
@@ -84,13 +84,13 @@
         <% end %>
       </div>
 
-      <% if @planned_expense_total.positive? && @mode != :bilan %>
+      <% if @planned_expense_total.positive? && @mode != :wrap_up %>
         <%= render "vital_confort", mode: @mode %>
       <% end %>
 
       <%# Off-plan spending sits above the line sections in the live month —
           it's what explains the gap between plan and reality. %>
-      <% if @mode == :en_cours %>
+      <% if @mode == :live %>
         <%= render "unplanned_section", read_only: false %>
       <% end %>
 
