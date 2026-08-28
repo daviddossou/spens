@@ -1,51 +1,200 @@
-<% content_for :title, t('.title') %>
+<% content_for :title, @budget_entry.display_name %>
+
+<%
+  item = @budget_entry.budget_item
+  currency = get_currency_symbol(current_space.currency)
+  month = @budget_entry.month
+  month_name = l(month, format: "%B")
+  next_month_name = l(month.next_month, format: "%B")
+  # French elision: "de septembre" but "d'août" (vowel-initial). English is untouched.
+  de_month = ->(name) { I18n.locale.to_s == "fr" ? "#{name.match?(/\A[aeiouâàéèêëîïôûùhy]/i) ? "d'" : "de "}#{name.downcase}" : name }
+  month_prep = de_month.call(month_name)
+  next_month_prep = de_month.call(next_month_name)
+  rule_amount = @budget_entry.rule_amount
+  is_expense = @budget_entry.kind == "expense"
+  kind_key = %w[debt_in debt_out].include?(@budget_entry.kind) ? "debt" : @budget_entry.kind
+  amount_val = @budget_entry.planned_amount % 1 == 0 ? @budget_entry.planned_amount.to_i : @budget_entry.planned_amount.to_f
+  ends_on = item&.ends_on
+  bounded = ends_on.present? && ends_on >= month
+  freqs = %w[monthly quarterly yearly]
+  current_freq = freqs.include?(item&.frequency) ? item.frequency : "monthly"
+  period_labels = freqs.index_with { |fr| t("budgets.form.per_#{fr}") }
+  period_short  = freqs.index_with { |fr| t("budgets.form.per_short_#{fr}") }
+  summary_freq  = freqs.index_with { |fr| t("budgets.form.summary_#{fr}") }
+  summary_end   = { never: t("budgets.form.summary_never"), date: t("budgets.form.summary_until") }
+  summary_rollover = { on: t("budgets.form.summary_rollover_on"), off: t("budgets.form.summary_rollover_off") }
+%>
 
 <%= turbo_frame_tag "modal" do %>
   <div class="page-container page-container--narrow">
-    <header class="page-header">
-      <p class="page-header__subtitle">
-        <%= t('.subtitle', type: @budget_entry.display_name, month: l(@budget_entry.month, format: :month_year)) %>
-      </p>
+    <header class="page-header budget-item-form__header budget-scope__header">
+      <div class="budget-scope__titles">
+        <h2 class="budget-item-form__title"><%= @budget_entry.display_name %></h2>
+        <p class="budget-item-form__subtitle"><%= t(".kind.#{kind_key}") %> · <%= l(month, format: :month_year) %></p>
+      </div>
+      <details class="header-menu budget-scope__menu">
+        <summary class="header-menu__trigger" aria-label="<%= t('.more_actions') %>">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <circle cx="5" cy="12" r="2"></circle><circle cx="12" cy="12" r="2"></circle><circle cx="19" cy="12" r="2"></circle>
+          </svg>
+        </summary>
+        <div class="header-menu__panel">
+          <%= link_to budget_item_path(id: item.id, from_month: month.next_month.strftime("%Y-%m"), month: month.strftime("%Y-%m")),
+                class: "header-menu__item header-menu__item--danger",
+                data: { turbo_method: :delete, turbo_confirm: t(".remove_confirm") } do %>
+            <span class="header-menu__item-label"><%= t(".remove") %></span>
+            <span class="header-menu__item-hint"><%= t(".remove_hint", from: next_month_name, from_prep: next_month_prep, month: month_name) %></span>
+          <% end %>
+        </div>
+      </details>
     </header>
 
     <div class="page-content">
-      <%= form_with model: @budget_entry, url: budget_entry_path(id: @budget_entry.id), method: :patch, class: "budget-item-form" do |f| %>
-        <%= render "shared/form_errors", object: @budget_entry %>
+      <%= form_with url: budget_entry_path(id: @budget_entry.id), method: :patch, class: "budget-item-form",
+            data: {
+              controller: "budget-scope",
+              budget_scope_currency_value: currency,
+              budget_scope_locale_value: I18n.locale,
+              budget_scope_cta_month_value: t(".cta_month"),
+              budget_scope_cta_rule_value: t(".cta_rule")
+            } do %>
+        <%= hidden_field_tag :scope, "month", data: { budget_scope_target: "scopeInput" } %>
 
-        <div class="budget-item-form__amount">
-          <%= render Forms::InputFieldComponent.new(
-            form: f,
-            field: :planned_amount,
-            type: :number_field,
-            label: t('.planned_amount_label'),
-            required: true,
-            value: (@budget_entry.planned_amount % 1 == 0 ? @budget_entry.planned_amount.to_i : @budget_entry.planned_amount.to_f),
-            prepend: get_currency_symbol(current_space.currency),
-            step: "0.01",
-            min: "0.01"
-          ) %>
-          <p class="form-help-text"><%= t('.override_help') %></p>
+        <%# Amount hero. %>
+        <div class="budget-amount">
+          <div class="budget-amount__field">
+            <%= number_field_tag :amount, amount_val, class: "budget-amount__input",
+                  step: "0.01", min: "0.01", inputmode: "decimal", autofocus: true,
+                  aria: { label: t(".amount_aria") },
+                  data: { budget_scope_target: "amount", action: "input->budget-scope#onAmount" } %>
+            <span class="budget-amount__currency"><%= currency %></span>
+          </div>
+          <span class="budget-amount__period"><%= t(".per_month") %></span>
+        </div>
+
+        <%# An existing exception: when it was posted + a one-tap way back to the rule. %>
+        <% if @budget_entry.overridden? %>
+          <p class="budget-exception">
+            <span class="budget-exception__badge">
+              <%= t(".exception_posted", date: l(@budget_entry.overridden_at.to_date, format: :day_month)) %>
+            </span>
+          </p>
+          <div class="debt-reactivate">
+            <div class="debt-reactivate__text">
+              <p class="debt-reactivate__title"><%= t(".revert_title", amount: smart_format_money(rule_amount, current_space.currency, sign: :never, threshold: Float::INFINITY)) %></p>
+              <p class="debt-reactivate__sub"><%= t(".revert_sub") %></p>
+            </div>
+            <%= link_to t(".revert_button"), revert_budget_entry_path(id: @budget_entry.id),
+                  class: "btn btn-outline-primary debt-reactivate__btn", data: { turbo_method: :post } %>
+          </div>
+        <% end %>
+
+        <%# Scope — the change is a setting, not a door. %>
+        <p class="budget-scope__q"><%= t(".scope_q") %></p>
+        <div class="scope-choice">
+          <button type="button" class="scope-card scope-card--selected" data-scope="month"
+                  data-budget-scope-target="scopeCard" data-action="budget-scope#setScope">
+            <span class="scope-card__title"><%= month_name.capitalize %></span>
+            <span class="scope-card__sub"><%= t(".scope_month_sub") %></span>
+          </button>
+          <button type="button" class="scope-card" data-scope="rule"
+                  data-budget-scope-target="scopeCard" data-action="budget-scope#setScope">
+            <span class="scope-card__title"><%= t(".scope_rule_title") %></span>
+            <span class="scope-card__sub"><%= t(".scope_rule_sub", month: month_name, month_prep: month_prep) %></span>
+          </button>
+        </div>
+
+        <%# The rule's own fields — only when "every month" is chosen. %>
+        <div class="budget-scope__rule hidden" data-budget-scope-target="ruleBlock"
+             data-controller="budget-line"
+             data-budget-line-period-labels-value="<%= period_labels.to_json %>"
+             data-budget-line-period-short-value="<%= period_short.to_json %>"
+             data-budget-line-summary-freq-value="<%= summary_freq.to_json %>"
+             data-budget-line-summary-end-value="<%= summary_end.to_json %>"
+             data-budget-line-summary-rollover-value="<%= summary_rollover.to_json %>"
+             data-budget-line-currency-value="<%= currency %>"
+             data-budget-line-locale-value="<%= I18n.locale %>">
+          <% if is_expense %>
+            <div class="vc-choice">
+              <span class="vc-choice__question"><%= t("budgets.form.vital_confort_question") %></span>
+              <div class="vc-choice__cards">
+                <% [ [ true, "vital" ], [ false, "confort" ] ].each do |val, key| %>
+                  <label class="vc-card">
+                    <%= radio_button_tag "budget_item[essential]", val, item&.essential == val, class: "vc-card__input" %>
+                    <span class="vc-card__title"><%= t("budgets.form.#{key}_card_title") %></span>
+                    <span class="vc-card__sub"><%= t("budgets.form.#{key}_card_sub") %></span>
+                  </label>
+                <% end %>
+              </div>
+            </div>
+          <% end %>
+
+          <details class="budget-modify">
+            <summary class="budget-modify__summary">
+              <span class="budget-modify__text">
+                <span class="budget-modify__main" data-budget-line-target="summaryMain"></span>
+              </span>
+              <span class="budget-modify__toggle"><%= t("budgets.form.modify") %></span>
+            </summary>
+            <div class="budget-modify__body">
+              <%= hidden_field_tag "budget_item[frequency]", current_freq, data: { budget_line_target: "frequency" } %>
+              <div class="budget-setting">
+                <span class="budget-setting__q"><%= t("budgets.form.freq_question") %></span>
+                <div class="seg-group">
+                  <% freqs.each do |fr| %>
+                    <button type="button" class="seg<%= ' seg--active' if fr == current_freq %>"
+                            data-budget-line-target="freqSeg" data-frequency="<%= fr %>"
+                            data-action="budget-line#setFrequency"><%= t("budgets.form.freq_#{fr}") %></button>
+                  <% end %>
+                </div>
+              </div>
+              <div class="budget-setting">
+                <span class="budget-setting__q"><%= t("budgets.form.end_question") %></span>
+                <div class="pill-choice">
+                  <button type="button" class="pill<%= ' pill--active' if ends_on.blank? %>"
+                          data-budget-line-target="endSeg" data-end="never"
+                          data-action="budget-line#setEnd"><%= t("budgets.form.end_never") %></button>
+                  <button type="button" class="pill<%= ' pill--active' if ends_on.present? %>"
+                          data-budget-line-target="endSeg" data-end="date"
+                          data-action="budget-line#setEnd"><%= t("budgets.form.end_dated") %></button>
+                </div>
+                <div class="budget-setting__date<%= ' hidden' if ends_on.blank? %>" data-budget-line-target="endField">
+                  <%= date_field_tag "budget_item[ends_on]", ends_on, class: "form-input",
+                        data: { budget_line_target: "endInput", action: "budget-line#syncSummary" } %>
+                </div>
+              </div>
+              <% if is_expense %>
+                <label class="budget-toggle">
+                  <span class="budget-toggle__text">
+                    <span class="budget-toggle__label"><%= t("budgets.form.rollover_toggle_label") %></span>
+                  </span>
+                  <span class="budget-toggle__switch">
+                    <%= hidden_field_tag "budget_item[rollover]", "0" %>
+                    <%= check_box_tag "budget_item[rollover]", "1", item&.rollover,
+                          class: "budget-toggle__input", data: { budget_line_target: "rollover", action: "budget-line#syncSummary" } %>
+                    <span class="budget-toggle__track" aria-hidden="true"></span>
+                  </span>
+                </label>
+              <% end %>
+            </div>
+          </details>
+        </div>
+
+        <%# Reassurance: which months move, and that the rule/history is safe. %>
+        <div class="budget-scope-note" data-budget-scope-target="noteMonth">
+          <%= t(".note_month", amount: smart_format_money(rule_amount, current_space.currency, sign: :never, threshold: Float::INFINITY), month: next_month_name.capitalize) %>
+        </div>
+        <div class="budget-scope-note budget-scope-note--amber hidden" data-budget-scope-target="noteRule">
+          <% if bounded %>
+            <%= t(".note_rule_bounded", from: month_name.capitalize, to: l(ends_on, format: "%B")) %>
+          <% else %>
+            <%= t(".note_rule_open", from: month_name, from_prep: month_prep) %>
+          <% end %>
+          <strong data-budget-scope-target="amberAmount"></strong><%= t(".note_rule_tail") %>
         </div>
 
         <div class="budget-item-form__actions">
-          <%= render Ui::ButtonComponent.new(
-            text: t('.save'),
-            type: :submit,
-            variant: :primary,
-            size: :lg,
-            full_width: true
-          ) %>
-
-          <% if @budget_entry.budget_item %>
-            <%= render Ui::ButtonComponent.new(
-              text: t('.edit_rule'),
-              url: edit_budget_item_path(id: @budget_entry.budget_item_id, month: @budget_entry.month.strftime("%Y-%m")),
-              variant: :"outline-secondary",
-              size: :lg,
-              full_width: true,
-              data: { turbo_frame: "modal" }
-            ) %>
-          <% end %>
+          <button type="submit" class="btn btn-primary btn-lg" data-budget-scope-target="cta"><%= t(".cta_month") %></button>
         </div>
       <% end %>
     </div>

@@ -91,6 +91,10 @@ en:
       # Dynamic button
       cta_add_plan: "Add to plan"
       cta_add_plan_amount: "Add %{value} to plan"
+      cta_no_category: "Pick a category"
+      cta_no_from_account: "Pick the source account"
+      cta_no_to_account: "Pick the destination account"
+      cta_no_person: "Add a name"
       per_short_monthly: "month"
       per_short_quarterly: "quarter"
       per_short_yearly: "year"
@@ -107,6 +111,10 @@ en:
       to_receive_html: "%{amount} to receive"
       to_send_html: "%{amount} to send"
       carried_html: "incl. %{amount} carried over"
+      debt_to_receive: "To receive"
+      debt_to_repay: "To repay"
+      exception_pill: "This month"
+      usually_html: "usually %{amount}"
     index:
       title: "Budget"
       subtitle: "Your monthly plan, planned vs actual"
@@ -235,14 +243,36 @@ en:
 
   budget_entries:
     edit:
-      title: "Adjust this month"
-      subtitle: "%{type} — %{month}"
-      planned_amount_label: "Planned amount for this month"
-      override_help: "Only this month changes. The recurring rule stays the same."
-      save: "Save"
-      edit_rule: "Edit the recurring rule"
+      kind:
+        expense: "Expense"
+        income: "Income"
+        transfer: "Transfer"
+        debt: "Debt"
+      more_actions: "More actions"
+      remove: "Remove from budget"
+      remove_hint: "From %{from} · %{month} keeps its spending"
+      remove_confirm: "Remove this line from next month on? Past months keep their history."
+      amount_aria: "Amount"
+      per_month: "a month"
+      exception_posted: "Exception set on %{date}"
+      revert_title: "Back to %{amount}"
+      revert_sub: "The rule takes over from this month"
+      revert_button: "Reset"
+      scope_q: "This change applies to"
+      scope_month_sub: "This month only"
+      scope_rule_title: "Every month"
+      scope_rule_sub: "From %{month}"
+      note_month: "Your rule stays %{amount} every month. %{month} returns to it on its own."
+      note_rule_bounded: "%{from} to %{to}, the amount becomes "
+      note_rule_open: "From %{from} on, the amount becomes "
+      note_rule_tail: ". Earlier months keep their history."
+      cta_month: "Save"
+      cta_rule: "Save the rule"
     update:
       success: "Month updated"
+      rule_success: "Rule updated"
+    revert:
+      reverted: "Back to the rule"
 
   navigation:
     bottom_nav:

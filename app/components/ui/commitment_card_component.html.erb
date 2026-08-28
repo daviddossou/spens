@@ -9,7 +9,7 @@
       <% end %>
     </div>
     <% if target_set? %>
-      <%= bar %>
+      <%= bar if show_bar? %>
       <%= meta %>
     <% elsif no_target_label.present? %>
       <div class="commitment-card__meta commitment-card__meta--no-target"><%= no_target_label %></div>
@@ -25,10 +25,12 @@
       </div>
     <% end %>
     <% if target_set? %>
-      <div class="commitment-card__bar-row">
-        <%= bar %>
-        <span class="commitment-card__pct"><%= percentage %>%</span>
-      </div>
+      <% if show_bar? %>
+        <div class="commitment-card__bar-row">
+          <%= bar %>
+          <span class="commitment-card__pct"><%= percentage %>%</span>
+        </div>
+      <% end %>
       <div class="commitment-card__progress"><%= progress_summary %></div>
     <% elsif no_target_label.present? %>
       <div class="commitment-card__progress commitment-card__progress--no-target"><%= no_target_label %></div>

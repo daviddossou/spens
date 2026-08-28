@@ -16,6 +16,9 @@ class BudgetItemForm < BaseForm
   attribute :essential, :boolean, default: true
   attribute :starts_on, :date, default: -> { Date.current.beginning_of_month }
   attribute :ends_on, :date
+  # The month the edit was made from — a rule change takes effect here, freezing
+  # earlier months. Not persisted; only steers rematerialization.
+  attribute :effective_month, :date
 
   ##
   # Validations
@@ -65,7 +68,8 @@ class BudgetItemForm < BaseForm
       rollover: payload[:rollover] || false,
       essential: payload.fetch(:essential, true),
       starts_on: payload[:starts_on] || Date.current.beginning_of_month,
-      ends_on: payload[:ends_on]
+      ends_on: payload[:ends_on],
+      effective_month: payload[:effective_month]
     )
   end
 
@@ -254,6 +258,6 @@ class BudgetItemForm < BaseForm
   end
 
   def rematerialize_entries
-    Budgets::RematerializeItem.call(@budget_item)
+    Budgets::RematerializeItem.call(@budget_item, from_month: effective_month)
   end
 end

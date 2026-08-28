@@ -8,6 +8,8 @@
 #  carried_amount      :decimal(15, 2)   default(0.0), not null
 #  kind                :string           not null
 #  month               :date             not null, indexed => [space_id], indexed => [space_id, budget_item_id]
+#  overridden          :boolean          default(FALSE), not null
+#  overridden_at       :datetime
 #  planned_amount      :decimal(15, 2)   not null
 #  created_at          :datetime         not null
 #  updated_at          :datetime         not null
@@ -51,5 +53,27 @@ class BudgetEntry < ApplicationRecord
 
   def display_name
     budget_item.display_name
+  end
+
+  # What the recurring rule would plan for this month, ignoring any hand-set
+  # exception — used for "usually 120K" and the revert target.
+  def rule_amount
+    budget_item.planned_amount_for(month)
+  end
+
+  # Set (or clear) a per-month exception. Marking it stamps when it was posted;
+  # an amount equal to the rule isn't an exception at all.
+  def override_to(amount)
+    diverges = amount.to_f != rule_amount.to_f
+    update(
+      planned_amount: amount,
+      overridden: diverges,
+      overridden_at: diverges ? (overridden? ? overridden_at : Time.current) : nil
+    )
+  end
+
+  # Drop the exception: the month goes back to whatever the rule plans.
+  def revert_to_rule!
+    update!(planned_amount: rule_amount, overridden: false, overridden_at: nil)
   end
 end

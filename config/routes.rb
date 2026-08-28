@@ -45,7 +45,10 @@ Rails.application.routes.draw do
 
     # Debts
     resources :debts, only: [ :index, :show, :new, :create, :edit, :update ] do
-      member { post :write_off, to: "debts/write_offs#create" }
+      member do
+        post :write_off, to: "debts/write_offs#create"
+        post :reactivate, to: "debts/write_offs#reactivate"
+      end
     end
 
     # Accounts
@@ -58,7 +61,9 @@ Rails.application.routes.draw do
       collection { get :summary }
     end
     resources :budget_items, only: [ :new, :create, :edit, :update, :destroy ]
-    resources :budget_entries, only: [ :edit, :update ]
+    resources :budget_entries, only: [ :edit, :update ] do
+      member { post :revert }
+    end
 
     # Spaces
     resources :spaces, only: [ :index, :new, :create, :edit, :update, :destroy ] do

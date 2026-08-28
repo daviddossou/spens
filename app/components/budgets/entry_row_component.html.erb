@@ -6,6 +6,9 @@
           <span class="budget-row__icon budget-row__icon--<%= entry.kind %>" aria-hidden="true"><%= helpers.transaction_icon_svg(leading_icon_kind) %></span>
         <% end %>
         <span class="budget-row__name"><%= entry.display_name %></span>
+        <% if exception? %>
+          <span class="budget-row__exception-pill"><%= t("budgets.row.exception_pill") %></span>
+        <% end %>
       </span>
       <% if meta_line.present? %>
         <span class="budget-row__meta-line"><%= meta_line %></span>
@@ -13,9 +16,9 @@
     </div>
     <div class="budget-row__amounts">
       <% if plan_mode? %>
-        <span class="budget-row__planned-only"><%= formatted_planned %></span>
+        <span class="budget-row__planned-only <%= 'budget-row__amount--income' if incoming_debt? %>"><%= formatted_planned %></span>
       <% else %>
-        <span class="budget-row__actual <%= 'budget-row__actual--over' if over? %>"><%= formatted_actual %></span>
+        <span class="budget-row__actual <%= 'budget-row__actual--over' if over? %> <%= 'budget-row__amount--income' if incoming_debt? %>"><%= formatted_actual %></span>
         <span class="budget-row__planned">/ <%= formatted_planned %></span>
       <% end %>
     </div>

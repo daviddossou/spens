@@ -16,6 +16,15 @@ module Debts
       end
     end
 
+    # Undo a write-off — the debt comes back as ongoing for its remaining balance.
+    def reactivate
+      if ReactivateDebtService.new(@debt, user: current_user).call
+        redirect_with_reload_to debt_path(id: @debt.id), notice: t("debts.reactivate.success"), status: :see_other
+      else
+        redirect_to debt_path(id: @debt.id), alert: t("debts.reactivate.error"), status: :see_other
+      end
+    end
+
     private
 
     def set_debt

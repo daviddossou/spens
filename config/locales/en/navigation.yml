@@ -1,6 +1,7 @@
 en:
   navigation:
     header:
+      back: "Back"
       settings: "Settings"
       learned_words: "Learned words"
       admin: "Admin"

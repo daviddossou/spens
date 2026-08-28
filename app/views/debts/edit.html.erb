@@ -1,28 +1,42 @@
-<% content_for :title, t(".title.#{ @form.direction }") %>
+<% content_for :title, t(".title.#{@form.direction}") %>
 
 <%= turbo_frame_tag "modal" do %>
   <div class="page-container page-container--narrow">
-    <header class="page-header">
-      <p class="page-header__subtitle"><%= t(".subtitle.#{ @form.direction }") %></p>
+    <%
+      currency_symbol = get_currency_symbol(current_space.currency)
+      amount_label = { lent: t("debts.new.amount_label.lent"), borrowed: t("debts.new.amount_label.borrowed") }
+      account_label = { lent: t("debts.form.account_label.lent"), borrowed: t("debts.form.account_label.borrowed") }
+      account_placeholder = { lent: t("debts.form.account_placeholder.lent"), borrowed: t("debts.form.account_placeholder.borrowed") }
+      cta_template = { lent: t("debts.new.cta_amount.lent"), borrowed: t("debts.new.cta_amount.borrowed") }
+      recap = { lent: t("debts.new.recap.lent"), borrowed: t("debts.new.recap.borrowed") }
+      recap_account = { lent: t("debts.new.recap_account.lent"), borrowed: t("debts.new.recap_account.borrowed") }
+    %>
+    <header class="page-header debt-form__header">
+      <h2 class="debt-form__title"><%= t(".title.#{@form.direction}") %></h2>
     </header>
 
     <div class="page-content">
-      <%= form_with model: @form,
-                    url: debt_path(id: @debt.id),
-                    method: :patch,
-                    class: "debt-form",
-                    data: { controller: "transaction-form" } do |f| %>
-        <%= render 'form', form: f %>
+      <%= form_with model: @form, url: debt_path(id: @debt.id), method: :patch, class: "debt-form",
+            data: {
+              controller: "debt-form",
+              action: "input->debt-form#onField change->debt-form#onField",
+              debt_form_currency_value: currency_symbol,
+              debt_form_locale_value: I18n.locale,
+              debt_form_amount_label_value: amount_label.to_json,
+              debt_form_account_label_value: account_label.to_json,
+              debt_form_account_placeholder_value: account_placeholder.to_json,
+              debt_form_cta_template_value: cta_template.to_json,
+              debt_form_cta_empty_value: t("debts.new.cta_empty"),
+              debt_form_cta_no_name_value: t("debts.new.cta_no_name"),
+              debt_form_recap_value: recap.to_json,
+              debt_form_recap_account_value: recap_account.to_json
+            } do |f| %>
+        <%= render "form", form: f %>
 
-        <!-- Form Actions -->
         <div class="debt-form__actions">
-          <%= render Ui::ButtonComponent.new(
-            text: t(".update_debt.#{ @form.direction }"),
-            type: :submit,
-            variant: :primary,
-            size: :lg,
-            full_width: true
-          ) %>
+          <button type="submit" class="btn btn-primary btn-lg" data-debt-form-target="cta">
+            <%= t(".update_debt.#{@form.direction}") %>
+          </button>
         </div>
       <% end %>
     </div>

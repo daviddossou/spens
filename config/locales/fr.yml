@@ -1,4 +1,6 @@
 fr:
+  commitment:
+    of: "sur"
   number:
     format:
       delimiter: " "
@@ -8,6 +10,8 @@ fr:
       default: "%d/%m/%Y"
       short: "%d %b"
       long: "%e %B %Y"
+      day_month: "%-d %B"
+      month_year: "%B %Y"
     day_names:
       - dimanche
       - lundi

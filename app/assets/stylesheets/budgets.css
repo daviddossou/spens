@@ -380,6 +380,10 @@
   gap: var(--space-md);
 }
 
+.budget-start__cta {
+  margin-top: var(--space-lg);
+}
+
 .budget-start__template {
   display: flex;
   align-items: center;
@@ -819,6 +823,117 @@
   overflow-wrap: break-word;
 }
 
+/* ── Unified line-edit sheet (this month / every month from here) ────── */
+.page-header.budget-item-form__header.budget-scope__header,
+.bottom-sheet__body .page-header.budget-item-form__header.budget-scope__header {
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.budget-scope__rule.hidden,
+.budget-scope-note.hidden {
+  display: none;
+}
+
+.budget-scope__menu {
+  flex-shrink: 0;
+}
+
+.budget-scope__q {
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+  font-size: var(--font-size-title);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-dark);
+}
+
+.scope-choice {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+}
+
+.scope-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  padding: 0.75rem 0.875rem;
+  text-align: left;
+  background: var(--color-surface-sunken);
+  border: 1.5px solid transparent;
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.scope-card__title {
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-dark);
+}
+
+.scope-card__sub {
+  font-size: var(--font-size-label);
+  color: var(--color-muted-strong);
+}
+
+.scope-card--selected {
+  border-color: var(--color-primary);
+  background: var(--color-primary-tint);
+}
+
+.scope-card--selected .scope-card__title {
+  color: var(--color-primary);
+}
+
+.budget-scope__rule {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.budget-scope-note {
+  margin-top: 1rem;
+  padding: 0.75rem 0.875rem;
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-sunken);
+  font-size: var(--font-size-body);
+  color: var(--color-muted-strong);
+}
+
+.budget-scope-note--amber {
+  background: var(--color-warning-20);
+  color: var(--color-dark);
+}
+
+.budget-exception {
+  margin-top: 0.5rem;
+  text-align: center;
+}
+
+.budget-exception__badge {
+  display: inline-block;
+  font-size: var(--font-size-label);
+  font-weight: var(--font-weight-semibold);
+  padding: 0.15rem 0.6rem;
+  border-radius: var(--radius-full);
+  background: var(--color-primary-20);
+  color: var(--color-primary);
+}
+
+/* Quiet "Ce mois" pill: only on a line whose month diverges from its rule. */
+.budget-row__exception-pill {
+  flex-shrink: 0;
+  font-size: var(--font-size-label);
+  font-weight: var(--font-weight-semibold);
+  padding: 0.1rem 0.45rem;
+  border-radius: var(--radius-full);
+  background: var(--color-primary-20);
+  color: var(--color-primary);
+}
+
 /* Vital · mensuel — the line's classification and rhythm */
 .budget-row__meta-line {
   font-size: var(--font-size-label);
@@ -880,6 +995,12 @@
   font-weight: var(--font-weight-bold);
   color: var(--color-dark);
   font-variant-numeric: tabular-nums;
+}
+
+/* Money coming toward you — income and a lent debt being repaid — reads green,
+   echoing the "On te doit" side of the debts screen. */
+.budget-row__amount--income {
+  color: var(--color-success-dark);
 }
 
 /* Vital / Confort tag on the right of the status line */

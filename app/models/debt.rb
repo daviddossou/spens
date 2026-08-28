@@ -76,6 +76,17 @@ class Debt < ApplicationRecord
     (total_lent || 0.0) - (total_reimbursed || 0.0)
   end
 
+  # They pay me back what I lent (debt_in); I repay what I borrowed (debt_out).
+  def repayment_kind
+    lent? ? "debt_in" : "debt_out"
+  end
+
+  # The recurring budget line this debt feeds — its repayment schedule, when the
+  # debt has a deadline. Nil until SyncDebtPlanService has built one.
+  def repayment_line
+    space.budget_items.where(debt_id: id, kind: repayment_kind).order(active: :desc).first
+  end
+
   def mark_as_paid!
     update!(status: "paid")
   end

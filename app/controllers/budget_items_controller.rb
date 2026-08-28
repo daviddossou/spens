@@ -43,9 +43,20 @@ class BudgetItemsController < ApplicationController
   # Stops the plan going forward: deactivate the rule and drop unsettled
   # current/future entries; paid entries and past months stay as history.
   def destroy
+    # Removal takes effect from a given month (default: now); earlier months keep
+    # their history. From a started month you drop it "from next month" so the
+    # month you're on keeps the spending already logged against it.
+    from = params[:from_month].present? ? Date.parse(params[:from_month]).beginning_of_month : Date.current.beginning_of_month
+
     ActiveRecord::Base.transaction do
-      @budget_item.update!(active: false)
-      @budget_item.budget_entries.where(month: Date.current.beginning_of_month..).destroy_all
+      if from <= Date.current.beginning_of_month
+        @budget_item.update!(active: false)
+      else
+        # Removing from a future month: bound the rule so it stops there and no
+        # new months materialize, while earlier months keep their history.
+        @budget_item.update!(ends_on: from.prev_month.end_of_month)
+      end
+      @budget_item.budget_entries.where(month: from..).destroy_all
     end
 
     redirect_with_reload_to budgets_path(month: params[:month].presence), notice: t(".success"), status: :see_other

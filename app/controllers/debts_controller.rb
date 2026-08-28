@@ -5,11 +5,15 @@ class DebtsController < ApplicationController
   before_action :set_debt, only: [ :show, :edit, :update ]
 
   def index
-    @direction = params[:direction].presence_in(%w[lent borrowed]) || "lent"
-    scope = current_space.debts.where(direction: @direction)
-    @debts = scope.ongoing.order(created_at: :desc)
+    # One list, two sections: a relation's direction colors its amount rather than
+    # hiding half the list behind a tab. Highest remaining balance first.
+    ongoing = current_space.debts.ongoing.order(Arel.sql("total_lent - total_reimbursed DESC"))
+    @lent_debts = ongoing.lent
+    @borrowed_debts = ongoing.borrowed
+    @total_owed_to_me = @lent_debts.sum("total_lent - total_reimbursed")
+    @total_i_owe = @borrowed_debts.sum("total_lent - total_reimbursed")
     # Closed debts (settled or written off) stay reachable as history, out of the totals.
-    @closed_debts = scope.where.not(status: "ongoing").order(updated_at: :desc)
+    @closed_debts = current_space.debts.where.not(status: "ongoing").order(updated_at: :desc)
   end
 
   def show

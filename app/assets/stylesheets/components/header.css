@@ -120,6 +120,31 @@
   height: 22px;
 }
 
+/* Detail header: back chevron (mirrors the analytics button's footprint). */
+.app-header__back {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  color: var(--text-muted, #8D909F);
+  text-decoration: none;
+  transition: background-color 0.15s ease, color 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.app-header__back:hover,
+.app-header__back:active {
+  background-color: var(--color-off-white, #EBEDF7);
+  color: var(--color-dark, #282A33);
+}
+
+.app-header__back svg {
+  width: 22px;
+  height: 22px;
+}
+
 /* Profile dropdown */
 .app-header__dropdown-backdrop {
   display: none;

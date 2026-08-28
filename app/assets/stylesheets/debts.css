@@ -7,12 +7,238 @@
   flex-direction: column;
   gap: 0.75rem;
 }
+
+/* Leave room below the last row so the floating action buttons never sit on it. */
+.debts-index {
+  padding-bottom: 6rem;
+}
+
+/* ── Two totals header (On te doit / Tu dois) ─────────────────────── */
+.debts-totals {
+  display: flex;
+  align-items: stretch;
+  gap: 1rem;
+  padding: 1.125rem 1.25rem;
+  margin-bottom: 1.75rem;
+  background: var(--bg-surface);
+  border-radius: var(--radius-xl);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.debts-totals__cell {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+.debts-totals__divider {
+  width: 1px;
+  background: var(--border-light);
+}
+
+.debts-totals__label {
+  font-size: var(--font-size-body);
+  color: var(--text-muted);
+}
+
+.debts-totals__value {
+  font-size: var(--font-size-display);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  font-variant-numeric: tabular-nums;
+}
+
+.debts-totals__value--lent {
+  color: var(--color-success-dark);
+}
+
+.debts-totals__value--borrowed {
+  color: var(--color-primary);
+}
+
+.debts-totals__meta {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+/* ── Direction sections ───────────────────────────────────────────── */
+.debts-section {
+  margin-bottom: 1.75rem;
+}
+
+.debts-section__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.debts-section__title {
+  font-size: var(--font-size-label);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.debts-section__title--lent {
+  color: var(--color-success-dark);
+}
+
+.debts-section__title--borrowed {
+  color: var(--color-primary);
+}
+
+.debts-section__hint {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
 /* Debt Form Styles */
 
 .debt-form {
   display: flex;
   flex-direction: column;
   gap: 0.875rem;
+}
+
+/* Sheet header title/subtitle (layout shared in bottom_sheet.css). */
+.debt-form__title {
+  font-size: var(--font-size-headline);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-dark);
+}
+
+.debt-form__subtitle {
+  font-size: var(--font-size-body);
+  color: var(--color-muted-strong);
+}
+
+/* ── Direction cards: J'ai prêté / J'ai emprunté, coloured by side once picked ── */
+.debt-direction {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.debt-direction__input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.debt-direction__card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  padding: 0.75rem 0.875rem;
+  background: var(--color-surface-sunken);
+  border: 1.5px solid transparent;
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.debt-direction__title {
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-dark);
+}
+
+.debt-direction__sub {
+  font-size: var(--font-size-label);
+  color: var(--text-muted);
+}
+
+/* Selected — the input sits right before its label, so a sibling rule colours
+   the card by side without any JS. */
+.debt-direction__input:checked + .debt-direction__card--lent {
+  border-color: var(--color-success);
+  background: var(--color-success-20);
+}
+
+.debt-direction__input:checked + .debt-direction__card--borrowed {
+  border-color: var(--color-primary);
+  background: var(--color-primary-20);
+}
+
+.debt-direction__input:focus-visible + .debt-direction__card {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* ── Collapsed "Deadline, advance, note" disclosure ─────────────────── */
+.debt-more {
+  border-top: 1px solid var(--border-light);
+  padding-top: 0.5rem;
+}
+
+.debt-more__summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.5rem 0;
+  cursor: pointer;
+  list-style: none;
+}
+
+.debt-more__summary::-webkit-details-marker {
+  display: none;
+}
+
+.debt-more__label {
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-dark);
+}
+
+.debt-more__toggle {
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-primary);
+}
+
+.debt-more[open] .debt-more__toggle::after {
+  content: " ▴";
+}
+
+.debt-more:not([open]) .debt-more__toggle::after {
+  content: " ▾";
+}
+
+.debt-more__body {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding-top: 0.75rem;
+}
+
+.debt-more__date {
+  margin-top: var(--space-sm);
+}
+
+.debt-more__date.hidden {
+  display: none;
+}
+
+/* ── One-line recap above the button ────────────────────────────────── */
+.debt-recap {
+  margin-top: 0.25rem;
+  padding: 0.75rem 0.875rem;
+  background: var(--color-surface-sunken);
+  border-radius: var(--radius-lg);
+  font-size: var(--font-size-body);
+  color: var(--color-muted-strong);
+}
+
+.debt-recap[hidden] {
+  display: none;
 }
 
 .debt-form__container {
@@ -53,54 +279,133 @@
   margin-top: 1.25rem;
 }
 
-/* ── Closed debts history (written off / settled) ─────────────────── */
-.debts-history {
-  margin-top: 2rem;
+/* ── Closed debts, collapsed (written off / settled) ──────────────── */
+/* Archive out of the way: a single expandable line at the bottom of the list. */
+.debts-closed {
+  margin-top: 0.5rem;
+  background: var(--bg-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
-.debts-history__title {
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: var(--text-muted);
-  margin-bottom: 0.75rem;
-}
-
-.debts-history__list {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.debt-history-row {
+.debts-closed__summary {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  padding: 0.75rem 1rem;
-  background: var(--bg-surface);
-  border: 1px solid var(--border-light);
-  border-radius: 12px;
-  text-decoration: none;
+  padding: 0.875rem 1.125rem;
+  cursor: pointer;
+  list-style: none;
+}
+
+.debts-closed__summary::-webkit-details-marker {
+  display: none;
+}
+
+.debts-closed__check {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: var(--radius-full);
+  background: var(--color-success-20);
+  color: var(--color-success-dark);
+}
+
+.debts-closed__check svg {
+  width: 0.875rem;
+  height: 0.875rem;
+}
+
+.debts-closed__label {
+  flex: 1;
+  min-width: 0;
+  font-size: var(--font-size-body);
+  font-weight: 600;
+  color: var(--text-dark);
+}
+
+.debts-closed__breakdown {
+  margin-left: 0.5rem;
+  font-weight: 400;
   color: var(--text-muted);
 }
 
-.debt-history-row__name {
-  font-weight: 600;
-  color: var(--text-default);
+.debts-closed__chevron {
+  flex-shrink: 0;
+  color: var(--text-muted);
+  transition: transform 0.2s ease;
 }
 
-.debt-history-row__status {
-  font-size: 0.75rem;
+.debts-closed__chevron svg {
+  width: 1.125rem;
+  height: 1.125rem;
+}
+
+.debts-closed[open] .debts-closed__chevron {
+  transform: rotate(180deg);
+}
+
+.debts-closed__list {
+  border-top: 1px solid var(--border-light);
+}
+
+.debt-closed-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1.125rem;
+  text-decoration: none;
+  border-top: 1px solid var(--border-light);
+}
+
+.debt-closed-row:first-child {
+  border-top: none;
+}
+
+.debt-closed-row__main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.debt-closed-row__name {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  color: var(--text-dark);
+}
+
+.debt-closed-row__tag {
+  font-size: var(--font-size-label);
   font-weight: 500;
-  padding: 0.15rem 0.5rem;
-  border-radius: 9999px;
+  padding: 0.1rem 0.45rem;
+  border-radius: var(--radius-full);
   background: var(--border-light);
   color: var(--text-muted);
 }
 
-.debt-history-row__amount {
-  margin-left: auto;
+.debt-closed-row__sub {
+  font-size: var(--font-size-label);
+  color: var(--text-muted);
+}
+
+.debt-closed-row__amount {
+  flex-shrink: 0;
   font-weight: 600;
   color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/* A written-off amount is struck through: it no longer counts toward your totals. */
+.debt-closed-row__amount--struck {
+  text-decoration: line-through;
+  color: var(--text-muted);
+  opacity: 0.7;
 }
 
 /* ── Closed-debt summary card (written off / settled) ─────────────── */
@@ -144,5 +449,306 @@
 .debt-closed-card__detail {
   margin-top: 0.75rem;
   font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+/* ── Written-off (abandoned) debt: a dated decision, not a deletion ──── */
+.debt-abandoned {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1.75rem 1.5rem;
+  text-align: center;
+  background: var(--bg-surface);
+  border-radius: var(--radius-xl);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.debt-abandoned__badge {
+  font-size: var(--font-size-label);
+  font-weight: var(--font-weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 0.2rem 0.7rem;
+  border-radius: var(--radius-full);
+  background: var(--border-light);
+  color: var(--text-muted);
+}
+
+/* Struck through and grey — the amount no longer counts toward your totals. */
+.debt-abandoned__amount {
+  font-size: var(--font-size-hero);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  color: var(--text-muted);
+  text-decoration: line-through;
+  opacity: 0.75;
+  font-variant-numeric: tabular-nums;
+}
+
+.debt-abandoned__note {
+  font-size: var(--font-size-body);
+  color: var(--text-muted);
+}
+
+.debt-abandoned__detail {
+  font-size: var(--font-size-label);
+  color: var(--text-muted);
+}
+
+/* ── Reactivate: the return path if the person pays after all ────────── */
+.debt-reactivate {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: 1.25rem 0;
+  padding: 1rem 1.125rem;
+  background: var(--bg-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.debt-reactivate__title {
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-dark);
+}
+
+.debt-reactivate__sub {
+  margin-top: 0.1rem;
+  font-size: var(--font-size-label);
+  color: var(--text-muted);
+}
+
+.debt-reactivate__btn {
+  flex-shrink: 0;
+  padding: 0.5rem 1.25rem;
+  white-space: nowrap;
+}
+
+/* ── Detail hero: direction-aware, centered, with a repayment gauge ─── */
+.debt-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 1.75rem 1.5rem;
+  background: var(--bg-surface);
+  border-radius: var(--radius-xl);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  text-align: center;
+}
+
+.debt-hero__label {
+  font-size: var(--font-size-body);
+  color: var(--text-muted);
+}
+
+.debt-hero__amount {
+  font-size: var(--font-size-hero);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+
+.debt-hero--lent .debt-hero__amount {
+  color: var(--color-success-dark);
+}
+
+.debt-hero--borrowed .debt-hero__amount {
+  color: var(--color-primary);
+}
+
+.debt-hero__progress {
+  margin-top: 0.1rem;
+  font-size: var(--font-size-body);
+  color: var(--text-muted);
+}
+
+.debt-hero__bar-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  margin-top: 0.75rem;
+}
+
+.debt-hero__bar {
+  flex: 1;
+  height: 8px;
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.debt-hero__bar-fill {
+  height: 100%;
+  border-radius: var(--radius-full);
+  transition: width 0.3s ease;
+}
+
+.debt-hero--lent .debt-hero__bar {
+  background: var(--color-success-20);
+}
+
+.debt-hero--lent .debt-hero__bar-fill {
+  background: var(--color-success);
+}
+
+.debt-hero--borrowed .debt-hero__bar {
+  background: var(--color-primary-20);
+}
+
+.debt-hero--borrowed .debt-hero__bar-fill {
+  background: var(--color-primary);
+}
+
+.debt-hero__pct {
+  flex-shrink: 0;
+  font-weight: 700;
+  color: var(--text-dark);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Repayment schedule (échéancier) ──────────────────────────────── */
+.debt-schedule {
+  margin: 1.25rem 0;
+  background: var(--bg-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.debt-schedule__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.125rem 1.25rem;
+}
+
+.debt-schedule__monthly {
+  font-size: var(--font-size-title);
+  font-weight: 700;
+  color: var(--text-dark);
+}
+
+.debt-schedule__timeline {
+  margin-top: 0.2rem;
+  font-size: var(--font-size-body);
+  color: var(--text-muted);
+}
+
+.debt-schedule__edit {
+  flex-shrink: 0;
+  font-size: var(--font-size-body);
+  font-weight: 600;
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+.debt-schedule__budget {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.875rem 1.25rem;
+  border-top: 1px solid var(--border-light);
+}
+
+.debt-schedule__budget-icon {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: var(--radius-full);
+  background: var(--color-primary-20);
+  color: var(--color-primary);
+}
+
+.debt-schedule__budget-icon svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.debt-schedule__budget-text {
+  font-size: var(--font-size-body);
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+/* ── Top-bar ⋯ menu (edit + write-off), fed via content_for :header_action ── */
+.header-menu {
+  position: relative;
+  display: flex;
+}
+
+.header-menu__trigger {
+  list-style: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: var(--radius-full);
+  color: var(--text-muted);
+}
+
+.header-menu__trigger::-webkit-details-marker {
+  display: none;
+}
+
+.header-menu__trigger svg {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.header-menu__trigger:hover {
+  background: var(--color-off-white);
+  color: var(--text-dark);
+}
+
+.header-menu__panel {
+  position: absolute;
+  z-index: 60;
+  right: 0;
+  top: calc(100% + 0.4rem);
+  min-width: 15rem;
+  background: var(--color-white);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  padding: 0.375rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.header-menu__item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding: 0.625rem 0.75rem;
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-body);
+  font-weight: 600;
+  color: var(--text-dark);
+  text-decoration: none;
+}
+
+.header-menu__item:hover {
+  background: var(--color-off-white);
+}
+
+.header-menu__item--danger,
+.header-menu__item--danger .header-menu__item-label {
+  color: var(--color-danger-dark);
+}
+
+.header-menu__item-hint {
+  font-size: var(--font-size-label);
+  font-weight: 400;
   color: var(--text-muted);
 }

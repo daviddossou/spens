@@ -6,6 +6,8 @@
 #  carried_amount      :decimal(15, 2)   default(0.0), not null
 #  kind                :string           not null
 #  month               :date             not null, indexed => [space_id], indexed => [space_id, budget_item_id]
+#  overridden          :boolean          default(FALSE), not null
+#  overridden_at       :datetime
 #  planned_amount      :decimal(15, 2)   not null
 #  created_at          :datetime         not null
 #  updated_at          :datetime         not null

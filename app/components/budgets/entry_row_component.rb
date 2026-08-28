@@ -29,9 +29,39 @@ module Budgets
       t("budgets.index.#{entry.budget_item&.essential ? 'vital_label' : 'confort_label'}")
     end
 
-    # Meta subline under the name: the Vital/Confort tag and the frequency.
+    # For a debt line, whether the money comes to you (a lent debt being repaid)
+    # or you send it (repaying what you borrowed) — otherwise the two read alike.
+    def debt_direction_label
+      case entry.kind
+      when "debt_in" then t("budgets.row.debt_to_receive")
+      when "debt_out" then t("budgets.row.debt_to_repay")
+      end
+    end
+
+    # A lent debt being repaid to you — the incoming side of the Dettes section,
+    # coloured green to set it apart from the amounts you owe.
+    def incoming_debt?
+      entry.kind == "debt_in"
+    end
+
+    # This month's amount was set by hand and diverges from the rule.
+    def exception?
+      entry.overridden?
+    end
+
+    # On an exception line the frequency slot says what the rule usually plans,
+    # so "chaque mois" gives way to "habituellement 120K". _html so the
+    # abbreviated-money span survives interpolation.
+    def usually_label
+      t("budgets.row.usually_html", amount: helpers.smart_format_money(entry.rule_amount, currency))
+    end
+
+    # Meta subline under the name: the Vital/Confort tag (expense) or the
+    # receive/repay direction (debt), then the frequency — or "usually X" when
+    # this month is an exception. safe_join keeps the money span intact.
     def meta_line
-      [ essential_label, frequency_label ].compact.join(" · ")
+      cadence = exception? ? usually_label : frequency_label
+      safe_join([ essential_label, debt_direction_label, cadence ].compact, " · ")
     end
 
     def planned
