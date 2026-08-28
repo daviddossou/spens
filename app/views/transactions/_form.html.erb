@@ -19,7 +19,7 @@
         debt_fields_currency_value: get_currency_symbol(current_space.currency),
         debt_fields_locale_value: I18n.locale,
         debt_fields_contact_name_value: @form.contact_name,
-        debt_fields_locked_value: @form.debt_id.present?,
+        debt_fields_locked_value: @form.debt_id.present? || @person_locked,
         debt_fields_labels_value: {
           someone: t('transactions.form.debt_someone'),
           titles: { lent_out: t('transactions.form.debt_lent_out_title'), lent_in: t('transactions.form.debt_lent_in_title'),
@@ -108,8 +108,12 @@
       <%= f.hidden_field :debt_id %>
       <%= f.hidden_field :direction, data: { debt_fields_target: "directionInput" } %>
 
-      <!-- Who? (hidden when opened from a specific debt — the person is fixed) -->
-      <% unless @form.debt_id.present? %>
+      <!-- Who? Hidden when the person is already known. A debt fixes it via
+           debt_id; a person page carries the name in a hidden field so it's still
+           submitted. -->
+      <% if @person_locked %>
+        <%= f.hidden_field :contact_name %>
+      <% elsif !@form.debt_id.present? %>
         <div class="transaction-form__contact">
           <%= render Forms::InputFieldComponent.new(
             form: f,
@@ -136,7 +140,9 @@
                [ "debt_in", "borrowed", "borrowed_in", "income" ],
                [ "debt_out", "borrowed", "borrowed_out", "expense" ]
              ].each do |kind, direction, variant, icon| %>
-            <% selected = @form.kind == kind && (@form.direction.blank? || @form.direction == direction) %>
+            <%# Both kind and direction must match — until a direction is chosen no
+                card is selected (two share a kind, so a blank direction picked both). %>
+            <% selected = @form.kind == kind && @form.direction == direction %>
             <button type="button" class="debt-card<%= ' debt-card--selected' if selected %>"
                     data-debt-fields-target="card" data-kind="<%= kind %>" data-direction="<%= direction %>"
                     data-variant="<%= variant %>" data-action="click->debt-fields#selectCard"

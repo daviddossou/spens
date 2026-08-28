@@ -10,7 +10,15 @@
       %>
       <header class="page-header transaction-form__header">
         <h2 class="transaction-form__title"><%= t(".subtitle.#{title_key}") %></h2>
-        <p class="transaction-form__subtitle"><%= t(".new_subtitle_html", type: t(".new_type_#{type_key}"), date: tx_date) %></p>
+        <% if @person_locked %>
+          <% net = @relation.net %>
+          <% balance = net > 0 ? t(".person_you_owe", amount: smart_format_money(net, current_space.currency, sign: :never, threshold: Float::INFINITY)) \
+                     : net < 0 ? t(".person_they_owe", amount: smart_format_money(-net, current_space.currency, sign: :never, threshold: Float::INFINITY)) \
+                     : t(".person_settled") %>
+          <p class="transaction-form__subtitle"><%= t(".person_subtitle", name: @relation.name, balance: balance) %></p>
+        <% else %>
+          <p class="transaction-form__subtitle"><%= t(".new_subtitle_html", type: t(".new_type_#{type_key}"), date: tx_date) %></p>
+        <% end %>
       </header>
 
       <div class="page-content">
