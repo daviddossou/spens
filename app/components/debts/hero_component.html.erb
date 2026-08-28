@@ -1,0 +1,16 @@
+<div class="debt-hero debt-hero--<%= direction_key %>">
+  <p class="debt-hero__label"><%= t("debts.hero.#{direction_key}", name: @debt.name) %></p>
+  <p class="debt-hero__amount"><%= money(remaining) %></p>
+  <% if target_set? %>
+    <p class="debt-hero__progress">
+      <%= t("debts.hero.progress_html", repaid: money(@debt.total_reimbursed), total: money(@debt.total_lent)) %>
+    </p>
+    <div class="debt-hero__bar-row">
+      <div class="debt-hero__bar" role="progressbar"
+           aria-valuenow="<%= percentage %>" aria-valuemin="0" aria-valuemax="100">
+        <div class="debt-hero__bar-fill" style="width: <%= percentage %>%;"></div>
+      </div>
+      <span class="debt-hero__pct"><%= percentage %> %</span>
+    </div>
+  <% end %>
+</div>

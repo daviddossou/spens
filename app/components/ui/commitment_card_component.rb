@@ -16,7 +16,8 @@ module Ui
 
     def initialize(title:, current_value:, target_value:, currency:, url: nil,
                    accent: "primary", progress_label: "done",
-                   complete_label: "Complete", remaining_label: "left", no_target_label: nil)
+                   complete_label: "Complete", remaining_label: "left", no_target_label: nil,
+                   partial_bar_only: false)
       @title = title
       @current_value = current_value.to_f
       @target_value = target_value.to_f
@@ -27,6 +28,10 @@ module Ui
       @complete_label = complete_label
       @remaining_label = remaining_label
       @no_target_label = no_target_label
+      # When true, the bar shows only for a partially-settled commitment — an
+      # empty bar at 0% reads calmer than the exposure it represents (a loan with
+      # nothing repaid), so debts drop it and lean on the amount instead.
+      @partial_bar_only = partial_bar_only
     end
 
     # No target yet: the card shows the current amount, not progress toward a goal.
@@ -49,6 +54,12 @@ module Ui
       # so sub-cent float drift (e.g. reimbursed 0.004 short of lent) still reads
       # as "Soldé" instead of "0.0 € restant".
       target_value.positive? && remaining_value.round(2).zero?
+    end
+
+    def show_bar?
+      return true unless @partial_bar_only
+
+      percentage.positive? && !settled?
     end
 
     def root_class
@@ -92,7 +103,8 @@ module Ui
 
     # Natural-language progress for the summary variant: "629K repaid of 855K".
     def progress_summary
-      safe_join([ formatted_current_value, " #{progress_label} of ", formatted_target_value ])
+      connector = I18n.t("commitment.of", default: "of")
+      safe_join([ formatted_current_value, " #{progress_label} #{connector} ", formatted_target_value ])
     end
   end
 end

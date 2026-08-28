@@ -1,28 +1,43 @@
 fr:
   debts:
     index:
-      title:
-        lent: "Argent prêté"
-        borrowed: "Argent emprunté"
-      subtitle:
-        lent: "Suis ce qu'on te doit"
-        borrowed: "Suis ce que tu dois"
-      i_lent: "On me doit"
-      i_borrowed: "Je dois"
-      no_debts_title:
-        lent: "Aucun prêt"
-        borrowed: "Aucune dette"
-      no_debts_message:
-        lent: "Note l'argent que tu prêtes"
-        borrowed: "Note l'argent que tu empruntes"
-      add_new:
-        lent: "Ajouter un prêt"
-        borrowed: "Ajouter une dette"
+      heading: "Dettes"
+      owed_to_me_label: "On te doit"
+      i_owe_label: "Tu dois"
+      section_lent: "On te doit"
+      section_borrowed: "Tu dois"
+      section_hint: "du plus élevé"
+      people_count:
+        one: "%{count} personne"
+        other: "%{count} personnes"
+      nothing_ongoing: "rien en cours"
       remaining_label: "restant"
       repaid_label: "remboursé"
       settled_label: "Soldé"
       no_amount: "Pas encore de montant — ajoute-le quand tu veux"
-      closed_title: "Clôturées"
+      add_new: "Ajouter un prêt ou une dette"
+      empty_title: "Aucune dette en cours"
+      empty_message: "Tout est réglé de part et d'autre. Le + en bas ouvre un nouveau prêt ou emprunt."
+      closed_count:
+        one: "%{count} relation clôturée"
+        other: "%{count} relations clôturées"
+      closed_settled_count:
+        one: "%{count} remboursée"
+        other: "%{count} remboursées"
+      closed_written_off_count:
+        one: "%{count} abandonnée"
+        other: "%{count} abandonnées"
+      closed_settled_on: "Réglée le %{date}"
+      closed_written_off_on:
+        lent: "Le %{date} · tu n'y comptes plus"
+        borrowed: "Effacée le %{date}"
+      closed_tag:
+        lent: "Abandonnée"
+        borrowed: "Effacée"
+    hero:
+      lent: "%{name} te doit"
+      borrowed: "Tu dois à %{name}"
+      progress_html: "%{repaid} rendus sur %{total}"
     status:
       settled: "Soldé"
       written_off:
@@ -37,16 +52,21 @@ fr:
         lent: "%{moved} récupéré sur %{total}"
         borrowed: "%{moved} remboursé sur %{total}"
     new:
-      title:
-        lent: "Nouveau prêt"
-        borrowed: "Nouvelle dette"
-      subtitle:
-        lent: "À qui as-tu prêté ?"
-        borrowed: "À qui as-tu emprunté ?"
-      save_debt:
-        lent: "Enregistrer"
-        borrowed: "Enregistrer"
-      cancel: "Annuler"
+      title: "Nouvelle dette"
+      amount_label:
+        lent: "montant prêté"
+        borrowed: "montant emprunté"
+      cta_empty: "Indique un montant"
+      cta_no_name: "Indique un nom"
+      cta_amount:
+        lent: "Enregistrer le prêt %{amount}"
+        borrowed: "Enregistrer l'emprunt %{amount}"
+      recap:
+        lent: "Tu prêtes %{amount} à %{name}"
+        borrowed: "%{name} te prête %{amount}"
+      recap_account:
+        lent: "· l'argent sort de %{account}"
+        borrowed: "· l'argent entre sur %{account}"
     edit:
       title:
         lent: "Modifier le prêt"
@@ -60,45 +80,32 @@ fr:
         borrowed: "Enregistrer"
       cancel: "Annuler"
     form:
-      contact_name_label:
-        lent: "Qui ?"
-        borrowed: "Qui ?"
-      contact_name_placeholder:
-        lent: "À qui as-tu prêté ?"
-        borrowed: "À qui as-tu emprunté ?"
-      contact_name_help:
-        lent: "Nom de la personne"
-        borrowed: "Nom de la personne"
-      total_amount_label:
-        lent: "Montant prêté"
-        borrowed: "Montant emprunté"
-      total_amount_help:
-        lent: "Combien as-tu prêté ?"
-        borrowed: "Combien as-tu emprunté ?"
-      show_more_details: "Plus de détails"
-      hide_more_details: "Masquer les détails"
+      direction_label: "Prêt ou emprunt ?"
+      direction_lent_title: "J'ai prêté"
+      direction_lent_sub: "On me devra"
+      direction_borrowed_title: "J'ai emprunté"
+      direction_borrowed_sub: "Je devrai"
+      amount_placeholder: "0"
+      amount_aria: "Montant"
+      who_label: "Avec qui ?"
+      who_placeholder: "Un nom"
       account_label:
         lent: "Depuis quel compte ?"
-        borrowed: "Vers quel compte ?"
+        borrowed: "Sur quel compte ?"
+      account_optional: "optionnel"
       account_placeholder:
-        lent: "ex. Espèces, Banque, Mobile Money..."
-        borrowed: "ex. Espèces, Banque, Mobile Money..."
-      account_help:
-        lent: "Laisse vide si déjà débité"
-        borrowed: "Laisse vide si déjà crédité"
-      amount_reimbursed_label:
-        lent: "Déjà remboursé"
-        borrowed: "Déjà remboursé"
-      amount_reimbursed_help:
-        lent: "Combien a déjà été remboursé ?"
-        borrowed: "Combien as-tu déjà remboursé ?"
-      deadline_label: "Échéance (optionnel)"
-      deadline_help:
-        lent: "Quand doit-on te rembourser le montant prêté ?"
-        borrowed: "Quand dois-tu rembourser le montant emprunté ?"
+        lent: "Vide si l'argent est déjà sorti"
+        borrowed: "Vide si l'argent est déjà rentré"
+      more_label: "Échéance, avance, note"
+      more_edit: "Modifier"
+      deadline_label: "Remboursement attendu"
+      deadline_eom: "Fin du mois"
+      deadline_in3: "Dans 3 mois"
+      deadline_other: "Une date…"
+      reimbursed_label: "Déjà rendu"
+      reimbursed_hint: "si ça a déjà commencé"
       note_label: "Note"
-      note_placeholder: "Ajoute des détails..."
-      note_help: "Raison, conditions ou autres infos"
+      note_placeholder: "Raison, conditions…"
     show:
       add_debt: "Ajouter une dette"
       back_to_debts: "Retour"
@@ -109,15 +116,39 @@ fr:
       add_transaction: "Ajouter une transaction"
       quick_add: "Ajout rapide"
       edit_debt: "Modifier"
+      more_actions: "Plus d'actions"
+      write_off_hint:
+        lent: "Considérer que %{name} ne te doit plus rien"
+        borrowed: "Considérer que tu ne dois plus rien à %{name}"
+      schedule:
+        monthly: "%{amount} par mois"
+        settled_in: "Soldé en %{month}"
+        installments_left:
+          one: "%{count} versement restant"
+          other: "%{count} versements restants"
+        edit: "Modifier"
+        budget:
+          lent_html: "Compté comme <strong>revenu prévu</strong> de %{amount} dans ton budget mensuel."
+          borrowed_html: "Compté comme <strong>dépense prévue</strong> de %{amount} dans ton budget mensuel."
       write_off:
         lent: "Je n'y compte plus"
         borrowed: "Je ne dois plus rien"
       write_off_confirm:
-        lent: "Clôturer cette créance ? Elle sortira de tes totaux mais restera dans ton historique."
-        borrowed: "Clôturer cette dette ? Elle sortira de tes totaux mais restera dans ton historique."
+        lent: "Ce montant sort de « on te doit ». Il reste dans l'historique."
+        borrowed: "Ce montant sort de « tu dois ». Il reste dans l'historique."
       note_title: "Note"
       recent_transactions: "Transactions récentes"
       no_transactions: "Aucune transaction"
+      abandoned_on:
+        lent: "Tu as arrêté de compter dessus le %{date} · ne compte plus dans « on te doit »"
+        borrowed: "Tu as effacé cette dette le %{date} · ne compte plus dans « tu dois »"
+      reactivate_title:
+        lent: "%{name} t'a payé ?"
+        borrowed: "Tu veux la reprendre ?"
+      reactivate_sub:
+        lent: "Enregistre le versement : la créance repasse en cours pour le reste."
+        borrowed: "La dette repasse en cours pour le reste."
+      reactivate_button: "Réactiver"
     create:
       success: "Enregistré !"
       error: "Impossible d'enregistrer"
@@ -127,6 +158,9 @@ fr:
     write_off:
       success: "C'est réglé — sorti de tes totaux, gardé dans ton historique."
       error: "Impossible de clôturer cette dette"
+    reactivate:
+      success: "C'est réactivé — de retour dans tes totaux."
+      error: "Impossible de réactiver cette dette"
     errors:
       not_found: "Introuvable"
       reimbursed_exceeds_lent: "Le montant remboursé ne peut pas dépasser le total"

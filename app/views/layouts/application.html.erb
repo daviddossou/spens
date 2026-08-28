@@ -44,12 +44,16 @@
 
   <body style="background-color: var(--color-off-white);">
     <% if user_signed_in? %>
-      <%= render Navigation::HeaderComponent.new(
-        page_title: content_for(:page_title).presence || content_for(:title).presence || "Spens",
-        current_user: current_user,
-        current_space: current_space,
-        params: params
-      ) %>
+      <% if content_for?(:header) %>
+        <%= content_for(:header) %>
+      <% else %>
+        <%= render Navigation::HeaderComponent.new(
+          page_title: content_for(:page_title).presence || content_for(:title).presence || "Spens",
+          current_user: current_user,
+          current_space: current_space,
+          params: params
+        ) %>
+      <% end %>
     <% end %>
 
     <main class="main-container<%= ' main-container--with-shell' if user_signed_in? %>">

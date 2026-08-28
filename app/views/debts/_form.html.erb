@@ -1,107 +1,121 @@
-<%= render 'shared/form_errors', object: form.object %>
+<%= render "shared/form_errors", object: form.object %>
+
+<% currency_symbol = get_currency_symbol(current_space.currency) %>
+<% dir = form.object.direction.presence || "lent" %>
 
 <div class="debt-form__container">
-  <%= form.hidden_field :direction %>
-
-  <!-- Contact Name Field -->
-  <div class="debt-form__field">
-    <%= render Forms::InputFieldComponent.new(
-      form: form,
-      field: :contact_name,
-      label: t(".contact_name_label.#{ form.object.direction }"),
-      required: true,
-      placeholder: t(".contact_name_placeholder.#{ form.object.direction }"),
-      help_text: t(".contact_name_help.#{ form.object.direction }")
-    ) %>
-  </div>
-
-  <!-- Total Amount Field -->
-  <div class="debt-form__field">
-    <%= render Forms::InputFieldComponent.new(
-      form: form,
-      field: :total_lent,
-      type: :number_field,
-      label: t(".total_amount_label.#{ form.object.direction }"),
-      required: true,
-      prepend: get_currency_symbol(current_space.currency),
-      step: "0.01",
-      min: "0",
-      placeholder: "0.00",
-      help_text: t(".total_amount_help.#{ form.object.direction }")
-    ) %>
-  </div>
-
-  <!-- Account Field -->
-  <div class="debt-form__field">
-    <%= render Forms::InputFieldComponent.new(
-      form: form,
-      field: :account_name,
-      label: t(".account_label.#{ form.object.direction }"),
-      required: false,
-      autocomplete: true,
-      autocomplete_options: form.object.account_suggestions,
-      default_autocomplete_options: form.object.default_account_suggestions,
-      allow_create: true,
-      placeholder: t(".account_placeholder.#{ form.object.direction }"),
-      help_text: t(".account_help.#{ form.object.direction }"),
-      field_data: { tom_select_currency_value: get_currency_symbol(current_space.currency) }
-    ) %>
-  </div>
-
-  <!-- More Details Toggle -->
-  <div class="debt-form__toggle">
-    <button
-      type="button"
-      class="link-button"
-      data-action="click->transaction-form#toggleDetails"
-      data-transaction-form-target="toggleButton"
-      data-show-text="<%= t('.show_more_details') %>"
-      data-hide-text="<%= t('.hide_more_details') %>">
-      <%= t('.show_more_details') %>
-    </button>
-  </div>
-
-  <!-- Optional Fields (Initially Hidden) -->
-  <div class="debt-form__optional-fields hidden" data-transaction-form-target="optionalFields">
-    <!-- Amount Reimbursed Field -->
-    <div class="debt-form__field">
-      <%= render Forms::InputFieldComponent.new(
-        form: form,
-        field: :total_reimbursed,
-        type: :number_field,
-        label: t(".amount_reimbursed_label.#{ form.object.direction }"),
-        required: false,
-        prepend: get_currency_symbol(current_space.currency),
-        step: "0.01",
-        min: "0",
-        placeholder: "0.00",
-        help_text: t(".amount_reimbursed_help.#{ form.object.direction }")
-      ) %>
+  <%# Direction is chosen here, not carried from a tab — two cards, coloured by
+      side when selected (green when it's owed to you, indigo when you owe).
+      On an existing debt the side is fixed, so it stays a hidden value. %>
+  <% if form.object.persisted? %>
+    <%= form.hidden_field :direction %>
+  <% else %>
+    <div class="debt-direction" role="radiogroup" aria-label="<%= t('.direction_label') %>">
+      <% %w[lent borrowed].each do |d| %>
+        <input type="radio" class="debt-direction__input" id="debt_direction_<%= d %>"
+               name="debt[direction]" value="<%= d %>" <%= "checked" if dir == d %>
+               data-action="change->debt-form#onDirection">
+        <label for="debt_direction_<%= d %>" class="debt-direction__card debt-direction__card--<%= d %>">
+          <span class="debt-direction__title"><%= t(".direction_#{d}_title") %></span>
+          <span class="debt-direction__sub"><%= t(".direction_#{d}_sub") %></span>
+        </label>
+      <% end %>
     </div>
+  <% end %>
 
-    <!-- Deadline (optional) -->
-    <div class="debt-form__field">
-      <%= render Forms::InputFieldComponent.new(
-        form: form,
-        field: :deadline,
-        type: :date_field,
-        label: t('.deadline_label'),
-        required: false,
-        help_text: t(".deadline_help.#{ form.object.direction }")
-      ) %>
+  <%# Amount is the hero: big, typed first. "0" keeps its size while empty. %>
+  <div class="budget-amount">
+    <div class="budget-amount__field">
+      <%= form.number_field :total_lent, class: "budget-amount__input",
+            value: (form.object.total_lent && (form.object.total_lent % 1 == 0 ? form.object.total_lent.to_i : form.object.total_lent.to_f)),
+            step: "0.01", min: "0.01", inputmode: "decimal",
+            placeholder: t(".amount_placeholder"), autofocus: !form.object.persisted?,
+            aria: { label: t(".amount_aria") },
+            data: { debt_form_target: "amount", action: "input->debt-form#onAmount" } %>
+      <span class="budget-amount__currency"><%= currency_symbol %></span>
     </div>
-
-    <!-- Note Field -->
-    <div class="debt-form__field">
-      <%= render Forms::InputFieldComponent.new(
-        form: form,
-        field: :note,
-        type: :text_area,
-        label: t('.note_label'),
-        placeholder: t('.note_placeholder'),
-        help_text: t('.note_help'),
-        rows: 3
-      ) %>
-    </div>
+    <span class="budget-amount__period" data-debt-form-target="amountLabel">
+      <%= t(".amount_label.#{dir}") %>
+    </span>
   </div>
+
+  <%# Who — a free name for now (recent-people pills come later). %>
+  <div class="debt-form__field">
+    <%# No red asterisk — the button names what's missing; the model still validates. %>
+    <%= render Forms::InputFieldComponent.new(
+      form: form, field: :contact_name, label: t(".who_label"), required: false,
+      placeholder: t(".who_placeholder")) %>
+  </div>
+
+  <%# Optional account: leave empty if the money already moved. %>
+  <div class="debt-form__field tx-detail">
+    <div class="tx-detail__head">
+      <span class="form-label" data-debt-form-target="accountLabel"><%= t(".account_label.#{dir}") %></span>
+      <span class="tx-detail__hint"><%= t(".account_optional") %></span>
+    </div>
+    <%= render Forms::InputFieldComponent.new(
+      form: form, field: :account_name, label: "", required: false,
+      autocomplete: true, autocomplete_options: form.object.account_suggestions,
+      default_autocomplete_options: form.object.default_account_suggestions, allow_create: true,
+      placeholder: t(".account_placeholder.#{dir}"),
+      field_data: { tom_select_currency_value: currency_symbol }) %>
+  </div>
+
+  <%# Deadline / advance / note — collapsed; the recurring stuff most debts skip. %>
+  <details class="debt-more">
+    <summary class="debt-more__summary">
+      <span class="debt-more__label"><%= t(".more_label") %></span>
+      <span class="debt-more__toggle"><%= t(".more_edit") %></span>
+    </summary>
+
+    <div class="debt-more__body">
+      <%# Expected repayment date as pills. %>
+      <div class="debt-form__field">
+        <div class="tx-detail__head">
+          <span class="form-label"><%= t(".deadline_label") %></span>
+          <span class="tx-detail__hint" data-debt-form-target="deadlineHint"></span>
+        </div>
+        <div class="pill-choice pill-choice--three">
+          <button type="button" class="pill" data-deadline-mode="eom"
+                  data-debt-form-target="deadlinePill" data-action="debt-form#setDeadline">
+            <%= t(".deadline_eom") %>
+          </button>
+          <button type="button" class="pill" data-deadline-mode="in3"
+                  data-debt-form-target="deadlinePill" data-action="debt-form#setDeadline">
+            <%= t(".deadline_in3") %>
+          </button>
+          <button type="button" class="pill" data-deadline-mode="other"
+                  data-debt-form-target="deadlinePill" data-action="debt-form#setDeadline">
+            <%= t(".deadline_other") %>
+          </button>
+        </div>
+        <div class="debt-more__date hidden" data-debt-form-target="deadlineField">
+          <%= form.date_field :deadline, class: "form-input",
+                data: { debt_form_target: "deadlineInput", action: "input->debt-form#onDeadlineInput" } %>
+        </div>
+      </div>
+
+      <%# Already repaid — for a loan that started before you logged it. %>
+      <div class="debt-form__field tx-detail">
+        <div class="tx-detail__head">
+          <span class="form-label"><%= t(".reimbursed_label") %></span>
+          <span class="tx-detail__hint"><%= t(".reimbursed_hint") %></span>
+        </div>
+        <%= render Forms::InputFieldComponent.new(
+          form: form, field: :total_reimbursed, type: :number_field, label: "", required: false,
+          value: (form.object.total_reimbursed.to_f.positive? ? form.object.total_reimbursed : nil),
+          prepend: currency_symbol, step: "0.01", min: "0", placeholder: "0") %>
+      </div>
+
+      <%# Note — for what the app can't compute. %>
+      <div class="debt-form__field">
+        <%= render Forms::InputFieldComponent.new(
+          form: form, field: :note, type: :text_area, label: t(".note_label"),
+          placeholder: t(".note_placeholder"), rows: 3) %>
+      </div>
+    </div>
+  </details>
+
+  <%# One-line recap of what will be recorded, just above the button. %>
+  <p class="debt-recap" data-debt-form-target="recap" hidden></p>
 </div>

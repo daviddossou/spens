@@ -1,26 +1,64 @@
 <% content_for :title, @debt.name %>
 
-<div class="page-container page-container--narrow">
-  <header class="page-header">
-    <p class="page-header__subtitle"><%= t(".subtitle.#{ @debt.direction }") %></p>
-  </header>
+<%# Contextual top bar: back to the debts list, the person's name centered, and a
+    ⋯ menu (edit + write-off) — always in the same place, out of the frequent path. %>
+<% content_for :header do %>
+  <%= render Navigation::DetailHeaderComponent.new(back_url: debts_path, title: @debt.name) do |header| %>
+    <% header.with_action do %>
+      <details class="header-menu">
+        <summary class="header-menu__trigger" aria-label="<%= t('.more_actions') %>">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <circle cx="5" cy="12" r="2"></circle><circle cx="12" cy="12" r="2"></circle><circle cx="19" cy="12" r="2"></circle>
+          </svg>
+        </summary>
+        <div class="header-menu__panel">
+          <%= link_to t("debts.edit.title.#{@debt.direction}"), edit_debt_path(id: @debt.id),
+                class: "header-menu__item", data: { turbo_frame: "modal" } %>
+          <% if @debt.ongoing? %>
+            <%= link_to write_off_debt_path(id: @debt.id),
+                  class: "header-menu__item header-menu__item--danger",
+                  data: { turbo_method: :post, turbo_confirm: t(".write_off_confirm.#{@debt.direction}") } do %>
+              <span class="header-menu__item-label"><%= t(".write_off.#{@debt.direction}") %></span>
+              <span class="header-menu__item-hint"><%= t(".write_off_hint.#{@debt.direction}", name: @debt.name) %></span>
+            <% end %>
+          <% end %>
+        </div>
+      </details>
+    <% end %>
+  <% end %>
+<% end %>
 
+<div class="page-container page-container--narrow">
   <div class="page-content"
        data-controller="infinite-scroll"
        data-infinite-scroll-url-value="<%= debt_path(id: @debt.id) %>"
        data-infinite-scroll-page-value="<%= @has_more ? @page + 1 : 0 %>">
     <% if @debt.ongoing? %>
-      <%= render Ui::CommitmentCardComponent.new(
-        title: @debt.name,
-        current_value: @debt.total_reimbursed,
-        target_value: @debt.total_lent,
-        currency: current_space.currency,
-        accent: "warning",
-        progress_label: t('debts.index.repaid_label'),
-        complete_label: t('debts.index.settled_label'),
-        remaining_label: t('debts.index.remaining_label'),
-        no_target_label: t('debts.index.no_amount')
-      ) %>
+      <%= render Debts::HeroComponent.new(debt: @debt, currency: current_space.currency) %>
+    <% elsif @debt.written_off? %>
+      <%# A write-off is a dated decision, not a deletion: the amount is struck
+          through, you see when you stopped counting on it, and you can bring it
+          back if the person pays after all. %>
+      <div class="debt-abandoned debt-abandoned--<%= @debt.direction %>">
+        <span class="debt-abandoned__badge"><%= debt_status_label(@debt) %></span>
+        <span class="debt-abandoned__amount"><%= smart_format_money(@debt.remaining_balance, current_space.currency, sign: :never) %></span>
+        <p class="debt-abandoned__note">
+          <%= t(".abandoned_on.#{@debt.direction}", date: l(@debt.updated_at.to_date, format: :long)) %>
+        </p>
+        <% if closed_debt_detail(@debt) %>
+          <p class="debt-abandoned__detail"><%= closed_debt_detail(@debt) %></p>
+        <% end %>
+      </div>
+
+      <div class="debt-reactivate">
+        <div class="debt-reactivate__text">
+          <p class="debt-reactivate__title"><%= t(".reactivate_title.#{@debt.direction}", name: @debt.name) %></p>
+          <p class="debt-reactivate__sub"><%= t(".reactivate_sub.#{@debt.direction}") %></p>
+        </div>
+        <%= link_to t(".reactivate_button"), reactivate_debt_path(id: @debt.id),
+              class: "btn btn-outline-primary debt-reactivate__btn",
+              data: { turbo_method: :post } %>
+      </div>
     <% else %>
       <div class="debt-closed-card debt-closed-card--<%= @debt.status %>">
         <span class="debt-closed-card__badge"><%= debt_status_label(@debt) %></span>
@@ -34,40 +72,37 @@
       </div>
     <% end %>
 
-    <div class="commitment-actions">
-      <div class="action-buttons">
-        <% if @debt.ongoing? %>
-          <%= render Ui::ButtonComponent.new(
-            text: t('.add_transaction'),
-            url: new_transaction_path(debt_id: @debt.id, kind: @debt.direction == 'lent' ? 'debt_in' : 'debt_out'),
-            variant: :primary,
-            size: :lg,
-            full_width: true,
-            data: { turbo_frame: "modal" }
-          ) %>
-        <% end %>
-
-        <%= render Ui::ButtonComponent.new(
-          text: t('.edit_debt'),
-          url: edit_debt_path(id: @debt.id),
-          variant: :"outline-secondary",
-          size: :lg,
-          full_width: true,
-          data: { turbo_frame: "modal" }
-        ) %>
-
-        <% if @debt.ongoing? %>
-          <%= render Ui::ButtonComponent.new(
-            text: t(".write_off.#{@debt.direction}"),
-            url: write_off_debt_path(id: @debt.id),
-            variant: :"outline-secondary",
-            size: :lg,
-            full_width: true,
-            data: { turbo_method: :post, turbo_confirm: t(".write_off_confirm.#{@debt.direction}") }
-          ) %>
-        <% end %>
+    <% if (schedule = debt_schedule(@debt)) %>
+      <!-- The échéancier the app can compute from balance + deadline, replacing a
+           hand-typed "60k/month" note and tying the debt to its budget line. -->
+      <div class="debt-schedule">
+        <div class="debt-schedule__head">
+          <div class="debt-schedule__plan">
+            <p class="debt-schedule__monthly">
+              <%= t(".schedule.monthly", amount: smart_format_money(schedule[:monthly], current_space.currency, sign: :never)) %>
+            </p>
+            <p class="debt-schedule__timeline">
+              <%= t(".schedule.settled_in", month: l(schedule[:ends_on], format: :month_year)) %>
+              · <%= t(".schedule.installments_left", count: schedule[:installments]) %>
+            </p>
+          </div>
+          <%= link_to t(".schedule.edit"), edit_debt_path(id: @debt.id),
+                class: "debt-schedule__edit", data: { turbo_frame: "modal" } %>
+        </div>
+        <div class="debt-schedule__budget">
+          <span class="debt-schedule__budget-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h5M20 20v-5h-5"></path>
+              <path stroke-linecap="round" stroke-linejoin="round" d="M20 9a8 8 0 00-14.9-2M4 15a8 8 0 0014.9 2"></path>
+            </svg>
+          </span>
+          <p class="debt-schedule__budget-text">
+            <%= t(".schedule.budget.#{schedule[:incoming] ? 'lent_html' : 'borrowed_html'}",
+                  amount: smart_format_money(schedule[:monthly], current_space.currency, sign: :never)) %>
+          </p>
+        </div>
       </div>
-    </div>
+    <% end %>
 
     <% if @debt.note.present? %>
       <div class="commitment-note">

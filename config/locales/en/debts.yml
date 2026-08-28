@@ -1,28 +1,43 @@
 en:
   debts:
     index:
-      title:
-        lent: "Money Lent"
-        borrowed: "Money Borrowed"
-      subtitle:
-        lent: "Track what others owe you"
-        borrowed: "Track what you owe others"
-      i_lent: "Owed to Me"
-      i_borrowed: "I Owe"
-      no_debts_title:
-        lent: "No loans yet"
-        borrowed: "No debts yet"
-      no_debts_message:
-        lent: "Record money you lend to people"
-        borrowed: "Record money you borrow from people"
-      add_new:
-        lent: "Add a Loan"
-        borrowed: "Add a Debt"
+      heading: "Debts"
+      owed_to_me_label: "Owed to you"
+      i_owe_label: "You owe"
+      section_lent: "Owed to you"
+      section_borrowed: "You owe"
+      section_hint: "highest first"
+      people_count:
+        one: "%{count} person"
+        other: "%{count} people"
+      nothing_ongoing: "nothing ongoing"
       remaining_label: "left"
       repaid_label: "repaid"
       settled_label: "Settled"
       no_amount: "No amount yet — add it when you're ready"
-      closed_title: "Closed"
+      add_new: "Add a loan or debt"
+      empty_title: "No ongoing debts"
+      empty_message: "All settled on both sides. The + below starts a new loan or debt."
+      closed_count:
+        one: "%{count} closed relation"
+        other: "%{count} closed relations"
+      closed_settled_count:
+        one: "%{count} repaid"
+        other: "%{count} repaid"
+      closed_written_off_count:
+        one: "%{count} written off"
+        other: "%{count} written off"
+      closed_settled_on: "Settled on %{date}"
+      closed_written_off_on:
+        lent: "%{date} · no longer counting on it"
+        borrowed: "Forgiven on %{date}"
+      closed_tag:
+        lent: "Written off"
+        borrowed: "Forgiven"
+    hero:
+      lent: "%{name} owes you"
+      borrowed: "You owe %{name}"
+      progress_html: "%{repaid} repaid of %{total}"
     status:
       settled: "Settled"
       written_off:
@@ -37,16 +52,21 @@ en:
         lent: "%{moved} recovered of %{total}"
         borrowed: "%{moved} repaid of %{total}"
     new:
-      title:
-        lent: "New Loan"
-        borrowed: "New Debt"
-      subtitle:
-        lent: "Record money you lent"
-        borrowed: "Record money you borrowed"
-      save_debt:
-        lent: "Save"
-        borrowed: "Save"
-      cancel: "Cancel"
+      title: "New debt"
+      amount_label:
+        lent: "amount lent"
+        borrowed: "amount borrowed"
+      cta_empty: "Enter an amount"
+      cta_no_name: "Add a name"
+      cta_amount:
+        lent: "Save loan %{amount}"
+        borrowed: "Save debt %{amount}"
+      recap:
+        lent: "You lend %{amount} to %{name}"
+        borrowed: "%{name} lends you %{amount}"
+      recap_account:
+        lent: "· money leaves %{account}"
+        borrowed: "· money lands in %{account}"
     edit:
       title:
         lent: "Edit Loan"
@@ -60,45 +80,32 @@ en:
         borrowed: "Save"
       cancel: "Cancel"
     form:
-      contact_name_label:
-        lent: "Who?"
-        borrowed: "Who?"
-      contact_name_placeholder:
-        lent: "Who did you lend to?"
-        borrowed: "Who did you borrow from?"
-      contact_name_help:
-        lent: "Name of the person"
-        borrowed: "Name of the person"
-      total_amount_label:
-        lent: "Amount Lent"
-        borrowed: "Amount Borrowed"
-      total_amount_help:
-        lent: "How much did you lend?"
-        borrowed: "How much did you borrow?"
+      direction_label: "Loan or debt?"
+      direction_lent_title: "I lent"
+      direction_lent_sub: "I'll be owed"
+      direction_borrowed_title: "I borrowed"
+      direction_borrowed_sub: "I'll owe"
+      amount_placeholder: "0"
+      amount_aria: "Amount"
+      who_label: "With whom?"
+      who_placeholder: "A name"
       account_label:
         lent: "From which account?"
         borrowed: "Into which account?"
+      account_optional: "optional"
       account_placeholder:
-        lent: "e.g. Cash, Bank, Mobile Money..."
-        borrowed: "e.g. Cash, Bank, Mobile Money..."
-      account_help:
-        lent: "Leave empty if already taken out"
-        borrowed: "Leave empty if already added"
-      show_more_details: "More details"
-      hide_more_details: "Hide details"
-      amount_reimbursed_label:
-        lent: "Already Paid Back"
-        borrowed: "Already Paid Back"
-      amount_reimbursed_help:
-        lent: "How much has been repaid so far?"
-        borrowed: "How much have you repaid so far?"
-      deadline_label: "Deadline (optional)"
-      deadline_help:
-        lent: "When should you be repaid the amount you lent?"
-        borrowed: "When do you need to repay the amount you borrowed?"
+        lent: "Leave empty if the money already left"
+        borrowed: "Leave empty if the money already came in"
+      more_label: "Deadline, advance, note"
+      more_edit: "Edit"
+      deadline_label: "Expected repayment"
+      deadline_eom: "End of month"
+      deadline_in3: "In 3 months"
+      deadline_other: "A date…"
+      reimbursed_label: "Already repaid"
+      reimbursed_hint: "if it started earlier"
       note_label: "Note"
-      note_placeholder: "Add details about this loan..."
-      note_help: "Reason, terms, or other info"
+      note_placeholder: "Reason, terms…"
     show:
       add_debt: "Add Debt"
       back_to_debts: "Back"
@@ -109,15 +116,39 @@ en:
       add_transaction: "Add Transaction"
       quick_add: "Quick add"
       edit_debt: "Edit"
+      more_actions: "More actions"
+      write_off_hint:
+        lent: "Consider that %{name} no longer owes you"
+        borrowed: "Consider that you no longer owe %{name}"
+      schedule:
+        monthly: "%{amount} a month"
+        settled_in: "Settled in %{month}"
+        installments_left:
+          one: "%{count} installment left"
+          other: "%{count} installments left"
+        edit: "Edit"
+        budget:
+          lent_html: "Counted as <strong>expected income</strong> of %{amount} in your monthly budget."
+          borrowed_html: "Counted as a <strong>planned expense</strong> of %{amount} in your monthly budget."
       write_off:
         lent: "Write it off"
         borrowed: "It's forgiven"
       write_off_confirm:
-        lent: "Close this receivable? It leaves your totals but stays in your history."
-        borrowed: "Close this debt? It leaves your totals but stays in your history."
+        lent: "This leaves “Owed to you.” It stays in your history."
+        borrowed: "This leaves “You owe.” It stays in your history."
       note_title: "Note"
       recent_transactions: "Recent Transactions"
       no_transactions: "No transactions yet"
+      abandoned_on:
+        lent: "You stopped counting on it on %{date} · no longer in “Owed to you”"
+        borrowed: "You cleared this debt on %{date} · no longer in “You owe”"
+      reactivate_title:
+        lent: "Did %{name} pay you?"
+        borrowed: "Want it back?"
+      reactivate_sub:
+        lent: "Log the payment: the receivable comes back for the rest."
+        borrowed: "The debt comes back for the rest."
+      reactivate_button: "Reactivate"
     create:
       success: "Saved!"
       error: "Could not save this loan"
@@ -127,6 +158,9 @@ en:
     write_off:
       success: "Done — it's off your totals, still in your history."
       error: "Couldn't close this debt"
+    reactivate:
+      success: "Reactivated — back in your totals."
+      error: "Couldn't reactivate this debt"
     errors:
       not_found: "Not found"
       reimbursed_exceeds_lent: "Repaid amount can't be more than the total"

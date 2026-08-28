@@ -1,63 +1,134 @@
-<% content_for :title, t(".title.#{@direction}") %>
+<% content_for :title, t(".heading") %>
 
 <div class="page-container page-container--narrow">
-  <header class="page-header">
-    <p class="page-header__subtitle"><%= t(".subtitle.#{@direction}") %></p>
-  </header>
+  <div class="page-content debts-index">
+    <% has_ongoing = @lent_debts.any? || @borrowed_debts.any? %>
 
-  <div class="page-content">
-    <!-- Direction Switcher -->
-    <div class="debts-switcher" style="margin-bottom: 2rem;">
-      <%= render Ui::SwitcherComponent.new(
-        options: [
-          { text: t('.i_lent'), value: 'lent', url: debts_path(direction: 'lent') },
-          { text: t('.i_borrowed'), value: 'borrowed', url: debts_path(direction: 'borrowed') }
-        ],
-        current: @direction
-      ) %>
-    </div>
-    <% if @debts.any? %>
-      <div class="debts-list">
-        <% @debts.each do |debt| %>
-          <%= render Ui::CommitmentCardComponent.new(
-            title: debt.name,
-            current_value: debt.total_reimbursed,
-            target_value: debt.total_lent,
-            currency: current_space.currency,
-            url: debt_path(id: debt.id),
-            accent: "warning",
-            progress_label: t('.repaid_label'),
-            complete_label: t('.settled_label'),
-            remaining_label: t('.remaining_label'),
-            no_target_label: t('.no_amount')
-          ) %>
-        <% end %>
+    <% if has_ongoing %>
+      <!-- Two totals, never one net: you don't repay one person with what another owes. -->
+      <div class="debts-totals">
+        <div class="debts-totals__cell">
+          <span class="debts-totals__label"><%= t(".owed_to_me_label") %></span>
+          <span class="debts-totals__value debts-totals__value--lent">
+            <%= smart_format_money(@total_owed_to_me, current_space.currency, sign: :never, threshold: 1_000) %>
+          </span>
+          <span class="debts-totals__meta">
+            <%= @lent_debts.any? ? t(".people_count", count: @lent_debts.size) : t(".nothing_ongoing") %>
+          </span>
+        </div>
+        <div class="debts-totals__divider"></div>
+        <div class="debts-totals__cell">
+          <span class="debts-totals__label"><%= t(".i_owe_label") %></span>
+          <span class="debts-totals__value debts-totals__value--borrowed">
+            <%= smart_format_money(@total_i_owe, current_space.currency, sign: :never, threshold: 1_000) %>
+          </span>
+          <span class="debts-totals__meta">
+            <%= @borrowed_debts.any? ? t(".people_count", count: @borrowed_debts.size) : t(".nothing_ongoing") %>
+          </span>
+        </div>
       </div>
+
+      <% if @lent_debts.any? %>
+        <section class="debts-section">
+          <header class="debts-section__head">
+            <h2 class="debts-section__title debts-section__title--lent"><%= t(".section_lent") %></h2>
+            <span class="debts-section__hint"><%= t(".section_hint") %></span>
+          </header>
+          <div class="debts-list">
+            <% @lent_debts.each do |debt| %>
+              <%= render Ui::CommitmentCardComponent.new(
+                title: debt.name,
+                current_value: debt.total_reimbursed,
+                target_value: debt.total_lent,
+                currency: current_space.currency,
+                url: debt_path(id: debt.id),
+                accent: "debt-lent",
+                partial_bar_only: true,
+                progress_label: t(".repaid_label"),
+                complete_label: t(".settled_label"),
+                remaining_label: t(".remaining_label"),
+                no_target_label: t(".no_amount")
+              ) %>
+            <% end %>
+          </div>
+        </section>
+      <% end %>
+
+      <% if @borrowed_debts.any? %>
+        <section class="debts-section">
+          <header class="debts-section__head">
+            <h2 class="debts-section__title debts-section__title--borrowed"><%= t(".section_borrowed") %></h2>
+            <span class="debts-section__hint"><%= t(".section_hint") %></span>
+          </header>
+          <div class="debts-list">
+            <% @borrowed_debts.each do |debt| %>
+              <%= render Ui::CommitmentCardComponent.new(
+                title: debt.name,
+                current_value: debt.total_reimbursed,
+                target_value: debt.total_lent,
+                currency: current_space.currency,
+                url: debt_path(id: debt.id),
+                accent: "debt-borrowed",
+                partial_bar_only: true,
+                progress_label: t(".repaid_label"),
+                complete_label: t(".settled_label"),
+                remaining_label: t(".remaining_label"),
+                no_target_label: t(".no_amount")
+              ) %>
+            <% end %>
+          </div>
+        </section>
+      <% end %>
     <% elsif @closed_debts.empty? %>
       <div class="empty-state">
         <svg class="empty-state__icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>
         </svg>
-        <h3><%= t(".no_debts_title.#{@direction}") %></h3>
-        <p><%= t(".no_debts_message.#{@direction}") %></p>
+        <h3><%= t(".empty_title") %></h3>
+        <p><%= t(".empty_message") %></p>
       </div>
     <% end %>
 
     <% if @closed_debts.any? %>
-      <section class="debts-history">
-        <h2 class="debts-history__title"><%= t(".closed_title") %></h2>
-        <div class="debts-history__list">
+      <!-- Closed debts are archive: collapsed to a single line, out of the way of living debts. -->
+      <details class="debts-closed">
+        <summary class="debts-closed__summary">
+          <span class="debts-closed__check" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path>
+            </svg>
+          </span>
+          <span class="debts-closed__label">
+            <%= t(".closed_count", count: @closed_debts.size) %>
+            <span class="debts-closed__breakdown"><%= closed_debts_breakdown(@closed_debts) %></span>
+          </span>
+          <span class="debts-closed__chevron" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 9l6 6 6-6"></path>
+            </svg>
+          </span>
+        </summary>
+        <div class="debts-closed__list">
           <% @closed_debts.each do |debt| %>
-            <%= link_to debt_path(id: debt.id), class: "debt-history-row" do %>
-              <span class="debt-history-row__name"><%= debt.name %></span>
-              <span class="debt-history-row__status"><%= debt_status_label(debt) %></span>
-              <span class="debt-history-row__amount"><%= smart_format_money(debt.total_lent, current_space.currency, sign: :never) %></span>
+            <%= link_to debt_path(id: debt.id), class: "debt-closed-row" do %>
+              <span class="debt-closed-row__main">
+                <span class="debt-closed-row__name">
+                  <%= debt.name %>
+                  <% if debt.written_off? %>
+                    <span class="debt-closed-row__tag"><%= closed_debt_short_tag(debt) %></span>
+                  <% end %>
+                </span>
+                <span class="debt-closed-row__sub"><%= closed_debt_row_subtitle(debt) %></span>
+              </span>
+              <span class="debt-closed-row__amount <%= 'debt-closed-row__amount--struck' if debt.written_off? %>">
+                <%= smart_format_money(debt.total_lent, current_space.currency, sign: :never) %>
+              </span>
             <% end %>
           <% end %>
         </div>
-      </section>
+      </details>
     <% end %>
   </div>
 </div>
 
-<%= render Ui::FabComponent.new(url: new_debt_path(direction: @direction), label: t(".add_new.#{@direction}")) %>
+<%= render Ui::FabComponent.new(url: new_debt_path, label: t(".add_new")) %>

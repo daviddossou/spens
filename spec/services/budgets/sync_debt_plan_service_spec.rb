@@ -15,7 +15,7 @@ RSpec.describe Budgets::SyncDebtPlanService do
       described_class.call(debt)
 
       item.reload
-      expect(item.amount).to eq(3_000) # 12000 / 4 months (Jan..Apr inclusive)
+      expect(item.amount).to eq(4_000) # 12000 / 3 months (Feb..Apr — repayment starts next month)
       expect(item.ends_on).to eq(Date.new(2026, 4, 30))
     end
   end
@@ -42,7 +42,8 @@ RSpec.describe Budgets::SyncDebtPlanService do
 
       line = space.budget_items.find_by(debt_id: debt.id)
       expect(line.kind).to eq("debt_out")
-      expect(line.amount).to eq(10_000) # 50000 / 5 months (Jan..May)
+      expect(line.amount).to eq(12_500) # 50000 / 4 months (Feb..May — repayment starts next month)
+      expect(line.starts_on).to eq(Date.new(2026, 2, 1)) # first payment is next month
       expect(line.ends_on).to eq(Date.new(2026, 5, 31))
       expect(line).to be_active
     end

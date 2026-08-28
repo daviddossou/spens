@@ -29,55 +29,37 @@ RSpec.describe DebtsController, type: :request do
       end
     end
 
-    context 'with no direction parameter (defaults to lent)' do
-      it 'returns successful response' do
-        get debts_path
-        expect(response).to be_successful
-      end
-
-      it 'displays lent debts' do
-        get debts_path
-        expect(response.body).to include('Alice')
-        expect(response.body).to include('Bob')
-      end
-
-      it 'does not display borrowed debts' do
-        get debts_path
-        expect(response.body).not_to include('Bank')
-      end
-
-      it 'shows paid debts in the closed history, not the active list' do
-        get debts_path
-        expect(response.body).to include('Charlie')
-        expect(assigns(:debts)).not_to include(paid_debt)
-        expect(assigns(:closed_debts)).to include(paid_debt)
-      end
+    it 'returns successful response' do
+      get debts_path
+      expect(response).to be_successful
     end
 
-    context 'with direction=lent parameter' do
-      it 'displays lent debts' do
-        get debts_path, params: { direction: 'lent' }
-        expect(response.body).to include('Alice')
-        expect(response.body).to include('Bob')
-      end
-
-      it 'does not display borrowed debts' do
-        get debts_path, params: { direction: 'lent' }
-        expect(response.body).not_to include('Bank')
-      end
+    it 'shows both directions on the one page, split into their sections' do
+      get debts_path
+      expect(response.body).to include('Alice')
+      expect(response.body).to include('Bob')
+      expect(response.body).to include('Bank')
+      expect(assigns(:lent_debts)).to include(lent_debt1, lent_debt2)
+      expect(assigns(:borrowed_debts)).to include(borrowed_debt1)
     end
 
-    context 'with direction=borrowed parameter' do
-      it 'displays borrowed debts' do
-        get debts_path, params: { direction: 'borrowed' }
-        expect(response.body).to include('Bank')
-      end
+    it 'exposes each direction total from ongoing remaining balances' do
+      get debts_path
+      expect(assigns(:total_owed_to_me)).to eq(lent_debt1.remaining_balance + lent_debt2.remaining_balance)
+      expect(assigns(:total_i_owe)).to eq(borrowed_debt1.remaining_balance)
+    end
 
-      it 'does not display lent debts' do
-        get debts_path, params: { direction: 'borrowed' }
-        expect(response.body).not_to include('Alice')
-        expect(response.body).not_to include('Bob')
-      end
+    it 'shows paid debts in the closed history, not the active sections' do
+      get debts_path
+      expect(response.body).to include('Charlie')
+      expect(assigns(:lent_debts)).not_to include(paid_debt)
+      expect(assigns(:borrowed_debts)).not_to include(paid_debt)
+      expect(assigns(:closed_debts)).to include(paid_debt)
+    end
+
+    it "does not leak another space's debts" do
+      get debts_path
+      expect(response.body).not_to include('Dave')
     end
   end
 
@@ -415,14 +397,15 @@ RSpec.describe DebtsController, type: :request do
       expect(response.body).to include(I18n.t('debts.status.written_off.lent'))
     end
 
-    it 'shows the closed-debt card (not the active progress) on the debt page' do
+    it 'shows the abandoned decision (struck amount + reactivate) on the debt page' do
       lent = create(:debt, user: user, name: 'Georges', direction: 'lent', total_lent: 50_000, total_reimbursed: 15_000)
       post write_off_debt_path(id: lent.id)
 
       get debt_path(id: lent.id)
-      expect(response.body).to include('debt-closed-card')                          # the closed summary, not the active card
-      expect(response.body).to include(I18n.t('debts.status.written_off.lent'))     # "Written off"
-      expect(response.body).to include(I18n.t('debts.closed.amount_label.lent'))    # "not recovered"
+      expect(response.body).to include('debt-abandoned')                            # the dated decision, not the active card
+      expect(response.body).to include(I18n.t('debts.status.written_off.lent'))     # "Créance abandonnée"
+      expect(response.body).to include('debt-reactivate')                           # the return path
+      expect(response.body).to include(I18n.t('debts.show.reactivate_button'))      # "Réactiver"
     end
 
     it 'redirects with an alert when nothing is outstanding' do

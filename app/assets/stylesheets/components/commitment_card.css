@@ -56,6 +56,7 @@
   color: var(--text-muted);
 }
 
+
 /* ── Summary variant (detail) ──────────────────────────────────── */
 .commitment-card--summary {
   display: flex;
@@ -174,6 +175,31 @@
 
 .commitment-card__bar-fill--settled {
   background: var(--color-success);
+}
+
+/* Debt-only accents: the direction of the balance (owed to you = green,
+   you owe = indigo) colors the bar AND the amount, so the sign reads at a
+   glance. Kept separate from the shared accents so goals stay unaffected. */
+.commitment-card--accent-debt-lent .commitment-card__bar {
+  background: var(--color-success-20);
+}
+.commitment-card--accent-debt-lent .commitment-card__bar-fill {
+  background: var(--color-success);
+}
+.commitment-card--accent-debt-lent .commitment-card__remaining,
+.commitment-card--accent-debt-lent .commitment-card__amount {
+  color: var(--color-success-dark);
+}
+
+.commitment-card--accent-debt-borrowed .commitment-card__bar {
+  background: var(--color-primary-20);
+}
+.commitment-card--accent-debt-borrowed .commitment-card__bar-fill {
+  background: var(--color-primary);
+}
+.commitment-card--accent-debt-borrowed .commitment-card__remaining,
+.commitment-card--accent-debt-borrowed .commitment-card__amount {
+  color: var(--color-primary);
 }
 
 /* ── Caption ───────────────────────────────────────────────────── */
