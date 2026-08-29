@@ -1,50 +1,64 @@
 <% content_for :title, (@account.goal&.name || @account.name) %>
 
-<div class="page-container page-container--narrow">
-  <header class="page-header">
-    <p class="page-header__subtitle"><%= t('.subtitle') %></p>
-  </header>
+<%# Contextual top bar: back to the goals list, the goal's name centered, and a
+    ⋯ menu (edit) — kept out of the frequent "put money aside" path. %>
+<% content_for :header do %>
+  <%= render Navigation::DetailHeaderComponent.new(back_url: goals_path, title: (@account.goal&.name || @account.name)) do |header| %>
+    <% header.with_action do %>
+      <details class="header-menu">
+        <summary class="header-menu__trigger" aria-label="<%= t('.more_actions') %>">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <circle cx="5" cy="12" r="2"></circle><circle cx="12" cy="12" r="2"></circle><circle cx="19" cy="12" r="2"></circle>
+          </svg>
+        </summary>
+        <div class="header-menu__panel">
+          <%= link_to t('.edit_goal'), edit_goal_path(id: @account.id),
+                class: "header-menu__item", data: { turbo_frame: "modal" } %>
+        </div>
+      </details>
+    <% end %>
+  <% end %>
+<% end %>
 
+<div class="page-container page-container--narrow">
   <div class="page-content"
        data-controller="infinite-scroll"
        data-infinite-scroll-url-value="<%= goal_path(id: @account.id) %>"
        data-infinite-scroll-page-value="<%= @has_more ? @page + 1 : 0 %>">
-    <%= render Ui::CommitmentCardComponent.new(
-      title: @account.goal&.name || @account.name,
-      current_value: @account.balance,
-      target_value: @account.goal&.target_amount,
-      currency: current_space.currency,
-      accent: "primary",
-      progress_label: t('goals.index.saved_label'),
-      complete_label: t('goals.index.reached_label'),
-      remaining_label: t('goals.index.to_go_label'),
-      no_target_label: t('goals.index.no_target')
-    ) %>
-
-    <div class="commitment-actions">
-      <div class="action-buttons">
-        <%= render Ui::ButtonComponent.new(
-          text: t('.add_transaction'),
-          url: new_transaction_path(kind: 'transfer', account_id: @account.id),
-          variant: :primary,
-          size: :lg,
-          full_width: true,
-          data: { turbo_frame: "modal" }
-        ) %>
-
-        <%= render Ui::ButtonComponent.new(
-          text: t('.edit_goal'),
-          url: edit_goal_path(id: @account.id),
-          variant: :"outline-secondary",
-          size: :lg,
-          full_width: true,
-          data: { turbo_frame: "modal" }
-        ) %>
-      </div>
+    <%# Hero: how much is saved against the target, the progress bar, and the
+        one-line verdict (remaining · months left · on track). %>
+    <div class="goal-hero">
+      <p class="goal-hero__amount"><%= smart_format_money(@progress&.current || @account.balance, current_space.currency, sign: :never, threshold: Float::INFINITY) %></p>
+      <% if @progress&.target_set? %>
+        <p class="goal-hero__target"><%= t('.hero_of', target: smart_format_money(@progress.target, current_space.currency, sign: :never, threshold: Float::INFINITY)) %></p>
+        <div class="goal-hero__bar" role="progressbar" aria-valuenow="<%= @progress.percentage %>" aria-valuemin="0" aria-valuemax="100">
+          <div class="goal-hero__bar-fill<%= " goal-hero__bar-fill--settled" if @progress.settled? %>" style="width: <%= @progress.percentage %>%;"></div>
+        </div>
+        <p class="goal-hero__meta"><%= goal_hero_meta(@progress) %></p>
+      <% else %>
+        <p class="goal-hero__label"><%= t('goals.index.saved_label') %></p>
+      <% end %>
     </div>
 
+    <% if @progress&.monthly %>
+      <%# The rhythm the deadline implies — the same monthly figure the budget
+          reserves for this goal. %>
+      <div class="goal-rhythm">
+        <span class="goal-rhythm__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h5M20 20v-5h-5"></path>
+            <path stroke-linecap="round" stroke-linejoin="round" d="M20 9a8 8 0 00-14.9-2M4 15a8 8 0 0014.9 2"></path>
+          </svg>
+        </span>
+        <div class="goal-rhythm__text">
+          <p class="goal-rhythm__monthly"><%= t('.rhythm_title', amount: smart_format_money(@progress.monthly.round, current_space.currency, sign: :never, threshold: Float::INFINITY)) %></p>
+          <p class="goal-rhythm__sub"><%= t('.rhythm_sub', target: smart_format_money(@progress.target, current_space.currency, sign: :never, threshold: Float::INFINITY), month: l(@progress.deadline, format: :month_year)) %></p>
+        </div>
+      </div>
+    <% end %>
+
     <div class="commitment-transactions">
-      <h2 class="commitment-section-title"><%= t('.recent_transactions') %></h2>
+      <h2 class="commitment-section-title"><%= t('.deposits_title') %></h2>
       <% if @transactions.any? %>
         <div id="transactions-container" class="transactions-timeline">
           <%= render partial: "shared/transactions_list", locals: { grouped_transactions: @grouped_transactions } %>
@@ -71,5 +85,5 @@
   </div>
 </div>
 
-<%= render Ui::FabComponent.new(url: new_quick_entry_path, label: t('.quick_add'), icon: :bolt, secondary: true) %>
-<%= render Ui::FabComponent.new(url: new_transaction_path(kind: 'transfer', account_id: @account.id), label: t('.add_transaction')) %>
+<%# One button: put money aside — a transfer into this goal's account. %>
+<%= render Ui::FabComponent.new(url: new_transaction_path(kind: 'transfer', account_id: @account.id), label: t('.set_aside')) %>

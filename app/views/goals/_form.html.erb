@@ -1,87 +1,74 @@
-<%= render 'shared/form_errors', object: form.object %>
+<%= render "shared/form_errors", object: form.object %>
+
+<% currency_symbol = get_currency_symbol(current_space.currency) %>
 
 <div class="goal-form__container">
-    <!-- Goal Name Field -->
-    <div class="goal-form__field">
-      <%= render Forms::InputFieldComponent.new(
-        form: form,
-        field: :goal_name,
-        label: t('.goal_name_label'),
-        required: true,
-        placeholder: t('.goal_name_placeholder'),
-        help_text: t('.goal_name_help')
-      ) %>
+  <%# The target is the hero: big, typed first. "0" keeps its size while empty. %>
+  <div class="budget-amount">
+    <div class="budget-amount__field">
+      <%= form.number_field :target_amount, class: "budget-amount__input",
+            value: (form.object.target_amount && (form.object.target_amount % 1 == 0 ? form.object.target_amount.to_i : form.object.target_amount.to_f)),
+            step: "0.01", min: "0.01", inputmode: "decimal", placeholder: "0",
+            autofocus: !form.object.persisted?, aria: { label: t(".target_aria") },
+            data: { goal_form_target: "amount", action: "input->goal-form#onAmount" } %>
+      <span class="budget-amount__currency"><%= currency_symbol %></span>
     </div>
-
-    <!-- Account Name Field with Autocomplete -->
-    <div class="goal-form__field">
-      <% if disable_account_field %>
-        <%= form.hidden_field :account_name %>
-      <% end %>
-
-      <%= render Forms::InputFieldComponent.new(
-        form: form,
-        field: :account_name,
-        label: t('.account_label'),
-        required: true,
-        autocomplete: !(disable_account_field.presence || false),
-        autocomplete_options: @form.account_suggestions,
-        default_autocomplete_options: @form.default_account_suggestions,
-        allow_create: !(disable_account_field.presence || false),
-        placeholder: t('.account_placeholder'),
-        help_text: t('.account_help'),
-        disabled: (disable_account_field || false),
-        field_data: {
-          goal_form_target: "accountName",
-          tom_select_currency_value: get_currency_symbol(current_space.currency)
-        }
-      ) %>
-    </div>
-
-    <!-- Current Balance Field -->
-    <div class="goal-form__field">
-      <%= render Forms::InputFieldComponent.new(
-        form: form,
-        field: :current_balance,
-        type: :number_field,
-        label: t('.current_balance_label'),
-        required: false,
-        prepend: get_currency_symbol(current_space.currency),
-        step: "0.01",
-        min: "0",
-        placeholder: "0.00",
-        help_text: t('.current_balance_help'),
-        field_data: {
-          goal_form_target: "currentBalance"
-        }
-      ) %>
-    </div>
-
-    <!-- Saving Goal Field -->
-    <div class="goal-form__field">
-      <%= render Forms::InputFieldComponent.new(
-        form: form,
-        field: :target_amount,
-        type: :number_field,
-        label: t('.saving_goal_label'),
-        required: false,
-        prepend: get_currency_symbol(current_space.currency),
-        step: "0.01",
-        min: "0",
-        placeholder: "0.00",
-        help_text: t('.saving_goal_help')
-      ) %>
-    </div>
-
-    <!-- Deadline (optional) -->
-    <div class="goal-form__field">
-      <%= render Forms::InputFieldComponent.new(
-        form: form,
-        field: :deadline,
-        type: :date_field,
-        label: t('.deadline_label'),
-        required: false,
-        help_text: t('.deadline_help')
-      ) %>
-    </div>
+    <span class="budget-amount__period"><%= t(".target_label") %></span>
   </div>
+
+  <%# What it's for — a motivating name. No asterisk; the button names what's missing. %>
+  <div class="goal-form__field">
+    <%= render Forms::InputFieldComponent.new(
+      form: form, field: :goal_name, label: t(".name_label"), required: false,
+      placeholder: t(".name_placeholder")) %>
+  </div>
+
+  <%# Where the money sits — locked once the goal exists. %>
+  <div class="goal-form__field">
+    <% if disable_account_field %>
+      <%= form.hidden_field :account_name %>
+    <% end %>
+    <%= render Forms::InputFieldComponent.new(
+      form: form, field: :account_name, label: t(".account_label"), required: false,
+      autocomplete: !(disable_account_field.presence || false),
+      autocomplete_options: @form.account_suggestions,
+      default_autocomplete_options: @form.default_account_suggestions,
+      allow_create: !(disable_account_field.presence || false),
+      placeholder: t(".account_placeholder"), help_text: t(".account_help"),
+      disabled: (disable_account_field || false),
+      field_data: {
+        goal_form_target: "accountName",
+        tom_select_currency_value: currency_symbol
+      }) %>
+  </div>
+
+  <%# Already put aside — the starting point. %>
+  <div class="goal-form__field">
+    <%= render Forms::InputFieldComponent.new(
+      form: form, field: :current_balance, type: :number_field, label: t(".saved_label"),
+      required: false, prepend: currency_symbol, step: "0.01", min: "0", placeholder: "0",
+      value: (form.object.current_balance && (form.object.current_balance % 1 == 0 ? form.object.current_balance.to_i : form.object.current_balance.to_f)),
+      field_data: { goal_form_target: "currentBalance" }) %>
+  </div>
+
+  <%# For when — pills that set a deadline without opening a calendar. %>
+  <div class="goal-form__field">
+    <span class="form-label"><%= t(".deadline_label") %></span>
+    <div class="pill-choice">
+      <button type="button" class="pill" data-deadline-mode="m6"
+              data-goal-form-target="deadlinePill" data-action="goal-form#setDeadline"><%= t(".deadline_6m") %></button>
+      <button type="button" class="pill" data-deadline-mode="y1"
+              data-goal-form-target="deadlinePill" data-action="goal-form#setDeadline"><%= t(".deadline_1y") %></button>
+      <button type="button" class="pill" data-deadline-mode="other"
+              data-goal-form-target="deadlinePill" data-action="goal-form#setDeadline"><%= t(".deadline_date") %></button>
+      <button type="button" class="pill" data-deadline-mode="none"
+              data-goal-form-target="deadlinePill" data-action="goal-form#setDeadline"><%= t(".deadline_none") %></button>
+    </div>
+    <div class="goal-form__date hidden" data-goal-form-target="deadlineField">
+      <%= form.date_field :deadline, class: "form-input",
+            data: { goal_form_target: "deadlineInput", action: "input->goal-form#onDeadlineInput" } %>
+    </div>
+    <%# The monthly rhythm the deadline implies, live. %>
+    <p class="goal-form__rhythm" data-goal-form-target="rhythm" hidden></p>
+  </div>
+</div>

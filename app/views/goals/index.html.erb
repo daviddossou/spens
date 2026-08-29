@@ -1,35 +1,49 @@
 <% content_for :title, t('.title') %>
 
 <div class="page-container page-container--narrow">
-  <header class="page-header">
-    <p class="page-header__subtitle"><%= t('.subtitle') %></p>
-  </header>
-
   <div class="page-content">
     <% if @goals.any? %>
+      <% if @all_reached %>
+        <%# Every goal met — celebrate instead of totalling. %>
+        <div class="goals-reached">
+          <span class="goals-reached__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path>
+            </svg>
+          </span>
+          <h2 class="goals-reached__title"><%= t('.reached_title') %></h2>
+          <p class="goals-reached__message"><%= t('.reached_message') %></p>
+        </div>
+      <% else %>
+      <%# The list header is the running total: what's set aside across every
+          goal, and how many goals it spans. %>
+        <div class="goals-total">
+          <div class="goals-total__main">
+            <p class="goals-total__label"><%= t('.total.label') %></p>
+            <p class="goals-total__amount"><%= goal_money(@total_current) %></p>
+          </div>
+          <div class="goals-total__side">
+            <% if @total_target.positive? %><p class="goals-total__of"><%= t('.total.of_html', target: goal_money(@total_target)) %></p><% end %>
+            <p class="goals-total__count"><%= t('.total.count', count: @goals.size) %></p>
+          </div>
+        </div>
+      <% end %>
+
       <div class="goals-list">
-        <% @goals.each do |goal| %>
-          <%= render Ui::CommitmentCardComponent.new(
-            title: goal.name,
-            current_value: goal.account.balance,
-            target_value: goal.target_amount,
-            currency: current_space.currency,
-            url: goal_path(id: goal.account.id),
-            accent: "primary",
-            progress_label: t('.saved_label'),
-            complete_label: t('.reached_label'),
-            remaining_label: t('.to_go_label'),
-            no_target_label: t('.no_target')
-          ) %>
+        <% @progresses.each do |progress| %>
+          <%= render "goal_card", progress: progress %>
         <% end %>
       </div>
     <% else %>
-      <div class="empty-state">
-        <svg class="empty-state__icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-        </svg>
-        <h3><%= t('.no_goals_title') %></h3>
-        <p><%= t('.no_goals_message') %></p>
+      <%# First day: a few starters instead of a blank slate. %>
+      <div class="goals-empty">
+        <h2 class="goals-empty__title"><%= t('.empty_title') %></h2>
+        <p class="goals-empty__lead"><%= t('.empty_lead') %></p>
+        <div class="goals-starters">
+          <% goal_starters.each do |starter| %>
+            <%= render "starter", starter: starter %>
+          <% end %>
+        </div>
       </div>
     <% end %>
   </div>

@@ -1,0 +1,29 @@
+<%# One goal as a progress row: name + saved / target, a slim bar, and the
+    rhythm (left) with a status chip (right). %>
+<% goal = progress.goal %>
+<%= link_to goal_path(id: goal.account_id), class: "goal-card" do %>
+  <div class="goal-card__head">
+    <span class="goal-card__name"><%= goal.name %></span>
+    <span class="goal-card__amount">
+      <span class="goal-card__saved"><%= goal_money(progress.current) %></span><% if progress.target_set? %><span class="goal-card__target"> / <%= goal_money(progress.target) %></span><% end %>
+    </span>
+  </div>
+
+  <% if progress.target_set? %>
+    <div class="goal-card__bar" role="progressbar" aria-valuenow="<%= progress.percentage %>" aria-valuemin="0" aria-valuemax="100">
+      <div class="goal-card__bar-fill<%= " goal-card__bar-fill--settled" if progress.settled? %>" style="width: <%= progress.percentage %>%;"></div>
+    </div>
+    <div class="goal-card__meta">
+      <% unless progress.settled? %>
+        <span class="goal-card__rhythm"><%= goal_rhythm_text(progress) %></span>
+      <% end %>
+      <% if (chip = goal_status_chip(progress)) %>
+        <%= chip %>
+      <% elsif progress.target_set? %>
+        <span class="goal-card__pct"><%= progress.percentage %>%</span>
+      <% end %>
+    </div>
+  <% else %>
+    <p class="goal-card__meta goal-card__meta--muted"><%= t("goals.index.no_target") %></p>
+  <% end %>
+<% end %>
