@@ -1,0 +1,22 @@
+<%# One account: name + full balance, and — for a goal-bearing account — its
+    promise in plain words with a slim bar, instead of a badge. %>
+<% progress = account.goal && GoalProgress.new(account.goal) %>
+<%= link_to account_path(id: account.id), class: "account-row" do %>
+  <div class="account-row__body">
+    <div class="account-row__head">
+      <span class="account-row__name"><%= account.name %></span>
+      <span class="account-row__balance<%= " account-row__balance--negative" if account.balance.negative? %>"><%= account_money(account.balance) %></span>
+    </div>
+    <% if progress&.target_set? %>
+      <div class="account-row__goal">
+        <div class="account-row__bar" role="progressbar" aria-valuenow="<%= progress.percentage %>" aria-valuemin="0" aria-valuemax="100">
+          <div class="account-row__bar-fill" style="width: <%= progress.percentage %>%;"></div>
+        </div>
+        <span class="account-row__goal-text"><%= t("accounts.index.goal_promise", name: account.goal.name, percent: progress.percentage, target: account_money(progress.target)) %></span>
+      </div>
+    <% end %>
+  </div>
+  <svg class="account-row__chevron" width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+  </svg>
+<% end %>

@@ -1,41 +1,74 @@
-<%= render 'shared/form_errors', object: form.object %>
+<%= render "shared/form_errors", object: form.object %>
+
+<% currency_symbol = get_currency_symbol(current_space.currency) %>
+<% editing = form.object.persisted? %>
 
 <div class="account-form__container">
-    <!-- Account Name Field with Autocomplete -->
-    <div class="account-form__field">
-      <% if disable_account_field %>
-        <%= form.hidden_field :account_name %>
-      <% end %>
-
-      <%= render Forms::InputFieldComponent.new(
-        form: form,
-        field: :account_name,
-        label: t('.account_label'),
-        required: true,
-        autocomplete: !(disable_account_field.presence || false),
-        autocomplete_options: @form.account_suggestions,
-        default_autocomplete_options: @form.default_account_suggestions,
-        allow_create: !(disable_account_field.presence || false),
-        placeholder: t('.account_placeholder'),
-        help_text: t('.account_help'),
-        disabled: (disable_account_field || false),
-        field_data: { tom_select_currency_value: get_currency_symbol(current_space.currency) }
-      ) %>
-    </div>
-
-    <!-- Current Balance Field -->
-    <div class="account-form__field">
-      <%= render Forms::InputFieldComponent.new(
-        form: form,
-        field: :current_balance,
-        type: :number_field,
-        label: t('.current_balance_label'),
-        required: true,
-        prepend: get_currency_symbol(current_space.currency),
-        step: "0.01",
-        min: "0",
-        placeholder: "0.00",
-        help_text: t('.current_balance_help')
-      ) %>
+  <%# The balance is the hero: how much is in it today, typed first. %>
+  <div class="budget-amount">
+    <div class="budget-amount__field">
+      <%= form.number_field :current_balance, class: "budget-amount__input",
+            value: (form.object.current_balance && (form.object.current_balance % 1 == 0 ? form.object.current_balance.to_i : form.object.current_balance.to_f)),
+            step: "0.01", min: "0", inputmode: "decimal", placeholder: "0",
+            autofocus: !editing, aria: { label: t('.amount_label') },
+            data: { account_form_target: "amount", action: "input->account-form#onAmount" } %>
+      <span class="budget-amount__currency"><%= currency_symbol %></span>
     </div>
   </div>
+
+  <%# Name — the existing searchable field, kept as is. No asterisk. %>
+  <div class="account-form__field">
+    <%= render Forms::InputFieldComponent.new(
+      form: form, field: :account_name, label: t('.name_label'), required: false,
+      autocomplete: true, autocomplete_options: @form.account_suggestions,
+      default_autocomplete_options: @form.default_account_suggestions, allow_create: true,
+      placeholder: t('.name_placeholder'),
+      field_data: {
+        account_form_target: "name",
+        tom_select_currency_value: currency_symbol
+      }) %>
+  </div>
+
+  <% if editing %>
+    <%# The gap opens only once the amount is touched: how far off, and why —
+        no cause is required, "I'm not sure, recalibrate" is the default. %>
+    <div class="account-gap hidden" data-account-form-target="gap">
+      <p class="account-gap__amount" data-account-form-target="gapAmount"></p>
+      <p class="account-gap__question"><%= t('.gap_question') %></p>
+      <div class="account-gap__options">
+        <div class="account-gap__option account-gap__option--selected">
+          <span class="account-gap__check" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg>
+          </span>
+          <span class="account-gap__text">
+            <span class="account-gap__label"><%= t('.cause_recalibrate') %></span>
+            <span class="account-gap__hint" data-account-form-target="recalibrateHint"></span>
+          </span>
+        </div>
+
+        <%= link_to "#", class: "account-gap__option hidden", data: { turbo_frame: "modal", account_form_target: "incomeLink" } do %>
+          <span class="account-gap__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 19V5M5 12l7-7 7 7"></path></svg>
+          </span>
+          <span class="account-gap__text">
+            <span class="account-gap__label"><%= t('.cause_income') %></span>
+            <span class="account-gap__hint" data-account-form-target="incomeHint"></span>
+          </span>
+        <% end %>
+
+        <%= link_to account_path(id: @account.id), class: "account-gap__option" do %>
+          <span class="account-gap__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"></path><path stroke-linecap="round" stroke-linejoin="round" d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+          </span>
+          <span class="account-gap__text">
+            <span class="account-gap__label"><%= t('.cause_fix') %></span>
+            <span class="account-gap__hint"><%= t('.cause_fix_hint') %></span>
+          </span>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+
+  <%# A one-line recap of what pressing the button will do. %>
+  <p class="account-form__recap" data-account-form-target="recap" hidden></p>
+</div>

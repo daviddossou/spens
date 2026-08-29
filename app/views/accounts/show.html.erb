@@ -1,62 +1,98 @@
 <% content_for :title, @account.name %>
 
-<div class="page-container page-container--narrow">
-  <header class="page-header">
-    <p class="page-header__subtitle"><%= t('.subtitle') %></p>
-  </header>
+<%# Contextual top bar: back to the accounts list, the account name centered, and
+    a ⋯ menu (edit / transfer / archive) — the statement, not a wall of buttons. %>
+<% content_for :header do %>
+  <%= render Navigation::DetailHeaderComponent.new(back_url: accounts_path, title: @account.name) do |header| %>
+    <% header.with_action do %>
+      <details class="header-menu">
+        <summary class="header-menu__trigger" aria-label="<%= t('.more_actions') %>">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <circle cx="5" cy="12" r="2"></circle><circle cx="12" cy="12" r="2"></circle><circle cx="19" cy="12" r="2"></circle>
+          </svg>
+        </summary>
+        <div class="header-menu__panel">
+          <%= link_to t('.edit_account'), edit_account_path(id: @account.id),
+                class: "header-menu__item", data: { turbo_frame: "modal" } %>
+          <%= link_to t('.transfer'), new_transaction_path(kind: 'transfer', account_id: @account.id),
+                class: "header-menu__item", data: { turbo_frame: "modal" } %>
+          <%= link_to account_archive_path(account_id: @account.id),
+                class: "header-menu__item", data: { turbo_method: :post } do %>
+            <span class="header-menu__item-label"><%= t('.archive') %></span>
+            <span class="header-menu__item-hint"><%= t('.archive_hint') %></span>
+          <% end %>
+          <% unless @account.transactions.exists? %>
+            <%= link_to t('.delete_account'), account_path(id: @account.id),
+                  class: "header-menu__item header-menu__item--danger",
+                  data: { turbo_method: :delete, turbo_confirm: t('.delete_confirmation') } %>
+          <% end %>
+        </div>
+      </details>
+    <% end %>
+  <% end %>
+<% end %>
 
+<div class="page-container page-container--narrow">
   <div class="page-content"
        data-controller="infinite-scroll"
        data-infinite-scroll-url-value="<%= account_path(id: @account.id) %>"
        data-infinite-scroll-page-value="<%= @has_more ? @page + 1 : 0 %>">
-    <div class="account-detail">
-      <span class="account-detail__balance-label"><%= t('.balance') %></span>
-      <span class="account-detail__balance-value <%= 'account-detail__balance-value--negative' if @account.balance.negative? %>"><%= smart_format_money(@account.balance, current_space.currency) %></span>
-
-      <% if @account.goal&.target_set? %>
-        <div class="account-detail__goal">
-          <span class="account-detail__goal-label"><%= @account.goal.name %></span>
-          <span class="account-detail__goal-value"><%= smart_format_money(@account.goal.target_amount, current_space.currency) %></span>
-        </div>
-      <% end %>
-    </div>
-
-    <div class="commitment-actions">
-      <div class="action-buttons">
-        <%= render Ui::ButtonComponent.new(
-          text: t('.add_transaction'),
-          url: new_transaction_path(kind: 'transfer', account_id: @account.id),
-          variant: :primary,
-          size: :lg,
-          full_width: true,
-          data: { turbo_frame: "modal" }
-        ) %>
-
-        <%= render Ui::ButtonComponent.new(
-          text: t('.edit_account'),
-          url: edit_account_path(id: @account.id),
-          variant: :"outline-secondary",
-          size: :lg,
-          full_width: true,
-          data: { turbo_frame: "modal" }
-        ) %>
-
-        <% unless @account.transactions.exists? %>
-          <%= render Ui::ButtonComponent.new(
-            text: t('.delete_account'),
-            url: account_path(id: @account.id),
-            variant: :danger,
-            size: :lg,
-            full_width: true,
-            method: :delete,
-            data: { "turbo-confirm" => t('.delete_confirmation') }
-          ) %>
+    <%# Hero: the balance, and in one line whether it's free to spend or reserved. %>
+    <div class="account-hero">
+      <p class="account-hero__amount<%= " account-hero__amount--negative" if @account.balance.negative? %>"><%= account_money(@account.balance) %></p>
+      <p class="account-hero__sub">
+        <% if @account.goal.present? %>
+          <%= t('.hero_reserved') %>
+        <% else %>
+          <%= t('.hero_available') %><% if @last_transaction_date %> · <%= account_last_movement(@last_transaction_date) %><% end %>
         <% end %>
-      </div>
+      </p>
     </div>
+
+    <% if @account.goal.blank? %>
+      <%# What moved this month, both sides in equal halves. %>
+      <div class="account-month">
+        <div class="account-month__head">
+          <span class="account-month__title"><%= t('.this_month') %></span>
+          <span class="account-month__net"><%= smart_format_money(@month_in - @month_out, current_space.currency, sign: :always, threshold: Float::INFINITY) %></span>
+        </div>
+        <div class="account-month__cells">
+          <div class="account-month__cell">
+            <span class="account-month__label"><%= t('.money_in') %></span>
+            <span class="account-month__value account-month__value--in"><%= account_money(@month_in) %></span>
+          </div>
+          <div class="account-month__divider"></div>
+          <div class="account-month__cell">
+            <span class="account-month__label"><%= t('.money_out') %></span>
+            <span class="account-month__value account-month__value--out"><%= account_money(@month_out) %></span>
+          </div>
+        </div>
+      </div>
+    <% elsif @progress&.target_set? %>
+      <%# The account carries a goal: its promise and the link to it. %>
+      <div class="account-goal-card">
+        <div class="account-goal-card__head">
+          <span class="account-goal-card__name"><%= @account.goal.name %></span>
+          <%= link_to t('.see_goal'), goal_path(id: @account.id), class: "account-goal-card__link" %>
+        </div>
+        <p class="account-goal-card__amount">
+          <%= account_money(@progress.current) %><span class="account-goal-card__target"> <%= t('.goal_of', target: account_money(@progress.target)) %></span>
+        </p>
+        <div class="account-goal-card__bar" role="progressbar" aria-valuenow="<%= @progress.percentage %>" aria-valuemin="0" aria-valuemax="100">
+          <div class="account-goal-card__bar-fill<%= " account-goal-card__bar-fill--settled" if @progress.settled? %>" style="width: <%= @progress.percentage %>%;"></div>
+        </div>
+        <p class="account-goal-card__meta">
+          <% if @progress.monthly %>
+            <%= t('.goal_pace', month: l(@progress.deadline, format: :month_year), amount: account_money(@progress.monthly.round)) %>
+          <% else %>
+            <%= t('goals.rhythm.no_deadline') %>
+          <% end %>
+        </p>
+      </div>
+    <% end %>
 
     <div class="commitment-transactions">
-      <h2 class="commitment-section-title"><%= t('.recent_transactions') %></h2>
+      <h2 class="commitment-section-title"><%= t('.movements') %></h2>
       <% if @transactions.any? %>
         <div id="transactions-container" class="transactions-timeline">
           <%= render partial: "shared/transactions_list", locals: { grouped_transactions: @grouped_transactions } %>
@@ -84,4 +120,5 @@
 </div>
 
 <%= render Ui::FabComponent.new(url: new_quick_entry_path, label: t('.quick_add'), icon: :bolt, secondary: true) %>
-<%= render Ui::FabComponent.new(url: new_transaction_path(kind: 'transfer', account_id: @account.id), label: t('.add_transaction')) %>
+<%# The frequent gesture — record a movement on this account — stays on the thumb. %>
+<%= render Ui::FabComponent.new(url: new_transaction_path(account_id: @account.id), label: t('.add_transaction')) %>
