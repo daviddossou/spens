@@ -21,6 +21,17 @@ en:
       add_new: "Add a loan or debt"
       empty_title: "No ongoing debts"
       empty_message: "All settled on both sides. The + below starts a new loan or debt."
+      starters_title: "Who, and which way?"
+      starters_lead: "Pick a starting point."
+      settled_title: "Nobody owes anything"
+      settled_message: "Everything's squared up on both sides."
+      starters:
+        lent:
+          name: "I lent"
+          hint: "You're owed money"
+        borrowed:
+          name: "I borrowed"
+          hint: "You owe money"
       closed_count:
         one: "%{count} closed relation"
         other: "%{count} closed relations"

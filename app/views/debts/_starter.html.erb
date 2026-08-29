@@ -1,0 +1,23 @@
+<%# One first-day debt starter: opens the create sheet on the right side. %>
+<%= link_to new_debt_path(direction: starter[:direction]), class: "goal-starter", data: { turbo_frame: "modal" } do %>
+  <span class="goal-starter__icon goal-starter__icon--<%= starter[:direction] %>" aria-hidden="true">
+    <% if starter[:key] == :lent %>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4-4 4M21 12H9M5 4v16"></path>
+      </svg>
+    <% else %>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M7 8l-4 4 4 4M3 12h12M19 4v16"></path>
+      </svg>
+    <% end %>
+  </span>
+  <span class="goal-starter__text">
+    <span class="goal-starter__label"><%= starter[:label] %></span>
+    <span class="goal-starter__hint"><%= starter[:hint] %></span>
+  </span>
+  <span class="goal-starter__chevron" aria-hidden="true">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M9 6l6 6-6 6"></path>
+    </svg>
+  </span>
+<% end %>

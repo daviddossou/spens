@@ -56,13 +56,27 @@
         </section>
       <% end %>
 
-    <% elsif @closed_debts.empty? %>
-      <div class="empty-state">
-        <svg class="empty-state__icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>
-        </svg>
-        <h3><%= t(".empty_title") %></h3>
-        <p><%= t(".empty_message") %></p>
+    <% elsif @closed_debts.any? %>
+      <%# Nothing outstanding, but there's history — reassure, then keep it below. %>
+      <div class="debts-settled">
+        <span class="debts-settled__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path>
+          </svg>
+        </span>
+        <h2 class="debts-settled__title"><%= t(".settled_title") %></h2>
+        <p class="debts-settled__message"><%= t(".settled_message") %></p>
+      </div>
+    <% else %>
+      <%# First day: a few starters instead of a blank slate. %>
+      <div class="goals-empty">
+        <h2 class="goals-empty__title"><%= t(".starters_title") %></h2>
+        <p class="goals-empty__lead"><%= t(".starters_lead") %></p>
+        <div class="goals-starters">
+          <% debt_starters.each do |starter| %>
+            <%= render "starter", starter: starter %>
+          <% end %>
+        </div>
       </div>
     <% end %>
 

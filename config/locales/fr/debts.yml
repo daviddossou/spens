@@ -21,6 +21,17 @@ fr:
       add_new: "Ajouter un prêt ou une dette"
       empty_title: "Aucune dette en cours"
       empty_message: "Tout est réglé de part et d'autre. Le + en bas ouvre un nouveau prêt ou emprunt."
+      starters_title: "À qui, et dans quel sens ?"
+      starters_lead: "Choisis un point de départ."
+      settled_title: "Personne ne doit rien"
+      settled_message: "Tout est réglé de part et d'autre."
+      starters:
+        lent:
+          name: "J'ai prêté"
+          hint: "On te doit de l'argent"
+        borrowed:
+          name: "J'ai emprunté"
+          hint: "Tu dois de l'argent"
       closed_count:
         one: "%{count} relation clôturée"
         other: "%{count} relations clôturées"
