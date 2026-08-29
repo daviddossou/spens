@@ -1,27 +1,36 @@
-<% content_for :title, t('.title', account_name: @account.name) %>
+<% content_for :title, @account.name %>
 
 <%= turbo_frame_tag "modal" do %>
   <div class="page-container page-container--narrow">
-    <header class="page-header">
-      <p class="page-header__subtitle"><%= t('.subtitle') %></p>
+    <header class="page-header account-form__header">
+      <h2 class="account-form__title"><%= @account.name %></h2>
+      <p class="account-form__subtitle"><%= t('.balance_now', amount: account_money(@account.balance)) %></p>
     </header>
 
     <div class="page-content">
-      <%= form_with model: @form,
-                    url: account_path(id: @account.id),
-                    method: :patch,
-                    class: "account-form" do |f| %>
-        <%= render 'form', form: f, disable_account_field: false %>
+      <%= form_with model: @form, url: account_path(id: @account.id), method: :patch, class: "account-form",
+            data: {
+              controller: "account-form",
+              action: "input->account-form#onField change->account-form#onField",
+              account_form_currency_value: get_currency_symbol(current_space.currency),
+              account_form_locale_value: I18n.locale,
+              account_form_mode_value: "edit",
+              account_form_original_balance_value: @account.balance.to_f,
+              account_form_income_url_value: new_transaction_path(kind: 'income', account_id: @account.id),
+              account_form_cta_empty_value: t('accounts.new.cta_empty'),
+              account_form_cta_ready_value: t('.cta_ready'),
+              account_form_recap_edit_value: t('.recap'),
+              account_form_gap_more_value: t('.gap_more'),
+              account_form_gap_less_value: t('.gap_less'),
+              account_form_recalibrate_hint_value: t('.recalibrate_hint'),
+              account_form_income_hint_value: t('.income_hint')
+            } do |f| %>
+        <%= render 'form', form: f %>
 
-        <!-- Form Actions -->
         <div class="account-form__actions">
-          <%= render Ui::ButtonComponent.new(
-            text: t('.update_account'),
-            type: :submit,
-            variant: :primary,
-            size: :lg,
-            full_width: true
-          ) %>
+          <button type="submit" class="btn btn-primary btn-lg" data-account-form-target="cta">
+            <%= t('.cta_ready') %>
+          </button>
         </div>
       <% end %>
     </div>

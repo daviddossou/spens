@@ -60,6 +60,7 @@ class AccountSuggestionsService
   # of every picker. left_joins keeps accounts that have no transactions yet.
   def ranked_accounts
     @space.accounts
+          .active
           .left_joins(:transactions)
           .group("accounts.id")
           .order(updated_at: :desc)

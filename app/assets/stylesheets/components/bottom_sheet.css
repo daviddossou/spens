@@ -113,10 +113,12 @@
 .page-header.transaction-form__header,
 .page-header.debt-form__header,
 .page-header.goal-form__header,
+.page-header.account-form__header,
 .bottom-sheet__body .page-header.budget-item-form__header,
 .bottom-sheet__body .page-header.transaction-form__header,
 .bottom-sheet__body .page-header.debt-form__header,
-.bottom-sheet__body .page-header.goal-form__header {
+.bottom-sheet__body .page-header.goal-form__header,
+.bottom-sheet__body .page-header.account-form__header {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -130,7 +132,8 @@
 .transaction-form__actions .btn-lg,
 .budget-item-form__actions .btn-lg,
 .debt-form__actions .btn-lg,
-.goal-form__actions .btn-lg {
+.goal-form__actions .btn-lg,
+.account-form__actions .btn-lg {
   min-height: 3.25rem;
   padding: 0.75rem 1.5rem;
   font-size: 1rem;

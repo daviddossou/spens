@@ -154,6 +154,124 @@
   margin-top: 1.25rem;
 }
 
+.account-form__header {
+  text-align: center;
+}
+
+.account-form__title {
+  font-size: var(--font-size-title);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-dark);
+}
+
+.account-form__subtitle {
+  margin-top: 0.2rem;
+  font-size: var(--font-size-body);
+  color: var(--text-muted);
+}
+
+.account-form__recap {
+  margin-top: 0.5rem;
+  padding: 0.75rem 0.875rem;
+  background: var(--color-surface-sunken);
+  border-radius: var(--radius-lg);
+  font-size: var(--font-size-body);
+  color: var(--color-muted-strong);
+}
+
+/* Edit only: the "where's the gap from?" card, shown once the balance changes. */
+.account-gap {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+/* Stays hidden until the balance is actually changed (beats .account-gap's
+   own display:flex, which a bare .hidden can't). */
+.account-gap.hidden {
+  display: none;
+}
+
+.account-gap__amount {
+  font-weight: 700;
+  color: var(--color-warning-dark);
+}
+
+.account-gap__question {
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-dark);
+}
+
+.account-gap__options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.account-gap__option {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.875rem 1rem;
+  border: 1.5px solid var(--color-border-soft);
+  border-radius: var(--radius-lg);
+  background: var(--color-white);
+  text-decoration: none;
+}
+
+.account-gap__option--selected {
+  border-color: var(--color-primary);
+  background: var(--color-primary-tint);
+}
+
+.account-gap__check,
+.account-gap__icon {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: var(--radius-full);
+}
+
+.account-gap__check {
+  background: var(--color-primary);
+  color: var(--color-white);
+}
+
+.account-gap__icon {
+  background: var(--color-surface-sunken);
+  color: var(--text-muted);
+}
+
+.account-gap__check svg,
+.account-gap__icon svg {
+  width: 0.9rem;
+  height: 0.9rem;
+}
+
+.account-gap__text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 0;
+}
+
+.account-gap__label {
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-dark);
+}
+
+.account-gap__option--selected .account-gap__label {
+  color: var(--color-primary);
+}
+
+.account-gap__hint {
+  font-size: var(--font-size-label);
+  color: var(--text-muted);
+}
+
 /* Responsive - Tablet */
 @media (max-width: 768px) {
   .accounts-list {
@@ -179,4 +297,378 @@
   .account-detail__balance-value {
     font-size: 1.625rem;
   }
+}
+
+/* ── Accounts list: total, groups, and a statement-style row ────────── */
+.accounts-total {
+  margin-bottom: 1.5rem;
+  padding: 1.5rem;
+  background: var(--bg-surface);
+  border-radius: var(--radius-xl);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  text-align: center;
+}
+
+.accounts-total__label {
+  font-size: var(--font-size-body);
+  color: var(--text-muted);
+}
+
+.accounts-total__amount {
+  margin-top: 0.25rem;
+  font-size: var(--font-size-hero);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  color: var(--text-dark);
+  font-variant-numeric: tabular-nums;
+}
+
+.accounts-total__reserved {
+  margin-top: 0.4rem;
+  font-size: var(--font-size-body);
+  color: var(--text-muted);
+}
+
+.accounts-total__reserved-amount {
+  color: var(--color-success-dark);
+  font-weight: 700;
+}
+
+.accounts-group {
+  margin-bottom: 1.5rem;
+}
+
+.accounts-group__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.6rem;
+  padding: 0 0.25rem;
+}
+
+.accounts-group__title {
+  font-size: var(--font-size-label);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.accounts-group__total {
+  font-size: var(--font-size-label);
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.account-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 1.125rem;
+  background: var(--bg-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  text-decoration: none;
+}
+
+.account-row__body {
+  flex: 1;
+  min-width: 0;
+}
+
+.account-row__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.account-row__name {
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-dark);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.account-row__balance {
+  flex-shrink: 0;
+  font-weight: 700;
+  color: var(--text-dark);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.account-row__balance--negative {
+  color: var(--color-danger);
+}
+
+.account-row__goal {
+  margin-top: 0.55rem;
+}
+
+.account-row__bar {
+  height: 5px;
+  border-radius: var(--radius-full);
+  background: var(--color-primary-20);
+  overflow: hidden;
+}
+
+.account-row__bar-fill {
+  height: 100%;
+  border-radius: var(--radius-full);
+  background: var(--color-primary);
+}
+
+.account-row__goal-text {
+  display: block;
+  margin-top: 0.35rem;
+  font-size: var(--font-size-label);
+  color: var(--text-muted);
+}
+
+.account-row__chevron {
+  flex-shrink: 0;
+  color: var(--text-muted);
+}
+
+/* ── Account detail: a statement (hero, this-month, goal card) ───────── */
+.account-hero {
+  padding: 1.5rem 1.5rem 1.25rem;
+  text-align: center;
+}
+
+.account-hero__amount {
+  font-size: var(--font-size-hero);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  color: var(--text-dark);
+  font-variant-numeric: tabular-nums;
+}
+
+.account-hero__amount--negative {
+  color: var(--color-danger);
+}
+
+.account-hero__sub {
+  margin-top: 0.3rem;
+  font-size: var(--font-size-body);
+  color: var(--text-muted);
+}
+
+.account-month {
+  margin: 1.25rem 0;
+}
+
+.account-month__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.6rem;
+  padding: 0 0.25rem;
+}
+
+.account-month__title {
+  font-size: var(--font-size-title);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-dark);
+}
+
+.account-month__net {
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.account-month__cells {
+  display: flex;
+  align-items: stretch;
+  padding: 1.125rem 1.25rem;
+  background: var(--bg-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.account-month__cell {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.account-month__divider {
+  width: 1px;
+  margin: 0 1rem;
+  background: var(--border-light);
+}
+
+.account-month__label {
+  font-size: var(--font-size-label);
+  color: var(--text-muted);
+}
+
+.account-month__value {
+  font-size: var(--font-size-title);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.account-month__value--in {
+  color: var(--color-success-dark);
+}
+
+.account-month__value--out {
+  color: var(--color-danger);
+}
+
+.account-goal-card {
+  margin: 1.25rem 0;
+  padding: 1.125rem 1.25rem;
+  background: var(--bg-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.account-goal-card__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.account-goal-card__name {
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-dark);
+}
+
+.account-goal-card__link {
+  flex-shrink: 0;
+  font-size: var(--font-size-body);
+  font-weight: 600;
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+.account-goal-card__amount {
+  margin-top: 0.5rem;
+  font-size: var(--font-size-title);
+  font-weight: 700;
+  color: var(--text-dark);
+  font-variant-numeric: tabular-nums;
+}
+
+.account-goal-card__target {
+  font-size: var(--font-size-label);
+  font-weight: var(--font-weight-regular);
+  color: var(--text-muted);
+}
+
+.account-goal-card__bar {
+  height: 6px;
+  margin-top: 0.6rem;
+  border-radius: var(--radius-full);
+  background: var(--color-primary-20);
+  overflow: hidden;
+}
+
+.account-goal-card__bar-fill {
+  height: 100%;
+  border-radius: var(--radius-full);
+  background: var(--color-primary);
+}
+
+.account-goal-card__bar-fill--settled {
+  background: var(--color-success);
+}
+
+.account-goal-card__meta {
+  margin-top: 0.55rem;
+  font-size: var(--font-size-label);
+  color: var(--text-muted);
+}
+
+/* ── Archived accounts: collapsed, kept for their history ───────────── */
+.accounts-archived {
+  margin-top: 1rem;
+}
+
+.accounts-archived__summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.875rem 1.125rem;
+  background: var(--bg-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  cursor: pointer;
+  list-style: none;
+}
+
+.accounts-archived__summary::-webkit-details-marker {
+  display: none;
+}
+
+.accounts-archived__label {
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-muted);
+}
+
+.accounts-archived__chevron {
+  width: 1.1rem;
+  height: 1.1rem;
+  color: var(--text-muted);
+  transition: transform 0.2s ease;
+}
+
+.accounts-archived[open] .accounts-archived__chevron {
+  transform: rotate(180deg);
+}
+
+.accounts-archived__list {
+  margin-top: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.account-archived-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.875rem 1.125rem;
+  background: var(--bg-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.account-archived-row__main {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.account-archived-row__name {
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-dark);
+}
+
+.account-archived-row__sub {
+  font-size: var(--font-size-label);
+  color: var(--text-muted);
+}
+
+.account-archived-row__action {
+  flex-shrink: 0;
+  font-size: var(--font-size-body);
+  font-weight: 600;
+  color: var(--color-primary);
+  text-decoration: none;
 }

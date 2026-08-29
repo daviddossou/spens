@@ -5,10 +5,24 @@ class AccountsController < ApplicationController
   before_action :set_account, only: [ :show, :edit, :update, :destroy ]
 
   def index
-    @accounts = current_space.accounts.order(created_at: :desc)
+    accounts = current_space.accounts.active.includes(:goal).to_a
+    @archived = current_space.accounts.archived.order(archived_at: :desc)
+    # Two groups, each sorted by amount so the biggest — and the account you reach
+    # for daily — leads. Set-aside is derived from a goal for now; the everyday
+    # vs put-aside choice comes with the form later.
+    @everyday = accounts.reject { |a| a.goal.present? }.sort_by { |a| -a.balance }
+    @set_aside = accounts.select { |a| a.goal.present? }.sort_by { |a| -a.balance }
+    @total = accounts.sum(&:balance)
+    @everyday_total = @everyday.sum(&:balance)
+    @reserved = @set_aside.sum(&:balance)
   end
 
+  INCOMING_KINDS = %w[income debt_in transfer_in].freeze
+  OUTGOING_KINDS = %w[expense debt_out transfer_out].freeze
+
   def show
+    @progress = GoalProgress.new(@account.goal) if @account.goal
+    load_month_flow
     load_transactions_timeline(@account.transactions)
 
     respond_to do |format|
@@ -19,6 +33,7 @@ class AccountsController < ApplicationController
 
   def new
     build_form
+    @accounts_total = current_space.accounts.active.sum(:balance)
   end
 
   def create
@@ -68,6 +83,14 @@ class AccountsController < ApplicationController
   end
 
   private
+
+  # This month's money in and out of the account, for the "Ce mois-ci" card.
+  def load_month_flow
+    scope = @account.transactions.joins(:transaction_type).where(transaction_date: Date.current.all_month)
+    @month_in = scope.where(transaction_types: { kind: INCOMING_KINDS }).sum(:amount).abs
+    @month_out = scope.where(transaction_types: { kind: OUTGOING_KINDS }).sum(:amount).abs
+    @last_transaction_date = @account.transactions.maximum(:transaction_date)
+  end
 
   def set_account
     @account = current_space.accounts.find(params[:id])

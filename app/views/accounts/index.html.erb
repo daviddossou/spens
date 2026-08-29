@@ -1,30 +1,45 @@
 <% content_for :title, t('.title') %>
 
 <div class="page-container page-container--narrow">
-  <header class="page-header">
-    <p class="page-header__subtitle"><%= t('.subtitle') %></p>
-  </header>
-
   <div class="page-content">
-    <% if @accounts.any? %>
-      <div class="accounts-list">
-        <% @accounts.each do |account| %>
-          <%= link_to account_path(id: account.id), class: "account-card" do %>
-            <div class="account-card__info">
-              <h3 class="account-card__name"><%= account.name %></h3>
-              <% if account.goal.present? %>
-                <span class="account-card__goal-badge"><%= t('.has_goal') %></span>
-              <% end %>
-            </div>
-            <div class="account-card__meta">
-              <span class="account-card__balance <%= 'account-card__balance--negative' if account.balance.negative? %>"><%= smart_format_money(account.balance, current_space.currency) %></span>
-              <svg class="account-card__chevron" width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-              </svg>
-            </div>
-          <% end %>
+    <% if @everyday.any? || @set_aside.any? %>
+      <%# The list answers "how much do I have?" first: the total, and the part
+          already promised to goals. %>
+      <div class="accounts-total">
+        <p class="accounts-total__label"><%= t('.total_label') %></p>
+        <p class="accounts-total__amount"><%= account_money(@total) %></p>
+        <% if @reserved.positive? %>
+          <p class="accounts-total__reserved"><%= t('.reserved_html', amount: tag.strong(account_money(@reserved), class: "accounts-total__reserved-amount")) %></p>
         <% end %>
       </div>
+
+      <% if @everyday.any? %>
+        <section class="accounts-group">
+          <header class="accounts-group__head">
+            <h2 class="accounts-group__title"><%= t('.everyday') %></h2>
+            <span class="accounts-group__total"><%= account_money(@everyday_total) %></span>
+          </header>
+          <div class="accounts-list">
+            <% @everyday.each do |account| %>
+              <%= render "account_row", account: account %>
+            <% end %>
+          </div>
+        </section>
+      <% end %>
+
+      <% if @set_aside.any? %>
+        <section class="accounts-group">
+          <header class="accounts-group__head">
+            <h2 class="accounts-group__title"><%= t('.set_aside') %></h2>
+            <span class="accounts-group__total"><%= account_money(@reserved) %></span>
+          </header>
+          <div class="accounts-list">
+            <% @set_aside.each do |account| %>
+              <%= render "account_row", account: account %>
+            <% end %>
+          </div>
+        </section>
+      <% end %>
     <% else %>
       <div class="empty-state">
         <svg class="empty-state__icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -33,6 +48,30 @@
         <h3><%= t('.no_accounts_title') %></h3>
         <p><%= t('.no_accounts_message') %></p>
       </div>
+    <% end %>
+
+    <% if @archived.any? %>
+      <%# Archived accounts are kept for their history — collapsed, out of the way. %>
+      <details class="accounts-archived">
+        <summary class="accounts-archived__summary">
+          <span class="accounts-archived__label"><%= t('.archived_count', count: @archived.size) %></span>
+          <svg class="accounts-archived__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 9l6 6 6-6"></path>
+          </svg>
+        </summary>
+        <div class="accounts-archived__list">
+          <% @archived.each do |account| %>
+            <div class="account-archived-row">
+              <span class="account-archived-row__main">
+                <span class="account-archived-row__name"><%= account.name %></span>
+                <span class="account-archived-row__sub"><%= t('.archived_on', date: l(account.archived_at.to_date, format: :long), balance: account_money(account.balance)) %></span>
+              </span>
+              <%= link_to t('.reactivate'), account_archive_path(account_id: account.id),
+                    class: "account-archived-row__action", data: { turbo_method: :delete } %>
+            </div>
+          <% end %>
+        </div>
+      </details>
     <% end %>
   </div>
 </div>
