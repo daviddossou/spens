@@ -938,3 +938,53 @@
   font-weight: 400;
   color: var(--text-muted);
 }
+
+/* ── Empty debts list: starters tinted by side, and the all-settled banner ── */
+.goals-starters .goal-starter__icon--lent {
+  background: var(--color-success-20);
+  color: var(--color-success-dark);
+}
+
+.goals-starters .goal-starter__icon--borrowed {
+  background: var(--color-primary-20);
+  color: var(--color-primary);
+}
+
+.debts-settled {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 1.75rem 1.5rem;
+  background: var(--bg-surface);
+  border-radius: var(--radius-xl);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  text-align: center;
+}
+
+.debts-settled__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  border-radius: var(--radius-full);
+  background: var(--color-success-20);
+  color: var(--color-success-dark);
+}
+
+.debts-settled__icon svg {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.debts-settled__title {
+  font-size: var(--font-size-title);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-dark);
+}
+
+.debts-settled__message {
+  font-size: var(--font-size-body);
+  color: var(--text-muted);
+}

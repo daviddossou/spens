@@ -6,9 +6,15 @@ class GoalsController < ApplicationController
 
   def index
     @goals = current_space.goals.includes(:account).order(created_at: :desc)
+    @progresses = @goals.map { |goal| GoalProgress.new(goal) }
+    @total_current = @progresses.sum(&:current)
+    @total_target = @progresses.sum(&:target)
+    # Every goal met: the list celebrates instead of totalling.
+    @all_reached = @progresses.any? && @progresses.all?(&:settled?)
   end
 
   def show
+    @progress = GoalProgress.new(@account.goal) if @account.goal
     load_transactions_timeline(@account.transactions)
 
     respond_to do |format|
@@ -18,7 +24,8 @@ class GoalsController < ApplicationController
   end
 
   def new
-    build_form
+    # Starter cards on the empty state prefill the name; everything else is typed.
+    build_form(goal_name: params[:goal_name])
   end
 
   def edit

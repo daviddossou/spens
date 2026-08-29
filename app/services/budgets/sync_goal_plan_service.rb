@@ -17,16 +17,12 @@ module Budgets
 
     def call
       line = goal_line
-      remaining = @goal.remaining.to_f
+      monthly = GoalProgress.new(@goal).monthly
 
-      if @goal.deadline.blank? || remaining <= 0
+      if monthly.nil? || monthly <= 0
         retire(line)
         return line
       end
-
-      months = months_until(@goal.deadline)
-      monthly = (remaining / months).round(2)
-      return retire(line) if monthly <= 0
 
       line ||= @space.budget_items.new
       line.assign_attributes(
@@ -57,13 +53,6 @@ module Budgets
       line.update!(active: false)
       RematerializeItem.call(line)
       line
-    end
-
-    # Months from this month through the deadline month, inclusive (min 1).
-    def months_until(deadline)
-      start = Date.current.beginning_of_month
-      target = deadline.beginning_of_month
-      [ (target.year - start.year) * 12 + (target.month - start.month) + 1, 1 ].max
     end
   end
 end

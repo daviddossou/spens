@@ -2,27 +2,30 @@
 
 <%= turbo_frame_tag "modal" do %>
   <div class="page-container page-container--narrow">
-    <header class="page-header">
-      <p class="page-header__subtitle"><%= t('.subtitle') %></p>
+    <header class="page-header goal-form__header">
+      <h2 class="goal-form__title"><%= t('.title') %></h2>
+      <p class="goal-form__subtitle"><%= t('.subtitle') %></p>
     </header>
 
     <div class="page-content">
-      <%= form_with model: @form,
-                    url: goals_path,
-                    method: :post,
-                    class: "goal-form",
-                    data: { controller: "goal-form" } do |f| %>
+      <%= form_with model: @form, url: goals_path, method: :post, class: "goal-form",
+            data: {
+              controller: "goal-form",
+              action: "input->goal-form#onField change->goal-form#onField",
+              goal_form_currency_value: get_currency_symbol(current_space.currency),
+              goal_form_locale_value: I18n.locale,
+              goal_form_cta_empty_value: t('.cta_empty'),
+              goal_form_cta_no_name_value: t('.cta_no_name'),
+              goal_form_cta_no_account_value: t('.cta_no_account'),
+              goal_form_cta_ready_value: t('.cta_ready'),
+              goal_form_rhythm_template_value: t('goals.form.rhythm')
+            } do |f| %>
         <%= render 'form', form: f, disable_account_field: false %>
 
-        <!-- Form Actions -->
         <div class="goal-form__actions">
-          <%= render Ui::ButtonComponent.new(
-            text: t('.save_goal'),
-            type: :submit,
-            variant: :primary,
-            size: :lg,
-            full_width: true
-          ) %>
+          <button type="submit" class="btn btn-primary btn-lg" data-goal-form-target="cta" disabled>
+            <%= t('.cta_empty') %>
+          </button>
         </div>
       <% end %>
     </div>

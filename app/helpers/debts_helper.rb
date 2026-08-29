@@ -1,6 +1,17 @@
 # frozen_string_literal: true
 
 module DebtsHelper
+  # First-day starters on the empty debts list: each opens the create sheet on the
+  # right side.
+  def debt_starters
+    [
+      { key: :lent, direction: "lent" },
+      { key: :borrowed, direction: "borrowed" }
+    ].map do |s|
+      s.merge(label: t("debts.index.starters.#{s[:key]}.name"), hint: t("debts.index.starters.#{s[:key]}.hint"))
+    end
+  end
+
   # Repayment schedule surfaced from the budget line the debt feeds, or nil when
   # there's no dated plan. Turns the balance + deadline the app already knows into
   # "X per month · settled in <month> · N installments left" — no hand-typed note.
