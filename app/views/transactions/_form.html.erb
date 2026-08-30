@@ -229,14 +229,14 @@
          data-transaction-form-target="optionalFields"
          data-expanded="<%= @form.fee_amount.present? %>">
 
-      <div class="tx-detail transaction-form__description">
+      <div class="tx-detail transaction-form__note">
         <div class="tx-detail__head">
-          <span class="form-label"><%= t('transactions.form.description_label') %></span>
+          <span class="form-label"><%= t('transactions.form.note_label') %></span>
           <span class="tx-detail__hint"><%= t('transactions.form.optional_hint') %></span>
         </div>
         <%= render Forms::InputFieldComponent.new(
-          form: f, field: :description, label: "",
-          placeholder: t('transactions.form.description_placeholder'), required: false) %>
+          form: f, field: :note, label: "",
+          placeholder: t('transactions.form.note_placeholder'), required: false) %>
       </div>
 
       <div class="tx-detail transaction-form__date">
