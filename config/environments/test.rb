@@ -42,6 +42,10 @@ Rails.application.configure do
   # Print deprecation notices to the stderr.
   config.active_support.deprecation = :stderr
 
+  # Enqueue jobs to the in-memory test adapter so specs can assert or run them
+  # (perform_enqueued_jobs), instead of pushing to Sidekiq/Redis.
+  config.active_job.queue_adapter = :test
+
   # Raises error for missing translations.
   # config.i18n.raise_on_missing_translations = true
 
