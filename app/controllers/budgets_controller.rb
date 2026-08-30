@@ -130,7 +130,6 @@ class BudgetsController < ApplicationController
     @unplanned_expense_total = @unplanned[:expense].values.sum { |s| s[:amount] }
     @offplan_net = @unplanned_income_total - @unplanned_expense_total
 
-    @savings_goal = current_space.monthly_savings_goal.to_f
     @has_items = current_space.budget_items.active.exists?
 
     load_mode_data
