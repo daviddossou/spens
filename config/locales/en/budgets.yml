@@ -2,6 +2,7 @@ en:
   date:
     formats:
       month_year: "%B %Y"
+      month_only: "%B"
 
   budgets:
     errors:
@@ -161,13 +162,6 @@ en:
       section_empty_expense: "No expense planned for %{month}"
       section_empty_transfer: "No transfer planned for %{month}"
       section_empty_debt: "No debt planned for %{month}"
-      goal_reached_html: "Savings goal %{amount} reached"
-      goal_on_track_html: "Savings goal %{amount} on track"
-      goal_plan_over_html: "Goal %{amount} — the plan beats it by %{delta}"
-      goal_plan_short_html: "Goal %{amount} — %{delta} short"
-      goal_short_html: "%{missing} short of your %{amount} savings goal"
-      goal_bar_over_html: "Goal %{amount} — %{delta} ahead"
-      goal_bar_short_html: "Goal %{amount} — %{delta} to go"
       today: "today"
       view_summary: "See how this month went"
       add_item: "Add a budget line"
@@ -181,7 +175,6 @@ en:
       template_from_tx_sub: "Recurring expenses spotted over the last months"
       template_blank: "Blank page"
       template_blank_sub: "I'll add my lines one by one"
-      goal_encart_html: "Your savings goal is set to %{amount} a month. We'll tell you from the first line whether the plan gets there."
       no_entries_title: "None of your lines fall in %{month}"
       no_entries_message: "Your lines stop before, or start after. Nothing's wrong — but there's nothing to track either."
       no_entries_create: "Create a line for %{month}"

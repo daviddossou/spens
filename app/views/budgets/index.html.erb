@@ -55,33 +55,6 @@
         <% else %>
           <span class="budget-hero__sublabel"><%= t('.actual_so_far_html', amount: smart_format_money(@actual_net, current_space.currency, sign: :always)) %></span>
         <% end %>
-        <% if @savings_goal.positive? && @mode == :live %>
-          <%# Goal bar with a "today" marker: am I pacing to hit the goal by month end? %>
-          <% goal_pct = [ [ (@hero_value / @savings_goal * 100).round, 0 ].max, 100 ].min %>
-          <% today_pct = [ (@day_of_month.to_f / @days_in_month * 100).round, 100 ].min %>
-          <% over = @hero_value >= @savings_goal %>
-          <% delta = (@hero_value - @savings_goal).abs %>
-          <div class="budget-goalbar">
-            <div class="budget-goalbar__track">
-              <div class="budget-goalbar__fill" style="width: <%= goal_pct %>%;"></div>
-              <div class="budget-goalbar__today" style="left: <%= today_pct %>%;" aria-hidden="true"></div>
-            </div>
-            <div class="budget-goalbar__legend">
-              <span class="<%= 'budget-goalbar__over' if over %>">
-                <%= over ? t('.goal_bar_over_html', amount: smart_format_money(@savings_goal, current_space.currency), delta: smart_format_money(delta, current_space.currency)) \
-                         : t('.goal_bar_short_html', amount: smart_format_money(@savings_goal, current_space.currency), delta: smart_format_money(delta, current_space.currency)) %>
-              </span>
-              <span class="budget-goalbar__today-label"><%= t('.today') %></span>
-            </div>
-          </div>
-        <% elsif @savings_goal.positive? && @mode == :plan %>
-          <% over = @hero_value >= @savings_goal %>
-          <% delta = (@hero_value - @savings_goal).abs %>
-          <span class="budget-hero__goal <%= over ? 'budget-hero__goal--on-track' : 'budget-hero__goal--short' %>">
-            <%= over ? t('.goal_plan_over_html', amount: smart_format_money(@savings_goal, current_space.currency), delta: smart_format_money(delta, current_space.currency)) \
-                     : t('.goal_plan_short_html', amount: smart_format_money(@savings_goal, current_space.currency), delta: smart_format_money(delta, current_space.currency)) %>
-          </span>
-        <% end %>
       </div>
 
       <% if @planned_expense_total.positive? && @mode != :wrap_up %>
@@ -161,10 +134,6 @@
               data: { turbo_frame: "modal" }
             ) %>
           </div>
-
-          <% if @savings_goal.positive? %>
-            <p class="budget-start__goal"><%= t('.goal_encart_html', amount: smart_format_money(@savings_goal, current_space.currency)) %></p>
-          <% end %>
         </div>
       <% end %>
     <% end %>

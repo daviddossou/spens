@@ -534,12 +534,23 @@ RSpec.describe TransactionForm, type: :model do
         form.submit
       end
 
-      context 'when custom description is provided' do
+      context 'when a description is passed (legacy field, no longer editable)' do
         let(:form) { described_class.new(space, valid_expense_attributes.merge(description: 'My custom note')) }
 
-        it 'uses the custom description instead of auto-generated one' do
+        it 'ignores it — the description is always system-composed from the category' do
           expect(CreateTransactionService).to receive(:new).with(
-            hash_including(description: 'My custom note')
+            hash_including(description: 'Groceries')
+          ).and_call_original
+          form.submit
+        end
+      end
+
+      context 'when a note is provided' do
+        let(:form) { described_class.new(space, valid_expense_attributes.merge(note: 'Lunch with Fatou')) }
+
+        it 'stores the note as the human text, keeping the system description' do
+          expect(CreateTransactionService).to receive(:new).with(
+            hash_including(description: 'Groceries', note: 'Lunch with Fatou')
           ).and_call_original
           form.submit
         end

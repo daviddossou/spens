@@ -14,6 +14,17 @@
             data: { account_form_target: "amount", action: "input->account-form#onAmount" } %>
       <span class="budget-amount__currency"><%= currency_symbol %></span>
     </div>
+
+    <!-- Reserved money — feeds the dashboard's "dont X mis de côté" -->
+    <div class="account-form__field">
+      <%= render Forms::CheckboxFieldComponent.new(
+        form: form,
+        field: :set_aside,
+        label: t('.set_aside_label'),
+        help_text: t('.set_aside_help'),
+        checked: @form.set_aside
+      ) %>
+    </div>
   </div>
 
   <%# Name — the existing searchable field, kept as is. No asterisk. %>

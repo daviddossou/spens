@@ -109,28 +109,22 @@ class GoalForm < BaseForm
     current_balance.to_f != account.balance
   end
 
-  # A balance adjustment is a single income (top-up) or expense (drawdown)
-  # transaction — not a transfer, which would require a matching second leg.
+  # A balance change on a goal's account is a neutral adjustment: it carries the
+  # SIGNED delta (NormalizeAmountService preserves the sign for neutral kinds),
+  # moves no real money, and stays out of "money in / out" and day totals.
   def adjust_account_balance(account)
     difference = current_balance.to_f - account.balance
-    kind = difference.positive? ? "income" : "expense"
+    name = I18n.t("transactions.balance_adjustment.type_name")
+    type = FindOrCreateTransactionTypeService.new(space, name, "adjustment").call
 
-    create_adjustment_transaction(account, difference.abs, kind)
-  end
-
-  def create_adjustment_transaction(account, amount, kind)
-    params = {
-      account_id: account.id,
-      account_name: account.name,
-      amount: amount,
+    CreateTransactionService.new(
+      space: space,
+      user: nil,
+      account: account,
+      transaction_type: type,
+      amount: difference,
       transaction_date: Date.current,
-      transaction_type_name: I18n.t("transactions.balance_adjustment.type_name"),
-      kind: kind
-    }
-
-    transaction_form = TransactionForm.new(space, params)
-    transaction_form.submit
-
-    raise StandardError, transaction_form.errors.full_messages.join(", ") unless transaction_form.errors.empty?
+      description: name
+    ).call
   end
 end

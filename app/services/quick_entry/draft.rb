@@ -4,7 +4,7 @@ module QuickEntry
   # The structured result of parsing one utterance — maps onto TransactionForm's payload.
   Draft = Data.define(
     :kind, :amount, :account_name, :from_account_name, :to_account_name,
-    :transaction_type_name, :fee_amount, :transaction_date, :description,
+    :transaction_type_name, :fee_amount, :transaction_date, :description, :note,
     :debt_id, :contact_name, :direction, :unresolved
   ) do
     CATEGORY_KINDS = %w[expense income].freeze
@@ -13,7 +13,7 @@ module QuickEntry
     # Ruby's Data has no native defaults; this lets callers pass only what they parsed.
     def initialize(kind:, amount: nil, account_name: nil, from_account_name: nil,
                    to_account_name: nil, transaction_type_name: nil, fee_amount: nil,
-                   transaction_date: nil, description: nil, debt_id: nil,
+                   transaction_date: nil, description: nil, note: nil, debt_id: nil,
                    contact_name: nil, direction: nil, unresolved: [])
       super
     end
@@ -41,6 +41,7 @@ module QuickEntry
         fee_amount: fee_amount,
         transaction_date: transaction_date,
         description: description,
+        note: note,
         debt_id: debt_id,
         contact_name: contact_name,
         direction: direction

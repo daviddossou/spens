@@ -81,6 +81,7 @@ RSpec.configure do |config|
 
   # Time travel (travel_to / freeze_time), auto-reverted after each example.
   config.include ActiveSupport::Testing::TimeHelpers
+  config.include ActiveJob::TestHelper
   config.after { travel_back }
 
   # ViewComponent test configuration

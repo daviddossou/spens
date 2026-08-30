@@ -88,10 +88,19 @@
 }
 
 .stat-card--hero .stat-card__value {
-  font-size: 1.75rem;
-  letter-spacing: -0.02em;
-  line-height: 1.15;
+  font-size: var(--font-size-hero); /* the total is shown in full, no "K" */
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
   color: var(--text-dark);
+}
+
+/* "dont X mis de côté" — a quiet fact under the big number, shown only
+   when at least one account is marked reserved. */
+.stat-card__footnote {
+  font-size: var(--font-size-body);
+  color: var(--text-muted);
+  line-height: 1.2;
 }
 
 /* ── Secondary stats: one grouped summary list ─────────────────── */

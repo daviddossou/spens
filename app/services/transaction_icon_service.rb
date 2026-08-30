@@ -31,6 +31,13 @@ class TransactionIconService
       @icon_cache[icon_kind] ||= read_icon_file(icon_kind)
     end
 
+    # Look up an icon by an explicit basename (e.g. MovementRow#icon_name, which
+    # already folds the neutral family onto "neutral"/"writeoff" glyphs).
+    def icon_svg_by_name(name)
+      @icon_cache ||= {}
+      @icon_cache[name] ||= read_icon_file(name)
+    end
+
     # Get amount prefix (+ or -)
     def amount_prefix(kind)
       %w[income debt_in transfer_in].include?(kind) ? "+" : "-"

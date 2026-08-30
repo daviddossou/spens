@@ -2,6 +2,7 @@ fr:
   date:
     formats:
       month_year: "%B %Y"
+      month_only: "%B"
 
   budgets:
     errors:
@@ -161,13 +162,6 @@ fr:
       section_empty_expense: "Aucune dépense prévue en %{month}"
       section_empty_transfer: "Aucun virement prévu en %{month}"
       section_empty_debt: "Aucune dette prévue en %{month}"
-      goal_reached_html: "Objectif d'épargne %{amount} atteint"
-      goal_on_track_html: "Objectif d'épargne %{amount} en bonne voie"
-      goal_plan_over_html: "Objectif %{amount} — le plan le dépasse de %{delta}"
-      goal_plan_short_html: "Objectif %{amount} — il manque %{delta}"
-      goal_short_html: "Il manque %{missing} pour ton objectif d'épargne de %{amount}"
-      goal_bar_over_html: "Objectif %{amount} — dépassé de %{delta}"
-      goal_bar_short_html: "Objectif %{amount} — il manque %{delta}"
       today: "aujourd'hui"
       view_summary: "Voir le bilan du mois"
       add_item: "Ajouter une ligne"
@@ -181,7 +175,6 @@ fr:
       template_from_tx_sub: "Dépenses récurrentes détectées ces derniers mois"
       template_blank: "Page blanche"
       template_blank_sub: "J'ajoute mes lignes une par une"
-      goal_encart_html: "Ton objectif d'épargne est réglé à %{amount} par mois. On te dira dès la première ligne si le plan y arrive."
       no_entries_title: "Aucune de tes lignes ne tombe en %{month}"
       no_entries_message: "Tes lignes s'arrêtent avant, ou commencent après. Rien d'anormal — mais rien à suivre non plus."
       no_entries_create: "Créer une ligne pour %{month}"

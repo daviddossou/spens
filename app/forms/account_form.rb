@@ -7,6 +7,7 @@ class AccountForm < BaseForm
 
   attribute :account_name, :string
   attribute :current_balance, :decimal
+  attribute :set_aside, :boolean, default: false
 
   ##
   # Validations
@@ -29,7 +30,8 @@ class AccountForm < BaseForm
 
     super(
       account_name: payload[:account_name],
-      current_balance: payload[:current_balance]
+      current_balance: payload[:current_balance],
+      set_aside: payload.key?(:set_aside) ? payload[:set_aside] : (@account&.set_aside || false)
     )
   end
 
@@ -70,13 +72,15 @@ class AccountForm < BaseForm
 
   def create_account
     @account = find_or_create_account
-    @account.update!(user: user || @account.user)
-    adjust_account_balance(account) if current_balance.present? && balance_changed?(account)
+    @account.update!(user: user || @account.user, set_aside: set_aside)
+    # The first balance set on a new account is its opening balance.
+    record_balance_movement(account, "initial_balance") if current_balance.present? && balance_changed?(account)
   end
 
   def update_account
-    account.update!(name: account_name.strip)
-    adjust_account_balance(account) if current_balance.present? && balance_changed?(account)
+    account.update!(name: account_name.strip, set_aside: set_aside)
+    # A later balance change is a reconciliation, not a real flow.
+    record_balance_movement(account, "adjustment") if current_balance.present? && balance_changed?(account)
   end
 
   def find_or_create_account
@@ -87,29 +91,28 @@ class AccountForm < BaseForm
     current_balance.to_f != account.balance
   end
 
-  # A balance adjustment is a single income (top-up) or expense (drawdown)
-  # transaction — not a transfer, which would require a matching second leg.
-  def adjust_account_balance(account)
+  # A balance movement is a single neutral transaction (initial_balance on
+  # creation, adjustment on edit). It carries the SIGNED delta so the ledger
+  # moves the balance the right way; NormalizeAmountService preserves that sign
+  # for neutral kinds. No matching leg (unlike a transfer), no cash flow.
+  def record_balance_movement(account, kind)
     difference = current_balance.to_f - account.balance
-    kind = difference.positive? ? "income" : "expense"
+    name = balance_movement_name(kind)
+    type = FindOrCreateTransactionTypeService.new(space, name, kind).call
 
-    create_adjustment_transaction(account, difference.abs, kind)
+    CreateTransactionService.new(
+      space: space,
+      user: user,
+      account: account,
+      transaction_type: type,
+      amount: difference,
+      transaction_date: Date.current,
+      description: name
+    ).call
   end
 
-  def create_adjustment_transaction(account, amount, kind)
-    params = {
-      account_id: account.id,
-      account_name: account.name,
-      amount: amount,
-      transaction_date: Date.current,
-      transaction_type_name: I18n.t("transactions.balance_adjustment.type_name"),
-      kind: kind
-    }
-
-    transaction_form = TransactionForm.new(space, params)
-    transaction_form.user = user
-    transaction_form.submit
-
-    raise StandardError, transaction_form.errors.full_messages.join(", ") unless transaction_form.errors.empty?
+  def balance_movement_name(kind)
+    key = kind == "initial_balance" ? "initial_balance" : "balance_adjustment"
+    I18n.t("transactions.#{key}.type_name")
   end
 end

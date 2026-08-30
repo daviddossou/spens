@@ -1,19 +1,22 @@
 /* Transaction Item Component Styles */
 
+/* A row inside the day block — the block owns the card; rows are separated by
+   an internal divider, with no divider under the last row. */
 .transaction-item {
   display: block;
-  background: var(--bg-surface);
-  border: 1px solid var(--border-light);
-  border-radius: 0.75rem;
-  padding: 0.5rem;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  padding: 0.75rem;
+  border-bottom: 1px solid var(--border-light);
+  transition: background-color 0.2s ease;
   text-decoration: none;
   color: inherit;
 }
 
+.transaction-item:last-child {
+  border-bottom: none;
+}
+
 .transaction-item:hover {
-  border-color: var(--border-light);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  background-color: var(--color-off-white);
 }
 
 .transaction-item__content {
@@ -59,6 +62,10 @@
   background-color: var(--color-info-20);
 }
 
+.transaction-item__icon--neutral {
+  background-color: var(--color-neutral-pill);
+}
+
 .transaction-item__icon svg {
   width: 1.25rem;
   height: 1.25rem;
@@ -78,6 +85,10 @@
 
 .transaction-item__icon--transfer svg {
   color: var(--color-info);
+}
+
+.transaction-item__icon--neutral svg {
+  color: var(--text-muted);
 }
 
 .transaction-item__details {
@@ -126,16 +137,15 @@
   font-weight: 600;
 }
 
-.transaction-item__amount--income {
-  color: var(--color-success);
-}
-
-.transaction-item__amount--expense {
-  color: var(--color-danger);
-}
-
-.transaction-item__amount--neutral {
+/* Amounts stay dark where a balance really moved; the coloured icon carries the
+   family. Neutral reconciliations are muted (Tour 17c/d). */
+.transaction-item__amount--strong {
   color: var(--text-dark);
+}
+
+.transaction-item__amount--muted {
+  color: var(--text-muted);
+  font-weight: 500;
 }
 
 .transaction-item__chevron {
@@ -156,4 +166,36 @@
   width: 1rem;
   height: 1rem;
   margin-right: 0.25rem;
+}
+
+/* A provider fee, hung under its parent — never a row of its own. */
+.transaction-item__fee {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
+  padding-left: 3rem; /* aligns under the title, past the 2.5rem icon + gap */
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.transaction-item__fee-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.transaction-item__fee-arrow {
+  color: var(--text-muted);
+}
+
+.transaction-item__fee-amount {
+  flex-shrink: 0;
+  font-weight: 500;
+  color: var(--text-muted);
 }

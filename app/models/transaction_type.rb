@@ -63,7 +63,12 @@ class TransactionType < ApplicationRecord
     transfer: "transfer",         # General type for transfers
     transfer_in: "transfer_in",   # user receives money to some account from another account
     transfer_out: "transfer_out", # user gives money from some account to another account
-    debt_writeoff: "debt_writeoff" # a debt no longer expected: written off / forgiven. Moves no money.
+    debt_writeoff: "debt_writeoff", # a debt no longer expected: written off / forgiven. Moves no money.
+    # Neutral family — reconciliations, not real in/out flows. Excluded from
+    # "money in / money out" and from day totals; shown in grey.
+    adjustment: "adjustment",         # a balance correction on an account (Solde corrigé)
+    compensation: "compensation",     # two mutual debts offset each other; no cash moves
+    initial_balance: "initial_balance" # the account's opening balance at creation (Solde de départ)
   }
 
   ##

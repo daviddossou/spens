@@ -114,7 +114,8 @@ class AccountsController < ApplicationController
   def account_params
     params.require(:account).permit(
       :account_name,
-      :current_balance
+      :current_balance,
+      :set_aside
     )
   end
 end

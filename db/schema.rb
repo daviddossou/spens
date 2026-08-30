@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_08_29_091351) do
+ActiveRecord::Schema[8.0].define(version: 2026_08_30_131942) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -23,6 +23,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_08_29_091351) do
     t.uuid "space_id", null: false
     t.uuid "user_id"
     t.datetime "archived_at"
+    t.boolean "set_aside", default: false, null: false
     t.index "lower((name)::text), space_id", name: "index_accounts_on_lower_name_and_space_id", unique: true
     t.index ["archived_at"], name: "index_accounts_on_archived_at"
     t.index ["space_id"], name: "index_accounts_on_space_id"
@@ -219,7 +220,6 @@ ActiveRecord::Schema[8.0].define(version: 2026_08_29_091351) do
     t.uuid "user_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.decimal "monthly_savings_goal", precision: 15, scale: 2
     t.string "locale"
     t.string "time_zone"
     t.index "user_id, lower((name)::text)", name: "index_spaces_on_user_id_and_lower_name", unique: true

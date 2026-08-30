@@ -72,11 +72,11 @@ RSpec.describe "Personal learned vocabulary" do
     end
   end
 
-  describe QuickEntry::DescriptionLearner do
-    it "learns the description -> category pairing from the manual form" do
+  describe QuickEntry::NoteLearner do
+    it "learns the note -> category pairing from the human text" do
       type = FindOrCreateTransactionTypeService.new(space, TransactionTaxonomy.name("restaurant_maquis", :fr), "expense").call
       transaction = create(:transaction, space: space, transaction_type: type,
-                                         amount: -3000, description: "chez l'indien")
+                                         amount: -3000, note: "chez l'indien")
 
       described_class.learn(transaction, locale: :fr)
 
@@ -87,13 +87,13 @@ RSpec.describe "Personal learned vocabulary" do
       # An unknown word also reaches the admin queue as a global candidate.
       candidate = LearnedAlias.global.find_by(phrase: "indien")
       expect(candidate).to be_candidate
-      expect(candidate.source).to eq("description")
+      expect(candidate.source).to eq("note")
     end
 
     it "no-ops when the category is a free-text custom type (no taxonomy key to map to)" do
       type = FindOrCreateTransactionTypeService.new(space, "Cotisation DD", "expense").call
       transaction = create(:transaction, space: space, transaction_type: type,
-                                         amount: -3000, description: "participation famille")
+                                         amount: -3000, note: "participation famille")
 
       expect { described_class.learn(transaction) }.not_to change(LearnedAlias, :count)
     end

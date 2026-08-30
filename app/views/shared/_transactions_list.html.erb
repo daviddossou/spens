@@ -1,14 +1,14 @@
 <% grouped_transactions.each do |date, transactions| %>
   <div class="transaction-group">
-    <!-- Date Header -->
+    <!-- Day header: date on the left, the day's total on the right -->
     <div class="transaction-group__header">
       <h3 class="transaction-group__date">
         <%= l(date, format: :long) %>
       </h3>
-      <div class="transaction-group__divider"></div>
+      <%= movement_day_total(transactions) %>
     </div>
 
-    <!-- Transactions for this day -->
+    <!-- One block per day, rows separated internally -->
     <div class="transaction-group__items">
       <%= render TransactionItemComponent.with_collection(transactions, transaction: :itself) %>
     </div>

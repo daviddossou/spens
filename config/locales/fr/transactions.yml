@@ -79,7 +79,7 @@ fr:
       description_placeholder: "ex. Déjeuner au bureau..."
       note_label: "Note"
       note_help: "Ajoute des détails si besoin"
-      note_placeholder: "Ajouter une note..."
+      note_placeholder: "ex. Déjeuner chez Fatou..."
       save_transaction: "Enregistrer la transaction"
       cta_save_amount: "Enregistrer %{amount}"
       cta_need_amount: "Saisis un montant"
@@ -91,8 +91,42 @@ fr:
     fee:
       description: "Frais · %{label}"
 
+    # App-composed titles for the movement list. The title is built here, never
+    # copied from a free-text field; the family icon replaces the auto emoji.
+    movement:
+      transfer:
+        out: "Envoyé vers %{account}"
+        in: "Reçu de %{account}"
+      debt:
+        loan: "Prêté à %{name}"
+        borrow: "Emprunté à %{name}"
+        repaid_in: "%{name} t'a remboursé"
+        repaid_out: "Remboursé %{name}"
+        remaining: "reste %{amount}"
+        settled: "dette soldée"
+      writeoff:
+        lent: "Créance abandonnée · %{name}"
+        borrowed: "Dette effacée · %{name}"
+        lent_sub: "tu ne récupéreras pas cet argent"
+        borrowed_sub: "cette dette est effacée"
+      compensation:
+        title: "Compensation avec %{name}"
+        sub: "vos deux dettes s'annulent"
+      adjustment:
+        title: "Solde corrigé · %{account}"
+        more: "%{amount} de plus que prévu"
+        less: "%{amount} de moins que prévu"
+      initial_balance:
+        title: "Solde de départ · %{account}"
+        sub: "à la création du compte"
+      day:
+        out_of_totals: "hors totaux"
+
     balance_adjustment:
       type_name: "⚖️ Ajustement de solde"
+
+    initial_balance:
+      type_name: "Solde de départ"
 
     transfer:
       type_name:

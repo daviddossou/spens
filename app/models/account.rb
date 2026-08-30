@@ -6,6 +6,7 @@
 #  archived_at :datetime         indexed
 #  balance     :float            default(0.0), not null
 #  name        :string           not null
+#  set_aside   :boolean          default(FALSE), not null
 #  created_at  :datetime         not null
 #  updated_at  :datetime         not null
 #  space_id    :uuid             not null, indexed
@@ -45,6 +46,9 @@ class Account < ApplicationRecord
   # Archived accounts keep their history but drop out of the lists and pickers.
   scope :active, -> { where(archived_at: nil) }
   scope :archived, -> { where.not(archived_at: nil) }
+  # Money the user has deliberately parked — surfaced as "dont X mis de côté".
+  scope :set_aside, -> { where(set_aside: true) }
+  scope :everyday, -> { where(set_aside: false) }
 
   ##
   # Instance Methods

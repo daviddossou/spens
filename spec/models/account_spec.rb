@@ -6,6 +6,7 @@
 #  archived_at :datetime         indexed
 #  balance     :float            default(0.0), not null
 #  name        :string           not null
+#  set_aside   :boolean          default(FALSE), not null
 #  created_at  :datetime         not null
 #  updated_at  :datetime         not null
 #  space_id    :uuid             not null, indexed

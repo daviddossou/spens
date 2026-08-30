@@ -79,7 +79,7 @@ en:
       description_placeholder: "e.g. Lunch at the office..."
       note_label: "Note"
       note_help: "Add any extra details"
-      note_placeholder: "Add a note..."
+      note_placeholder: "e.g. Lunch with Fatou..."
       save_transaction: "Save transaction"
       cta_save_amount: "Save %{amount}"
       cta_need_amount: "Enter an amount"
@@ -91,8 +91,42 @@ en:
     fee:
       description: "Fee · %{label}"
 
+    # App-composed titles for the movement list. The title is built here, never
+    # copied from a free-text field; the family icon replaces the auto emoji.
+    movement:
+      transfer:
+        out: "Sent to %{account}"
+        in: "Received from %{account}"
+      debt:
+        loan: "Lent to %{name}"
+        borrow: "Borrowed from %{name}"
+        repaid_in: "%{name} paid you back"
+        repaid_out: "Repaid %{name}"
+        remaining: "%{amount} left"
+        settled: "debt settled"
+      writeoff:
+        lent: "Write-off · %{name}"
+        borrowed: "Debt forgiven · %{name}"
+        lent_sub: "you won't get this money back"
+        borrowed_sub: "this debt is cleared"
+      compensation:
+        title: "Compensation with %{name}"
+        sub: "your two debts cancel out"
+      adjustment:
+        title: "Balance corrected · %{account}"
+        more: "%{amount} more than expected"
+        less: "%{amount} less than expected"
+      initial_balance:
+        title: "Starting balance · %{account}"
+        sub: "when the account was created"
+      day:
+        out_of_totals: "off totals"
+
     balance_adjustment:
       type_name: "⚖️ Balance adjustment"
+
+    initial_balance:
+      type_name: "Starting balance"
 
     transfer:
       type_name:

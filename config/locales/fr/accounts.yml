@@ -52,6 +52,8 @@ fr:
       cause_fix_hint: "Va aux mouvements du compte pour corriger"
       current_balance_label: "Solde actuel"
       current_balance_help: "Combien y a-t-il dans ce compte ?"
+      set_aside_label: "Argent mis de côté"
+      set_aside_help: "Marque ce compte comme réservé — il apparaîtra en « dont mis de côté » sur l'accueil."
       saving_goal_label: "Objectif d'épargne (optionnel)"
       saving_goal_help: "Fixe un montant cible (laisse à 0 si aucun)"
     show:
