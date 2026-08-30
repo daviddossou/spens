@@ -100,10 +100,10 @@ RSpec.describe TransactionItemComponent, type: :component do
       )
     end
 
-    it "displays note indicator" do
+    it "keeps the list sober — no note indicator (the note lives on the detail page)" do
       render_inline(described_class.new(transaction: transaction))
 
-      expect(rendered_content).to include("transaction-item__note")
+      expect(rendered_content).not_to include("transaction-item__note")
     end
   end
 

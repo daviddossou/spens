@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_08_30_131942) do
+ActiveRecord::Schema[8.0].define(version: 2026_08_30_141113) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -270,6 +270,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_08_30_131942) do
     t.uuid "user_id"
     t.uuid "transfer_group_id"
     t.uuid "fee_parent_id"
+    t.string "label"
     t.index ["account_id"], name: "index_transactions_on_account_id"
     t.index ["debt_id"], name: "index_transactions_on_debt_id"
     t.index ["fee_parent_id"], name: "index_transactions_on_fee_parent_id"

@@ -242,6 +242,8 @@ fr:
         transfer: "Transfert"
         debt: "Dette"
       more_actions: "Plus d'actions"
+      edit_rule: "Modifier la règle"
+      edit_rule_hint: "Fréquence, échéance, report du non-dépensé"
       remove: "Retirer du budget"
       remove_hint: "À partir %{from_prep} · %{month} garde sa dépense"
       remove_confirm: "Retirer cette ligne à partir du mois prochain ? Les mois passés gardent leur historique."

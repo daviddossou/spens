@@ -47,6 +47,13 @@ RSpec.describe QuickEntry::AnthropicParser do
       expect(parser.parse("achat sprite 500").phrase).to eq("sprite")
     end
 
+    it "extracts a short title label, cleaned of any leading emoji or amount" do
+      stub_tool_use("kind" => "expense", "amount" => 5000, "category" => "Repas à l'extérieur",
+                    "phrase" => "déjeuner fatou", "label" => "🍽️ Déjeuner chez Fatou 5000")
+
+      expect(parser.parse("j'ai payé le déjeuner chez Fatou 5000").label).to eq("Déjeuner chez Fatou")
+    end
+
     it "passes through person and direction for a debt" do
       stub_tool_use("kind" => "debt", "amount" => 30000, "person" => "Marcellin", "direction" => "lent")
 

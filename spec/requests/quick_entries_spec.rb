@@ -127,7 +127,7 @@ RSpec.describe QuickEntriesController, type: :request do
         QuickEntry::LlmParser,
         parse: QuickEntry::LlmParser::Result.new(
           kind: "expense", amount: 3000, category_key: "groceries",
-          category_name: TransactionTaxonomy.name("groceries", :en), phrase: "ndogou"
+          category_name: TransactionTaxonomy.name("groceries", :en), phrase: "ndogou", label: "Ndogou"
         )
       )
       allow(QuickEntry::LlmParser).to receive(:new).and_return(llm)
@@ -135,6 +135,10 @@ RSpec.describe QuickEntriesController, type: :request do
       expect do
         perform_enqueued_jobs { post quick_entry_path, params: { text: "3000 ndogou" } }
       end.to change { space.transactions.count }.by(1)
+
+      transaction = space.transactions.order(:created_at).last
+      expect(transaction.label).to eq("Ndogou")     # short title label
+      expect(transaction.note).to eq("3000 ndogou") # the raw phrase, verbatim
 
       attempt = QuickEntryAttempt.order(:created_at).last
       expect(attempt.source).to eq("ai")

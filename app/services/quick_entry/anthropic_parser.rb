@@ -23,10 +23,10 @@ module QuickEntry
     DIRECTIONS = { "lent" => "lent", "lend" => "lent", "loaned" => "lent",
                    "borrowed" => "borrowed", "borrow" => "borrowed" }.freeze
 
-    Result = Data.define(:kind, :amount, :category_key, :category_name, :phrase,
+    Result = Data.define(:kind, :amount, :category_key, :category_name, :phrase, :label,
                          :from_account, :to_account, :person, :direction) do
       def initialize(kind:, amount: nil, category_key: nil, category_name: nil, phrase: nil,
-                     from_account: nil, to_account: nil, person: nil, direction: nil)
+                     label: nil, from_account: nil, to_account: nil, person: nil, direction: nil)
         super
       end
     end
@@ -68,6 +68,7 @@ module QuickEntry
         category_key: key || nil,
         category_name: key ? TransactionTaxonomy.name(key, @locale) : nil,
         phrase: clean_phrase(data["phrase"]),
+        label: sanitize_label(data["label"]),
         from_account: data["from_account"].presence,
         to_account: data["to_account"].presence,
         person: data["person"].presence,
@@ -87,6 +88,13 @@ module QuickEntry
     def clean_phrase(phrase)
       cleaned = phrase.to_s.gsub(/\b\d[\d.,\s]*\d?\s*(?:k|m)?\b/i, " ").squeeze(" ").strip
       cleaned.presence
+    end
+
+    # The short title label ("Coca", "Déjeuner chez Fatou"): drop any leading emoji
+    # and stray amount tokens, and keep it terse enough for a one-line title.
+    def sanitize_label(label)
+      cleaned = clean_phrase(label.to_s.sub(/\A[^[:alnum:]]+/, ""))
+      cleaned && cleaned.length > 40 ? cleaned[0, 40].strip : cleaned
     end
 
     # POST the message with a forced tool call, then read the tool_use block's validated input.
@@ -129,6 +137,7 @@ module QuickEntry
             amount: { type: %w[number null], description: "the amount stated, or null" },
             category: { type: %w[string null], description: "closest category from the list — a specific subcategory is better than its parent (expense/income only)" },
             phrase: { type: %w[string null], description: "the salient word(s) the entry is about — the human note (e.g. 'coca')" },
+            label: { type: %w[string null], description: "a short Title-Case label for the list row, WITHOUT the amount (e.g. 'Coca', 'Déjeuner chez Fatou', 'Crédit téléphone'); expense/income only" },
             from_account: { type: %w[string null], description: "source account, transfer only, only if it appears in the message" },
             to_account: { type: %w[string null], description: "destination account, transfer only, only if it appears in the message" },
             person: { type: %w[string null], description: "the other person's name, debt only, only if it appears" },
@@ -151,6 +160,9 @@ module QuickEntry
         - Use ONLY account or person names that actually appear in the message — never invent one.
         - "phrase" = the meaningful word(s) the entry is about (a product, a merchant, a reason),
           WITHOUT the amount. It becomes a searchable note.
+        - "label" = a short, human, Title-Case title for the list row, WITHOUT the amount
+          (e.g. "Coca", "Déjeuner chez Fatou", "Crédit téléphone"). For expense/income only;
+          leave it null for transfers and debts (their title is composed from the accounts/people).
 
         For expense/income, set "category" to the closest match from this list. Prefer a
         specific subcategory (shown in parentheses) when it clearly fits; otherwise use its

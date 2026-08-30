@@ -242,6 +242,8 @@ en:
         transfer: "Transfer"
         debt: "Debt"
       more_actions: "More actions"
+      edit_rule: "Edit the rule"
+      edit_rule_hint: "Frequency, end date, rollover"
       remove: "Remove from budget"
       remove_hint: "From %{from} · %{month} keeps its spending"
       remove_confirm: "Remove this line from next month on? Past months keep their history."

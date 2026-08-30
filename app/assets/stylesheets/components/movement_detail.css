@@ -1,0 +1,116 @@
+/* Transaction detail page — a calm statement of the movement, each fact
+   fixable in one gesture (no review framing: the system stands by its call). */
+
+.movement-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-xl) var(--space-lg);
+  background: var(--bg-surface);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-resting);
+  text-align: center;
+}
+
+.movement-hero__icon {
+  width: 3rem;
+  height: 3rem;
+}
+
+.movement-hero__amount {
+  font-size: var(--font-size-hero);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  color: var(--text-dark);
+}
+
+.movement-hero__amount--muted {
+  color: var(--text-muted);
+}
+
+.movement-hero__subtitle {
+  font-size: var(--font-size-body);
+  color: var(--text-muted);
+}
+
+/* The dictated phrase, kept as a quiet quoted fact under the hero. */
+.movement-hero__note {
+  margin-top: var(--space-xs);
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-md);
+  background: var(--color-off-white);
+  font-size: var(--font-size-body);
+  font-style: italic;
+  color: var(--text-muted);
+}
+
+/* ── Fact rows: label · value · chevron, one selector per row ─────── */
+.movement-facts {
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-resting);
+  overflow: hidden;
+}
+
+.movement-facts__row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  min-height: 44px;
+  padding: var(--space-md) var(--space-lg);
+  border-bottom: 1px solid var(--border-light);
+  text-decoration: none;
+  color: inherit;
+  transition: background-color 0.2s ease;
+}
+
+.movement-facts__row:last-child {
+  border-bottom: none;
+}
+
+a.movement-facts__row:hover {
+  background-color: var(--color-off-white);
+}
+
+.movement-facts__label {
+  flex-shrink: 0;
+  font-size: var(--font-size-body);
+  color: var(--text-muted);
+}
+
+.movement-facts__value {
+  flex: 1;
+  text-align: right;
+  font-size: var(--font-size-body);
+  font-weight: 600;
+  color: var(--text-dark);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.movement-facts__chevron {
+  flex-shrink: 0;
+  color: var(--text-muted);
+  font-size: var(--font-size-title);
+  line-height: 1;
+}
+
+.movement-meta {
+  text-align: center;
+  font-size: var(--font-size-label);
+  color: var(--text-muted);
+}
+
+/* ── One-fact bottom sheet ────────────────────────────────────────── */
+.fact-sheet__header {
+  margin-bottom: var(--space-md);
+}
+
+.fact-sheet__field {
+  margin-bottom: var(--space-lg);
+}
