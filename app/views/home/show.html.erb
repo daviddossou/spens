@@ -10,6 +10,8 @@
         value: @total_balance,
         currency: @currency,
         variant: :hero,
+        abbreviate: false,
+        footnote: (@set_aside_total.positive? ? t('.stats.set_aside_footnote', amount: strip_tags(smart_format_money(@set_aside_total, @currency, threshold: Float::INFINITY)).gsub("&nbsp;", " ")) : nil),
         icon: tag.svg(fill: "none", stroke: "currentColor", viewBox: "0 0 24 24") do
           tag.path(stroke_linecap: "round", stroke_linejoin: "round", "stroke-width": "1.8",
                    d: "M3 7a2 2 0 012-2h12a2 2 0 012 2v1h1a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2V7zm15 5h-3a1.5 1.5 0 100 3h3")
@@ -17,39 +19,50 @@
       ) %>
     <% end %>
 
-    <!-- Secondary stats -->
-    <div class="stat-cards">
-      <% savings_goal = current_space.monthly_savings_goal %>
-      <%= link_to edit_space_path(id: current_space.id), class: "stat-card-link",
-                  "aria-label": savings_goal.present? ? t('.stats.edit_goal') : t('.stats.set_goal') do %>
-        <%= render Ui::StatCardComponent.new(
-          label: t('.stats.saved_this_month'),
-          sublabel: savings_goal.present? ? t('.stats.goal_sublabel', goal: strip_tags(smart_format_money(savings_goal, @currency)).gsub("&nbsp;", " ")) : t('.stats.set_goal_sublabel'),
-          value: @saved_this_month,
-          currency: @currency,
-          variant: :compact,
-          trend: @saved_this_month.positive? ? :positive : (@saved_this_month.negative? ? :caution : nil)
-        ) %>
-      <% end %>
-      <%= link_to debts_path(direction: "lent"), class: "stat-card-link", "aria-label": t('.stats.view_lent') do %>
-        <%= render Ui::StatCardComponent.new(
-          label: t('.stats.owed_to_me'),
-          value: @owed_to_me,
-          currency: @currency,
-          variant: :compact,
-          trend: @owed_to_me.positive? ? :positive : nil
-        ) %>
-      <% end %>
-      <%= link_to debts_path(direction: "borrowed"), class: "stat-card-link", "aria-label": t('.stats.view_borrowed') do %>
-        <%= render Ui::StatCardComponent.new(
-          label: t('.stats.i_owe'),
-          value: @i_owe,
-          currency: @currency,
-          variant: :compact,
-          trend: @i_owe.positive? ? :negative : nil
-        ) %>
-      <% end %>
+    <!-- Money in / out this month — two verifiable facts, side by side -->
+    <div class="flow-cells">
+      <div class="flow-cell flow-cell--in">
+        <span class="flow-cell__head">
+          <span class="flow-cell__icon" aria-hidden="true">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19V5M5 12l7-7 7 7"/>
+            </svg>
+          </span>
+          <%= t('.stats.money_in', month: l(Date.current, format: :month_only)) %>
+        </span>
+        <span class="flow-cell__value"><%= smart_format_money(@money_in, @currency, threshold: Float::INFINITY) %></span>
+      </div>
+      <div class="flow-cell flow-cell--out">
+        <span class="flow-cell__head">
+          <span class="flow-cell__icon" aria-hidden="true">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v14M19 12l-7 7-7-7"/>
+            </svg>
+          </span>
+          <%= t('.stats.money_out', month: l(Date.current, format: :month_only)) %>
+        </span>
+        <span class="flow-cell__value"><%= smart_format_money(@money_out, @currency, threshold: Float::INFINITY) %></span>
+      </div>
     </div>
+
+    <!-- Debts summary — one neutral block, cumulative, links to Debts -->
+    <% if @owed_to_me.positive? || @i_owe.positive? %>
+      <%= link_to debts_path, class: "debt-summary", "aria-label": t('.stats.view_debts') do %>
+        <div class="debt-summary__half">
+          <span class="debt-summary__label"><%= t('.stats.owed_to_me') %></span>
+          <span class="debt-summary__value"><%= smart_format_money(@owed_to_me, @currency, threshold: Float::INFINITY) %></span>
+        </div>
+        <div class="debt-summary__half">
+          <span class="debt-summary__label"><%= t('.stats.i_owe') %></span>
+          <span class="debt-summary__value"><%= smart_format_money(@i_owe, @currency, threshold: Float::INFINITY) %></span>
+        </div>
+        <span class="debt-summary__chevron" aria-hidden="true">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+          </svg>
+        </span>
+      <% end %>
+    <% end %>
 
     <!-- Search -->
     <%= form_with url: dashboard_path, method: :get, role: "search",

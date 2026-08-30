@@ -2,6 +2,7 @@ en:
   date:
     formats:
       month_year: "%B %Y"
+      month_only: "%B"
 
   budgets:
     errors:
