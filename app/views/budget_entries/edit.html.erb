@@ -39,6 +39,11 @@
           </svg>
         </summary>
         <div class="header-menu__panel">
+          <%= link_to edit_budget_item_path(id: item.id, month: month.strftime("%Y-%m")),
+                class: "header-menu__item", data: { turbo_frame: "modal" } do %>
+            <span class="header-menu__item-label"><%= t(".edit_rule") %></span>
+            <span class="header-menu__item-hint"><%= t(".edit_rule_hint") %></span>
+          <% end %>
           <%= link_to budget_item_path(id: item.id, from_month: month.next_month.strftime("%Y-%m"), month: month.strftime("%Y-%m")),
                 class: "header-menu__item header-menu__item--danger",
                 data: { turbo_method: :delete, turbo_confirm: t(".remove_confirm") } do %>
