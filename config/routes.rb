@@ -35,7 +35,12 @@ Rails.application.routes.draw do
     get "dashboard", to: "home#show"
 
     # Transactions
-    resources :transactions, only: [ :new, :create, :show, :edit, :update, :destroy ]
+    resources :transactions, only: [ :new, :create, :show, :edit, :update, :destroy ] do
+      # One-field editors for the detail page: each fact opens its own selector
+      # in a bottom sheet and PATCHes transactions#update with just that field.
+      get "facts/:fact", to: "transactions/facts#edit", on: :member, as: :fact,
+                         constraints: { fact: /category|account|date/ }
+    end
 
     # Quick add: parse one natural-language utterance into a transaction (typed now, voice later)
     resource :quick_entry, only: [ :new, :create ]
