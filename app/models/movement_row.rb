@@ -44,7 +44,7 @@ class MovementRow
     when "compensation" then t("movement.compensation.title", name: debt_name)
     when "adjustment" then t("movement.adjustment.title", account: account_name)
     when "initial_balance" then t("movement.initial_balance.title", account: account_name)
-    else clean(@txn.transaction_type.name)
+    else labelled_title
     end
   end
 
@@ -149,9 +149,31 @@ class MovementRow
     t("movement.adjustment.#{key}", amount: money(amount.abs))
   end
 
+  # Tour 19: an extracted short label takes the title, so the category drops to the
+  # subtitle. Without a label the category IS the title, so the subtitle keeps only
+  # the parent (the roll-up) — never repeating the title.
+  def labelled_title
+    label.presence ? clean(label) : clean(@txn.transaction_type.name)
+  end
+
+  def label
+    @txn.label
+  end
+
   def category_subtitle
+    category = label.present? ? display_category : parent_category
+    [ account_name, category ].reject { |part| part.to_s.strip.empty? }.join(" · ")
+  end
+
+  # The category shown when a label owns the title: the parent (roll-up) if there is
+  # one, else the type's own name.
+  def display_category
     parent = @txn.transaction_type.parent&.name
-    [ account_name, clean(parent) ].reject { |part| part.to_s.strip.empty? }.join(" · ")
+    clean(parent.presence || @txn.transaction_type.name)
+  end
+
+  def parent_category
+    clean(@txn.transaction_type.parent&.name)
   end
 
   def money(value)

@@ -16,8 +16,8 @@ RSpec.describe MovementRow do
     create(:transaction_type, space: space, kind: kind, name: name, parent: parent)
   end
 
-  def txn(kind:, name: nil, parent: nil, amount: 1000, account: nil, debt: nil, group: nil, fee_parent: nil)
-    create(:transaction, space: space, amount: amount,
+  def txn(kind:, name: nil, parent: nil, amount: 1000, account: nil, debt: nil, group: nil, fee_parent: nil, label: nil)
+    create(:transaction, space: space, amount: amount, label: label,
                          transaction_type: type(kind, name: name, parent: parent),
                          account: account, debt: debt, transfer_group_id: group, fee_parent_id: fee_parent)
   end
@@ -56,6 +56,15 @@ RSpec.describe MovementRow do
       account = create(:account, space: space, name: "Wallet")
       r = row(txn(kind: "expense", name: "Groceries", account: account))
       expect(r.subtitle).to eq("Wallet")
+    end
+
+    it "uses the extracted label as the title and drops the category to the subtitle" do
+      account = create(:account, space: space, name: "Bank")
+      parent = type("expense", name: "Alimentation")
+      r = row(txn(kind: "expense", name: "Sodas", parent: parent, account: account, label: "Coca"))
+
+      expect(r.title).to eq("Coca")
+      expect(r.subtitle).to eq("Bank · Alimentation")
     end
   end
 
