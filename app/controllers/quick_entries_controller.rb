@@ -16,7 +16,7 @@ class QuickEntriesController < ApplicationController
 
     if draft.confident? && @form.submit
       attempt = log_attempt(draft, result.ai_draft, @form.transaction)
-      QuickEntry::AiAssistLearner.learn(attempt) if attempt&.ai_used?
+      QuickEntry::LearnTransactionJob.perform_later(@form.transaction.id, ai_assist: true)
       Analytics.track(current_user, "quick_add_used", confident: true, ai_used: attempt&.ai_used? || false)
       Analytics.track(current_user, "transaction_created", source: "quick_add")
       redirect_with_reload_to transaction_path(id: @form.transaction.id),

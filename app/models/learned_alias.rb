@@ -35,7 +35,7 @@ class LearnedAlias < ApplicationRecord
   #     last fallback once a human approves them.
   #   • "user" personal rows (space_id set) — a space's own vocabulary, active immediately and
   #     checked FIRST, so it can override any built-in mapping.
-  SOURCES = %w[edit_diff description ai miner system user].freeze
+  SOURCES = %w[edit_diff description note ai miner system user].freeze
   include Learnable
 
   validates :taxonomy_key, presence: true

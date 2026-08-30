@@ -133,7 +133,7 @@ RSpec.describe QuickEntriesController, type: :request do
       allow(QuickEntry::LlmParser).to receive(:new).and_return(llm)
 
       expect do
-        post quick_entry_path, params: { text: "3000 ndogou" }
+        perform_enqueued_jobs { post quick_entry_path, params: { text: "3000 ndogou" } }
       end.to change { space.transactions.count }.by(1)
 
       attempt = QuickEntryAttempt.order(:created_at).last

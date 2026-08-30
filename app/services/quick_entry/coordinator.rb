@@ -23,15 +23,24 @@ module QuickEntry
 
     def call
       rules = DebtLinker.link(Parser.parse(@text, space: @space, locale: @locale), text: @text, space: @space)
-      return Result.new(draft: rules, ai_draft: nil) if rules.confident? || form_ready?(rules) || !LlmParser.enabled?
+      return Result.new(draft: rules, ai_draft: nil) if rules.confident? || form_ready?(rules) || !ai_parser
 
-      ai = LlmParser.new(space: @space, locale: @locale).parse(@text)
+      ai = ai_parser.new(space: @space, locale: @locale).parse(@text)
       return Result.new(draft: rules, ai_draft: nil) unless ai
 
       Result.new(draft: merge(rules, ai), ai_draft: ai_draft(ai))
     end
 
     private
+
+    # Claude Haiku is the primary decomposer; the OpenAI-compatible path (Ollama) stays as a
+    # fallback if only it is configured. nil when neither is enabled → rules-only.
+    def ai_parser
+      return AnthropicParser if AnthropicParser.enabled?
+      return LlmParser if LlmParser.enabled?
+
+      nil
+    end
 
     # The rules already detected a structural kind and resolved what they could — the rest is a
     # human choice (a new account, the debt direction), so the LLM adds nothing. A debt without a
@@ -59,22 +68,29 @@ module QuickEntry
       kind == "transfer" || DEBT_KINDS.include?(kind)
     end
 
-    # Expense/income: keep what the rules resolved, let the model fill the gaps.
+    # Expense/income: keep what the rules resolved, let the model fill the gaps, and never
+    # leave it uncategorised — fall back to the "Other" default so the entry always lands
+    # somewhere (the note keeps the detail; the user can recategorise).
     def backfill(rules, ai)
-      type_name = rules.transaction_type_name.presence || ai.category_name
       kind = rules.transaction_type_name.present? ? rules.kind : (ai.kind.presence || rules.kind)
+      type_name = rules.transaction_type_name.presence || ai.category_name.presence || default_category_name(kind)
       amount = rules.amount || ai.amount
 
       unresolved = []
       unresolved << :amount if amount.blank?
-      unresolved << :category if type_name.blank?
 
       Draft.new(
         kind: kind, amount: amount, account_name: rules.account_name,
         transaction_type_name: type_name, fee_amount: rules.fee_amount,
         transaction_date: rules.transaction_date, description: rules.description,
-        unresolved: unresolved
+        note: ai.phrase, unresolved: unresolved
       )
+    end
+
+    # The "Other" parent for the kind — the last-resort category so quick add is never blank.
+    def default_category_name(kind)
+      key = kind == "income" ? "other_income" : "other_expense"
+      TransactionTaxonomy.name(key, @locale)
     end
 
     # Auto-create only when BOTH ends resolve to existing accounts; otherwise prefill the form
@@ -91,7 +107,7 @@ module QuickEntry
       Draft.new(
         kind: "transfer", amount: rules.amount, from_account_name: from, to_account_name: to,
         fee_amount: rules.fee_amount, transaction_date: rules.transaction_date,
-        description: rules.description, unresolved: unresolved
+        description: rules.description, note: ai.phrase, unresolved: unresolved
       )
     end
 
@@ -111,7 +127,7 @@ module QuickEntry
         contact_name: contact,
         direction: rules.direction.presence || (resolved == "debt_in" ? "borrowed" : "lent"),
         transaction_date: rules.transaction_date, description: rules.description,
-        unresolved: unresolved
+        note: ai.phrase, unresolved: unresolved
       )
     end
 

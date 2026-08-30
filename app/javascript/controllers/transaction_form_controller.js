@@ -107,8 +107,9 @@ export default class extends Controller {
   }
 
   // When picking a category suggestion replaces what the user typed ("carrefour" →
-  // "Provisions"), keep the typed text in the description so nothing is lost. Bound via
-  // data-action on the form root; only reacts to the category field.
+  // "Provisions"), keep the typed text in the note so nothing is lost — the note is
+  // the human phrase, the description is system-composed. Bound via data-action on
+  // the form root; only reacts to the category field.
   keepTypedText(event) {
     const field = event.target
     if (!field.name || !field.name.includes("transaction_type_name")) return
@@ -121,8 +122,8 @@ export default class extends Controller {
     const value = (event.detail?.value || "").toLowerCase()
     if (value.includes(typed.toLowerCase())) return
 
-    const description = this.element.querySelector('[name="transaction[description]"]')
-    if (description && !description.value) description.value = typed
+    const note = this.element.querySelector('[name="transaction[note]"]')
+    if (note && !note.value) note.value = typed
   }
 
   toggleDetails(event) {

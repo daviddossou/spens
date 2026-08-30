@@ -21,7 +21,7 @@ class BuildTransaction < TransactionWriter
       account: account,
       transaction_type: find_or_create_transaction_type,
       amount: amount,
-      description: description.presence || transaction_type_name
+      description: transaction_type_name
     )
     build_fee(account: account, parent: txn)
     txn
@@ -42,7 +42,7 @@ class BuildTransaction < TransactionWriter
       account: account,
       transaction_type: type,
       amount: amount,
-      description: description.presence || transaction_type_name.presence || transfer_leg_description(side),
+      description: transaction_type_name.presence || transfer_leg_description(side),
       transfer_group_id: group_id
     )
   end
@@ -53,7 +53,7 @@ class BuildTransaction < TransactionWriter
       account: account,
       transaction_type: find_or_create_transaction_type(debt_type_name, kind),
       amount: amount,
-      description: description.presence || debt_auto_description,
+      description: debt_auto_description,
       debt: debt
     )
     build_fee(account: account, parent: txn)
