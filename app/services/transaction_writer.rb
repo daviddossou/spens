@@ -18,12 +18,15 @@ class TransactionWriter
            :transfer?, :debt_transaction?, :fee_applicable?, to: :form
 
   def create_and_validate_transaction(account:, transaction_type:, amount:, description:, debt: nil, transfer_group_id: nil, fee_parent_id: nil)
+    # Pass the amount as-is; NormalizeAmountService is the single source of sign
+    # truth (it re-signs by kind for money in/out, and preserves the caller's
+    # sign for neutral kinds like a balance adjustment, which can be negative).
     transaction = CreateTransactionService.new(
       space: space,
       user: user,
       account: account,
       transaction_type: transaction_type,
-      amount: amount.abs,
+      amount: amount,
       transaction_date: transaction_date,
       note: note,
       description: description,

@@ -204,6 +204,9 @@ fr:
       debt_writeoff:
         lent: "Créance abandonnée"
         borrowed: "Dette effacée"
+      compensation:
+        lent: "Compensation"
+        borrowed: "Compensation"
     transaction_description:
       debt_in:
         lent: "Remboursé par %{contact_name}"
