@@ -16,12 +16,16 @@ class HomeController < ApplicationController
     # Analytics
     @currency = current_space.currency
     @total_balance = current_space.accounts.sum(:balance)
-    @saved_this_month = current_space.transactions
+    @set_aside_total = current_space.accounts.set_aside.sum(:balance)
+
+    # Two verifiable facts, not one interpreted "savings" figure. Transfers are
+    # excluded (the same money would count twice); each is shown on its own.
+    month_scope = current_space.transactions
       .joins(:transaction_type)
       .where(transaction_date: Date.current.all_month)
-      .where.not(transaction_types: { kind: %w[transfer transfer_in transfer_out] })
-      .where.not(account_id: nil)
-      .sum(:amount)
+    @money_in = month_scope.where(transaction_types: { kind: %w[income debt_in] }).sum(:amount).abs
+    @money_out = month_scope.where(transaction_types: { kind: %w[expense debt_out] }).sum(:amount).abs
+
     @owed_to_me = current_space.debts.ongoing.lent.sum("total_lent - total_reimbursed")
     @i_owe = current_space.debts.ongoing.borrowed.sum("total_lent - total_reimbursed")
 

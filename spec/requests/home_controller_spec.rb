@@ -37,6 +37,24 @@ RSpec.describe HomeController, type: :request do
           expect(assigns(:total_balance)).to eq(3500.0)
         end
 
+        it "sums only reserved accounts into the set-aside total" do
+          create(:account, user: user, name: "Checking", balance: 1000.0, set_aside: false)
+          create(:account, user: user, name: "Savings", balance: 2500.0, set_aside: true)
+
+          get dashboard_path
+          expect(assigns(:set_aside_total)).to eq(2500.0)
+        end
+
+        it "shows the set-aside footnote only when money is reserved" do
+          account = create(:account, user: user, name: "Savings", balance: 2500.0, set_aside: true)
+          get dashboard_path
+          expect(response.body).to include("set aside")
+
+          account.update!(set_aside: false)
+          get dashboard_path
+          expect(response.body).not_to include("set aside")
+        end
+
         it "returns 0 when user has no accounts" do
           get dashboard_path
           expect(assigns(:total_balance)).to eq(0)
@@ -51,19 +69,20 @@ RSpec.describe HomeController, type: :request do
         end
       end
 
-      context "saved this month" do
+      context "money in / out this month" do
         let(:account) { create(:account, user: user, name: "Main") }
         let(:income_type) { create(:transaction_type, user: user, kind: "income", name: "Salary") }
         let(:expense_type) { create(:transaction_type, user: user, kind: "expense", name: "Food") }
 
-        it "sums transaction amounts for the current month" do
+        it "splits the month into money in and money out" do
           create(:transaction, user: user, account: account, transaction_type: income_type,
                  amount: 500.0, transaction_date: Date.current, description: "Salary")
           create(:transaction, user: user, account: account, transaction_type: expense_type,
                  amount: -200.0, transaction_date: Date.current, description: "Food")
 
           get dashboard_path
-          expect(assigns(:saved_this_month)).to eq(300.0)
+          expect(assigns(:money_in)).to eq(500.0)
+          expect(assigns(:money_out)).to eq(200.0)
         end
 
         it "excludes transactions from other months" do
@@ -73,12 +92,26 @@ RSpec.describe HomeController, type: :request do
                  amount: -200.0, transaction_date: 2.months.ago, description: "Old food")
 
           get dashboard_path
-          expect(assigns(:saved_this_month)).to eq(500.0)
+          expect(assigns(:money_in)).to eq(500.0)
+          expect(assigns(:money_out)).to eq(0)
+        end
+
+        it "excludes transfers from both figures" do
+          transfer_out = create(:transaction_type, user: user, kind: "transfer_out", name: "Transfer out")
+          create(:transaction, user: user, account: account, transaction_type: income_type,
+                 amount: 500.0, transaction_date: Date.current, description: "Salary")
+          create(:transaction, user: user, account: account, transaction_type: transfer_out,
+                 amount: -300.0, transaction_date: Date.current, description: "To savings")
+
+          get dashboard_path
+          expect(assigns(:money_in)).to eq(500.0)
+          expect(assigns(:money_out)).to eq(0)
         end
 
         it "returns 0 when user has no transactions this month" do
           get dashboard_path
-          expect(assigns(:saved_this_month)).to eq(0)
+          expect(assigns(:money_in)).to eq(0)
+          expect(assigns(:money_out)).to eq(0)
         end
       end
 
@@ -164,16 +197,21 @@ RSpec.describe HomeController, type: :request do
       end
     end
 
-    describe "stat cards rendering" do
-      it "renders the stat cards section" do
+    describe "summary blocks rendering" do
+      it "renders the money in / out cells" do
         get dashboard_path
-        expect(response.body).to include("stat-cards")
+        expect(response.body).to include("flow-cells")
+        expect(response.body).to include(I18n.t("home.show.stats.total_balance"))
       end
 
-      it "renders all four stat card labels" do
+      it "shows the debts summary only when a debt exists" do
         get dashboard_path
-        expect(response.body).to include(I18n.t("home.show.stats.total_balance"))
-        expect(response.body).to include(I18n.t("home.show.stats.saved_this_month"))
+        expect(response.body).not_to include("debt-summary")
+
+        create(:debt, user: user, name: "Alice", direction: "lent",
+               status: "ongoing", total_lent: 1000.0, total_reimbursed: 0.0)
+        get dashboard_path
+        expect(response.body).to include("debt-summary")
         expect(response.body).to include(I18n.t("home.show.stats.owed_to_me"))
         expect(response.body).to include(I18n.t("home.show.stats.i_owe"))
       end

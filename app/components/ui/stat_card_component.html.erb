@@ -14,10 +14,13 @@
     <% end %>
     <span class="stat-card__amount">
       <% if currency %>
-        <%= helpers.smart_format_money(value, currency) %>
+        <%= formatted_value %>
       <% else %>
         <%= value %>
       <% end %>
     </span>
   </span>
+  <% if footnote %>
+    <span class="stat-card__footnote"><%= footnote %></span>
+  <% end %>
 </div>

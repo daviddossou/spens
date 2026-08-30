@@ -1,0 +1,106 @@
+/* Dashboard summary blocks — money in/out and the debts summary.
+   Amounts stay dark; the colored icon carries the family (Tour 17). */
+
+/* ── Money in / out — two verifiable facts, side by side ───────── */
+.flow-cells {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-md);
+}
+
+.flow-cell {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  padding: var(--space-lg);
+  background: var(--bg-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-resting);
+}
+
+.flow-cell__head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  font-size: var(--font-size-label);
+  color: var(--text-muted);
+}
+
+.flow-cell__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.flow-cell__icon svg {
+  width: 0.85rem;
+  height: 0.85rem;
+}
+
+.flow-cell--in .flow-cell__icon {
+  background: var(--color-success-20);
+  color: var(--color-success-dark);
+}
+
+.flow-cell--out .flow-cell__icon {
+  background: var(--color-danger-20);
+  color: var(--color-danger-dark);
+}
+
+.flow-cell__value {
+  font-size: var(--font-size-headline);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--text-dark);
+}
+
+/* ── Debts summary — one neutral block, cumulative, tappable ────── */
+.debt-summary {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-lg);
+  background: var(--bg-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-resting);
+  text-decoration: none;
+  color: inherit;
+}
+
+.debt-summary__half {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.debt-summary__half + .debt-summary__half {
+  border-left: 1px solid var(--border-light);
+  padding-left: var(--space-md);
+}
+
+.debt-summary__label {
+  font-size: var(--font-size-label);
+  color: var(--text-muted);
+}
+
+.debt-summary__value {
+  font-size: var(--font-size-title);
+  font-weight: 600;
+  color: var(--text-dark);
+}
+
+.debt-summary__chevron {
+  color: var(--text-muted);
+  flex-shrink: 0;
+  display: inline-flex;
+}
+
+.debt-summary__chevron svg {
+  width: 1.1rem;
+  height: 1.1rem;
+}
