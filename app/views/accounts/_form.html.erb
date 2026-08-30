@@ -38,4 +38,15 @@
         help_text: t('.current_balance_help')
       ) %>
     </div>
+
+    <!-- Reserved money — feeds the dashboard's "dont X mis de côté" -->
+    <div class="account-form__field">
+      <%= render Forms::CheckboxFieldComponent.new(
+        form: form,
+        field: :set_aside,
+        label: t('.set_aside_label'),
+        help_text: t('.set_aside_help'),
+        checked: @form.set_aside
+      ) %>
+    </div>
   </div>

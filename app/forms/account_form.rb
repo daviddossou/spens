@@ -7,6 +7,7 @@ class AccountForm < BaseForm
 
   attribute :account_name, :string
   attribute :current_balance, :decimal
+  attribute :set_aside, :boolean, default: false
 
   ##
   # Validations
@@ -29,7 +30,8 @@ class AccountForm < BaseForm
 
     super(
       account_name: payload[:account_name],
-      current_balance: payload[:current_balance]
+      current_balance: payload[:current_balance],
+      set_aside: payload.key?(:set_aside) ? payload[:set_aside] : (@account&.set_aside || false)
     )
   end
 
@@ -70,12 +72,12 @@ class AccountForm < BaseForm
 
   def create_account
     @account = find_or_create_account
-    @account.update!(user: user || @account.user)
+    @account.update!(user: user || @account.user, set_aside: set_aside)
     adjust_account_balance(account) if current_balance.present? && balance_changed?(account)
   end
 
   def update_account
-    account.update!(name: account_name.strip)
+    account.update!(name: account_name.strip, set_aside: set_aside)
     adjust_account_balance(account) if current_balance.present? && balance_changed?(account)
   end
 

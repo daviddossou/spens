@@ -186,6 +186,25 @@ RSpec.describe AccountForm, type: :model do
       end
     end
 
+    context 'set_aside flag' do
+      let(:account) { create(:account, user: user, name: 'My Savings', balance: 0, set_aside: false) }
+
+      before do
+        allow(FindOrCreateAccountService).to receive(:new).with(space, 'My Savings')
+          .and_return(instance_double(FindOrCreateAccountService, call: account))
+      end
+
+      it 'marks the account as set aside when the flag is on' do
+        described_class.new(space, valid_attributes.merge(set_aside: "1")).submit
+        expect(account.reload.set_aside).to be(true)
+      end
+
+      it 'defaults to false when the flag is absent' do
+        described_class.new(space, valid_attributes).submit
+        expect(account.reload.set_aside).to be(false)
+      end
+    end
+
     context 'creating a new account' do
       let(:account) { create(:account, user: user, name: 'My Savings', balance: 0) }
 
