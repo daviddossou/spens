@@ -9,7 +9,6 @@
 #  income_frequency        :string
 #  locale                  :string
 #  main_income_source      :string
-#  monthly_savings_goal    :decimal(15, 2)
 #  name                    :string           not null
 #  onboarding_current_step :string
 #  time_zone               :string
