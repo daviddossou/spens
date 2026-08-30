@@ -85,12 +85,13 @@ RSpec.describe DebtsController, type: :request do
       end
 
       it 'displays latest transactions when present' do
-        transaction1 = create(:transaction, debt: debt, user: user, transaction_date: 1.day.ago, description: 'Payment 1')
-        transaction2 = create(:transaction, debt: debt, user: user, transaction_date: 2.days.ago, description: 'Payment 2')
+        type = create(:transaction_type, space: debt.space, kind: 'expense', name: 'Rent payment')
+        create(:transaction, debt: debt, user: user, transaction_type: type, transaction_date: 1.day.ago)
 
         get debt_path(id: debt.id)
 
-        expect(response.body).to include('Payment 1')
+        # The list shows the composed title (the category), not the free-text note.
+        expect(response.body).to include('Rent payment')
       end
 
       it 'limits transactions to 10' do

@@ -9,8 +9,11 @@
 
 .transaction-group__header {
   display: flex;
-  align-items: center;
-  margin-bottom: 0.75rem;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+  padding: 0 0.25rem;
 }
 
 .transaction-group__date {
@@ -19,15 +22,24 @@
   color: var(--text-muted);
 }
 
-.transaction-group__divider {
-  flex: 1;
-  margin-left: 1rem;
-  height: 1px;
-  background-color: #e5e7eb;
+/* The day's net of real flows (transfers and neutral lines excluded). */
+.transaction-group__total {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-dark);
 }
 
+.transaction-group__total--muted {
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+/* One block per day: rows sit inside a single card, separated internally. */
 .transaction-group__items {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  background: var(--bg-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-resting);
+  overflow: hidden;
 }

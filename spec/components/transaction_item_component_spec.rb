@@ -22,7 +22,9 @@ RSpec.describe TransactionItemComponent, type: :component do
 
     expect(rendered_content).to include("transaction-item")
     expect(rendered_content).to include("Salary")
-    expect(rendered_content).to include("Monthly salary")
+    # The free-text description no longer appears in the list (it lives on the
+    # detail page); the subtitle is the account.
+    expect(rendered_content).not_to include("Monthly salary")
     expect(rendered_content).to include("Bank Account")
   end
 
@@ -37,7 +39,8 @@ RSpec.describe TransactionItemComponent, type: :component do
       render_inline(described_class.new(transaction: transaction))
 
       expect(rendered_content).to include("transaction-item__icon--income")
-      expect(rendered_content).to include("transaction-item__amount--income")
+      # Amounts stay dark now; the coloured icon carries the family.
+      expect(rendered_content).to include("transaction-item__amount--strong")
     end
 
     it "shows + prefix for amount" do
@@ -54,7 +57,7 @@ RSpec.describe TransactionItemComponent, type: :component do
       render_inline(described_class.new(transaction: transaction))
 
       expect(rendered_content).to include("transaction-item__icon--expense")
-      expect(rendered_content).to include("transaction-item__amount--expense")
+      expect(rendered_content).to include("transaction-item__amount--strong")
     end
 
     it "shows - prefix for amount" do
@@ -151,25 +154,26 @@ RSpec.describe TransactionItemComponent, type: :component do
     it "renders multiple transaction items" do
       render_inline(described_class.with_collection(transactions, transaction: :itself))
 
-      expect(rendered_content).to include("transaction-item")
-      expect(rendered_content).to include("Transaction 1")
-      expect(rendered_content).to include("Transaction 2")
-      expect(rendered_content).to include("Transaction 3")
+      # Titles are composed from the category, not the free-text description.
+      expect(rendered_content.scan("transaction-item__content").size).to eq(3)
+      expect(rendered_content).to include("Salary")
     end
   end
 
   context "with a debt write-off (no money moved)" do
+    let(:debt) { create(:debt, user: user, name: "Georges", direction: "lent") }
     let(:writeoff_type) { create(:transaction_type, user: user, kind: "debt_writeoff", name: "Written off") }
     let(:writeoff) do
-      create(:transaction, user: user, transaction_type: writeoff_type, account: nil,
+      create(:transaction, user: user, transaction_type: writeoff_type, account: nil, debt: debt,
                            amount: 35_000, description: "Georges's debt written off")
     end
 
-    it "renders the amount neutrally, with no + or - sign" do
+    it "renders the amount muted, with no + or - sign, and a composed title" do
       render_inline(described_class.new(transaction: writeoff))
 
-      expect(rendered_content).to include("transaction-item__amount--neutral")
-      expect(rendered_content).to include("Written off")
+      expect(rendered_content).to include("transaction-item__amount--muted")
+      expect(rendered_content).to include("transaction-item__icon--neutral")
+      expect(rendered_content).to include("Georges")
       # The amount shows with no leading sign (not "-35" or "+35").
       expect(rendered_content).not_to match(/[-+]\s*35/)
     end

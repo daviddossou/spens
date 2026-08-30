@@ -11,47 +11,49 @@ class TransactionItemComponent < ViewComponent::Base
 
   attr_reader :transaction
 
-  def kind
-    @kind ||= transaction.transaction_type.kind
+  # The row's meaning is composed by MovementRow: family, title, subtitle, and
+  # how the amount reads. Subtitle amounts ("reste 45 000") are formatted without
+  # a currency suffix to stay terse.
+  def row
+    @row ||= MovementRow.new(
+      transaction,
+      currency: currency,
+      formatter: ->(amount) { helpers.format_money_number(amount.abs) }
+    )
   end
 
-  def description
-    text = transaction.description.to_s.strip
-    return if text.blank?
-    return if text.casecmp?(transaction.transaction_type.name.to_s.strip)
+  # A provider fee shown as a nested child line under its parent, never its own row.
+  def fee_row
+    return @fee_row if defined?(@fee_row)
 
-    text
+    fee = transaction.fee
+    @fee_row = fee && MovementRow.new(fee, currency: currency)
+  end
+
+  def currency
+    @currency ||= transaction.space.currency
   end
 
   def icon_class
-    TransactionIconService.icon_class(kind)
+    "transaction-item__icon--#{row.family}"
   end
 
   def icon_svg
-    TransactionIconService.icon_svg(kind)
+    TransactionIconService.icon_svg_by_name(row.icon_name)
   end
 
+  # Amounts stay dark where a balance really moved; neutral lines are muted.
   def amount_class
-    TransactionIconService.amount_class(kind)
+    row.muted? ? "transaction-item__amount--muted" : "transaction-item__amount--strong"
   end
 
-  def amount_prefix
-    TransactionIconService.amount_prefix(kind)
-  end
-
-  def signed_amount
-    return transaction.amount.abs if neutral?
-
-    income_kinds = %w[income debt_in transfer_in]
-    income_kinds.include?(kind) ? transaction.amount.abs : -transaction.amount.abs
-  end
-
-  # A write-off moved no money, so it shows a plain amount with no +/- sign.
-  def neutral?
-    kind == "debt_writeoff"
-  end
-
-  def amount_sign
-    neutral? ? :never : :always
+  # Full amounts in the list (no "K"); the sign follows the row's rule.
+  def display_amount(movement, transaction_for_amount)
+    helpers.smart_format_money(
+      transaction_for_amount.amount,
+      currency,
+      sign: movement.show_sign? ? :always : :never,
+      threshold: Float::INFINITY
+    )
   end
 end
