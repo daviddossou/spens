@@ -16,8 +16,10 @@ class CompensateDebtsService
 
     ActiveRecord::Base.transaction do
       # They "repay" the slice on what they owe you; you "repay" it on what you owe.
-      record(@relation.lent, "debt_in", amount)
-      record(@relation.borrowed, "debt_out", amount)
+      # Both legs are the neutral "compensation" kind: no cash moves, but each
+      # still reduces its debt's remaining balance (via total_reimbursed).
+      record(@relation.lent, "compensation", amount)
+      record(@relation.borrowed, "compensation", amount)
     end
     true
   rescue StandardError => e

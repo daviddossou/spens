@@ -43,13 +43,17 @@ class ApplicationController < ActionController::Base
     @page = params[:page]&.to_i || 1
     @per_page = per_page
 
-    @transactions = scope
-      .includes(:transaction_type, :account, :debt)
+    # Fees are hung under their parent row, never listed on their own — exclude
+    # them from the timeline (and its count) and eager-load each parent's fee.
+    listed = scope.where(fee_parent_id: nil)
+
+    @transactions = listed
+      .includes(:transaction_type, :account, :debt, fee: [ :transaction_type, :account ])
       .order(transaction_date: :desc, created_at: :desc)
       .offset((@page - 1) * @per_page)
       .limit(@per_page)
 
     @grouped_transactions = @transactions.group_by(&:transaction_date)
-    @has_more = scope.count > (@page * @per_page)
+    @has_more = listed.count > (@page * @per_page)
   end
 end

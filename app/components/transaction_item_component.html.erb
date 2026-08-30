@@ -1,45 +1,29 @@
 <%= link_to transaction_path(locale: I18n.locale, id: transaction.id),
             class: "transaction-item",
             data: { turbo_frame: "_top" },
-            aria_label: "View #{transaction.transaction_type.name}: #{helpers.smart_format_money(signed_amount, transaction.space.currency, sign: amount_sign)}" do %>
+            aria_label: "#{row.title}: #{display_amount(row, transaction)}" do %>
   <div class="transaction-item__content">
-    <!-- Left side: Transaction type and description -->
+    <!-- Left side: family icon, composed title + one subtitle -->
     <div class="transaction-item__left">
       <div class="transaction-item__info">
-        <!-- Icon based on kind -->
         <div class="transaction-item__icon <%= icon_class %>" aria-hidden="true">
           <%= icon_svg %>
         </div>
 
-        <!-- Transaction Type and Description -->
         <div class="transaction-item__details">
-          <p class="transaction-item__type">
-            <%= transaction.transaction_type.name %>
-          </p>
-          <% if description.present? %>
-            <p class="transaction-item__description">
-              <%= description %>
-            </p>
-          <% end %>
-          <% if transaction.account.present? %>
-            <p class="transaction-item__account">
-              <%= transaction.account.name %>
-            </p>
-          <% end %>
-          <% if transaction.debt.present? %>
-            <p class="transaction-item__account">
-              <%= transaction.debt.name %>
-            </p>
+          <p class="transaction-item__type"><%= row.title %></p>
+          <% if row.subtitle.present? %>
+            <p class="transaction-item__account"><%= row.subtitle %></p>
           <% end %>
         </div>
       </div>
     </div>
 
-    <!-- Right side: Amount and chevron -->
+    <!-- Right side: amount (dark, or muted for neutral) and chevron -->
     <div class="transaction-item__right">
       <div class="transaction-item__amount-container">
         <p class="transaction-item__amount <%= amount_class %>">
-          <%= helpers.smart_format_money(signed_amount, transaction.space.currency, sign: amount_sign) %>
+          <%= display_amount(row, transaction) %>
         </p>
       </div>
       <svg class="transaction-item__chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -47,6 +31,17 @@
       </svg>
     </div>
   </div>
+
+  <!-- A provider fee, nested under its parent -->
+  <% if fee_row %>
+    <div class="transaction-item__fee">
+      <span class="transaction-item__fee-title">
+        <span class="transaction-item__fee-arrow" aria-hidden="true">&#8627;</span>
+        <%= fee_row.title %>
+      </span>
+      <span class="transaction-item__fee-amount"><%= display_amount(fee_row, transaction.fee) %></span>
+    </div>
+  <% end %>
 
   <!-- Note indicator if present -->
   <% if transaction.note.present? %>

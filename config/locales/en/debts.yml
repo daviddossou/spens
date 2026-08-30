@@ -204,6 +204,9 @@ en:
       debt_writeoff:
         lent: "Written off"
         borrowed: "Debt forgiven"
+      compensation:
+        lent: "Compensation"
+        borrowed: "Compensation"
     transaction_description:
       debt_in:
         lent: "Repaid by %{contact_name}"

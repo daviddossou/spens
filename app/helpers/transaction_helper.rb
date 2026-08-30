@@ -35,6 +35,28 @@ module TransactionHelper
     TransactionKind.money_in?(kind) ? transaction.amount.abs : -transaction.amount.abs
   end
 
+  # A day-block header total: real in/out flows only (income/expense/debt) plus
+  # any fees hung under them; transfers and neutral reconciliations are excluded.
+  # A day made only of opening balances shows "hors totaux" instead of a figure.
+  # `transactions` are the day's top-level rows (fees already nested, not listed).
+  def movement_day_total(transactions, currency = nil)
+    currency ||= current_space&.currency
+    contributes = ->(txn) { MovementRow.new(txn).counts_in_day_total? || txn.fee }
+
+    if transactions.none?(&contributes) && transactions.any? { |t| MovementRow.new(t).out_of_totals? }
+      return content_tag(:span, t("transactions.movement.day.out_of_totals"),
+                         class: "transaction-group__total transaction-group__total--muted")
+    end
+
+    total = transactions.sum do |txn|
+      counted = MovementRow.new(txn).counts_in_day_total? ? txn.amount : 0
+      counted + (txn.fee&.amount || 0)
+    end
+
+    content_tag(:span, smart_format_money(total, currency, sign: :always, threshold: Float::INFINITY),
+                class: "transaction-group__total")
+  end
+
   # Top-level cards for the transaction picker. "Debt" is a UI category (not a
   # kind); it resolves to debt_in/debt_out once a person and intent are chosen.
   # Its default link target is the concrete kind "debt_out".
