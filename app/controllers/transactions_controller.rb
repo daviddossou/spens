@@ -17,7 +17,7 @@ class TransactionsController < ApplicationController
 
     if @form.submit
       link_quick_entry_attempt
-      QuickEntry::DescriptionLearner.learn(@form.transaction)
+      QuickEntry::LearnTransactionJob.perform_later(@form.transaction.id, correction: true)
       Analytics.track(current_user, "transaction_created", source: "manual")
       redirect_with_reload_to transaction_path(id: @form.transaction.id), notice: t(".success"), status: :see_other
     else
@@ -36,8 +36,7 @@ class TransactionsController < ApplicationController
     build_form_for_edit(update_params.to_h.symbolize_keys)
 
     if @form.submit
-      QuickEntry::CorrectionLearner.learn(@transaction)
-      QuickEntry::DescriptionLearner.learn(@transaction)
+      QuickEntry::LearnTransactionJob.perform_later(@transaction.id, correction: true)
       redirect_with_reload_to transaction_path(id: @transaction.id), notice: t(".success"), status: :see_other
     else
       render :edit, status: :unprocessable_entity
@@ -116,7 +115,8 @@ class TransactionsController < ApplicationController
     return unless attempt
 
     attempt.update!(transaction_id: @form.transaction.id)
-    QuickEntry::CorrectionLearner.learn(@form.transaction)
+    # The correction learning runs in LearnTransactionJob (enqueued in #create), after the
+    # attempt is linked here — so it sees the link and stays off the request path.
   rescue StandardError => e
     Rails.logger.warn("quick-entry attempt linking failed: #{e.message}")
   end

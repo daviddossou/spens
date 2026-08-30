@@ -10,7 +10,6 @@ export default class extends Controller {
     "from_account_name",
     "to_account_name",
     "note",
-    "description",
     "contact_name",
     "direction"
   ]

@@ -92,10 +92,12 @@ RSpec.describe TransactionsController, type: :request do
                                                rules_draft: { "kind" => "expense", "amount" => 100.5,
                                                               "transaction_date" => Date.current.iso8601 })
 
-        post transactions_path, params: {
-          transaction: valid_attributes.merge(quick_entry_attempt_id: attempt.id,
-                                              transaction_type_name: TransactionTaxonomy.name("groceries", :en))
-        }
+        perform_enqueued_jobs do
+          post transactions_path, params: {
+            transaction: valid_attributes.merge(quick_entry_attempt_id: attempt.id,
+                                                transaction_type_name: TransactionTaxonomy.name("groceries", :en))
+          }
+        end
 
         attempt.reload
         expect(attempt.transaction_id).to be_present
@@ -231,11 +233,13 @@ RSpec.describe TransactionsController, type: :request do
           expect(response.location).to match(%r{/transactions/[^?]+\?format=html})
         end
 
-        it "stores custom description on the transaction" do
+        it "stores a typed note as the human text, keeping the system description" do
           expect {
-            post transactions_path, params: { transaction: valid_attributes.merge(description: 'My groceries') }
+            post transactions_path, params: { transaction: valid_attributes.merge(note: 'My groceries') }
           }.to change(Transaction, :count).by(1)
-          expect(Transaction.order(created_at: :desc).first.description).to eq('My groceries')
+          txn = Transaction.order(created_at: :desc).first
+          expect(txn.note).to eq('My groceries')
+          expect(txn.description).to eq('Groceries')
         end
 
         it "uses auto-generated description when description is blank" do
@@ -475,9 +479,11 @@ RSpec.describe TransactionsController, type: :request do
       end
 
       it "keeps the same transaction id and records the kind correction" do
-        patch transaction_path(id: qe_transaction.id), params: {
-          transaction: { kind: "expense", transaction_type_name: "Groceries", amount: "100" }
-        }
+        perform_enqueued_jobs do
+          patch transaction_path(id: qe_transaction.id), params: {
+            transaction: { kind: "expense", transaction_type_name: "Groceries", amount: "100" }
+          }
+        end
 
         expect(qe_transaction.reload.transaction_type.kind).to eq("expense")
 

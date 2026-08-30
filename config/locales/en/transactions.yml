@@ -79,7 +79,7 @@ en:
       description_placeholder: "e.g. Lunch at the office..."
       note_label: "Note"
       note_help: "Add any extra details"
-      note_placeholder: "Add a note..."
+      note_placeholder: "e.g. Lunch with Fatou..."
       save_transaction: "Save transaction"
       cta_save_amount: "Save %{amount}"
       cta_need_amount: "Enter an amount"
