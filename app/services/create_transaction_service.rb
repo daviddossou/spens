@@ -14,6 +14,7 @@ class CreateTransactionService
       amount: normalized_amount,
       transaction_date: @attributes[:transaction_date],
       note: @attributes[:note],
+      label: @attributes[:label],
       description: @attributes[:description],
       debt: @attributes[:debt],
       transfer_group_id: @attributes[:transfer_group_id],

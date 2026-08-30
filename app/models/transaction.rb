@@ -5,6 +5,7 @@
 #  id                  :uuid             not null, primary key
 #  amount              :float            not null
 #  description         :string           not null
+#  label               :string
 #  note                :text
 #  transaction_date    :date             not null, indexed
 #  created_at          :datetime         not null
@@ -77,6 +78,7 @@ class Transaction < ApplicationRecord
     clauses = [
       "transactions.description ILIKE :pattern",
       "transactions.note ILIKE :pattern",
+      "transactions.label ILIKE :pattern",
       "transaction_types.name ILIKE :pattern",
       "accounts.name ILIKE :pattern"
     ]

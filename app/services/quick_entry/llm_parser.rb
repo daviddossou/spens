@@ -15,10 +15,10 @@ module QuickEntry
     DIRECTIONS = { "lent" => "lent", "lend" => "lent", "loaned" => "lent",
                    "borrowed" => "borrowed", "borrow" => "borrowed" }.freeze
 
-    Result = Data.define(:kind, :amount, :category_key, :category_name, :phrase,
+    Result = Data.define(:kind, :amount, :category_key, :category_name, :phrase, :label,
                          :from_account, :to_account, :person, :direction) do
       def initialize(kind:, amount: nil, category_key: nil, category_name: nil, phrase: nil,
-                     from_account: nil, to_account: nil, person: nil, direction: nil)
+                     label: nil, from_account: nil, to_account: nil, person: nil, direction: nil)
         super
       end
     end

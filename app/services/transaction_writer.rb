@@ -13,11 +13,11 @@ class TransactionWriter
   attr_reader :form
 
   delegate :space, :user, :kind, :amount, :fee_amount, :transaction_date,
-           :note, :description, :account_name, :from_account_name, :to_account_name,
+           :note, :label, :description, :account_name, :from_account_name, :to_account_name,
            :transaction_type_name, :contact_name, :direction, :debt, :transaction,
            :transfer?, :debt_transaction?, :fee_applicable?, to: :form
 
-  def create_and_validate_transaction(account:, transaction_type:, amount:, description:, debt: nil, transfer_group_id: nil, fee_parent_id: nil)
+  def create_and_validate_transaction(account:, transaction_type:, amount:, description:, label: nil, debt: nil, transfer_group_id: nil, fee_parent_id: nil)
     # Pass the amount as-is; NormalizeAmountService is the single source of sign
     # truth (it re-signs by kind for money in/out, and preserves the caller's
     # sign for neutral kinds like a balance adjustment, which can be negative).
@@ -29,6 +29,7 @@ class TransactionWriter
       amount: amount,
       transaction_date: transaction_date,
       note: note,
+      label: label,
       description: description,
       debt: debt,
       transfer_group_id: transfer_group_id,
