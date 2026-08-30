@@ -53,7 +53,9 @@ Rails.application.routes.draw do
     end
 
     # Accounts
-    resources :accounts, only: [ :index, :show, :new, :create, :edit, :update, :destroy ]
+    resources :accounts, only: [ :index, :show, :new, :create, :edit, :update, :destroy ] do
+      resource :archive, only: [ :create, :destroy ], module: :accounts
+    end
 
     # Monthly budget (forecast + past-month summary), its recurring items and per-month entries
     resources :budgets, only: [ :index ] do
