@@ -145,7 +145,7 @@ module QuickEntry
       target = CategoryText.normalize(name)
       return nil if target.length < 2
 
-      @space.accounts.pluck(:name).find do |account|
+      @space.accounts.active.pluck(:name).find do |account|
         normalized = CategoryText.normalize(account)
         normalized.include?(target) || target.include?(normalized)
       end
