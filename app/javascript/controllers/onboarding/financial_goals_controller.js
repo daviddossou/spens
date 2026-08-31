@@ -2,6 +2,8 @@ import { Controller } from "@hotwired/stimulus"
 
 // Connects to data-controller="onboarding--financial-goals"
 export default class extends Controller {
+  static values = { emptyLabel: String, readyLabel: String }
+
   connect() {
     // Defer so the ui--selectable-card controllers on the cards connect first.
     setTimeout(() => {
@@ -43,11 +45,10 @@ export default class extends Controller {
     if (submitButton) {
       const hasSelection = checkedBoxes.length > 0
       submitButton.disabled = !hasSelection
-
-      if (hasSelection) {
-        submitButton.classList.remove('disabled')
-      } else {
-        submitButton.classList.add('disabled')
+      submitButton.classList.toggle('disabled', !hasSelection)
+      // The button names what's missing instead of sitting grey and mute.
+      if (this.hasEmptyLabelValue && this.hasReadyLabelValue) {
+        submitButton.textContent = hasSelection ? this.readyLabelValue : this.emptyLabelValue
       }
     }
   }

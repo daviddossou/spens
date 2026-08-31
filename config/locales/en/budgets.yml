@@ -91,6 +91,7 @@ en:
       transfer_impact_body_html: "None. A transfer counts as neither spending nor savings this month — <strong>the money stays yours</strong>, it just changes account."
       # Dynamic button
       cta_add_plan: "Add to plan"
+      cta_need_amount: "Enter an amount"
       cta_add_plan_amount: "Add %{value} to plan"
       cta_no_category: "Pick a category"
       cta_no_from_account: "Pick the source account"

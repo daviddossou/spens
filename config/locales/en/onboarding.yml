@@ -33,6 +33,7 @@ en:
         subtitle: "Pick the ones that matter most. You can change these later."
       form:
         continue: "Continue"
+        continue_empty: "Pick at least one goal"
     profile_setups:
       show:
         title: "Set up your profile"
