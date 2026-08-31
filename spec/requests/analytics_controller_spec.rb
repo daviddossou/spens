@@ -34,6 +34,14 @@ RSpec.describe AnalyticsController, type: :request do
     expect(response.body).to include("20")
   end
 
+  it "renders the biggest-day phrase as real HTML, never escaped tags" do
+    spend(62_000)
+    get analytics_path
+
+    expect(response.body).to include("Your biggest day: <strong>")
+    expect(response.body).not_to include("&lt;strong&gt;")
+  end
+
   it "reads the range param and rejects unknown ones" do
     get analytics_path(range: "three_months")
     expect(assigns(:period).kind).to eq("three_months")

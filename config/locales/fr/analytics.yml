@@ -33,10 +33,10 @@ fr:
         day: "Jour par jour"
         week: "Semaine par semaine"
         month: "Mois par mois"
-      rhythm_biggest_html:
-        day: "Ton plus gros jour : <strong>le %{date}, %{amount}</strong>%{category}"
-        week: "Ta plus grosse semaine : <strong>celle du %{date}, %{amount}</strong>%{category}"
-        month: "Ton plus gros mois : <strong>%{date}, %{amount}</strong>%{category}"
+      rhythm_biggest:
+        day_html: "Ton plus gros jour : <strong>le %{date}, %{amount}</strong>%{category}"
+        week_html: "Ta plus grosse semaine : <strong>celle du %{date}, %{amount}</strong>%{category}"
+        month_html: "Ton plus gros mois : <strong>%{date}, %{amount}</strong>%{category}"
       rhythm_biggest_category: " — %{name}"
       all_in_plan: "Tout est dans ton plan"
       overruns_title: "Ce qui a débordé"

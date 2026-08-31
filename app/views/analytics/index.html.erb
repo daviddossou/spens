@@ -134,7 +134,7 @@
           </div>
           <% if @rhythm.biggest %>
             <p class="analyses-row__caption">
-              <%= t(".rhythm_biggest_html.#{@period.granularity}",
+              <%= t(".rhythm_biggest.#{@period.granularity}_html",
                     date: l(@rhythm.biggest.starts_on, format: @period.granularity == :month ? :month_only : :day_month),
                     amount: format_money_number(@rhythm.biggest.amount),
                     category: @rhythm.biggest_category ? t('.rhythm_biggest_category', name: @rhythm.biggest_category) : "") %>

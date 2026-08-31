@@ -33,10 +33,10 @@ en:
         day: "Day by day"
         week: "Week by week"
         month: "Month by month"
-      rhythm_biggest_html:
-        day: "Your biggest day: <strong>%{date}, %{amount}</strong>%{category}"
-        week: "Your biggest week: <strong>from %{date}, %{amount}</strong>%{category}"
-        month: "Your biggest month: <strong>%{date}, %{amount}</strong>%{category}"
+      rhythm_biggest:
+        day_html: "Your biggest day: <strong>%{date}, %{amount}</strong>%{category}"
+        week_html: "Your biggest week: <strong>from %{date}, %{amount}</strong>%{category}"
+        month_html: "Your biggest month: <strong>%{date}, %{amount}</strong>%{category}"
       rhythm_biggest_category: " — %{name}"
       all_in_plan: "Everything is inside your plan"
       overruns_title: "What overflowed"
