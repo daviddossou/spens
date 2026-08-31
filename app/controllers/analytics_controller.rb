@@ -8,5 +8,6 @@ class AnalyticsController < ApplicationController
     @period = Analyses::Period.new(params[:range],
                                    start_date: params[:start_date], end_date: params[:end_date])
     @spending = Analyses::SpendingQuery.new(space: current_space, period: @period)
+    @rhythm = Analyses::RhythmQuery.new(space: current_space, period: @period)
   end
 end

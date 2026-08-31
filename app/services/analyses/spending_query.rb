@@ -63,7 +63,65 @@ module Analyses
       }
     end
 
+    PlanRow = Data.define(:entry, :name, :spent, :planned, :prorated, :gap)
+    OffplanRow = Data.define(:name, :spent, :other)
+
+    # Overrun = spent beyond the plan PRORATED to today (never the full plan
+    # mid-month), sorted by that gap. Single-month periods only.
+    def overruns
+      plan_rows.select { |r| r.gap.positive? }.sort_by { |r| -r.gap }
+    end
+
+    def within_plan
+      plan_rows.reject { |r| r.gap.positive? }.sort_by { |r| -r.spent }
+    end
+
+    # Expense categories with spend but no budget line; "Autre" reads as
+    # uncategorised (its exit is reclassifying, not budgeting).
+    def offplan_categories
+      return [] unless @period.single_month?
+
+      planned_ids = plan_rows.flat_map { |r| r.entry.transaction_type&.subtree_ids }.compact
+      other_names = %w[other_expense].map { |k| TransactionTaxonomy.name(k, I18n.locale) }
+
+      spent_by_parent_type.filter_map do |(type_id, name), amount|
+        next if planned_ids.include?(type_id)
+
+        OffplanRow.new(name: name, spent: amount.round(2), other: other_names.include?(name))
+      end.sort_by { |r| -r.spent }
+    end
+
     private
+
+    def plan_rows
+      return [] unless @period.single_month? && plan
+
+      @plan_rows ||= begin
+        month = @period.months.first
+        actuals = Budgets::ActualsQuery.new(space: @space, month: month)
+        ratio = @period.month? ? @period.days_elapsed.to_f / @period.days_total : 1.0
+        month_entries(month).map do |entry|
+          spent = actuals.for_entry(entry)
+          prorated = (entry.planned_amount.to_f * ratio).round(2)
+          PlanRow.new(entry: entry, name: entry.display_name, spent: spent,
+                      planned: entry.planned_amount.to_f, prorated: prorated,
+                      gap: (spent - prorated).round(2))
+        end
+      end
+    end
+
+    def month_entries(month)
+      @space.budget_entries.for_month(month).expense.includes(:budget_item, transaction_type: :children)
+    end
+
+    def spent_by_parent_type
+      @space.transactions.joins(:transaction_type)
+            .where(transaction_types: { kind: "expense" }, transaction_date: @period.range)
+            .joins("LEFT JOIN transaction_types parents ON parents.id = transaction_types.parent_id")
+            .group(Arel.sql("COALESCE(parents.id, transaction_types.id)"),
+                   Arel.sql("COALESCE(parents.name, transaction_types.name)"))
+            .sum(Arel.sql("ABS(transactions.amount)"))
+    end
 
     def abs_sum(kinds, range)
       @space.transactions.joins(:transaction_type)

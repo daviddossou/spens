@@ -34,6 +34,25 @@ module Analyses
     def month? = kind == "month"
     def twelve_months? = kind == "twelve_months"
 
+    # Plan detail blocks (overruns / within / off-plan) read one month's plan.
+    def single_month?
+      month? || (kind == "custom" && whole_months? && months.size == 1)
+    end
+
+    def granularity
+      case kind
+      when "month" then :day
+      when "three_months" then :week
+      when "twelve_months" then :month
+      else
+        days = days_total
+        if days <= 31 then :day
+        elsif days <= 180 then :week
+        else :month
+        end
+      end
+    end
+
     # A custom range gets a plan reading only when it hugs whole months.
     def whole_months?
       return true unless kind == "custom"

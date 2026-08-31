@@ -105,4 +105,47 @@ RSpec.describe Analyses::SpendingQuery do
       expect(query.essential_split).to be_nil
     end
   end
+
+  describe "plan breakdown" do
+    let(:groceries) { type("expense", "Courses X") }
+    let(:outings) { type("expense", "Sorties X") }
+
+    before do
+      item_a = create(:budget_item, space: space, transaction_type: groceries, amount: 60_000)
+      item_b = create(:budget_item, space: space, transaction_type: outings, amount: 40_000)
+      create(:budget_entry, space: space, budget_item: item_a, transaction_type: groceries, planned_amount: 60_000)
+      create(:budget_entry, space: space, budget_item: item_b, transaction_type: outings, planned_amount: 40_000)
+    end
+
+    it "judges overruns against the plan PRORATED to today, sorted by gap" do
+      spend(84_000, type: groceries) # over even a full plan
+      spend(1_000, type: outings)    # far within
+
+      overrun = query.overruns.sole
+      expect(overrun.name).to eq("Courses X")
+      expect(overrun.prorated).to be <= 60_000
+      expect(overrun.gap).to eq((84_000 - overrun.prorated).round(2))
+
+      expect(query.within_plan.sole.name).to eq("Sorties X")
+    end
+
+    it "lists off-plan categories apart, flagging Autre as unclassified" do
+      spend(8_500, type: type("expense", "Loisirs X"))
+      other = FindOrCreateTransactionTypeService.new(space, TransactionTaxonomy.name("other_expense", I18n.locale), "expense").call
+      spend(2_000, type: other)
+
+      rows = query.offplan_categories
+      expect(rows.map(&:name)).to contain_exactly("Loisirs X", other.name)
+      expect(rows.find { |r| r.name == other.name }.other).to be(true)
+      expect(rows.find { |r| r.name == "Loisirs X" }.other).to be(false)
+    end
+
+    it "keeps subcategory spend inside its planned parent, not off-plan" do
+      child = create(:transaction_type, space: space, kind: "expense", name: "Marché X", parent: groceries)
+      spend(5_000, type: child)
+
+      expect(query.offplan_categories).to be_empty
+      expect(query.plan[:spent_on_plan]).to eq(5_000)
+    end
+  end
 end

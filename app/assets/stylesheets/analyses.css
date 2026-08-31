@@ -224,3 +224,173 @@
 .analyses-empty__message {
   color: var(--text-muted);
 }
+
+.analyses-card__title {
+  font-size: var(--font-size-title);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-dark);
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.analyses-card__count {
+  font-size: var(--font-size-label);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-muted);
+}
+
+.analyses-card--calm {
+  color: var(--text-dark);
+  font-weight: var(--font-weight-semibold);
+}
+
+/* Rhythm: plain flex bars; the future is grey stubs, never a fake zero. */
+.analyses-rhythm {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 96px;
+}
+
+.analyses-rhythm__bar {
+  flex: 1;
+  min-height: 4px;
+  border-radius: 2px;
+  background: var(--color-primary-20);
+}
+
+.analyses-rhythm__bar--peak {
+  background: var(--color-primary);
+}
+
+.analyses-rhythm__bar--future {
+  height: 4px !important;
+  background: var(--color-separator);
+}
+
+.analyses-rhythm__axis {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--font-size-label);
+  color: var(--text-muted);
+}
+
+.analyses-overrun {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding: 0.5rem 0;
+  text-decoration: none;
+  color: inherit;
+}
+
+.analyses-overrun + .analyses-overrun {
+  border-top: 1px solid var(--border-light);
+}
+
+.analyses-overrun__name {
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-dark);
+}
+
+.analyses-overrun__gap {
+  font-weight: var(--font-weight-bold);
+  color: var(--color-danger-dark);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Folds: the summary answers without being opened. */
+.analyses-fold__summary {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  cursor: pointer;
+  list-style: none;
+}
+
+.analyses-fold__summary::-webkit-details-marker {
+  display: none;
+}
+
+.analyses-fold__text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.analyses-fold__title {
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-dark);
+}
+
+.analyses-fold__sub {
+  font-size: var(--font-size-label);
+  color: var(--text-muted);
+}
+
+.analyses-fold__toggle {
+  flex-shrink: 0;
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-primary);
+}
+
+.analyses-fold[open] > .analyses-fold__summary {
+  margin-bottom: 0.5rem;
+}
+
+.analyses-fold[open] > .analyses-fold__summary .analyses-fold__toggle::after,
+details.analyses-fold:not([open]) > .analyses-fold__summary .analyses-fold__toggle::after {
+  content: "";
+}
+
+/* Slim rows for the folded lists. */
+.analyses-slim {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.45rem 0;
+  text-decoration: none;
+  color: inherit;
+}
+
+.analyses-slim__name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: var(--font-size-body);
+  color: var(--text-dark);
+}
+
+.analyses-slim__bar {
+  flex: 0 0 5.5rem;
+  height: 6px;
+  border-radius: var(--radius-full);
+  background: var(--color-separator);
+  overflow: hidden;
+}
+
+.analyses-slim__bar span {
+  display: block;
+  height: 100%;
+  background: var(--color-primary);
+  border-radius: var(--radius-full);
+}
+
+.analyses-slim__amount {
+  flex-shrink: 0;
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-dark);
+  font-variant-numeric: tabular-nums;
+}
+
+.analyses-slim__action {
+  flex-shrink: 0;
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-primary);
+  text-decoration: none;
+}
