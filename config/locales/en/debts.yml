@@ -41,6 +41,12 @@ en:
       closed_written_off_count:
         one: "%{count} written off"
         other: "%{count} written off"
+      closed_group_count:
+        one: "%{count} debt"
+        other: "%{count} debts"
+      closed_direction:
+        lent: "Loan"
+        borrowed: "Borrowed"
       closed_settled_on: "Settled on %{date}"
       closed_written_off_on:
         lent: "%{date} · no longer counting on it"

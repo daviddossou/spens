@@ -82,7 +82,8 @@
 
     <% if @closed_debts.any? %>
       <!-- Closed debts are archive: collapsed to a single line, out of the way of living debts. -->
-      <details class="debts-closed">
+      <% closed_groups = @closed_debts.group_by { |d| DebtRelation.normalize(d.name) }.values %>
+      <details class="debts-closed" <%= "open" if params[:closed].present? %>>
         <summary class="debts-closed__summary">
           <span class="debts-closed__check" aria-hidden="true">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
@@ -90,7 +91,7 @@
             </svg>
           </span>
           <span class="debts-closed__label">
-            <%= t(".closed_count", count: @closed_debts.size) %>
+            <%= t(".closed_count", count: closed_groups.size) %>
             <span class="debts-closed__breakdown"><%= closed_debts_breakdown(@closed_debts) %></span>
           </span>
           <span class="debts-closed__chevron" aria-hidden="true">
@@ -100,21 +101,36 @@
           </span>
         </summary>
         <div class="debts-closed__list">
-          <% @closed_debts.each do |debt| %>
-            <%= link_to debt_path(id: debt.id), class: "debt-closed-row" do %>
-              <span class="debt-closed-row__main">
-                <span class="debt-closed-row__name">
-                  <%= debt.name %>
-                  <% if debt.written_off? %>
-                    <span class="debt-closed-row__tag"><%= closed_debt_short_tag(debt) %></span>
-                  <% end %>
+          <%# One block per person: the name once, then each settled debt under it
+              (still clickable to its own page and history). %>
+          <% closed_groups.each do |person_debts| %>
+            <div class="debt-closed-group">
+              <% if person_debts.size > 1 %>
+                <span class="debt-closed-group__head">
+                  <%# Prefer the best-cased spelling of the person's name. %>
+                  <span class="debt-closed-group__name"><%= person_debts.map(&:name).max_by { |n| n.count("A-Z") } %></span>
+                  <span class="debt-closed-group__count"><%= t('.closed_group_count', count: person_debts.size) %></span>
                 </span>
-                <span class="debt-closed-row__sub"><%= closed_debt_row_subtitle(debt) %></span>
-              </span>
-              <span class="debt-closed-row__amount <%= 'debt-closed-row__amount--struck' if debt.written_off? %>">
-                <%= smart_format_money(debt.total_lent, current_space.currency, sign: :never) %>
-              </span>
-            <% end %>
+              <% end %>
+              <% person_debts.each do |debt| %>
+                <%= link_to debt_path(id: debt.id), class: "debt-closed-row#{' debt-closed-row--grouped' if person_debts.size > 1}" do %>
+                  <span class="debt-closed-row__main">
+                    <span class="debt-closed-row__name">
+                      <% if person_debts.size == 1 %><%= debt.name %><% end %>
+                      <% if debt.written_off? %>
+                        <span class="debt-closed-row__tag"><%= closed_debt_short_tag(debt) %></span>
+                      <% end %>
+                    </span>
+                    <span class="debt-closed-row__sub">
+                      <% if person_debts.size > 1 %><%= t(".closed_direction.#{debt.direction}") %> · <% end %><%= closed_debt_row_subtitle(debt) %>
+                    </span>
+                  </span>
+                  <span class="debt-closed-row__amount <%= 'debt-closed-row__amount--struck' if debt.written_off? %>">
+                    <%= smart_format_money(debt.total_lent, current_space.currency, sign: :never) %>
+                  </span>
+                <% end %>
+              <% end %>
+            </div>
           <% end %>
         </div>
       </details>
