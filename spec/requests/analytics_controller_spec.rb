@@ -47,6 +47,29 @@ RSpec.describe AnalyticsController, type: :request do
     expect(response.body).to include(I18n.t("analytics.index.empty_title"))
   end
 
+  describe "between you and others" do
+    it "does not render the section without a debt" do
+      spend(1_000)
+      get analytics_path
+      expect(response.body).not_to include(I18n.t("analytics.index.section_between"))
+    end
+
+    it "shows the net first, both gross lists, and the two-sided net note" do
+      create(:debt, user: user, name: "Mariam", direction: "lent", total_lent: 80_000, total_reimbursed: 0)
+      create(:debt, user: user, name: "Gilchrist", direction: "lent", total_lent: 28_000, total_reimbursed: 0)
+      create(:debt, :borrowed, user: user, name: "Gilchrist", direction: "borrowed", total_lent: 150_000, total_reimbursed: 0)
+
+      get analytics_path
+
+      expect(response.body).to include(I18n.t("analytics.index.settle_today"))
+      expect(response.body).to include("Mariam")
+      expect(response.body).to include(I18n.t("analytics.index.who_owes_you"))
+      expect(response.body).to include(I18n.t("analytics.index.whom_you_owe"))
+      # Gilchrist on both sides: gross on each list + an explicit net note (122 000).
+      expect(response.body).to include(I18n.t("analytics.index.both_sides_you_owe", amount: "122,000"))
+    end
+  end
+
   it "states the moved money apart, never in the spent total" do
     spend(10_000)
     debt_type = create(:transaction_type, space: space, kind: "debt_out", name: "Prêt X")

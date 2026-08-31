@@ -220,5 +220,64 @@
         <% end %>
       <% end %>
     <% end %>
+
+    <%# Section 2 — debts as numbered lists, the net first; no section without a debt. %>
+    <% if @relations.any? %>
+      <%
+        owed = @relations.select { |r| r.owed_to_me.positive? }.sort_by { |r| -r.owed_to_me }
+        owing = @relations.select { |r| r.i_owe.positive? }.sort_by { |r| -r.i_owe }
+        total_owed = owed.sum(&:owed_to_me)
+        total_owing = owing.sum(&:i_owe)
+        net = total_owed - total_owing
+        max_owed = owed.map(&:owed_to_me).max
+        max_owing = owing.map(&:i_owe).max
+      %>
+      <h2 class="analyses-section__title"><%= t('.section_between') %></h2>
+      <div class="analyses-card">
+        <p class="analyses-card__label"><%= t('.settle_today') %></p>
+        <p class="analyses-hero <%= net.negative? ? 'analyses-hero--negative' : 'analyses-hero--positive' %>">
+          <%= smart_format_money(net, current_space.currency, sign: :always, threshold: Float::INFINITY) %>
+        </p>
+        <div class="analyses-debt-chips">
+          <div class="analyses-debt-chip analyses-debt-chip--in">
+            <span class="analyses-debt-chip__label"><%= t('.owed_to_you') %></span>
+            <span class="analyses-debt-chip__value"><%= format_money_number(total_owed) %></span>
+          </div>
+          <div class="analyses-debt-chip analyses-debt-chip--out">
+            <span class="analyses-debt-chip__label"><%= t('.you_owe') %></span>
+            <span class="analyses-debt-chip__value"><%= format_money_number(total_owing) %></span>
+          </div>
+        </div>
+
+        <% [ [ owed, :owed_to_me, max_owed, 'who_owes_you', 'in' ], [ owing, :i_owe, max_owing, 'whom_you_owe', 'out' ] ].each do |rows, reader, max, title_key, side| %>
+          <% next if rows.empty? %>
+          <div class="analyses-row">
+            <p class="analyses-debt-list__title"><%= t(".#{title_key}") %></p>
+            <% rows.each do |relation| %>
+              <%= link_to debt_path(id: relation.primary_debt.id), class: "analyses-person", data: { turbo_frame: "_top" } do %>
+                <span class="analyses-person__avatar analyses-person__avatar--<%= side %>"><%= relation.initials %></span>
+                <span class="analyses-person__body">
+                  <span class="analyses-person__head">
+                    <span class="analyses-person__name"><%= relation.name %></span>
+                    <span class="analyses-person__amount"><%= format_money_number(relation.public_send(reader)) %></span>
+                  </span>
+                  <span class="analyses-person__bar analyses-person__bar--<%= side %>">
+                    <span style="width: <%= (relation.public_send(reader) / max * 100).round(1) %>%;"></span>
+                  </span>
+                </span>
+              <% end %>
+            <% end %>
+          </div>
+        <% end %>
+
+        <% @relations.select(&:two_way?).each do |relation| %>
+          <p class="analyses-debt-note">
+            <%= t('.both_sides_html', name: relation.name,
+                  net: t(relation.net_direction == 'borrowed' ? '.both_sides_you_owe' : '.both_sides_owes_you',
+                         amount: format_money_number(relation.net_amount))) %>
+          </p>
+        <% end %>
+      </div>
+    <% end %>
   </div>
 </div>

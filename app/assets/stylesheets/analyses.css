@@ -394,3 +394,130 @@ details.analyses-fold:not([open]) > .analyses-fold__summary .analyses-fold__togg
   color: var(--color-primary);
   text-decoration: none;
 }
+
+/* Section 2 — between you and others */
+.analyses-hero--negative {
+  color: var(--color-danger-dark);
+}
+
+.analyses-hero--positive {
+  color: var(--color-success-dark);
+}
+
+.analyses-debt-chips {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.analyses-debt-chip {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding: 0.625rem 0.875rem;
+  border-radius: var(--radius-lg);
+}
+
+.analyses-debt-chip--in {
+  background: var(--color-success-20);
+}
+
+.analyses-debt-chip--out {
+  background: var(--color-danger-20);
+}
+
+.analyses-debt-chip__label {
+  font-size: var(--font-size-label);
+}
+
+.analyses-debt-chip--in .analyses-debt-chip__label { color: var(--color-success-dark); }
+.analyses-debt-chip--out .analyses-debt-chip__label { color: var(--color-danger-dark); }
+
+.analyses-debt-chip__value {
+  font-weight: 700;
+  color: var(--text-dark);
+  font-variant-numeric: tabular-nums;
+}
+
+.analyses-debt-list__title {
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-dark);
+  margin-bottom: 0.25rem;
+}
+
+.analyses-person {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.4rem 0;
+  text-decoration: none;
+  color: inherit;
+}
+
+.analyses-person__avatar {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-label);
+  font-weight: var(--font-weight-bold);
+  background: var(--color-primary-20);
+  color: var(--color-primary);
+}
+
+.analyses-person__body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.analyses-person__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.analyses-person__name {
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-dark);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.analyses-person__amount {
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-dark);
+  font-variant-numeric: tabular-nums;
+}
+
+.analyses-person__bar {
+  height: 6px;
+  border-radius: var(--radius-full);
+  background: var(--color-separator);
+  overflow: hidden;
+}
+
+.analyses-person__bar span {
+  display: block;
+  height: 100%;
+  border-radius: var(--radius-full);
+}
+
+.analyses-person__bar--in span { background: var(--color-success); }
+.analyses-person__bar--out span { background: var(--color-danger); }
+
+.analyses-debt-note {
+  padding: 0.625rem 0.875rem;
+  border-radius: var(--radius-lg);
+  background: var(--color-primary-20);
+  color: var(--color-primary);
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-medium);
+}

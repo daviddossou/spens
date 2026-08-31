@@ -9,5 +9,6 @@ class AnalyticsController < ApplicationController
                                    start_date: params[:start_date], end_date: params[:end_date])
     @spending = Analyses::SpendingQuery.new(space: current_space, period: @period)
     @rhythm = Analyses::RhythmQuery.new(space: current_space, period: @period)
+    @relations = DebtRelation.all_ongoing(current_space).select { |r| r.owed_to_me.positive? || r.i_owe.positive? }
   end
 end
