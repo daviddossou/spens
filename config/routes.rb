@@ -109,6 +109,9 @@ Rails.application.routes.draw do
         collection { patch :reorder }
       end
 
+      # Read-only JSON snapshot of the tree (+ usage, aliases, coverage, gaps).
+      resource :taxonomy_export, only: :show, defaults: { format: :json }
+
       resources :users, only: [ :index, :show ] do
         member do
           post :impersonate

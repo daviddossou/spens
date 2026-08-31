@@ -32,4 +32,49 @@ namespace :taxonomy do
     TransactionTaxonomy.reload!
     puts "taxonomy nodes: #{created} created, #{skipped} skipped (admin-owned)"
   end
+
+  # Full tree + usage, aliases, coverage and gaps as JSON.
+  #   bin/rails taxonomy:export            -> stdout
+  #   OUT=tmp/taxonomy.json bin/rails taxonomy:export
+  #   KIND=expense GAPS=false bin/rails taxonomy:export
+  desc "Export the taxonomy (with usage and coverage) as JSON"
+  task export: :environment do
+    payload = TaxonomyExport.call(kind: ENV["KIND"], gaps: ENV["GAPS"] != "false",
+                                  gap_limit: (ENV["GAP_LIMIT"] || 50).to_i)
+    json = JSON.pretty_generate(payload)
+
+    if (out = ENV["OUT"]).present?
+      File.write(out, json)
+      warn "taxonomy exported to #{out} (#{json.bytesize} bytes)"
+    else
+      puts json
+    end
+  end
+
+  # Human-readable pass for deciding which parents stand on their own.
+  #   bin/rails taxonomy:review
+  desc "Print a review table of parents, their subtree usage and coverage"
+  task review: :environment do
+    data = TaxonomyExport.call(gaps: false)
+
+    data[:kinds].each do |kind, parents|
+      puts "\n===== #{kind.upcase} (#{parents.size} parents) ====="
+      printf("%-26s %5s %7s %7s  %s\n", "KEY", "SUBS", "SPACES", "TX", "NAME (FR)")
+      parents.sort_by { |p| -p[:subtree_usage][:transactions] }.each do |p|
+        printf("%-26s %5d %7d %7d  %s\n", p[:key], p[:children].size,
+               p[:subtree_usage][:spaces], p[:subtree_usage][:transactions], p[:name][:fr])
+      end
+    end
+
+    c = data[:coverage]
+    puts "\n===== COUVERTURE ====="
+    if c[:transactions].to_i.zero?
+      puts "aucune transaction"
+    else
+      puts "transactions           : #{c[:transactions]}"
+      puts "fourre-tout (other/unc): #{c[:catch_all][:transactions]} (#{c[:catch_all][:percent]}%)"
+      puts "categorie inventee     : #{c[:custom_category][:transactions]} (#{c[:custom_category][:percent]}%)"
+      puts "NON COUVERT            : #{c[:uncovered][:transactions]} (#{c[:uncovered][:percent]}%)"
+    end
+  end
 end
