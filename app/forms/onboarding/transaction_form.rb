@@ -3,15 +3,16 @@
 class Onboarding::TransactionForm < BaseForm
   ##
   # Constants
-  DEFAULT_TRANSACTION_TYPE_NAME = "Transfer In"
-  DEFAULT_TRANSACTION_TYPE_KIND = TransactionType::KIND_TRANSFER_IN
+  # An opening balance is a neutral reconciliation, not an orphan transfer leg.
+  DEFAULT_TRANSACTION_TYPE_KIND = "initial_balance"
 
   ##
   # Attributes
   attribute :account_name, :string
   attribute :amount, :decimal
   attribute :transaction_date, :date, default: -> { Date.current }
-  attribute :transaction_type_name, :string, default: DEFAULT_TRANSACTION_TYPE_NAME
+  attribute :transaction_type_name, :string,
+            default: -> { I18n.t("transactions.initial_balance.type_name") }
   attribute :transaction_type_kind, :string, default: DEFAULT_TRANSACTION_TYPE_KIND
 
   attr_accessor :space

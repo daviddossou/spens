@@ -52,8 +52,8 @@ RSpec.describe Onboarding::AccountSetupForm, type: :model do
         expect(form.transactions.first.account_name).to eq('')
       end
 
-      it 'default transaction form has Transfer In type' do
-        expect(form.transactions.first.transaction_type_name).to eq('Transfer In')
+      it 'defaults the transaction to the starting-balance type' do
+        expect(form.transactions.first.transaction_type_name).to eq(I18n.t('transactions.initial_balance.type_name'))
       end
     end
 
@@ -65,7 +65,7 @@ RSpec.describe Onboarding::AccountSetupForm, type: :model do
               amount: '1000.00',
               transaction_date: '2025-10-27',
               account_name: 'Checking',
-              transaction_type_name: 'Transfer In'
+              transaction_type_name: I18n.t('transactions.initial_balance.type_name')
             },
             '1' => {
               amount: '500.00',
@@ -104,7 +104,7 @@ RSpec.describe Onboarding::AccountSetupForm, type: :model do
 
       it 'uses default transaction type name when not provided' do
         form = described_class.new(space, payload)
-        expect(form.transactions[1].transaction_type_name).to eq('Transfer In')
+        expect(form.transactions[1].transaction_type_name).to eq(I18n.t('transactions.initial_balance.type_name'))
       end
     end
   end
@@ -221,7 +221,7 @@ RSpec.describe Onboarding::AccountSetupForm, type: :model do
             '0' => {
               amount: '1500.00',
               account_name: 'Checking Account',
-              transaction_type_name: 'Transfer In'
+              transaction_type_name: I18n.t('transactions.initial_balance.type_name')
             }
           }
         }

@@ -30,7 +30,7 @@
     </div>
 
     <%= form.hidden_field :transaction_date, value: Date.current %>
-    <%= form.hidden_field :transaction_type_name, value: Onboarding::TransactionForm::DEFAULT_TRANSACTION_TYPE_NAME %>
+    <%= form.hidden_field :transaction_type_name, value: I18n.t("transactions.initial_balance.type_name") %>
     <%= form.hidden_field :transaction_type_kind, value: Onboarding::TransactionForm::DEFAULT_TRANSACTION_TYPE_KIND %>
   </div>
 
