@@ -11,7 +11,7 @@ RSpec.describe Onboarding::AccountLineComponent, type: :component do
       amount: 50_000.00,
       transaction_date: Date.current,
       account_name: 'Cash Wallet',
-      transaction_type_name: Onboarding::TransactionForm::DEFAULT_TRANSACTION_TYPE_NAME,
+      transaction_type_name: I18n.t("transactions.initial_balance.type_name"),
       transaction_type_kind: Onboarding::TransactionForm::DEFAULT_TRANSACTION_TYPE_KIND
     )
   end
@@ -238,7 +238,7 @@ RSpec.describe Onboarding::AccountLineComponent, type: :component do
           amount: 10_000 * (i + 1),
           transaction_date: Date.current,
           account_name: "Account #{i + 1}",
-          transaction_type_name: Onboarding::TransactionForm::DEFAULT_TRANSACTION_TYPE_NAME,
+          transaction_type_name: I18n.t("transactions.initial_balance.type_name"),
           transaction_type_kind: Onboarding::TransactionForm::DEFAULT_TRANSACTION_TYPE_KIND
         )
       end

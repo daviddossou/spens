@@ -29,3 +29,28 @@ namespace :transactions do
     puts "Paired #{paired} transfer(s)"
   end
 end
+
+namespace :transactions do
+  desc "Re-kind onboarding opening balances (orphan Transfer In legs) to initial_balance"
+  task convert_onboarding_initial_balances: :environment do
+    # The old onboarding recorded opening balances as partner-less transfer_in
+    # rows with a recognisable description. Same sign, so no ledger adjustment.
+    patterns = %w[en fr].map { |l| I18n.t("onboarding.account_setups.initial_balance_description", account_name: "%", locale: l) }
+    converted = 0
+
+    Space.find_each do |space|
+      scope = space.transactions.joins(:transaction_type)
+                   .where(transaction_types: { kind: "transfer_in" }, transfer_group_id: nil)
+                   .where(patterns.map { "transactions.description LIKE ?" }.join(" OR "), *patterns)
+      next if scope.none?
+
+      type = FindOrCreateTransactionTypeService.new(
+        space, I18n.t("transactions.initial_balance.type_name"), "initial_balance"
+      ).call
+      converted += scope.update_all(transaction_type_id: type.id, updated_at: Time.current)
+    end
+
+    Rails.logger.info "[transactions:convert_onboarding_initial_balances] converted #{converted} row(s)"
+    puts "converted #{converted} opening-balance row(s)"
+  end
+end

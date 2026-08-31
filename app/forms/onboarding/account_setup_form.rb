@@ -83,7 +83,7 @@ class Onboarding::AccountSetupForm < BaseForm
         space: space,
         account_name: attrs[:account_name],
         amount: attrs[:amount],
-        transaction_type_name: attrs[:transaction_type_name] || Onboarding::TransactionForm::DEFAULT_TRANSACTION_TYPE_NAME,
+        transaction_type_name: attrs[:transaction_type_name] || I18n.t("transactions.initial_balance.type_name"),
         transaction_type_kind: attrs[:transaction_type_kind] || Onboarding::TransactionForm::DEFAULT_TRANSACTION_TYPE_KIND
       }
 

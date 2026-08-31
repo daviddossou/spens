@@ -5,6 +5,6 @@ namespace :release do
   # tasks (e.g. data backfills) here, then remove them once they've shipped.
   desc "Run post-deploy tasks"
   task run_after: :environment do
-    Rake::Task["debts:merge_duplicate_names"].invoke
+    Rake::Task["transactions:convert_onboarding_initial_balances"].invoke
   end
 end
