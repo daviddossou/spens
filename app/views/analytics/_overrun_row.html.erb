@@ -5,7 +5,9 @@
   </div>
   <div class="analyses-bar analyses-bar--over">
     <span class="analyses-bar__fill" style="width: <%= row.planned.positive? ? [ row.spent / row.planned * 100, 100 ].min.round(1) : 100 %>%;"></span>
-    <span class="analyses-bar__tick" style="left: <%= row.planned.positive? ? [ row.prorated / row.planned * 100, 100 ].min.round(1) : 100 %>%;" aria-hidden="true"></span>
+    <% if row.planned.positive? && row.prorated < row.planned %>
+      <span class="analyses-bar__tick" style="left: <%= [ row.prorated / row.planned * 100, 100 ].min.round(1) %>%;" aria-hidden="true"></span>
+    <% end %>
   </div>
   <p class="analyses-row__caption"><%= t('analytics.index.overrun_caption', spent: format_money_number(row.spent), planned: format_money_number(row.planned)) %></p>
 <% end %>

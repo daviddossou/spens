@@ -33,7 +33,7 @@
       <% end %>
     </div>
 
-    <% if @spending.spent_total.zero? && @spending.moved_total.zero? %>
+    <% if @spending.spent_total.zero? && @spending.lent_total.zero? %>
       <div class="empty-state">
         <p class="analyses-empty__title"><%= t('.empty_title') %></p>
         <p class="analyses-empty__message"><%= t('.empty_message') %></p>
@@ -68,8 +68,14 @@
         <% end %>
 
         <% if plan && plan[:planned] %>
-          <% over = plan[:spent_on_plan] > plan[:planned] %>
-          <% fill = plan[:planned].positive? ? [ plan[:spent_on_plan] / plan[:planned] * 100, 100 ].min : 0 %>
+          <%
+            over = plan[:spent_on_plan] > plan[:planned]
+            fill = plan[:planned].positive? ? [ plan[:spent_on_plan] / plan[:planned] * 100, 100 ].min : 0
+            prorated = @spending.prorated_plan_total
+            ongoing = prorated < plan[:planned]
+            pace_gap = (plan[:spent_on_plan] - prorated).round
+            final_gap = (plan[:planned] - plan[:spent_on_plan]).round
+          %>
           <div class="analyses-row">
             <div class="analyses-row__head">
               <span class="analyses-row__label"><%= t('.plan_label') %></span>
@@ -79,9 +85,21 @@
             </div>
             <div class="analyses-bar<%= ' analyses-bar--over' if over %>">
               <span class="analyses-bar__fill" style="width: <%= fill.round(1) %>%;"></span>
-              <span class="analyses-bar__tick" style="left: <%= (@period.month? ? plan[:prorata_ratio] * 100 : 100).round(1) %>%;" aria-hidden="true"></span>
+              <%# The tick exists only mid-period; at 100% it's not a landmark. %>
+              <% if ongoing && plan[:planned].positive? %>
+                <span class="analyses-bar__tick" style="left: <%= [ prorated / plan[:planned] * 100, 100 ].min.round(1) %>%;" aria-hidden="true"></span>
+              <% end %>
             </div>
-            <p class="analyses-row__caption"><%= t('.plan_caption_html', date: l([ Date.current, range.end ].min, format: :day_month), with_plan: plan[:categories_with_plan], total: [ plan[:categories_total], plan[:categories_with_plan] ].max) %></p>
+            <%# The verdict in money — the phrase IS the tick's legend, never its definition. %>
+            <p class="analyses-row__caption analyses-row__caption--verdict">
+              <% if ongoing %>
+                <%= pace_gap.positive? ? t('.plan_verdict_over', amount: format_money_number(pace_gap)) \
+                                       : (pace_gap.negative? ? t('.plan_verdict_under', amount: format_money_number(pace_gap.abs)) : t('.plan_verdict_on')) %>
+              <% else %>
+                <%= final_gap.positive? ? t('.plan_done_kept', amount: format_money_number(final_gap)) \
+                                        : (final_gap.negative? ? t('.plan_done_over', amount: format_money_number(final_gap.abs)) : t('.plan_done_exact')) %>
+              <% end %>
+            </p>
           </div>
         <% elsif plan && plan[:months_total] %>
           <div class="analyses-row">
@@ -90,19 +108,22 @@
         <% end %>
 
         <% if split %>
+          <%# Invariant 2: total = essentiel + plaisir + non classé (grey). %>
+          <% total = @spending.spent_total %>
           <div class="analyses-row">
             <div class="analyses-row__head">
               <span class="analyses-row__label"><%= t('.essential_label') %></span>
               <span class="analyses-row__value"><%= t('.essential_pct', pct: split[:pct_essential]) %></span>
             </div>
             <div class="analyses-splitbar">
-              <span class="analyses-splitbar__essential" style="width: <%= split[:pct_essential] %>%;"></span>
+              <span class="analyses-splitbar__essential" style="width: <%= (split[:essential] / total * 100).round(1) %>%;"></span>
+              <span class="analyses-splitbar__plaisir" style="width: <%= (split[:plaisir] / total * 100).round(1) %>%;"></span>
             </div>
             <p class="analyses-row__caption">
               <strong><%= format_money_number(split[:essential]) %></strong> <%= t('.essential_amount') %>
               &nbsp; <strong><%= format_money_number(split[:plaisir]) %></strong> <%= t('.plaisir_amount') %>
-              <% if split[:offplan_noteworthy] %>
-                · <%= t('.essential_offplan_note', amount: format_money_number(@spending.offplan_total)) %>
+              <% if split[:unclassified].positive? %>
+                &nbsp; <strong><%= format_money_number(split[:unclassified]) %></strong> <%= t('.unclassified_amount') %>
               <% end %>
             </p>
           </div>
@@ -113,11 +134,12 @@
           <p class="analyses-allgood"><%= t('.all_in_plan') %></p>
         <% end %>
 
-        <% if @spending.moved_total.positive? %>
-          <%= link_to dashboard_path, class: "analyses-moved" do %>
-            <span><%= t('.moved_label') %></span>
-            <span class="analyses-moved__amount"><%= format_money_number(@spending.moved_total) %> ›</span>
-          <% end %>
+        <%# Money that left the accounts as loans — an addition, never a subtraction. %>
+        <% if @spending.lent_total.positive? %>
+          <a href="#analyses-between" class="analyses-moved">
+            <span><%= t('.lent_line', amount: format_money_number(@spending.lent_total)) %></span>
+            <span class="analyses-moved__amount">›</span>
+          </a>
         <% end %>
       </div>
 
@@ -188,10 +210,15 @@
             </summary>
             <% within.each do |row| %>
               <%= link_to edit_budget_entry_path(id: row.entry.id), class: "analyses-slim", data: { turbo_frame: "modal" } do %>
-                <span class="analyses-slim__name"><%= row.name %></span>
+                <span class="analyses-slim__name">
+                  <%= row.name %><% if row.single && row.spent.positive? %> <span class="analyses-slim__chip"><%= t('.paid_chip') %></span><% end %>
+                </span>
                 <span class="analyses-slim__bar">
                   <span style="width: <%= row.planned.positive? ? [ row.spent / row.planned * 100, 100 ].min.round(1) : 0 %>%;"></span>
-                  <i class="analyses-slim__tick" style="left: <%= row.planned.positive? ? [ row.prorated / row.planned * 100, 100 ].min.round(1) : 100 %>%;" aria-hidden="true"></i>
+                  <%# No tick at 100%: single-transaction lines and finished periods carry none. %>
+                  <% if row.planned.positive? && row.prorated < row.planned %>
+                    <i class="analyses-slim__tick" style="left: <%= [ row.prorated / row.planned * 100, 100 ].min.round(1) %>%;" aria-hidden="true"></i>
+                  <% end %>
                 </span>
                 <span class="analyses-slim__amount"><%= format_money_number(row.spent) %></span>
               <% end %>
@@ -201,12 +228,16 @@
 
         <%# Block 5 — off-plan, apart, never mixed with overruns. %>
         <% offplan = @spending.offplan_categories %>
-        <% if offplan.any? %>
+        <%# Block 5 shows only past 10% of the total; the plan-coverage line lives here. %>
+        <% if offplan.any? && @spending.spent_total.positive? && @spending.offplan_total / @spending.spent_total > 0.10 %>
           <details class="analyses-card analyses-fold">
             <summary class="analyses-fold__summary">
               <span class="analyses-fold__text">
                 <span class="analyses-fold__title"><%= t('.offplan_title', count: offplan.size) %></span>
-                <span class="analyses-fold__sub"><%= t('.offplan_totals', spent: format_money_number(offplan.sum(&:spent))) %></span>
+                <span class="analyses-fold__sub">
+                  <%= t('.offplan_totals', spent: format_money_number(offplan.sum(&:spent))) %>
+                  · <%= t('.coverage', with_plan: plan[:categories_with_plan], total: [ plan[:categories_total], plan[:categories_with_plan] ].max) %>
+                </span>
               </span>
               <span class="analyses-fold__toggle"><%= t('.fold_toggle') %></span>
             </summary>
@@ -235,18 +266,19 @@
       <% end %>
     <% end %>
 
-    <%# Section 2 — debts as numbered lists, the net first; no section without a debt. %>
+    <%# Section 2 — netted PER PERSON before any aggregation: someone on both
+        sides appears once, at their net. No section without a debt. %>
     <% if @relations.any? %>
       <%
-        owed = @relations.select { |r| r.owed_to_me.positive? }.sort_by { |r| -r.owed_to_me }
-        owing = @relations.select { |r| r.i_owe.positive? }.sort_by { |r| -r.i_owe }
-        total_owed = owed.sum(&:owed_to_me)
-        total_owing = owing.sum(&:i_owe)
+        owed = @relations.select { |r| r.net_direction == "lent" }.sort_by { |r| -r.net_amount }
+        owing = @relations.select { |r| r.net_direction == "borrowed" && r.net_amount.positive? }.sort_by { |r| -r.net_amount }
+        total_owed = owed.sum(&:net_amount)
+        total_owing = owing.sum(&:net_amount)
         net = total_owed - total_owing
-        max_owed = owed.map(&:owed_to_me).max
-        max_owing = owing.map(&:i_owe).max
+        max_owed = owed.map(&:net_amount).max
+        max_owing = owing.map(&:net_amount).max
       %>
-      <h2 class="analyses-section__title"><%= t('.section_between') %></h2>
+      <h2 class="analyses-section__title" id="analyses-between"><%= t('.section_between') %></h2>
       <div class="analyses-card">
         <p class="analyses-card__label"><%= t('.settle_today') %></p>
         <p class="analyses-hero <%= net.negative? ? 'analyses-hero--negative' : 'analyses-hero--positive' %>">
@@ -263,7 +295,7 @@
           </div>
         </div>
 
-        <% [ [ owed, :owed_to_me, max_owed, 'who_owes_you', 'in' ], [ owing, :i_owe, max_owing, 'whom_you_owe', 'out' ] ].each do |rows, reader, max, title_key, side| %>
+        <% [ [ owed, :net_amount, max_owed, 'who_owes_you', 'in' ], [ owing, :net_amount, max_owing, 'whom_you_owe', 'out' ] ].each do |rows, reader, max, title_key, side| %>
           <% next if rows.empty? %>
           <div class="analyses-row">
             <p class="analyses-debt-list__title"><%= t(".#{title_key}") %></p>
@@ -284,13 +316,6 @@
           </div>
         <% end %>
 
-        <% @relations.select(&:two_way?).each do |relation| %>
-          <p class="analyses-debt-note">
-            <%= t('.both_sides_html', name: relation.name,
-                  net: t(relation.net_direction == 'borrowed' ? '.both_sides_you_owe' : '.both_sides_owes_you',
-                         amount: format_money_number(relation.net_amount))) %>
-          </p>
-        <% end %>
       </div>
     <% end %>
 
@@ -333,8 +358,11 @@
                 </span>
               </span>
               <span class="analyses-person__bar"><span style="width: <%= progress.percentage %>%; background: var(--color-primary);"></span></span>
-              <% if (eta = progress.eta_at_current_pace) %>
+              <% state, eta = progress.rhythm_state %>
+              <% if state == :eta %>
                 <span class="analyses-goal__eta"><%= t('.goal_eta', date: l(eta, format: :month_year)) %></span>
+              <% elsif state == :no_rhythm %>
+                <span class="analyses-goal__eta"><%= t('.no_rhythm') %></span>
               <% end %>
             <% end %>
           <% end %>

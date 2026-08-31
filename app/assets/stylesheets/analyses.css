@@ -186,8 +186,9 @@
 }
 
 .analyses-splitbar {
+  display: flex;
   height: 8px;
-  background: var(--color-primary-20);
+  background: var(--color-separator); /* the grey remainder = non classé */
   border-radius: var(--radius-full);
   overflow: hidden;
 }
@@ -196,6 +197,12 @@
   display: block;
   height: 100%;
   background: var(--color-primary);
+}
+
+.analyses-splitbar__plaisir {
+  display: block;
+  height: 100%;
+  background: var(--color-primary-20);
 }
 
 .analyses-moved {
@@ -665,4 +672,14 @@ details.analyses-fold:not([open]) > .analyses-fold__summary .analyses-fold__togg
   width: 2px;
   background: var(--color-charcoal-black);
   transform: translateX(-1px);
+}
+
+.analyses-slim__chip {
+  margin-left: 0.25rem;
+  padding: 0.05rem 0.4rem;
+  border-radius: var(--radius-full);
+  background: var(--color-success-20);
+  color: var(--color-success-dark);
+  font-size: var(--font-size-label);
+  font-weight: var(--font-weight-semibold);
 }
