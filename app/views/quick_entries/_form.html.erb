@@ -1,22 +1,64 @@
+<%# The dictation sheet (Tours 20-23). Three things vary with the page it opened
+    from: the pill (what the page knows), the example in the field (what one
+    usually says here), and the button's verb. Everything else is identical. %>
+<%
+  ctx = @context&.type || :none
+  record = @context&.record
+  pill_name = case ctx
+              when :goal then record.name
+              when :person then record.name
+              when :account then record.name
+              end
+  form_url = case ctx
+             when :goal then new_transaction_path(kind: "transfer", account_id: record.account_id)
+             when :person then new_transaction_path(kind: "debt_out", contact_name: record.name, person_locked: 1)
+             when :account then new_transaction_path(account_id: record.id)
+             else new_transaction_path
+             end
+  hidden_key = { goal: :goal_id, person: :debt_id, account: :account_id }[ctx]
+%>
+
 <header class="page-header">
-  <p class="page-header__subtitle"><%= t('.subtitle') %></p>
+  <h2 class="quick-entry__title"><%= ctx == :goal ? t('.title_goal') : t('.title') %></h2>
 </header>
 
 <div class="page-content">
+  <% if pill_name %>
+    <div class="quick-entry__pill">
+      <span class="quick-entry__pill-label"><%= t(".pill_#{ctx}", name: pill_name) %></span>
+      <%# The pill is always removable — nobody is prisoner of a context they
+          didn't ask for. Removing it reloads the sheet bare. %>
+      <%= link_to new_quick_entry_path, class: "quick-entry__pill-remove",
+                  aria: { label: t('.remove_context') }, data: { turbo_frame: "modal" } do %>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      <% end %>
+    </div>
+  <% end %>
+
   <%= form_with url: quick_entry_path, method: :post, class: "quick-entry" do |f| %>
+    <%= hidden_field_tag hidden_key, record.id if hidden_key && record %>
+
     <%= f.text_field :text,
           autofocus: true,
           autocomplete: "off",
           enterkeyhint: "send",
           class: "form-input quick-entry__input",
-          placeholder: t('.placeholder'),
+          placeholder: t(".placeholder_#{ctx}"),
           aria: { label: t('.subtitle') } %>
 
-    <p class="quick-entry__examples"><%= t('.examples') %></p>
+    <p class="quick-entry__examples">
+      <%= case ctx
+          when :goal then t('.help_goal')
+          when :none then t('.help_none')
+          else t('.help')
+          end %>
+    </p>
 
     <div class="transaction-form__actions">
       <%= render Ui::ButtonComponent.new(
-        text: t('.submit'),
+        text: ctx == :goal ? t('.submit_goal') : t('.submit'),
         type: :submit,
         variant: :primary,
         size: :lg,
@@ -24,4 +66,8 @@
       ) %>
     </div>
   <% end %>
+
+  <%# The form is an exit INSIDE the sheet, pre-set by the page — never a prior
+      decision, and never fed by what the parser guessed. %>
+  <%= link_to t('.open_form'), form_url, class: "quick-entry__form-link", data: { turbo_frame: "modal" } %>
 </div>
