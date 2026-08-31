@@ -480,6 +480,42 @@
   border-top: none;
 }
 
+/* One person, one block: the name once, then that person's settled debts. */
+.debt-closed-group + .debt-closed-group {
+  border-top: 1px solid var(--border-light);
+}
+
+.debt-closed-group__head {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  padding: 0.75rem 1.125rem 0;
+}
+
+.debt-closed-group__name {
+  font-weight: 600;
+  color: var(--text-dark);
+}
+
+.debt-closed-group__count {
+  font-size: var(--font-size-label);
+  color: var(--text-muted);
+}
+
+.debt-closed-group .debt-closed-row:first-of-type {
+  border-top: none;
+}
+
+.debt-closed-row--grouped {
+  padding-top: 0.375rem;
+  padding-bottom: 0.375rem;
+  border-top: none;
+}
+
+.debt-closed-group > .debt-closed-row--grouped:last-child {
+  padding-bottom: 0.75rem;
+}
+
 .debt-closed-row__main {
   flex: 1;
   min-width: 0;

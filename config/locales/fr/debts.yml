@@ -41,6 +41,12 @@ fr:
       closed_written_off_count:
         one: "%{count} abandonnée"
         other: "%{count} abandonnées"
+      closed_group_count:
+        one: "%{count} dette"
+        other: "%{count} dettes"
+      closed_direction:
+        lent: "Prêt"
+        borrowed: "Emprunt"
       closed_settled_on: "Réglée le %{date}"
       closed_written_off_on:
         lent: "Le %{date} · tu n'y comptes plus"
