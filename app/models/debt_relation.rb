@@ -15,8 +15,13 @@ class DebtRelation
     @borrowed = scope.find(&:borrowed?)
   end
 
-  # The relation a given debt belongs to (both directions of its person).
+  # The relation a given debt belongs to (both directions of its person). A
+  # closed debt (settled or written off) is out of the ongoing scope, so its
+  # page reads as its own single-debt relation — keeping its full history
+  # instead of an empty merged timeline.
   def self.for(debt)
+    return new(space: debt.space, name: debt.name, debts: [ debt ]) unless debt.ongoing?
+
     new(space: debt.space, name: debt.name)
   end
 

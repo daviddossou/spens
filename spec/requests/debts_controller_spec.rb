@@ -105,6 +105,20 @@ RSpec.describe DebtsController, type: :request do
       end
     end
 
+    context 'with a settled (non-ongoing) debt' do
+      let(:paid_debt) { create(:debt, :paid, user: user, name: 'Doris') }
+
+      it 'keeps showing its transaction history' do
+        type = create(:transaction_type, space: paid_debt.space, kind: 'debt_in', name: 'Remboursement Doris')
+        create(:transaction, debt: paid_debt, user: user, transaction_type: type, transaction_date: 1.day.ago)
+
+        get debt_path(id: paid_debt.id)
+
+        expect(response).to be_successful
+        expect(assigns(:transactions)).not_to be_empty
+      end
+    end
+
     context 'with debt belonging to another user' do
       let(:other_debt) { create(:debt, user: other_user, name: 'Someone') }
 
