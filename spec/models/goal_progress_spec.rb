@@ -73,4 +73,27 @@ RSpec.describe GoalProgress do
       expect(progress.status).to be_nil
     end
   end
+
+  describe "#eta_at_current_pace" do
+    let(:space) { create(:space) }
+    let(:account) { create(:account, space: space, balance: 112_000) }
+    let(:real_goal) { create(:goal, space: space, account: account, name: "Moto", target_amount: 700_000) }
+
+    before { travel_to Time.zone.local(2026, 8, 28) }
+
+    it "projects the arrival month from the observed 3-month net inflow" do
+      type = create(:transaction_type, space: space, kind: "transfer_in", name: "In X")
+      [ 1, 2, 3 ].each do |back|
+        create(:transaction, space: space, account: account, transaction_type: type,
+                             amount: 50_000, transaction_date: Date.new(2026, 8, 1) << back)
+      end
+
+      eta = described_class.new(real_goal).eta_at_current_pace
+      expect(eta).to eq(Date.new(2027, 5, 1)) # ledger-posted inflows leave 438_000 at 50_000/month -> 9 months
+    end
+
+    it "is nil when nothing flows in" do
+      expect(described_class.new(real_goal).eta_at_current_pace).to be_nil
+    end
+  end
 end

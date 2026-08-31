@@ -10,5 +10,8 @@ class AnalyticsController < ApplicationController
     @spending = Analyses::SpendingQuery.new(space: current_space, period: @period)
     @rhythm = Analyses::RhythmQuery.new(space: current_space, period: @period)
     @relations = DebtRelation.all_ongoing(current_space).select { |r| r.owed_to_me.positive? || r.i_owe.positive? }
+    @set_aside = Analyses::SetAsideQuery.new(space: current_space)
+    @goals = current_space.goals.includes(:account).map { |g| GoalProgress.new(g) }
+    @accounts = current_space.accounts.active.where("balance > 0").order(balance: :desc)
   end
 end

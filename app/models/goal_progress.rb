@@ -94,4 +94,27 @@ class GoalProgress
     elapsed = (Date.current - goal.created_at.to_date).to_f
     [ [ elapsed / span, 1.0 ].min, 0.0 ].max
   end
+
+  public
+
+  # When the goal lands at the OBSERVED pace (net inflow into its account over
+  # the last 3 complete months) — a date motivates where a percent doesn't.
+  # nil without a target, once reached, or when nothing is flowing in.
+  def eta_at_current_pace
+    return nil unless target_set? && remaining.positive?
+
+    pace = observed_monthly_pace
+    return nil unless pace.positive?
+
+    Date.current.beginning_of_month >> (remaining / pace).ceil
+  end
+
+  def observed_monthly_pace
+    bom = Date.current.beginning_of_month
+    range = (bom << 3)..(bom - 1)
+    scope = goal.account.transactions.joins(:transaction_type).where(transaction_date: range)
+    inflow = scope.where(transaction_types: { kind: "transfer_in" }).sum("ABS(transactions.amount)").to_f
+    outflow = scope.where(transaction_types: { kind: "transfer_out" }).sum("ABS(transactions.amount)").to_f
+    ((inflow - outflow) / 3).round(2)
+  end
 end

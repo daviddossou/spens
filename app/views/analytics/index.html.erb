@@ -279,5 +279,88 @@
         <% end %>
       </div>
     <% end %>
+
+    <%# Section 3 — what you set aside: the habit, the goals' arrival dates,
+        and where the money sits. Each block exists only if its data does. %>
+    <% show_saved = @set_aside.any_account? || @goals.any? || @accounts.any? %>
+    <% if show_saved %>
+      <h2 class="analyses-section__title"><%= t('.section_saved') %></h2>
+
+      <% if @set_aside.any_account? %>
+        <% months = @set_aside.last_three %>
+        <% saved_max = months.map { |_, v| v.abs }.max %>
+        <div class="analyses-card">
+          <p class="analyses-card__label"><%= t('.saved_title', month: l(Date.current, format: :month_only)) %></p>
+          <p class="analyses-hero"><%= smart_format_money(months.last.last, current_space.currency, sign: :never, threshold: Float::INFINITY) %></p>
+          <% if @set_aside.streak >= 2 %>
+            <span class="analyses-streak"><%= t('.saved_streak', count: @set_aside.streak) %></span>
+          <% end %>
+          <div class="analyses-minimonths" aria-hidden="true">
+            <% months.each do |month, net| %>
+              <div class="analyses-minimonths__col">
+                <span class="analyses-minimonths__bar<%= ' analyses-minimonths__bar--current' if month == Date.current.beginning_of_month %>"
+                      style="height: <%= saved_max.to_f.positive? ? [ (net.abs / saved_max * 100).round, 8 ].max : 8 %>%;"></span>
+                <span class="analyses-minimonths__label"><%= l(month, format: :month_only).first(4) %></span>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+
+      <% if @goals.any? %>
+        <div class="analyses-card">
+          <p class="analyses-card__title"><%= t('.goals_title') %></p>
+          <% @goals.each do |progress| %>
+            <%= link_to goal_path(id: progress.goal.account_id), class: "analyses-goal", data: { turbo_frame: "_top" } do %>
+              <span class="analyses-person__head">
+                <span class="analyses-person__name"><%= progress.name || progress.account.name %></span>
+                <span class="analyses-goal__figures">
+                  <%= smart_format_money(progress.current, current_space.currency, sign: :never, threshold: 10_000) %><% if progress.target_set? %> / <%= smart_format_money(progress.target, current_space.currency, sign: :never, threshold: 10_000) %><% end %>
+                </span>
+              </span>
+              <span class="analyses-person__bar"><span style="width: <%= progress.percentage %>%; background: var(--color-primary);"></span></span>
+              <% if (eta = progress.eta_at_current_pace) %>
+                <span class="analyses-goal__eta"><%= t('.goal_eta', date: l(eta, format: :month_year)) %></span>
+              <% end %>
+            <% end %>
+          <% end %>
+        </div>
+      <% end %>
+
+      <% if @accounts.any? %>
+        <% total = @accounts.sum(&:balance) %>
+        <div class="analyses-card">
+          <p class="analyses-card__title">
+            <%= t('.accounts_title') %>
+            <%= link_to t('.accounts_link'), accounts_path, class: "analyses-card__link", data: { turbo_frame: "_top" } %>
+          </p>
+          <div class="analyses-stack" aria-hidden="true">
+            <% @accounts.each_with_index do |account, i| %>
+              <span class="analyses-stack__seg" style="width: <%= (account.balance / total * 100).round(1) %>%; opacity: <%= [ 1 - i * 0.22, 0.2 ].max %>;"></span>
+            <% end %>
+          </div>
+          <% @accounts.first(3).each do |account| %>
+            <div class="analyses-slim">
+              <span class="analyses-slim__name"><%= account.name %></span>
+              <span class="analyses-slim__amount"><%= format_money_number(account.balance) %></span>
+            </div>
+          <% end %>
+          <% if @accounts.size > 3 %>
+            <div class="analyses-slim analyses-slim--muted">
+              <span class="analyses-slim__name"><%= t('.accounts_more', count: @accounts.size - 3) %></span>
+              <span class="analyses-slim__amount"><%= format_money_number(@accounts.drop(3).sum(&:balance)) %></span>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+
+      <%= link_to budgets_path, class: "analyses-footer-cta", data: { turbo_frame: "_top" } do %>
+        <span class="analyses-footer-cta__body">
+          <span class="analyses-footer-cta__title"><%= t('.adjust_budget') %></span>
+          <span class="analyses-footer-cta__sub"><%= t('.adjust_budget_sub') %></span>
+        </span>
+        <span aria-hidden="true">›</span>
+      <% end %>
+    <% end %>
   </div>
 </div>

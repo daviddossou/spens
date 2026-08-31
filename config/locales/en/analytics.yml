@@ -64,3 +64,17 @@ en:
       both_sides_html: "%{name} is on both sides: net, %{net}."
       both_sides_you_owe: "you owe them %{amount}"
       both_sides_owes_you: "they owe you %{amount}"
+      section_saved: "What you set aside"
+      saved_title: "Set aside in %{month}"
+      saved_streak:
+        one: "%{count} month"
+        other: "%{count} months in a row"
+      goals_title: "Your goals"
+      goal_eta: "At this pace: %{date}"
+      accounts_title: "Where your money is"
+      accounts_link: "Accounts ›"
+      accounts_more:
+        one: "%{count} other account"
+        other: "%{count} other accounts"
+      adjust_budget: "Adjust my budget"
+      adjust_budget_sub: "The line-by-line detail lives on the Budget page"
