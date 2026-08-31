@@ -7,8 +7,9 @@ module Analyses
   # never hidden.
   class SpendingQuery
     CONSUMED = %w[expense].freeze
-    MOVED = %w[transfer transfer_out debt_in debt_out].freeze
+    LENT = %w[debt_out].freeze
     SMALL_BASE = 10_000
+    MIN_COMPARISON_DAYS = 7
 
     def initialize(space:, period:)
       @space = space
@@ -19,8 +20,11 @@ module Analyses
       @spent_total ||= abs_sum(CONSUMED, @period.range)
     end
 
-    def moved_total
-      @moved_total ||= abs_sum(MOVED, @period.range)
+    # Loans granted + repayments paid over the period — money that left the
+    # accounts without being a spend. Stated as an ADDITION under the hero
+    # ("Tu as aussi prêté X"), pointing to block 6; never subtracted.
+    def lent_total
+      @lent_total ||= abs_sum(LENT, @period.range)
     end
 
     # nil → nothing to say; {monthly_average:} → 12 months without enough history;
@@ -49,32 +53,37 @@ module Analyses
       (spent_total - plan[:spent_on_plan]).round(2)
     end
 
-    # Split of the PLANNED spend by the budget line's flag; off-plan is excluded
-    # and flagged from 10% of the total so the share is never over-read.
+    # Invariant 2: total = essentiel + plaisir + non classé. The flag lives on
+    # the budget line; off-plan spend has none, so it takes the grey segment.
     def essential_split
-      return nil unless plan && plan[:spent_on_plan].to_f.positive?
+      return nil unless plan && spent_total.positive?
 
       essential = plan[:essential_spent]
-      plaisir = (plan[:spent_on_plan] - essential).round(2)
+      plaisir = ((plan[:spent_on_plan] || 0) - essential).round(2)
       {
         essential: essential, plaisir: plaisir,
-        pct_essential: (essential / plan[:spent_on_plan] * 100).round,
-        offplan_noteworthy: spent_total.positive? && offplan_total / spent_total >= 0.10
+        unclassified: offplan_total,
+        pct_essential: (essential / spent_total * 100).round
       }
     end
 
-    PlanRow = Data.define(:entry, :name, :spent, :planned, :prorated, :gap)
+    PlanRow = Data.define(:entry, :name, :spent, :planned, :prorated, :gap, :single, :rel_gap)
     OffplanRow = Data.define(:name, :spent, :other)
 
     # Overrun = spent beyond the plan PRORATED to today (never the full plan
-    # mid-month), sorted by that gap. Single-month periods only.
+    # mid-month). Sorted by the RELATIVE gap — a small line at +80% outranks a
+    # big one at +2%. Single-month periods only.
     def overruns
-      plan_rows.select { |r| r.gap.positive? }.sort_by { |r| -r.gap }
+      plan_rows.select { |r| r.gap.positive? }.sort_by { |r| -r.rel_gap }
     end
 
-    # Sorted by gap to the plan (least margin first) — never by amount.
     def within_plan
-      plan_rows.reject { |r| r.gap.positive? }.sort_by { |r| -r.gap }
+      plan_rows.reject { |r| r.gap.positive? }.sort_by { |r| -r.rel_gap }
+    end
+
+    # The prorated plan across the lines — the tick's position and the verdict's base.
+    def prorated_plan_total
+      plan_rows.sum(&:prorated).round(2)
     end
 
     # Expense categories with spend but no budget line; "Autre" reads as
@@ -100,15 +109,28 @@ module Analyses
       @plan_rows ||= begin
         month = @period.months.first
         actuals = Budgets::ActualsQuery.new(space: @space, month: month)
+        counts = txn_counts_by_type(month)
         ratio = @period.month? ? @period.days_elapsed.to_f / @period.days_total : 1.0
         month_entries(month).map do |entry|
           spent = actuals.for_entry(entry)
-          prorated = (entry.planned_amount.to_f * ratio).round(2)
+          planned = entry.planned_amount.to_f
+          # A line whose spend fits in ONE transaction (rent, subscriptions) has
+          # no rhythm to keep: it reads against its full plan from day one.
+          single = entry.transaction_type ? counts.values_at(*entry.transaction_type.subtree_ids).compact.sum == 1 : false
+          prorated = single ? planned : (planned * ratio).round(2)
+          gap = (spent - prorated).round(2)
           PlanRow.new(entry: entry, name: entry.display_name, spent: spent,
-                      planned: entry.planned_amount.to_f, prorated: prorated,
-                      gap: (spent - prorated).round(2))
+                      planned: planned, prorated: prorated, gap: gap, single: single,
+                      rel_gap: planned.positive? ? (gap / planned).round(4) : 0)
         end
       end
+    end
+
+    def txn_counts_by_type(month)
+      @space.transactions.joins(:transaction_type)
+            .where(transaction_types: { kind: "expense" },
+                   transaction_date: month.beginning_of_month..month.end_of_month, fee_parent_id: nil)
+            .group(:transaction_type_id).count
     end
 
     def month_entries(month)
@@ -139,9 +161,10 @@ module Analyses
       range = comparison_window
       return { monthly_average: (spent_total / 12).round } if range == :average
       return nil if range.nil?
+      return { no_data: true } if @period.days_elapsed < MIN_COMPARISON_DAYS
 
       first = @space.transactions.minimum(:transaction_date)
-      return { no_data: true } if first.nil? || ([ range.end, Date.current ].min - [ range.begin, first ].max).to_i + 1 < 7
+      return { no_data: true } if first.nil? || ([ range.end, Date.current ].min - [ range.begin, first ].max).to_i + 1 < MIN_COMPARISON_DAYS
 
       # A zero base still compares (as an FCFA gap) — only missing data declines.
       delta(abs_sum(CONSUMED, range), range)

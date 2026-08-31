@@ -97,28 +97,30 @@ class GoalProgress
 
   public
 
-  # When the goal lands at the OBSERVED pace (net inflow into its account over
-  # the last 3 complete months) — a date motivates where a percent doesn't.
-  # nil without a target, once reached, or when nothing is flowing in.
-  def eta_at_current_pace
+  # The arrival date at the OBSERVED pace — closed months only (including the
+  # running month collapses the rhythm on the 1st). :eta with the date, or
+  # :no_rhythm when a target exists but the pace can't be trusted yet
+  # (pace <= 0, or under 2 months of history) — say so rather than announce 2074.
+  def rhythm_state
     return nil unless target_set? && remaining.positive?
 
     pace = observed_monthly_pace
-    return nil unless pace.positive?
+    return [ :no_rhythm, nil ] if pace <= 0 || !enough_history?
 
-    Date.current.beginning_of_month >> (remaining / pace).ceil
+    [ :eta, Date.current.beginning_of_month >> (remaining / pace).ceil ]
   end
 
   def observed_monthly_pace
     bom = Date.current.beginning_of_month
-    net = net_inflow((bom << 3)..(bom - 1))
-    return (net / 3).round(2) if net.positive?
-
-    # Young data: this month's flow is the only rhythm there is.
-    net_inflow(bom..Date.current).round(2)
+    (net_inflow((bom << 3)..(bom - 1)) / 3).round(2)
   end
 
   private
+
+  def enough_history?
+    first = goal.account.transactions.minimum(:transaction_date)
+    first.present? && first < (Date.current.beginning_of_month << 1)
+  end
 
   def net_inflow(range)
     scope = goal.account.transactions.joins(:transaction_type).where(transaction_date: range)

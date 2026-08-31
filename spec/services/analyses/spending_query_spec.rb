@@ -18,24 +18,24 @@ RSpec.describe Analyses::SpendingQuery do
   end
 
   describe "the three natures" do
-    it "only consumption feeds the total; moved money is counted apart" do
+    it "only consumption feeds the total; lent money is stated apart" do
       groceries = type("expense", "Courses X")
       debt_out = type("debt_out", "Prêt X")
       transfer_out = type("transfer_out", "Sortant X")
 
       spend(20_000, type: groceries)
       spend(50_000, type: debt_out)
-      spend(30_000, type: transfer_out)
+      spend(30_000, type: transfer_out) # a transfer counts nowhere
 
       expect(query.spent_total).to eq(20_000)
-      expect(query.moved_total).to eq(80_000)
+      expect(query.lent_total).to eq(50_000)
     end
 
     it "ignores neutral reconciliations everywhere" do
       create(:transaction, space: space, account: account, amount: 99_000,
                            transaction_type: type("adjustment", "Ajust X"))
       expect(query.spent_total).to eq(0)
-      expect(query.moved_total).to eq(0)
+      expect(query.lent_total).to eq(0)
     end
   end
 
@@ -93,10 +93,13 @@ RSpec.describe Analyses::SpendingQuery do
       expect(query.plan[:categories_total]).to eq(3)
       expect(query.offplan_total).to eq(2_000)
 
+      # Invariant 2: total = essentiel + plaisir + non classé.
       split = query.essential_split
       expect(split[:essential]).to eq(84_000)
       expect(split[:plaisir]).to eq(10_000)
-      expect(split[:pct_essential]).to eq(89)
+      expect(split[:unclassified]).to eq(2_000)
+      expect(split[:essential] + split[:plaisir] + split[:unclassified]).to eq(query.spent_total)
+      expect(split[:pct_essential]).to eq(88)
     end
 
     it "is nil without any budget line" do
@@ -150,6 +153,21 @@ RSpec.describe Analyses::SpendingQuery do
 
       expect(query.offplan_categories.map(&:name)).not_to include("Housing X")
       expect(query.plan[:spent_on_plan] + query.offplan_categories.sum(&:spent)).to eq(query.spent_total)
+    end
+
+    it "sorts by the RELATIVE gap and gives single-transaction lines no rhythm" do
+      travel_to Time.zone.local(Date.current.year, Date.current.month, 10, 12) do
+        spend(30_000, type: groceries) # two transactions: a rhythm to keep
+        spend(24_000, type: groceries)
+        spend(39_000, type: outings)   # one transaction: judged on the full plan
+
+        rent_row = query.within_plan.find { |r| r.name == "Sorties X" }
+        expect(rent_row.single).to be(true)
+        expect(rent_row.prorated).to eq(rent_row.planned) # no proration, no fake overrun
+
+        # groceries: small plan far over its prorata → outranks by RELATIVE gap
+        expect(query.overruns.first.name).to eq("Courses X")
+      end
     end
 
     it "keeps subcategory spend inside its planned parent, not off-plan" do
