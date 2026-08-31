@@ -14,17 +14,6 @@
             data: { account_form_target: "amount", action: "input->account-form#onAmount" } %>
       <span class="budget-amount__currency"><%= currency_symbol %></span>
     </div>
-
-    <!-- Reserved money — feeds the dashboard's "dont X mis de côté" -->
-    <div class="account-form__field">
-      <%= render Forms::CheckboxFieldComponent.new(
-        form: form,
-        field: :set_aside,
-        label: t('.set_aside_label'),
-        help_text: t('.set_aside_help'),
-        checked: @form.set_aside
-      ) %>
-    </div>
   </div>
 
   <%# Name — the existing searchable field, kept as is. No asterisk. %>
@@ -38,6 +27,21 @@
         account_form_target: "name",
         tom_select_currency_value: currency_symbol
       }) %>
+  </div>
+
+  <%# Spending or savings? — an explicit two-card choice (same pattern as the
+      budget's Vital/Confort). A savings account counts as "mis de côté". %>
+  <div class="vc-choice">
+    <span class="vc-choice__question"><%= t('.kind_question') %></span>
+    <div class="vc-choice__cards">
+      <% [ [ false, "everyday" ], [ true, "set_aside" ] ].each do |val, key| %>
+        <label class="vc-card">
+          <%= form.radio_button :set_aside, val, class: "vc-card__input" %>
+          <span class="vc-card__title"><%= t(".#{key}_card_title") %></span>
+          <span class="vc-card__sub"><%= t(".#{key}_card_sub") %></span>
+        </label>
+      <% end %>
+    </div>
   </div>
 
   <% if editing %>
