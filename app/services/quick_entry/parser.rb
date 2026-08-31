@@ -414,7 +414,7 @@ module QuickEntry
     # --- account ------------------------------------------------------------
 
     def detect_account
-      names = @space.accounts.pluck(:name)
+      names = @space.accounts.active.pluck(:name)
 
       direct = names.find do |name|
         norm = CategoryText.normalize(name)
@@ -429,7 +429,18 @@ module QuickEntry
         return hit if hit
       end
 
-      nil
+      account_by_token(names)
+    end
+
+    # A word of the phrase that IS a word of one account's name ("mtn" ->
+    # "MTN Mobile Money"). Exact tokens only — a misspelling never becomes an
+    # approximate account — and only when a single account matches.
+    def account_by_token(names)
+      tokens = loose_tokens.reject { |t| t.length < 3 || t.match?(/\d/) || ARTICLES.include?(t) }
+      return nil if tokens.empty?
+
+      hits = names.select { |name| (account_tokens(name) & tokens).any? }
+      hits.size == 1 ? hits.first : nil
     end
 
     # Source/destination of a transfer, each resolved to an existing account named after a
@@ -445,7 +456,7 @@ module QuickEntry
 
       markers = prepositions.map { |p| translit(p) }
       toks = loose_tokens
-      @space.accounts.pluck(:name).find do |name|
+      @space.accounts.active.pluck(:name).find do |name|
         pos = subsequence_index(toks, account_tokens(name))
         pos && markers.include?(marker_before_token(toks, pos))
       end

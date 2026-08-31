@@ -140,6 +140,27 @@ RSpec.describe QuickEntry::Parser do
     it "is blank when no account is mentioned" do
       expect(parse("2000 zem").account_name).to be_nil
     end
+
+    it "matches a single word of an account's name" do
+      create(:account, space: space, name: "Tontine Maman")
+      expect(parse("5000 riz tontine").account_name).to eq("Tontine Maman")
+    end
+
+    it "never turns a misspelling into an approximate account" do
+      create(:account, space: space, name: "NSIA Banque")
+      expect(parse("2000 zem nsai").account_name).to be_nil
+    end
+
+    it "stays blank when the token is ambiguous across accounts" do
+      create(:account, space: space, name: "Tontine Maman")
+      create(:account, space: space, name: "Tontine Quartier")
+      expect(parse("5000 riz tontine").account_name).to be_nil
+    end
+
+    it "ignores archived accounts" do
+      create(:account, space: space, name: "Tontine Maman", archived_at: Time.current)
+      expect(parse("5000 riz tontine").account_name).to be_nil
+    end
   end
 
   describe "transfer" do
