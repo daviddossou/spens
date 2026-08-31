@@ -6,7 +6,7 @@ import { formatMoney } from "lib/money"
 // exception) or "every month from here" (the recurring rule, unfolding its fields).
 // The scope cards swap which fields, note and button the sheet shows.
 export default class extends Controller {
-  static targets = ["scopeInput", "scopeCard", "ruleBlock", "noteMonth", "noteRule",
+  static targets = ["scopeInput", "scopeCard", "ruleBlock", "ruleHint", "noteMonth", "noteRule",
     "cta", "amount", "amberAmount"]
   static values = {
     currency: String, locale: String,
@@ -31,6 +31,8 @@ export default class extends Controller {
 
     this.scopeCardTargets.forEach((c) => c.classList.toggle("scope-card--selected", c.dataset.scope === this.#scope()))
     if (this.hasRuleBlockTarget) this.ruleBlockTarget.classList.toggle("hidden", !rule)
+    // The always-visible rule summary folds away once its settings are open.
+    if (this.hasRuleHintTarget) this.ruleHintTarget.classList.toggle("hidden", rule)
     if (this.hasNoteMonthTarget) this.noteMonthTarget.classList.toggle("hidden", rule)
     if (this.hasNoteRuleTarget) this.noteRuleTarget.classList.toggle("hidden", !rule)
     if (this.hasCtaTarget) this.ctaTarget.textContent = rule ? this.ctaRuleValue : this.ctaMonthValue
