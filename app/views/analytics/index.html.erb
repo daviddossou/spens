@@ -1,83 +1,119 @@
 <% content_for :page_title, t('.page_title') %>
-<% content_for :head do %>
-  <meta name="currency-symbol" content="<%= get_currency_symbol(@currency) %>">
-<% end %>
+<%
+  range = @period.range
+  range_label = @period.month? ? "#{range.begin.day} – #{l([ Date.current, range.end ].min, format: :day_month)}" \
+                               : "#{l(range.begin, format: :day_month)} – #{l(range.end, format: :day_month)}"
+  plan = @spending.plan
+  split = @spending.essential_split
+  comparison = @spending.comparison
+%>
 
 <div class="page-container page-container--narrow">
-  <div class="page-content">
-
-    <!-- Period Switcher -->
-    <div class="analytics-period" data-controller="date-range">
-      <div class="analytics-period__bar">
-        <%= render Ui::SwitcherComponent.new(
-          options: [
-            { text: t('.periods.custom'),       value: "custom",        url: analytics_path(period: "custom"),        data: { action: "click->date-range#showPicker", "date-range-target": "customBtn" } },
-            { text: t('.periods.today'),         value: "today",         url: analytics_path(period: "today") },
-            { text: t('.periods.yesterday'),     value: "yesterday",     url: analytics_path(period: "yesterday") },
-            { text: t('.periods.this_week'),     value: "this_week",     url: analytics_path(period: "this_week") },
-            { text: t('.periods.this_month'),    value: "this_month",    url: analytics_path(period: "this_month") },
-            { text: t('.periods.last_3_months'), value: "last_3_months", url: analytics_path(period: "last_3_months") },
-            { text: t('.periods.last_6_months'), value: "last_6_months", url: analytics_path(period: "last_6_months") },
-            { text: t('.periods.last_12_months'), value: "last_12_months", url: analytics_path(period: "last_12_months") },
-            { text: t('.periods.all_time'),        value: "all_time",        url: analytics_path(period: "all_time") }
-          ],
-          current: @period,
-          css_class: "switcher switcher--small switcher--scroll"
-        ) %>
+  <div class="page-content analyses">
+    <div class="analyses-rangebar">
+      <div class="analyses-rangebar__head">
+        <span class="analyses-rangebar__title"><%= t('.page_title') %></span>
+        <span class="analyses-rangebar__range"><%= range_label %></span>
       </div>
-
-      <% if @period != 'custom' %>
-        <div class="analytics-period__date-label">
-          <% if @date_range %>
-            <%= l(@date_range.first, format: :short) %> — <%= l(@date_range.last, format: :short) %>
-          <% else %>
-            <%= t('.periods.all_time') %>
-          <% end %>
-        </div>
+      <nav class="analyses-ranges" aria-label="<%= t('.page_title') %>">
+        <% Analyses::Period::KINDS.each do |kind| %>
+          <%= link_to t(".ranges.#{kind}"),
+                analytics_path(range: kind),
+                class: "analyses-ranges__seg#{' analyses-ranges__seg--active' if @period.kind == kind}" %>
+        <% end %>
+      </nav>
+      <% if @period.kind == "custom" || params[:range] == "custom" %>
+        <%= form_with url: analytics_path, method: :get, class: "analyses-custom" do %>
+          <%= hidden_field_tag :range, "custom" %>
+          <%= date_field_tag :start_date, params[:start_date] || range.begin, class: "form-input", aria: { label: t('.ranges.from') } %>
+          <%= date_field_tag :end_date, params[:end_date] || range.end, class: "form-input", aria: { label: t('.ranges.to') } %>
+          <%= submit_tag t('.ranges.apply'), class: "btn btn-primary" %>
+        <% end %>
       <% end %>
+    </div>
 
-      <div class="analytics-period__custom <%= 'analytics-period__custom--visible' if @period == 'custom' %>"
-           data-date-range-target="picker">
-        <%= form_tag analytics_path, method: :get, class: "analytics-period__form" do %>
-          <input type="hidden" name="period" value="custom">
-          <div class="analytics-period__inputs">
-            <div class="analytics-period__field">
-              <label for="start_date" class="analytics-period__label"><%= t('.periods.from') %></label>
-              <input type="date" id="start_date" name="start_date"
-                     value="<%= params[:start_date] || @date_range&.first || Date.current.beginning_of_month %>"
-                     class="analytics-period__date-input"
-                     data-action="change->date-range#submit">
+    <% if @spending.spent_total.zero? && @spending.moved_total.zero? %>
+      <div class="empty-state">
+        <p class="analyses-empty__title"><%= t('.empty_title') %></p>
+        <p class="analyses-empty__message"><%= t('.empty_message') %></p>
+      </div>
+    <% else %>
+      <h2 class="analyses-section__title"><%= t('.section_spent') %></h2>
+
+      <div class="analyses-card">
+        <p class="analyses-card__label">
+          <%= @period.month? ? t('.spent_title_month', month: l(range.begin, format: :month_only)) \
+                             : t('.spent_title_range', from: l(range.begin, format: :day_month), to: l(range.end, format: :day_month)) %>
+        </p>
+        <p class="analyses-hero"><%= smart_format_money(@spending.spent_total, current_space.currency, sign: :never, threshold: Float::INFINITY) %></p>
+
+        <% if comparison %>
+          <% if comparison[:no_data] %>
+            <p class="analyses-compare analyses-compare--quiet"><%= t('.no_comparison') %></p>
+          <% elsif comparison[:monthly_average] %>
+            <p class="analyses-compare analyses-compare--quiet"><%= t('.monthly_average', amount: smart_format_money(comparison[:monthly_average], current_space.currency, sign: :never, threshold: Float::INFINITY)) %></p>
+          <% else %>
+            <% up = (comparison[:percent] || comparison[:amount]).positive? %>
+            <% delta = comparison[:percent] ? "#{'↑ ' if up}#{'↓ ' unless up}#{comparison[:percent].abs} %" \
+                                            : "#{up ? '+' : '−'} #{strip_tags(smart_format_money((comparison[:amount]).abs, current_space.currency, sign: :never, threshold: Float::INFINITY))}" %>
+            <p class="analyses-compare">
+              <span class="analyses-compare__chip <%= up ? 'analyses-compare__chip--up' : 'analyses-compare__chip--down' %>"><%= delta %></span>
+              <span class="analyses-compare__ref">
+                <%= @period.month? ? t('.vs_past_month', month: l(comparison[:range].begin, format: :month_only), amount: strip_tags(smart_format_money(comparison[:previous], current_space.currency, sign: :never, threshold: Float::INFINITY)).gsub("&nbsp;", " ")) \
+                                   : t('.vs_past_range', amount: strip_tags(smart_format_money(comparison[:previous], current_space.currency, sign: :never, threshold: Float::INFINITY)).gsub("&nbsp;", " ")) %>
+              </span>
+            </p>
+          <% end %>
+        <% end %>
+
+        <% if plan && plan[:planned] %>
+          <% over = plan[:spent_on_plan] > plan[:planned] %>
+          <% fill = plan[:planned].positive? ? [ plan[:spent_on_plan] / plan[:planned] * 100, 100 ].min : 0 %>
+          <div class="analyses-row">
+            <div class="analyses-row__head">
+              <span class="analyses-row__label"><%= t('.plan_label') %></span>
+              <span class="analyses-row__value<%= ' analyses-row__value--over' if over %>">
+                <%= format_money_number(plan[:spent_on_plan]) %> / <%= format_money_number(plan[:planned]) %>
+              </span>
             </div>
-            <div class="analytics-period__field">
-              <label for="end_date" class="analytics-period__label"><%= t('.periods.to') %></label>
-              <input type="date" id="end_date" name="end_date"
-                     value="<%= params[:end_date] || @date_range&.last || Date.current %>"
-                     class="analytics-period__date-input"
-                     data-action="change->date-range#submit">
+            <div class="analyses-bar<%= ' analyses-bar--over' if over %>">
+              <span class="analyses-bar__fill" style="width: <%= fill.round(1) %>%;"></span>
+              <span class="analyses-bar__tick" style="left: <%= (@period.month? ? plan[:prorata_ratio] * 100 : 100).round(1) %>%;" aria-hidden="true"></span>
             </div>
+            <p class="analyses-row__caption"><%= t('.plan_caption_html', date: l([ Date.current, range.end ].min, format: :day_month), with_plan: plan[:categories_with_plan], total: [ plan[:categories_total], plan[:categories_with_plan] ].max) %></p>
           </div>
-          <button type="submit" class="analytics-period__apply-btn"><%= t('.periods.apply') %></button>
+        <% elsif plan && plan[:months_total] %>
+          <div class="analyses-row">
+            <p class="analyses-row__caption"><%= t('.plan_months_html', ok: plan[:months_ok], total: plan[:months_total]) %></p>
+          </div>
+        <% end %>
+
+        <% if split %>
+          <div class="analyses-row">
+            <div class="analyses-row__head">
+              <span class="analyses-row__label"><%= t('.essential_label') %></span>
+              <span class="analyses-row__value"><%= t('.essential_pct', pct: split[:pct_essential]) %></span>
+            </div>
+            <div class="analyses-splitbar">
+              <span class="analyses-splitbar__essential" style="width: <%= split[:pct_essential] %>%;"></span>
+            </div>
+            <p class="analyses-row__caption">
+              <strong><%= format_money_number(split[:essential]) %></strong> <%= t('.essential_amount') %>
+              &nbsp; <strong><%= format_money_number(split[:plaisir]) %></strong> <%= t('.plaisir_amount') %>
+              <% if split[:offplan_noteworthy] %>
+                · <%= t('.essential_offplan_note', amount: format_money_number(@spending.offplan_total)) %>
+              <% end %>
+            </p>
+          </div>
+        <% end %>
+
+        <% if @spending.moved_total.positive? %>
+          <%= link_to dashboard_path, class: "analyses-moved" do %>
+            <span><%= t('.moved_label') %></span>
+            <span class="analyses-moved__amount"><%= format_money_number(@spending.moved_total) %> ›</span>
+          <% end %>
         <% end %>
       </div>
-    </div>
-
-    <!-- Income / Expense Section -->
-    <div class="analytics-section">
-      <h2 class="analytics-section__title"><%= t('.sections.income_expense') %></h2>
-      <%= render partial: "analytics/income_expense" %>
-    </div>
-
-    <!-- Debts Section -->
-    <div class="analytics-section">
-      <h2 class="analytics-section__title"><%= t('.sections.debts') %></h2>
-      <%= render partial: "analytics/debts" %>
-    </div>
-
-    <!-- Savings Section -->
-    <div class="analytics-section">
-      <h2 class="analytics-section__title"><%= t('.sections.savings') %></h2>
-      <%= render partial: "analytics/savings" %>
-    </div>
-
+    <% end %>
   </div>
 </div>

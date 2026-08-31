@@ -1,0 +1,226 @@
+/* Analyses — the "what changed?" page (Tours 24-27). All bars are plain CSS. */
+
+.analyses-rangebar {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  margin: 0 -1rem;
+  padding: 0.5rem 1rem 0.75rem;
+  background: var(--color-off-white);
+}
+
+.analyses-rangebar__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.analyses-rangebar__title {
+  font-size: var(--font-size-headline);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-dark);
+}
+
+.analyses-rangebar__range {
+  font-size: var(--font-size-body);
+  color: var(--text-muted);
+}
+
+.analyses-ranges {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  background: var(--color-banner-track);
+  border-radius: 11px;
+  padding: 4px;
+}
+
+.analyses-ranges__seg {
+  padding: 7px 0;
+  border-radius: var(--radius-md);
+  font-size: 12px;
+  font-weight: var(--font-weight-medium);
+  color: var(--color-muted-strong);
+  text-align: center;
+  text-decoration: none;
+}
+
+.analyses-ranges__seg--active {
+  background: var(--bg-surface);
+  color: var(--color-primary);
+  font-weight: var(--font-weight-semibold);
+  box-shadow: var(--shadow-resting);
+}
+
+.analyses-custom {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.analyses-section__title {
+  font-size: var(--font-size-label);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+  margin-top: 0.5rem;
+}
+
+.analyses-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+  padding: 1.125rem 1.25rem;
+  background: var(--bg-surface);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-resting);
+}
+
+.analyses-card__label {
+  font-size: var(--font-size-body);
+  color: var(--text-muted);
+}
+
+.analyses-hero {
+  font-size: var(--font-size-hero);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+  color: var(--text-dark);
+  margin-top: -0.5rem;
+}
+
+.analyses-compare {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: var(--font-size-body);
+  color: var(--text-muted);
+}
+
+.analyses-compare--quiet {
+  color: var(--text-muted);
+}
+
+.analyses-compare__chip {
+  padding: 0.2rem 0.5rem;
+  border-radius: var(--radius-md);
+  font-weight: var(--font-weight-semibold);
+}
+
+/* Spending up is the warm signal, down the calm one. */
+.analyses-compare__chip--up {
+  background: var(--color-danger-20);
+  color: var(--color-danger-dark);
+}
+
+.analyses-compare__chip--down {
+  background: var(--color-success-20);
+  color: var(--color-success-dark);
+}
+
+.analyses-row {
+  border-top: 1px solid var(--border-light);
+  padding-top: 0.875rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.analyses-row__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.analyses-row__label {
+  font-size: var(--font-size-body);
+  color: var(--text-muted);
+}
+
+.analyses-row__value {
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-dark);
+  font-variant-numeric: tabular-nums;
+}
+
+.analyses-row__value--over {
+  color: var(--color-danger-dark);
+}
+
+.analyses-row__caption {
+  font-size: var(--font-size-label);
+  color: var(--text-muted);
+}
+
+/* Plan bar: fill clipped at 100%, the prorata tick always visible. */
+.analyses-bar {
+  position: relative;
+  height: 8px;
+  background: var(--color-separator);
+  border-radius: var(--radius-full);
+}
+
+.analyses-bar__fill {
+  display: block;
+  height: 100%;
+  border-radius: var(--radius-full);
+  background: var(--color-primary);
+}
+
+.analyses-bar--over .analyses-bar__fill {
+  background: var(--color-danger);
+}
+
+.analyses-bar__tick {
+  position: absolute;
+  top: -3px;
+  bottom: -3px;
+  width: 2px;
+  background: var(--color-charcoal-black);
+  transform: translateX(-1px);
+}
+
+.analyses-splitbar {
+  height: 8px;
+  background: var(--color-primary-20);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.analyses-splitbar__essential {
+  display: block;
+  height: 100%;
+  background: var(--color-primary);
+}
+
+.analyses-moved {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  border-top: 1px solid var(--border-light);
+  padding-top: 0.875rem;
+  font-size: var(--font-size-body);
+  color: var(--text-muted);
+  text-decoration: none;
+}
+
+.analyses-moved__amount {
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-dark);
+  font-variant-numeric: tabular-nums;
+}
+
+.analyses-empty__title {
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-dark);
+}
+
+.analyses-empty__message {
+  color: var(--text-muted);
+}
