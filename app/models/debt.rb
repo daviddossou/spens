@@ -41,7 +41,7 @@ class Debt < ApplicationRecord
   # Only one ONGOING debt per person+direction. Closed debts (settled/written off)
   # are history: they neither block nor get reused when the same person is
   # lent/borrowed from again.
-  validates :name, uniqueness: { scope: [ :space_id, :direction ], conditions: -> { where(status: "ongoing") } }, if: :ongoing?
+  validates :name, uniqueness: { scope: [ :space_id, :direction ], conditions: -> { where(status: "ongoing") }, case_sensitive: false }, if: :ongoing?
   validates :status, presence: true
   validates :direction, presence: true
 
