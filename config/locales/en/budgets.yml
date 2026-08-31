@@ -194,7 +194,6 @@ en:
       meta_recurring_html: "%{amount} · also in %{month}"
       meta_once_html: "%{amount} · seen once"
       plan_it_pill: "Plan it"
-      one_off_pill: "One-off"
     summary:
       title: "Budget summary — %{month}"
       subtitle: "How the month went"

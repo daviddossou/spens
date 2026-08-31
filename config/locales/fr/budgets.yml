@@ -194,7 +194,6 @@ fr:
       meta_recurring_html: "%{amount} · aussi en %{month}"
       meta_once_html: "%{amount} · vu une seule fois"
       plan_it_pill: "Planifier"
-      one_off_pill: "Ponctuel"
     summary:
       title: "Bilan du budget — %{month}"
       subtitle: "Le bilan du mois"

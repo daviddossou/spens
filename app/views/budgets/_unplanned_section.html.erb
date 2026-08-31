@@ -47,13 +47,12 @@
               <% end %>
             </span>
           </div>
-          <% if row[:recurring] && row[:path] && !read_only %>
+          <%# "Planifier" is always offered — the user knows better than a
+              one-month heuristic whether this will come back. The meta line
+              keeps the recurrence info (seen once / already off-plan last month). %>
+          <% if row[:path] && !read_only %>
             <%= link_to t('budgets.unplanned.plan_it_pill'), row[:path],
                         class: "hors-plan__action", data: { turbo_frame: "modal" } %>
-          <% else %>
-            <%# One-off: labelled as such. Dismissing it from the list (keeping it
-                in totals) is a deferred backend decision — see README. %>
-            <span class="hors-plan__action hors-plan__action--muted"><%= t('budgets.unplanned.one_off_pill') %></span>
           <% end %>
         </li>
       <% end %>
