@@ -22,6 +22,17 @@ RSpec.describe DebtRelation do
     expect(rel.offsettable).to eq(45_000)
   end
 
+  it "matches a person across casing and stray spaces (one relation, one card)" do
+    create(:debt, space: space, name: "Gilchrist", direction: "lent", total_lent: 35_000, total_reimbursed: 0)
+    create(:debt, space: space, name: "gilchrist ", direction: "borrowed", total_lent: 150_000, total_reimbursed: 0)
+
+    rel = relation_for("Gilchrist")
+    expect(rel).to be_two_way
+    expect(rel.net_amount).to eq(115_000)
+
+    expect(described_class.all_ongoing(space).size).to eq(1)
+  end
+
   it "reads as a plain one-directional relation when only one side has a balance" do
     create(:debt, space: space, name: "Karim", direction: "lent", total_lent: 100_000, total_reimbursed: 20_000)
 

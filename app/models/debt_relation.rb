@@ -10,20 +10,31 @@ class DebtRelation
   def initialize(space:, name:, debts: nil)
     @space = space
     @name = name
-    scope = debts || space.debts.ongoing.where(name: name)
+    # Case/whitespace-insensitive: "Gilchrist" and "gilchrist " are one person.
+    scope = debts || space.debts.ongoing.where("lower(trim(name)) = ?", self.class.normalize(name))
     @lent = scope.find(&:lent?)
     @borrowed = scope.find(&:borrowed?)
   end
 
-  # The relation a given debt belongs to (both directions of its person).
+  # One person = one key, whatever the typed casing or stray spaces.
+  def self.normalize(name)
+    name.to_s.strip.downcase
+  end
+
+  # The relation a given debt belongs to (both directions of its person). A
+  # closed debt (settled or written off) is out of the ongoing scope, so its
+  # page reads as its own single-debt relation — keeping its full history
+  # instead of an empty merged timeline.
   def self.for(debt)
+    return new(space: debt.space, name: debt.name, debts: [ debt ]) unless debt.ongoing?
+
     new(space: debt.space, name: debt.name)
   end
 
-  # Every ongoing relation in the space, one per person.
+  # Every ongoing relation in the space, one per person (case-insensitive).
   def self.all_ongoing(space)
-    space.debts.ongoing.group_by(&:name).map do |name, debts|
-      new(space: space, name: name, debts: debts)
+    space.debts.ongoing.group_by { |debt| normalize(debt.name) }.map do |_key, debts|
+      new(space: space, name: debts.first.name, debts: debts)
     end
   end
 
