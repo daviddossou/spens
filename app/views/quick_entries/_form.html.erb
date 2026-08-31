@@ -1,6 +1,4 @@
-<%# The dictation sheet (Tours 20-23). Three things vary with the page it opened
-    from: the pill (what the page knows), the example in the field (what one
-    usually says here), and the button's verb. Everything else is identical. %>
+<%# The dictation sheet: only the pill, the example and the button verb vary per page. %>
 <%
   ctx = @context&.type || :none
   record = @context&.record
@@ -26,8 +24,6 @@
   <% if pill_name %>
     <div class="quick-entry__pill">
       <span class="quick-entry__pill-label"><%= t(".pill_#{ctx}", name: pill_name) %></span>
-      <%# The pill is always removable — nobody is prisoner of a context they
-          didn't ask for. Removing it reloads the sheet bare. %>
       <%= link_to new_quick_entry_path, class: "quick-entry__pill-remove",
                   aria: { label: t('.remove_context') }, data: { turbo_frame: "modal" } do %>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
@@ -67,7 +63,6 @@
     </div>
   <% end %>
 
-  <%# The form is an exit INSIDE the sheet, pre-set by the page — never a prior
-      decision, and never fed by what the parser guessed. %>
+  <%# Pre-set by the page only — never by what the parser guessed. %>
   <%= link_to t('.open_form'), form_url, class: "quick-entry__form-link", data: { turbo_frame: "modal" } %>
 </div>

@@ -19,9 +19,7 @@ module QuickEntry
       @text = text
       @space = space
       @locale = locale
-      # What the PAGE knows (the sheet's context pill): an account, a person, or
-      # a goal's target account. Applied only where the phrase said nothing —
-      # what the parser guessed never overrides what the user typed.
+      # The sheet's pill; applied only where the phrase said nothing.
       @context = context || {}
     end
 
@@ -153,17 +151,13 @@ module QuickEntry
       end
     end
 
-    # ── Page context ──────────────────────────────────────────────────────
-    # The sheet's pill, applied to the draft where the phrase said nothing.
-
     def apply_context(draft)
       draft = apply_goal_context(draft)
       draft = apply_account_context(draft)
       apply_person_context(draft)
     end
 
-    # Opened from a goal: the entry IS a deposit — a transfer into the goal's
-    # account. The phrase only has to say the amount and where it comes from.
+    # A goal entry is a deposit: a transfer into the goal's account.
     def apply_goal_context(draft)
       target = @context[:to_account_name]
       return draft if target.blank?
@@ -181,7 +175,6 @@ module QuickEntry
       )
     end
 
-    # Opened from an account: an entry that names no account happens on THIS one.
     def apply_account_context(draft)
       account = @context[:account_name]
       return draft if account.blank? || draft.account_name.present?
@@ -190,11 +183,8 @@ module QuickEntry
       draft.with(account_name: account)
     end
 
-    # Opened from a person's page: a money movement that names nobody and
-    # carries no category is about THIS person — "received 20000" reads as a
-    # repayment, while "2000 zem" keeps its category and stays a plain expense.
-    # With exactly one ongoing debt we link it (its direction is a fact);
-    # two-way or none, the direction stays the user's call.
+    # Nameless, category-less movements are about the page's person; a
+    # categorised phrase ("2000 zem") stays a plain expense.
     def apply_person_context(draft)
       person = @context[:contact_name]
       return draft if person.blank?

@@ -85,6 +85,4 @@
   </div>
 </div>
 
-<%# One button: the deposit sheet — dictate the amount and where it comes from;
-    the goal's account is the destination, carried as the context pill. %>
 <%= render Ui::FabComponent.new(url: new_quick_entry_path(goal_id: @account.goal.id), label: t('.set_aside')) %>

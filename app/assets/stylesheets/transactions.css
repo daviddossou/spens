@@ -440,7 +440,7 @@
   color: var(--text-dark);
 }
 
-/* The context pill: what the page knows, stated once, always removable. */
+/* Context pill */
 .quick-entry__pill {
   display: inline-flex;
   align-items: center;
@@ -474,8 +474,7 @@
   background: var(--bg-surface);
 }
 
-/* The form is a text link under the button — present at every opening, never
-   competing visually with the primary action. */
+/* Form exit link */
 .quick-entry__form-link {
   display: block;
   margin-top: 0.875rem;

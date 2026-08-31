@@ -5,9 +5,7 @@
 class QuickEntriesController < ApplicationController
   before_action :authenticate_user!
 
-  # The dictation sheet — the "+" FAB's single destination. It carries the
-  # page's context as a removable pill (account, person, or goal) and offers
-  # "Remplir le formulaire" as the way out to the untouched manual form.
+  # The dictation sheet: the "+" FAB's single destination.
   def new
     @context = resolve_context
   end
@@ -41,8 +39,7 @@ class QuickEntriesController < ApplicationController
 
   private
 
-  # The page's context, resolved to a real record — never trusted as free text.
-  # One pill max: goal wins over account (a goal page IS its account's page).
+  # One pill max: goal > person > account, always space-scoped records.
   Context = Struct.new(:type, :record, keyword_init: true)
 
   def resolve_context
