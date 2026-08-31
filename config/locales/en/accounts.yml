@@ -52,8 +52,11 @@ en:
       cause_fix_hint: "Go to the account's movements to fix it"
       current_balance_label: "Current Balance"
       current_balance_help: "How much is in this account right now?"
-      set_aside_label: "Money set aside"
-      set_aside_help: "Mark this account as reserved — it shows up as \"incl. set aside\" on the home screen."
+      kind_question: "Spending or savings?"
+      everyday_card_title: "Spending account"
+      everyday_card_sub: "For everyday money"
+      set_aside_card_title: "Savings account"
+      set_aside_card_sub: "Set aside — counted apart on the home screen"
       saving_goal_label: "Savings Goal (optional)"
       saving_goal_help: "Set a target amount (leave at 0 if none)"
     show:
