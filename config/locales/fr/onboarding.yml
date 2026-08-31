@@ -33,6 +33,7 @@ fr:
         subtitle: "Sélectionne les objectifs qui comptent le plus pour toi. Tu pourras toujours les modifier plus tard."
       form:
         continue: "Continuer"
+        continue_empty: "Choisis au moins un objectif"
     profile_setups:
       show:
         title: "Ton profil"

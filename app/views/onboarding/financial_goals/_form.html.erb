@@ -2,14 +2,16 @@
               url: onboarding_financial_goals_path,
               method: :patch,
               class: "onboarding-form",
-              data: { controller: "onboarding--financial-goals" } do |f| %>
+              data: { controller: "onboarding--financial-goals",
+                      onboarding__financial_goals_empty_label_value: t('.continue_empty'),
+                      onboarding__financial_goals_ready_label_value: t('.continue') } do |f| %>
   <%= render 'shared/form_errors', object: @form %>
 
   <%= render Onboarding::FinancialGoals::GridComponent.new(form_builder: f, model: @form) %>
 
   <div class="form-actions">
     <%= render Ui::ButtonComponent.new(
-          text: t('.continue'),
+          text: @form.financial_goals.empty? ? t('.continue_empty') : t('.continue'),
           type: :submit,
           variant: :primary,
           size: :lg,

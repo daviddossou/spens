@@ -25,7 +25,7 @@
      data-budget-line-rollover-empty-value="<%= t('budgets.form.rollover_example_empty') %>"
      data-budget-line-next-month-value="<%= l(@form.starts_on >> 1, format: '%B') %>"
      data-budget-line-cta-template-value="<%= t('budgets.form.cta_add_plan_amount', value: '%{value}') %>"
-     data-budget-line-cta-empty-value="<%= @form.editing? ? t('budget_items.edit.save') : t('budgets.form.cta_add_plan') %>"
+     data-budget-line-cta-empty-value="<%= t('budgets.form.cta_need_amount') %>"
      data-budget-line-kind-value="<%= @form.category_kind? ? 'category' : (@form.transfer_kind? ? 'transfer' : 'debt') %>"
      data-budget-line-cta-no-category-value="<%= t('budgets.form.cta_no_category') %>"
      data-budget-line-cta-no-from-account-value="<%= t('budgets.form.cta_no_from_account') %>"

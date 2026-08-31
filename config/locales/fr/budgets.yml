@@ -91,6 +91,7 @@ fr:
       transfer_impact_body_html: "Aucun. Un transfert n'entre ni dans tes dépenses ni dans ton épargne du mois — <strong>l'argent reste à toi</strong>, il change juste de compte."
       # Bouton dynamique
       cta_add_plan: "Ajouter au plan"
+      cta_need_amount: "Entre un montant"
       cta_add_plan_amount: "Ajouter %{value} au plan"
       cta_no_category: "Choisis une catégorie"
       cta_no_from_account: "Choisis le compte de départ"
