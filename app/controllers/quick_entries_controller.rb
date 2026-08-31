@@ -5,12 +5,15 @@
 class QuickEntriesController < ApplicationController
   before_action :authenticate_user!
 
-  # Renders the quick-add modal (its own FAB, separate from the manual "+").
+  # The dictation sheet: the "+" FAB's single destination.
   def new
+    @context = resolve_context
   end
 
   def create
-    result = QuickEntry::Coordinator.call(params[:text].to_s, space: current_space, locale: I18n.locale)
+    @context = resolve_context
+    result = QuickEntry::Coordinator.call(params[:text].to_s, space: current_space,
+                                          locale: I18n.locale, context: coordinator_context)
     draft = result.draft
     build_form(draft)
 
@@ -35,6 +38,34 @@ class QuickEntriesController < ApplicationController
   end
 
   private
+
+  # One pill max: goal > person > account, always space-scoped records.
+  Context = Struct.new(:type, :record, keyword_init: true)
+
+  def resolve_context
+    if params[:goal_id].present?
+      goal = current_space.goals.find_by(id: params[:goal_id])
+      return Context.new(type: :goal, record: goal) if goal
+    end
+    if params[:debt_id].present?
+      debt = current_space.debts.find_by(id: params[:debt_id])
+      return Context.new(type: :person, record: debt) if debt
+    end
+    if params[:account_id].present?
+      account = current_space.accounts.find_by(id: params[:account_id])
+      return Context.new(type: :account, record: account) if account
+    end
+    nil
+  end
+
+  def coordinator_context
+    case @context&.type
+    when :goal then { to_account_name: @context.record.account.name }
+    when :person then { contact_name: @context.record.name }
+    when :account then { account_name: @context.record.name }
+    else {}
+    end
+  end
 
   def build_form(draft)
     @form = TransactionForm.new(current_space, draft.to_form_payload)

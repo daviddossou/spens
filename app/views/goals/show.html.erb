@@ -85,5 +85,4 @@
   </div>
 </div>
 
-<%# One button: put money aside — a transfer into this goal's account. %>
-<%= render Ui::FabComponent.new(url: new_transaction_path(kind: 'transfer', account_id: @account.id), label: t('.set_aside')) %>
+<%= render Ui::FabComponent.new(url: new_quick_entry_path(goal_id: @account.goal.id), label: t('.set_aside')) %>

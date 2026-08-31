@@ -1,12 +1,24 @@
 en:
   quick_entries:
     new:
-      title: "Quick add"
+      title: "New transaction"
     form:
+      title: "New transaction"
+      title_goal: "New deposit"
       subtitle: "Describe your transaction"
-      placeholder: "e.g. 2000 zem, or 5k groceries at Carrefour"
-      examples: "Just say the amount and what it was for — we'll sort the rest."
+      pill_account: "On %{name}"
+      pill_person: "With %{name}"
+      pill_goal: "To %{name}"
+      remove_context: "Remove the context"
+      placeholder_none: "e.g. 2000 zem wallet, or 5k groceries"
+      placeholder_account: "e.g. 35k groceries"
+      placeholder_person: "e.g. she paid me back 20k"
+      placeholder_goal: "e.g. 25k from MTN"
+      help: "The amount and what it was for are enough."
+      help_none: "The amount and what it was for are enough — add the account if you want it debited."
+      help_goal: "The amount and the account it leaves are enough."
       submit: "Add"
-      enter_manually: "Enter details manually"
+      submit_goal: "Deposit"
+      open_form: "Fill the form"
     create:
       created: "Added %{category} · %{amount}"

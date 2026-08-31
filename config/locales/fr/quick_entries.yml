@@ -1,12 +1,24 @@
 fr:
   quick_entries:
     new:
-      title: "Ajout rapide"
+      title: "Nouvelle transaction"
     form:
+      title: "Nouvelle transaction"
+      title_goal: "Nouveau versement"
       subtitle: "Décris ta transaction"
-      placeholder: "ex. 2000 zem, ou 5k provisions à Carrefour"
-      examples: "Dites juste le montant et à quoi ça servait — on s'occupe du reste."
+      pill_account: "Sur %{name}"
+      pill_person: "Avec %{name}"
+      pill_goal: "Vers %{name}"
+      remove_context: "Retirer le contexte"
+      placeholder_none: "ex. 2000 zem porte-feuille, ou 5k provisions"
+      placeholder_account: "ex. 35k provisions"
+      placeholder_person: "ex. elle m'a rendu 20k"
+      placeholder_goal: "ex. 25k depuis MTN"
+      help: "Le montant et à quoi ça servait suffisent."
+      help_none: "Le montant et à quoi ça servait suffisent — ajoute le compte si tu veux qu'il soit débité."
+      help_goal: "Le montant et le compte d'où il part suffisent."
       submit: "Ajouter"
-      enter_manually: "Saisir les détails manuellement"
+      submit_goal: "Verser"
+      open_form: "Remplir le formulaire"
     create:
       created: "Ajouté %{category} · %{amount}"

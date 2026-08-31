@@ -11,24 +11,26 @@ module QuickEntry
     DEBT_KINDS = %w[debt_in debt_out].freeze
     DIRECTION_KIND = { "lent" => "debt_out", "borrowed" => "debt_in" }.freeze
 
-    def self.call(text, space:, locale: I18n.locale)
-      new(text, space: space, locale: locale).call
+    def self.call(text, space:, locale: I18n.locale, context: {})
+      new(text, space: space, locale: locale, context: context).call
     end
 
-    def initialize(text, space:, locale: I18n.locale)
+    def initialize(text, space:, locale: I18n.locale, context: {})
       @text = text
       @space = space
       @locale = locale
+      # The sheet's pill; applied only where the phrase said nothing.
+      @context = context || {}
     end
 
     def call
-      rules = DebtLinker.link(Parser.parse(@text, space: @space, locale: @locale), text: @text, space: @space)
+      rules = apply_context(DebtLinker.link(Parser.parse(@text, space: @space, locale: @locale), text: @text, space: @space))
       return Result.new(draft: rules, ai_draft: nil) if rules.confident? || form_ready?(rules) || !ai_parser
 
       ai = ai_parser.new(space: @space, locale: @locale).parse(@text)
       return Result.new(draft: rules, ai_draft: nil) unless ai
 
-      Result.new(draft: merge(rules, ai), ai_draft: ai_draft(ai))
+      Result.new(draft: apply_context(merge(rules, ai)), ai_draft: ai_draft(ai))
     end
 
     private
@@ -147,6 +149,64 @@ module QuickEntry
         normalized = CategoryText.normalize(account)
         normalized.include?(target) || target.include?(normalized)
       end
+    end
+
+    def apply_context(draft)
+      draft = apply_goal_context(draft)
+      draft = apply_account_context(draft)
+      apply_person_context(draft)
+    end
+
+    # A goal entry is a deposit: a transfer into the goal's account.
+    def apply_goal_context(draft)
+      target = @context[:to_account_name]
+      return draft if target.blank?
+
+      from = draft.from_account_name.presence || draft.account_name.presence
+      unresolved = []
+      unresolved << :amount if draft.amount.blank?
+      unresolved << :from_account if from.blank?
+
+      Draft.new(
+        kind: "transfer", amount: draft.amount, from_account_name: from,
+        to_account_name: target, fee_amount: draft.fee_amount,
+        transaction_date: draft.transaction_date, description: draft.description,
+        note: draft.note, unresolved: unresolved
+      )
+    end
+
+    def apply_account_context(draft)
+      account = @context[:account_name]
+      return draft if account.blank? || draft.account_name.present?
+      return draft unless %w[expense income debt_in debt_out].include?(draft.kind)
+
+      draft.with(account_name: account)
+    end
+
+    # Nameless, category-less movements are about the page's person; a
+    # categorised phrase ("2000 zem") stays a plain expense.
+    def apply_person_context(draft)
+      person = @context[:contact_name]
+      return draft if person.blank?
+      return draft if draft.contact_name.present? || draft.debt_id.present?
+
+      kind = person_kind(draft)
+      return draft unless kind
+
+      debts = @space.debts.ongoing.where("lower(trim(name)) = ?", person.to_s.strip.downcase).to_a
+      attrs = { kind: kind, contact_name: person,
+                unresolved: draft.unresolved - [ :debt, :category ] }
+      attrs.merge!(debt_id: debts.first.id, direction: debts.first.direction) if debts.size == 1
+
+      draft.with(**attrs)
+    end
+
+    def person_kind(draft)
+      return draft.kind if DEBT_KINDS.include?(draft.kind)
+      return "debt_out" if draft.kind == "debt"
+      return nil if draft.transaction_type_name.present?
+
+      { "income" => "debt_in", "expense" => "debt_out" }[draft.kind]
     end
 
     def ai_draft(ai)
