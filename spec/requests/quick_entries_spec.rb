@@ -11,10 +11,38 @@ RSpec.describe QuickEntriesController, type: :request do
   before { sign_in user, scope: :user }
 
   describe "GET #new" do
-    it "renders the quick-add modal" do
+    it "renders the dictation sheet, bare on the dashboard" do
       get new_quick_entry_path
       expect(response).to have_http_status(:success)
-      expect(response.body).to include(I18n.t("quick_entries.form.subtitle"))
+      expect(response.body).to include(I18n.t("quick_entries.form.title"))
+      expect(response.body).to include(I18n.t("quick_entries.form.open_form"))
+      expect(response.body).not_to include("quick-entry__pill")
+    end
+
+    it "carries the account as a removable context pill" do
+      account = create(:account, space: space, name: "NSIA Banque")
+      get new_quick_entry_path(account_id: account.id)
+      expect(response.body).to include("quick-entry__pill")
+      expect(response.body).to include("NSIA Banque")
+    end
+
+    it "carries the person, and titles a goal sheet as a deposit" do
+      debt = create(:debt, user: user, name: "Mariam", direction: "lent")
+      get new_quick_entry_path(debt_id: debt.id)
+      expect(response.body).to include("Mariam")
+
+      account = create(:account, space: space, name: "Moto")
+      goal = create(:goal, space: space, account: account, name: "Ma première moto", target_amount: 700_000)
+      get new_quick_entry_path(goal_id: goal.id)
+      expect(response.body).to include(I18n.t("quick_entries.form.title_goal"))
+      expect(response.body).to include("Ma première moto")
+    end
+
+    it "ignores a context from another space" do
+      foreign = create(:account, name: "Autre")
+      get new_quick_entry_path(account_id: foreign.id)
+      expect(response).to have_http_status(:success)
+      expect(response.body).not_to include("quick-entry__pill")
     end
   end
 
@@ -145,6 +173,51 @@ RSpec.describe QuickEntriesController, type: :request do
       expect(attempt.ai_used).to be(true)
       expect(LearnedAlias.global.find_by(phrase: "ndogou")).to be_candidate
       expect(LearnedAlias.for_space(space).find_by(phrase: "ndogou")).to be_active
+    end
+
+    describe "page context" do
+      it "defaults the account to the page's when the phrase names none" do
+        account = create(:account, space: space, name: "NSIA Banque")
+
+        expect do
+          post quick_entry_path, params: { text: "2000 zem", account_id: account.id }
+        end.to change { space.transactions.count }.by(1)
+
+        expect(space.transactions.order(:created_at).last.account).to eq(account)
+      end
+
+      it "never overrides an account the phrase names" do
+        page_account = create(:account, space: space, name: "NSIA Banque")
+        named = create(:account, space: space, name: "Wallet")
+
+        post quick_entry_path, params: { text: "2000 zem wallet", account_id: page_account.id }
+        expect(space.transactions.order(:created_at).last.account).to eq(named)
+      end
+
+      it "links a nameless debt phrase to the page's person (single ongoing debt)" do
+        debt = create(:debt, user: user, name: "Mariam", direction: "lent")
+
+        expect do
+          post quick_entry_path, params: { text: "received 20000", debt_id: debt.id }
+        end.to change { space.transactions.count }.by(1)
+
+        transaction = space.transactions.order(:created_at).last
+        expect(transaction.debt).to eq(debt)
+        expect(transaction.transaction_type.kind).to eq("debt_in")
+      end
+
+      it "auto-creates a deposit (transfer into the goal's account) when the phrase names the source" do
+        from = create(:account, space: space, name: "MTN Mobile Money")
+        target = create(:account, space: space, name: "Moto")
+        goal = create(:goal, space: space, account: target, name: "Ma première moto", target_amount: 700_000)
+
+        expect do
+          post quick_entry_path, params: { text: "transfer 25000 from MTN Mobile Money", goal_id: goal.id }
+        end.to change { space.transactions.count }.by(2) # both legs
+
+        legs = space.transactions.order(:created_at).last(2)
+        expect(legs.map { |l| l.account.name }).to contain_exactly("MTN Mobile Money", "Moto")
+      end
     end
 
     it "requires authentication" do

@@ -11,24 +11,28 @@ module QuickEntry
     DEBT_KINDS = %w[debt_in debt_out].freeze
     DIRECTION_KIND = { "lent" => "debt_out", "borrowed" => "debt_in" }.freeze
 
-    def self.call(text, space:, locale: I18n.locale)
-      new(text, space: space, locale: locale).call
+    def self.call(text, space:, locale: I18n.locale, context: {})
+      new(text, space: space, locale: locale, context: context).call
     end
 
-    def initialize(text, space:, locale: I18n.locale)
+    def initialize(text, space:, locale: I18n.locale, context: {})
       @text = text
       @space = space
       @locale = locale
+      # What the PAGE knows (the sheet's context pill): an account, a person, or
+      # a goal's target account. Applied only where the phrase said nothing —
+      # what the parser guessed never overrides what the user typed.
+      @context = context || {}
     end
 
     def call
-      rules = DebtLinker.link(Parser.parse(@text, space: @space, locale: @locale), text: @text, space: @space)
+      rules = apply_context(DebtLinker.link(Parser.parse(@text, space: @space, locale: @locale), text: @text, space: @space))
       return Result.new(draft: rules, ai_draft: nil) if rules.confident? || form_ready?(rules) || !ai_parser
 
       ai = ai_parser.new(space: @space, locale: @locale).parse(@text)
       return Result.new(draft: rules, ai_draft: nil) unless ai
 
-      Result.new(draft: merge(rules, ai), ai_draft: ai_draft(ai))
+      Result.new(draft: apply_context(merge(rules, ai)), ai_draft: ai_draft(ai))
     end
 
     private
@@ -147,6 +151,72 @@ module QuickEntry
         normalized = CategoryText.normalize(account)
         normalized.include?(target) || target.include?(normalized)
       end
+    end
+
+    # ── Page context ──────────────────────────────────────────────────────
+    # The sheet's pill, applied to the draft where the phrase said nothing.
+
+    def apply_context(draft)
+      draft = apply_goal_context(draft)
+      draft = apply_account_context(draft)
+      apply_person_context(draft)
+    end
+
+    # Opened from a goal: the entry IS a deposit — a transfer into the goal's
+    # account. The phrase only has to say the amount and where it comes from.
+    def apply_goal_context(draft)
+      target = @context[:to_account_name]
+      return draft if target.blank?
+
+      from = draft.from_account_name.presence || draft.account_name.presence
+      unresolved = []
+      unresolved << :amount if draft.amount.blank?
+      unresolved << :from_account if from.blank?
+
+      Draft.new(
+        kind: "transfer", amount: draft.amount, from_account_name: from,
+        to_account_name: target, fee_amount: draft.fee_amount,
+        transaction_date: draft.transaction_date, description: draft.description,
+        note: draft.note, unresolved: unresolved
+      )
+    end
+
+    # Opened from an account: an entry that names no account happens on THIS one.
+    def apply_account_context(draft)
+      account = @context[:account_name]
+      return draft if account.blank? || draft.account_name.present?
+      return draft unless %w[expense income debt_in debt_out].include?(draft.kind)
+
+      draft.with(account_name: account)
+    end
+
+    # Opened from a person's page: a money movement that names nobody and
+    # carries no category is about THIS person — "received 20000" reads as a
+    # repayment, while "2000 zem" keeps its category and stays a plain expense.
+    # With exactly one ongoing debt we link it (its direction is a fact);
+    # two-way or none, the direction stays the user's call.
+    def apply_person_context(draft)
+      person = @context[:contact_name]
+      return draft if person.blank?
+      return draft if draft.contact_name.present? || draft.debt_id.present?
+
+      kind = person_kind(draft)
+      return draft unless kind
+
+      debts = @space.debts.ongoing.where("lower(trim(name)) = ?", person.to_s.strip.downcase).to_a
+      attrs = { kind: kind, contact_name: person,
+                unresolved: draft.unresolved - [ :debt, :category ] }
+      attrs.merge!(debt_id: debts.first.id, direction: debts.first.direction) if debts.size == 1
+
+      draft.with(**attrs)
+    end
+
+    def person_kind(draft)
+      return draft.kind if DEBT_KINDS.include?(draft.kind)
+      return "debt_out" if draft.kind == "debt"
+      return nil if draft.transaction_type_name.present?
+
+      { "income" => "debt_in", "expense" => "debt_out" }[draft.kind]
     end
 
     def ai_draft(ai)
