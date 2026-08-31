@@ -67,5 +67,26 @@ RSpec.describe BudgetItemsController, type: :request do
       expect(other_item.reload.active).to be true
       expect(response).to redirect_to(budgets_path)
     end
+
+    it "reads a YYYY-MM from_month slug (the quick-edit sheet's format)" do
+      item = create(:budget_item, space: space, starts_on: month)
+      Budgets::EnsureEntriesService.new(space: space, month: month).call
+      next_slug = (month >> 1).strftime("%Y-%m")
+
+      delete budget_item_path(id: item.id, from_month: next_slug, month: month.strftime("%Y-%m"))
+
+      expect(response).to have_http_status(:see_other)
+      expect(item.reload.ends_on).to eq(month.end_of_month)
+      expect(space.budget_entries.for_month(month)).not_to be_empty
+    end
+
+    it "falls back to the current month on a malformed from_month" do
+      item = create(:budget_item, space: space, starts_on: month)
+
+      delete budget_item_path(id: item.id, from_month: "garbage")
+
+      expect(response).to have_http_status(:see_other)
+      expect(item.reload.active).to be false
+    end
   end
 end
