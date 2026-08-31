@@ -73,4 +73,33 @@ RSpec.describe GoalProgress do
       expect(progress.status).to be_nil
     end
   end
+
+  describe "#rhythm_state" do
+    let(:space) { create(:space) }
+    let(:account) { create(:account, space: space, balance: 112_000) }
+    let(:real_goal) { create(:goal, space: space, account: account, name: "Moto", target_amount: 700_000) }
+
+    before { travel_to Time.zone.local(2026, 8, 28) }
+
+    it "projects the arrival month from the last 3 CLOSED months" do
+      type = create(:transaction_type, space: space, kind: "transfer_in", name: "In X")
+      [ 1, 2, 3 ].each do |back|
+        create(:transaction, space: space, account: account, transaction_type: type,
+                             amount: 50_000, transaction_date: Date.new(2026, 8, 1) << back)
+      end
+
+      state, eta = described_class.new(real_goal).rhythm_state
+      expect(state).to eq(:eta)
+      expect(eta).to eq(Date.new(2027, 5, 1)) # ledger-posted inflows leave 438_000 at 50_000/month -> 9 months
+    end
+
+    it "says no-rhythm-yet instead of announcing 2074 on young or flowless data" do
+      # This month's inflow alone never counts: closed months only.
+      type = create(:transaction_type, space: space, kind: "transfer_in", name: "In X")
+      create(:transaction, space: space, account: account, transaction_type: type,
+                           amount: 50_000, transaction_date: Date.new(2026, 8, 10))
+
+      expect(described_class.new(real_goal).rhythm_state).to eq([ :no_rhythm, nil ])
+    end
+  end
 end

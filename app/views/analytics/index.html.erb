@@ -1,83 +1,408 @@
 <% content_for :page_title, t('.page_title') %>
-<% content_for :head do %>
-  <meta name="currency-symbol" content="<%= get_currency_symbol(@currency) %>">
-<% end %>
+<%
+  range = @period.range
+  range_label = @period.month? ? "#{range.begin.day} – #{l([ Date.current, range.end ].min, format: :day_month)}" \
+                               : "#{l(range.begin, format: :day_month)} – #{l(range.end, format: :day_month)}"
+  plan = @spending.plan
+  split = @spending.essential_split
+  comparison = @spending.comparison
+%>
 
 <div class="page-container page-container--narrow">
-  <div class="page-content">
+  <div class="page-content analyses">
+    <div class="analyses-rangebar">
+      <%# The app header already says "Analyses"; the sticky bar carries the
+          one thing filtering needs: what range you're on. %>
+      <div class="analyses-rangebar__head">
+        <span class="analyses-rangebar__range"><%= range_label %></span>
+      </div>
+      <nav class="analyses-ranges" aria-label="<%= t('.page_title') %>">
+        <% Analyses::Period::KINDS.each do |kind| %>
+          <%= link_to t(".ranges.#{kind}"),
+                analytics_path(range: kind),
+                class: "analyses-ranges__seg#{' analyses-ranges__seg--active' if @period.kind == kind}" %>
+        <% end %>
+      </nav>
+      <% if @period.kind == "custom" || params[:range] == "custom" %>
+        <%= form_with url: analytics_path, method: :get, class: "analyses-custom" do %>
+          <%= hidden_field_tag :range, "custom" %>
+          <%= date_field_tag :start_date, params[:start_date] || range.begin, class: "form-input", aria: { label: t('.ranges.from') } %>
+          <%= date_field_tag :end_date, params[:end_date] || range.end, class: "form-input", aria: { label: t('.ranges.to') } %>
+          <%= submit_tag t('.ranges.apply'), class: "btn btn-primary" %>
+        <% end %>
+      <% end %>
+    </div>
 
-    <!-- Period Switcher -->
-    <div class="analytics-period" data-controller="date-range">
-      <div class="analytics-period__bar">
-        <%= render Ui::SwitcherComponent.new(
-          options: [
-            { text: t('.periods.custom'),       value: "custom",        url: analytics_path(period: "custom"),        data: { action: "click->date-range#showPicker", "date-range-target": "customBtn" } },
-            { text: t('.periods.today'),         value: "today",         url: analytics_path(period: "today") },
-            { text: t('.periods.yesterday'),     value: "yesterday",     url: analytics_path(period: "yesterday") },
-            { text: t('.periods.this_week'),     value: "this_week",     url: analytics_path(period: "this_week") },
-            { text: t('.periods.this_month'),    value: "this_month",    url: analytics_path(period: "this_month") },
-            { text: t('.periods.last_3_months'), value: "last_3_months", url: analytics_path(period: "last_3_months") },
-            { text: t('.periods.last_6_months'), value: "last_6_months", url: analytics_path(period: "last_6_months") },
-            { text: t('.periods.last_12_months'), value: "last_12_months", url: analytics_path(period: "last_12_months") },
-            { text: t('.periods.all_time'),        value: "all_time",        url: analytics_path(period: "all_time") }
-          ],
-          current: @period,
-          css_class: "switcher switcher--small switcher--scroll"
-        ) %>
+    <% if @spending.spent_total.zero? && @spending.lent_total.zero? %>
+      <div class="empty-state">
+        <p class="analyses-empty__title"><%= t('.empty_title') %></p>
+        <p class="analyses-empty__message"><%= t('.empty_message') %></p>
+      </div>
+    <% else %>
+      <h2 class="analyses-section__title"><%= t('.section_spent') %></h2>
+
+      <div class="analyses-card">
+        <p class="analyses-card__label">
+          <%= @period.month? ? t('.spent_title_month', month: l(range.begin, format: :month_only)) \
+                             : t('.spent_title_range', from: l(range.begin, format: :day_month), to: l(range.end, format: :day_month)) %>
+        </p>
+        <p class="analyses-hero"><%= smart_format_money(@spending.spent_total, current_space.currency, sign: :never, threshold: Float::INFINITY) %></p>
+
+        <% if comparison %>
+          <% if comparison[:no_data] %>
+            <p class="analyses-compare analyses-compare--quiet"><%= t('.no_comparison') %></p>
+          <% elsif comparison[:monthly_average] %>
+            <p class="analyses-compare analyses-compare--quiet"><%= t('.monthly_average', amount: smart_format_money(comparison[:monthly_average], current_space.currency, sign: :never, threshold: Float::INFINITY)) %></p>
+          <% else %>
+            <% up = (comparison[:percent] || comparison[:amount]).positive? %>
+            <% delta = comparison[:percent] ? "#{'↑ ' if up}#{'↓ ' unless up}#{comparison[:percent].abs} %" \
+                                            : "#{up ? '+' : '−'} #{strip_tags(smart_format_money((comparison[:amount]).abs, current_space.currency, sign: :never, threshold: Float::INFINITY))}" %>
+            <p class="analyses-compare">
+              <span class="analyses-compare__chip <%= up ? 'analyses-compare__chip--up' : 'analyses-compare__chip--down' %>"><%= delta %></span>
+              <span class="analyses-compare__ref">
+                <%= @period.month? ? t('.vs_past_month', month: l(comparison[:range].begin, format: :month_only), amount: strip_tags(smart_format_money(comparison[:previous], current_space.currency, sign: :never, threshold: Float::INFINITY)).gsub("&nbsp;", " ")) \
+                                   : t('.vs_past_range', amount: strip_tags(smart_format_money(comparison[:previous], current_space.currency, sign: :never, threshold: Float::INFINITY)).gsub("&nbsp;", " ")) %>
+              </span>
+            </p>
+          <% end %>
+        <% end %>
+
+        <% if plan && plan[:planned] %>
+          <%
+            over = plan[:spent_on_plan] > plan[:planned]
+            fill = plan[:planned].positive? ? [ plan[:spent_on_plan] / plan[:planned] * 100, 100 ].min : 0
+            prorated = @spending.prorated_plan_total
+            ongoing = prorated < plan[:planned]
+            pace_gap = (plan[:spent_on_plan] - prorated).round
+            final_gap = (plan[:planned] - plan[:spent_on_plan]).round
+          %>
+          <div class="analyses-row">
+            <div class="analyses-row__head">
+              <span class="analyses-row__label"><%= t('.plan_label') %></span>
+              <span class="analyses-row__value<%= ' analyses-row__value--over' if over %>">
+                <%= format_money_number(plan[:spent_on_plan]) %> / <%= format_money_number(plan[:planned]) %>
+              </span>
+            </div>
+            <div class="analyses-bar<%= ' analyses-bar--over' if over %>">
+              <span class="analyses-bar__fill" style="width: <%= fill.round(1) %>%;"></span>
+              <%# The tick exists only mid-period; at 100% it's not a landmark. %>
+              <% if ongoing && plan[:planned].positive? %>
+                <span class="analyses-bar__tick" style="left: <%= [ prorated / plan[:planned] * 100, 100 ].min.round(1) %>%;" aria-hidden="true"></span>
+              <% end %>
+            </div>
+            <%# The verdict in money — the phrase IS the tick's legend, never its definition. %>
+            <p class="analyses-row__caption analyses-row__caption--verdict">
+              <% if ongoing %>
+                <%= pace_gap.positive? ? t('.plan_verdict_over', amount: format_money_number(pace_gap)) \
+                                       : (pace_gap.negative? ? t('.plan_verdict_under', amount: format_money_number(pace_gap.abs)) : t('.plan_verdict_on')) %>
+              <% else %>
+                <%= final_gap.positive? ? t('.plan_done_kept', amount: format_money_number(final_gap)) \
+                                        : (final_gap.negative? ? t('.plan_done_over', amount: format_money_number(final_gap.abs)) : t('.plan_done_exact')) %>
+              <% end %>
+            </p>
+          </div>
+        <% elsif plan && plan[:months_total] %>
+          <div class="analyses-row">
+            <p class="analyses-row__caption"><%= t('.plan_months_html', ok: plan[:months_ok], total: plan[:months_total]) %></p>
+          </div>
+        <% end %>
+
+        <% if split %>
+          <%# Invariant 2: total = essentiel + plaisir + non classé (grey). %>
+          <% total = @spending.spent_total %>
+          <div class="analyses-row">
+            <div class="analyses-row__head">
+              <span class="analyses-row__label"><%= t('.essential_label') %></span>
+              <span class="analyses-row__value"><%= t('.essential_pct', pct: split[:pct_essential]) %></span>
+            </div>
+            <div class="analyses-splitbar">
+              <span class="analyses-splitbar__essential" style="width: <%= (split[:essential] / total * 100).round(1) %>%;"></span>
+              <span class="analyses-splitbar__plaisir" style="width: <%= (split[:plaisir] / total * 100).round(1) %>%;"></span>
+            </div>
+            <p class="analyses-row__caption">
+              <strong><%= format_money_number(split[:essential]) %></strong> <%= t('.essential_amount') %>
+              &nbsp; <strong><%= format_money_number(split[:plaisir]) %></strong> <%= t('.plaisir_amount') %>
+              <% if split[:unclassified].positive? %>
+                &nbsp; <strong><%= format_money_number(split[:unclassified]) %></strong> <%= t('.unclassified_amount') %>
+              <% end %>
+            </p>
+          </div>
+        <% end %>
+
+        <%# A month with no overrun says so here — not as a floating empty card. %>
+        <% if @period.single_month? && @spending.plan && @spending.overruns.empty? %>
+          <p class="analyses-allgood"><%= t('.all_in_plan') %></p>
+        <% end %>
+
+        <%# Money that left the accounts as loans — an addition, never a subtraction. %>
+        <% if @spending.lent_total.positive? %>
+          <a href="#analyses-between" class="analyses-moved">
+            <span><%= t('.lent_line', amount: format_money_number(@spending.lent_total)) %></span>
+            <span class="analyses-moved__amount">›</span>
+          </a>
+        <% end %>
       </div>
 
-      <% if @period != 'custom' %>
-        <div class="analytics-period__date-label">
-          <% if @date_range %>
-            <%= l(@date_range.first, format: :short) %> — <%= l(@date_range.last, format: :short) %>
-          <% else %>
-            <%= t('.periods.all_time') %>
+      <%# Block 2 — the rhythm: one bar per unit, the future grey, never a fake 0. %>
+      <% units = @rhythm.units %>
+      <% if units.any? { |u| u.amount.positive? } %>
+        <% max = units.map(&:amount).max %>
+        <div class="analyses-card">
+          <p class="analyses-card__title"><%= t(".rhythm_title.#{@period.granularity}") %></p>
+          <div class="analyses-rhythm" aria-hidden="true">
+            <% units.each do |unit| %>
+              <% height = unit.future || max.zero? ? 0 : (unit.amount / max * 100).round(1) %>
+              <span class="analyses-rhythm__bar<%= ' analyses-rhythm__bar--future' if unit.future %><%= ' analyses-rhythm__bar--peak' if !unit.future && unit == @rhythm.biggest %>"
+                    style="height: <%= [ height, unit.future ? 0 : 4 ].max %>%;"></span>
+            <% end %>
+          </div>
+          <div class="analyses-rhythm__axis">
+            <span><%= l(units.first.starts_on, format: :day_month) %></span>
+            <span><%= l(units.last.starts_on, format: :day_month) %></span>
+          </div>
+          <% if @rhythm.biggest %>
+            <p class="analyses-row__caption">
+              <%= t(".rhythm_biggest.#{@period.granularity}_html",
+                    date: l(@rhythm.biggest.starts_on, format: @period.granularity == :month ? :month_only : :day_month),
+                    amount: format_money_number(@rhythm.biggest.amount),
+                    category: @rhythm.biggest_category ? t('.rhythm_biggest_category', name: @rhythm.biggest_category) : "") %>
+            </p>
           <% end %>
         </div>
       <% end %>
 
-      <div class="analytics-period__custom <%= 'analytics-period__custom--visible' if @period == 'custom' %>"
-           data-date-range-target="picker">
-        <%= form_tag analytics_path, method: :get, class: "analytics-period__form" do %>
-          <input type="hidden" name="period" value="custom">
-          <div class="analytics-period__inputs">
-            <div class="analytics-period__field">
-              <label for="start_date" class="analytics-period__label"><%= t('.periods.from') %></label>
-              <input type="date" id="start_date" name="start_date"
-                     value="<%= params[:start_date] || @date_range&.first || Date.current.beginning_of_month %>"
-                     class="analytics-period__date-input"
-                     data-action="change->date-range#submit">
-            </div>
-            <div class="analytics-period__field">
-              <label for="end_date" class="analytics-period__label"><%= t('.periods.to') %></label>
-              <input type="date" id="end_date" name="end_date"
-                     value="<%= params[:end_date] || @date_range&.last || Date.current %>"
-                     class="analytics-period__date-input"
-                     data-action="change->date-range#submit">
-            </div>
+      <% if @period.single_month? && @spending.plan %>
+        <%# Block 3 — overruns, judged against the prorated plan, 3 at most. %>
+        <% overruns = @spending.overruns %>
+        <% if overruns.any? %>
+          <div class="analyses-card">
+            <p class="analyses-card__title">
+              <%= t('.overruns_title') %>
+              <span class="analyses-card__count"><%= t('.overruns_count', shown: [ overruns.size, 3 ].min, total: @spending.plan[:categories_with_plan]) %></span>
+            </p>
+            <% overruns.first(3).each do |row| %>
+              <%= render "overrun_row", row: row %>
+            <% end %>
+            <% if overruns.size > 3 %>
+              <details class="analyses-fold">
+                <summary class="analyses-fold__summary">
+                  <span><%= t('.overruns_more', count: overruns.size - 3) %></span>
+                  <span class="analyses-fold__toggle"><%= t('.overruns_more_cta') %></span>
+                </summary>
+                <% overruns.drop(3).each do |row| %>
+                  <%= render "overrun_row", row: row %>
+                <% end %>
+              </details>
+            <% end %>
           </div>
-          <button type="submit" class="analytics-period__apply-btn"><%= t('.periods.apply') %></button>
         <% end %>
+
+        <%# Block 4 — what holds its plan, folded; the fold carries its totals. %>
+        <% within = @spending.within_plan %>
+        <% if within.any? %>
+          <details class="analyses-card analyses-fold">
+            <summary class="analyses-fold__summary">
+              <span class="analyses-fold__text">
+                <span class="analyses-fold__title"><%= t('.within_title', count: within.size) %></span>
+                <span class="analyses-fold__sub"><%= t('.fold_totals', spent: format_money_number(within.sum(&:spent)), planned: format_money_number(within.sum(&:planned))) %></span>
+              </span>
+              <span class="analyses-fold__toggle"><%= t('.fold_toggle') %></span>
+            </summary>
+            <% within.each do |row| %>
+              <%= link_to edit_budget_entry_path(id: row.entry.id), class: "analyses-slim", data: { turbo_frame: "modal" } do %>
+                <span class="analyses-slim__name">
+                  <%= row.name %><% if row.single && row.spent.positive? %> <span class="analyses-slim__chip"><%= t('.paid_chip') %></span><% end %>
+                </span>
+                <span class="analyses-slim__bar">
+                  <span style="width: <%= row.planned.positive? ? [ row.spent / row.planned * 100, 100 ].min.round(1) : 0 %>%;"></span>
+                  <%# No tick at 100%: single-transaction lines and finished periods carry none. %>
+                  <% if row.planned.positive? && row.prorated < row.planned %>
+                    <i class="analyses-slim__tick" style="left: <%= [ row.prorated / row.planned * 100, 100 ].min.round(1) %>%;" aria-hidden="true"></i>
+                  <% end %>
+                </span>
+                <span class="analyses-slim__amount"><%= format_money_number(row.spent) %></span>
+              <% end %>
+            <% end %>
+          </details>
+        <% end %>
+
+        <%# Block 5 — off-plan, apart, never mixed with overruns. %>
+        <% offplan = @spending.offplan_categories %>
+        <%# Block 5 shows only past 10% of the total; the plan-coverage line lives here. %>
+        <% if offplan.any? && @spending.spent_total.positive? && @spending.offplan_total / @spending.spent_total > 0.10 %>
+          <details class="analyses-card analyses-fold">
+            <summary class="analyses-fold__summary">
+              <span class="analyses-fold__text">
+                <span class="analyses-fold__title"><%= t('.offplan_title', count: offplan.size) %></span>
+                <span class="analyses-fold__sub">
+                  <%= t('.offplan_totals', spent: format_money_number(offplan.sum(&:spent))) %>
+                  · <%= t('.coverage', with_plan: plan[:categories_with_plan], total: [ plan[:categories_total], plan[:categories_with_plan] ].max) %>
+                </span>
+              </span>
+              <span class="analyses-fold__toggle"><%= t('.fold_toggle') %></span>
+            </summary>
+            <%# The tail folds: tiny lines don't get the same visual weight as big ones. %>
+            <% offplan.first(3).each do |row| %>
+              <div class="analyses-slim">
+                <span class="analyses-slim__name"><%= row.name %></span>
+                <span class="analyses-slim__amount"><%= format_money_number(row.spent) %></span>
+                <% if row.other %>
+                  <%= link_to t('.offplan_classify'), dashboard_path(q: row.name), class: "analyses-slim__action", data: { turbo_frame: "_top" } %>
+                <% else %>
+                  <%= link_to t('.offplan_budget'),
+                        new_budget_item_path(month: @period.months.first.strftime("%Y-%m"), kind: "expense", transaction_type_name: row.name, amount: row.spent.round),
+                        class: "analyses-slim__action", data: { turbo_frame: "modal" } %>
+                <% end %>
+              </div>
+            <% end %>
+            <% if offplan.size > 3 %>
+              <div class="analyses-slim analyses-slim--muted">
+                <span class="analyses-slim__name"><%= t('.offplan_more', count: offplan.size - 3) %></span>
+                <span class="analyses-slim__amount"><%= format_money_number(offplan.drop(3).sum(&:spent)) %></span>
+              </div>
+            <% end %>
+          </details>
+        <% end %>
+      <% end %>
+    <% end %>
+
+    <%# Section 2 — netted PER PERSON before any aggregation: someone on both
+        sides appears once, at their net. No section without a debt. %>
+    <% if @relations.any? %>
+      <%
+        owed = @relations.select { |r| r.net_direction == "lent" }.sort_by { |r| -r.net_amount }
+        owing = @relations.select { |r| r.net_direction == "borrowed" && r.net_amount.positive? }.sort_by { |r| -r.net_amount }
+        total_owed = owed.sum(&:net_amount)
+        total_owing = owing.sum(&:net_amount)
+        net = total_owed - total_owing
+        max_owed = owed.map(&:net_amount).max
+        max_owing = owing.map(&:net_amount).max
+      %>
+      <h2 class="analyses-section__title" id="analyses-between"><%= t('.section_between') %></h2>
+      <div class="analyses-card">
+        <p class="analyses-card__label"><%= t('.settle_today') %></p>
+        <p class="analyses-hero <%= net.negative? ? 'analyses-hero--negative' : 'analyses-hero--positive' %>">
+          <%= smart_format_money(net, current_space.currency, sign: :always, threshold: Float::INFINITY) %>
+        </p>
+        <div class="analyses-debt-chips">
+          <div class="analyses-debt-chip analyses-debt-chip--in">
+            <span class="analyses-debt-chip__label"><%= t('.owed_to_you') %></span>
+            <span class="analyses-debt-chip__value"><%= format_money_number(total_owed) %></span>
+          </div>
+          <div class="analyses-debt-chip analyses-debt-chip--out">
+            <span class="analyses-debt-chip__label"><%= t('.you_owe') %></span>
+            <span class="analyses-debt-chip__value"><%= format_money_number(total_owing) %></span>
+          </div>
+        </div>
+
+        <% [ [ owed, :net_amount, max_owed, 'who_owes_you', 'in' ], [ owing, :net_amount, max_owing, 'whom_you_owe', 'out' ] ].each do |rows, reader, max, title_key, side| %>
+          <% next if rows.empty? %>
+          <div class="analyses-row">
+            <p class="analyses-debt-list__title"><%= t(".#{title_key}") %></p>
+            <% rows.each do |relation| %>
+              <%= link_to debt_path(id: relation.primary_debt.id), class: "analyses-person", data: { turbo_frame: "_top" } do %>
+                <span class="analyses-person__avatar analyses-person__avatar--<%= side %>"><%= relation.initials %></span>
+                <span class="analyses-person__body">
+                  <span class="analyses-person__head">
+                    <span class="analyses-person__name"><%= relation.name %></span>
+                    <span class="analyses-person__amount"><%= format_money_number(relation.public_send(reader)) %></span>
+                  </span>
+                  <span class="analyses-person__bar analyses-person__bar--<%= side %>">
+                    <span style="width: <%= (relation.public_send(reader) / max * 100).round(1) %>%;"></span>
+                  </span>
+                </span>
+              <% end %>
+            <% end %>
+          </div>
+        <% end %>
+
       </div>
-    </div>
+    <% end %>
 
-    <!-- Income / Expense Section -->
-    <div class="analytics-section">
-      <h2 class="analytics-section__title"><%= t('.sections.income_expense') %></h2>
-      <%= render partial: "analytics/income_expense" %>
-    </div>
+    <%# Section 3 — what you set aside: the habit, the goals' arrival dates,
+        and where the money sits. Each block exists only if its data does. %>
+    <% show_saved = @set_aside.any_account? || @goals.any? || @accounts.any? %>
+    <% if show_saved %>
+      <h2 class="analyses-section__title"><%= t('.section_saved') %></h2>
 
-    <!-- Debts Section -->
-    <div class="analytics-section">
-      <h2 class="analytics-section__title"><%= t('.sections.debts') %></h2>
-      <%= render partial: "analytics/debts" %>
-    </div>
+      <% if @set_aside.any_account? %>
+        <% months = @set_aside.last_three %>
+        <% saved_max = months.map { |_, v| v.abs }.max %>
+        <div class="analyses-card">
+          <p class="analyses-card__label"><%= t('.saved_title', month: l(Date.current, format: :month_only)) %></p>
+          <p class="analyses-hero"><%= smart_format_money(months.last.last, current_space.currency, sign: :never, threshold: Float::INFINITY) %></p>
+          <% if @set_aside.streak >= 2 %>
+            <span class="analyses-streak"><%= t('.saved_streak', count: @set_aside.streak) %></span>
+          <% end %>
+          <div class="analyses-minimonths" aria-hidden="true">
+            <% months.each do |month, net| %>
+              <div class="analyses-minimonths__col">
+                <span class="analyses-minimonths__bar<%= ' analyses-minimonths__bar--current' if month == Date.current.beginning_of_month %>"
+                      style="height: <%= saved_max.to_f.positive? ? [ (net.abs / saved_max * 100).round, 8 ].max : 8 %>%;"></span>
+                <span class="analyses-minimonths__label"><%= l(month, format: :month_only).first(4) %></span>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
 
-    <!-- Savings Section -->
-    <div class="analytics-section">
-      <h2 class="analytics-section__title"><%= t('.sections.savings') %></h2>
-      <%= render partial: "analytics/savings" %>
-    </div>
+      <% if @goals.any? %>
+        <div class="analyses-card">
+          <p class="analyses-card__title"><%= t('.goals_title') %></p>
+          <% @goals.each do |progress| %>
+            <%= link_to goal_path(id: progress.goal.account_id), class: "analyses-goal", data: { turbo_frame: "_top" } do %>
+              <span class="analyses-person__head">
+                <span class="analyses-person__name"><%= progress.name || progress.account.name %></span>
+                <span class="analyses-goal__figures">
+                  <%= format_money_number(progress.current) %><% if progress.target_set? %> / <%= format_money_number(progress.target) %><% end %>
+                </span>
+              </span>
+              <span class="analyses-person__bar"><span style="width: <%= progress.percentage %>%; background: var(--color-primary);"></span></span>
+              <% state, eta = progress.rhythm_state %>
+              <% if state == :eta %>
+                <span class="analyses-goal__eta"><%= t('.goal_eta', date: l(eta, format: :month_year)) %></span>
+              <% elsif state == :no_rhythm %>
+                <span class="analyses-goal__eta"><%= t('.no_rhythm') %></span>
+              <% end %>
+            <% end %>
+          <% end %>
+        </div>
+      <% end %>
 
+      <% if @accounts.any? %>
+        <% total = @accounts.sum(&:balance) %>
+        <div class="analyses-card">
+          <p class="analyses-card__title">
+            <%= t('.accounts_title') %>
+            <%= link_to t('.accounts_link'), accounts_path, class: "analyses-card__link", data: { turbo_frame: "_top" } %>
+          </p>
+          <div class="analyses-stack" aria-hidden="true">
+            <% @accounts.each_with_index do |account, i| %>
+              <span class="analyses-stack__seg" style="width: <%= (account.balance / total * 100).round(1) %>%; opacity: <%= [ 1 - i * 0.22, 0.2 ].max %>;"></span>
+            <% end %>
+          </div>
+          <% @accounts.first(3).each do |account| %>
+            <div class="analyses-slim">
+              <span class="analyses-slim__name"><%= account.name %></span>
+              <span class="analyses-slim__amount"><%= format_money_number(account.balance) %></span>
+            </div>
+          <% end %>
+          <% if @accounts.size > 3 %>
+            <div class="analyses-slim analyses-slim--muted">
+              <span class="analyses-slim__name"><%= t('.accounts_more', count: @accounts.size - 3) %></span>
+              <span class="analyses-slim__amount"><%= format_money_number(@accounts.drop(3).sum(&:balance)) %></span>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+
+      <%= link_to budgets_path, class: "analyses-footer-cta", data: { turbo_frame: "_top" } do %>
+        <span class="analyses-footer-cta__body">
+          <span class="analyses-footer-cta__title"><%= t('.adjust_budget') %></span>
+          <span class="analyses-footer-cta__sub"><%= t('.adjust_budget_sub') %></span>
+        </span>
+        <span aria-hidden="true">›</span>
+      <% end %>
+    <% end %>
   </div>
 </div>

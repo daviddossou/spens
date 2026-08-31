@@ -94,4 +94,38 @@ class GoalProgress
     elapsed = (Date.current - goal.created_at.to_date).to_f
     [ [ elapsed / span, 1.0 ].min, 0.0 ].max
   end
+
+  public
+
+  # The arrival date at the OBSERVED pace — closed months only (including the
+  # running month collapses the rhythm on the 1st). :eta with the date, or
+  # :no_rhythm when a target exists but the pace can't be trusted yet
+  # (pace <= 0, or under 2 months of history) — say so rather than announce 2074.
+  def rhythm_state
+    return nil unless target_set? && remaining.positive?
+
+    pace = observed_monthly_pace
+    return [ :no_rhythm, nil ] if pace <= 0 || !enough_history?
+
+    [ :eta, Date.current.beginning_of_month >> (remaining / pace).ceil ]
+  end
+
+  def observed_monthly_pace
+    bom = Date.current.beginning_of_month
+    (net_inflow((bom << 3)..(bom - 1)) / 3).round(2)
+  end
+
+  private
+
+  def enough_history?
+    first = goal.account.transactions.minimum(:transaction_date)
+    first.present? && first < (Date.current.beginning_of_month << 1)
+  end
+
+  def net_inflow(range)
+    scope = goal.account.transactions.joins(:transaction_type).where(transaction_date: range)
+    inflow = scope.where(transaction_types: { kind: "transfer_in" }).sum("ABS(transactions.amount)").to_f
+    outflow = scope.where(transaction_types: { kind: "transfer_out" }).sum("ABS(transactions.amount)").to_f
+    inflow - outflow
+  end
 end

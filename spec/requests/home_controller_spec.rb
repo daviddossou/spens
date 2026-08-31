@@ -8,7 +8,10 @@ RSpec.describe HomeController, type: :request do
   let(:user) { create(:user) }
   let(:space) { user.spaces.first }
 
+  # Fixed mid-month noon: the controller reads dates in the user's time zone,
+  # and a real month boundary would shift its "today" past the spec's.
   before do
+    travel_to Time.zone.local(2026, 8, 18, 12)
     sign_in user, scope: :user
   end
 
