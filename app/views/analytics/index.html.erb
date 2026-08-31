@@ -11,8 +11,9 @@
 <div class="page-container page-container--narrow">
   <div class="page-content analyses">
     <div class="analyses-rangebar">
+      <%# The app header already says "Analyses"; the sticky bar carries the
+          one thing filtering needs: what range you're on. %>
       <div class="analyses-rangebar__head">
-        <span class="analyses-rangebar__title"><%= t('.page_title') %></span>
         <span class="analyses-rangebar__range"><%= range_label %></span>
       </div>
       <nav class="analyses-ranges" aria-label="<%= t('.page_title') %>">
@@ -107,6 +108,11 @@
           </div>
         <% end %>
 
+        <%# A month with no overrun says so here — not as a floating empty card. %>
+        <% if @period.single_month? && @spending.plan && @spending.overruns.empty? %>
+          <p class="analyses-allgood"><%= t('.all_in_plan') %></p>
+        <% end %>
+
         <% if @spending.moved_total.positive? %>
           <%= link_to dashboard_path, class: "analyses-moved" do %>
             <span><%= t('.moved_label') %></span>
@@ -146,9 +152,7 @@
       <% if @period.single_month? && @spending.plan %>
         <%# Block 3 — overruns, judged against the prorated plan, 3 at most. %>
         <% overruns = @spending.overruns %>
-        <% if overruns.empty? %>
-          <div class="analyses-card analyses-card--calm"><p><%= t('.all_in_plan') %></p></div>
-        <% else %>
+        <% if overruns.any? %>
           <div class="analyses-card">
             <p class="analyses-card__title">
               <%= t('.overruns_title') %>
@@ -185,7 +189,10 @@
             <% within.each do |row| %>
               <%= link_to edit_budget_entry_path(id: row.entry.id), class: "analyses-slim", data: { turbo_frame: "modal" } do %>
                 <span class="analyses-slim__name"><%= row.name %></span>
-                <span class="analyses-slim__bar"><span style="width: <%= row.planned.positive? ? [ row.spent / row.planned * 100, 100 ].min.round(1) : 0 %>%;"></span></span>
+                <span class="analyses-slim__bar">
+                  <span style="width: <%= row.planned.positive? ? [ row.spent / row.planned * 100, 100 ].min.round(1) : 0 %>%;"></span>
+                  <i class="analyses-slim__tick" style="left: <%= row.planned.positive? ? [ row.prorated / row.planned * 100, 100 ].min.round(1) : 100 %>%;" aria-hidden="true"></i>
+                </span>
                 <span class="analyses-slim__amount"><%= format_money_number(row.spent) %></span>
               <% end %>
             <% end %>
@@ -203,7 +210,8 @@
               </span>
               <span class="analyses-fold__toggle"><%= t('.fold_toggle') %></span>
             </summary>
-            <% offplan.each do |row| %>
+            <%# The tail folds: tiny lines don't get the same visual weight as big ones. %>
+            <% offplan.first(3).each do |row| %>
               <div class="analyses-slim">
                 <span class="analyses-slim__name"><%= row.name %></span>
                 <span class="analyses-slim__amount"><%= format_money_number(row.spent) %></span>
@@ -214,6 +222,12 @@
                         new_budget_item_path(month: @period.months.first.strftime("%Y-%m"), kind: "expense", transaction_type_name: row.name, amount: row.spent.round),
                         class: "analyses-slim__action", data: { turbo_frame: "modal" } %>
                 <% end %>
+              </div>
+            <% end %>
+            <% if offplan.size > 3 %>
+              <div class="analyses-slim analyses-slim--muted">
+                <span class="analyses-slim__name"><%= t('.offplan_more', count: offplan.size - 3) %></span>
+                <span class="analyses-slim__amount"><%= format_money_number(offplan.drop(3).sum(&:spent)) %></span>
               </div>
             <% end %>
           </details>
@@ -315,7 +329,7 @@
               <span class="analyses-person__head">
                 <span class="analyses-person__name"><%= progress.name || progress.account.name %></span>
                 <span class="analyses-goal__figures">
-                  <%= smart_format_money(progress.current, current_space.currency, sign: :never, threshold: 10_000) %><% if progress.target_set? %> / <%= smart_format_money(progress.target, current_space.currency, sign: :never, threshold: 10_000) %><% end %>
+                  <%= format_money_number(progress.current) %><% if progress.target_set? %> / <%= format_money_number(progress.target) %><% end %>
                 </span>
               </span>
               <span class="analyses-person__bar"><span style="width: <%= progress.percentage %>%; background: var(--color-primary);"></span></span>

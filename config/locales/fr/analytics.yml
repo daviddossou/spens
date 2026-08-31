@@ -45,8 +45,8 @@ fr:
       overruns_more: "%{count} autres dépassements, plus petits"
       overruns_more_cta: "Voir"
       within_title:
-        one: "%{count} ligne dans son plan"
-        other: "%{count} lignes dans leur plan"
+        one: "%{count} catégorie dans son plan"
+        other: "%{count} catégories dans leur plan"
       fold_totals: "%{spent} dépensés · %{planned} prévus"
       fold_toggle: "Voir"
       offplan_title:
@@ -78,3 +78,6 @@ fr:
         other: "%{count} autres comptes"
       adjust_budget: "Ajuster mon budget"
       adjust_budget_sub: "Le détail ligne par ligne vit sur la page Budget"
+      offplan_more:
+        one: "+ %{count} autre"
+        other: "+ %{count} autres"

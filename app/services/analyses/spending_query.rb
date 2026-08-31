@@ -72,21 +72,22 @@ module Analyses
       plan_rows.select { |r| r.gap.positive? }.sort_by { |r| -r.gap }
     end
 
+    # Sorted by gap to the plan (least margin first) — never by amount.
     def within_plan
-      plan_rows.reject { |r| r.gap.positive? }.sort_by { |r| -r.spent }
+      plan_rows.reject { |r| r.gap.positive? }.sort_by { |r| -r.gap }
     end
 
     # Expense categories with spend but no budget line; "Autre" reads as
-    # uncategorised (its exit is reclassifying, not budgeting).
+    # uncategorised (its exit is reclassifying, not budgeting). Transactions
+    # inside a planned subtree are excluded BEFORE the parent rollup, so a
+    # planned child never re-counts under its unplanned parent — the invariant
+    # total = plan + off-plan holds.
     def offplan_categories
       return [] unless @period.single_month?
 
-      planned_ids = plan_rows.flat_map { |r| r.entry.transaction_type&.subtree_ids }.compact
       other_names = %w[other_expense].map { |k| TransactionTaxonomy.name(k, I18n.locale) }
 
-      spent_by_parent_type.filter_map do |(type_id, name), amount|
-        next if planned_ids.include?(type_id)
-
+      spent_by_parent_type(excluding: planned_type_ids).map do |(_type_id, name), amount|
         OffplanRow.new(name: name, spent: amount.round(2), other: other_names.include?(name))
       end.sort_by { |r| -r.spent }
     end
@@ -114,13 +115,18 @@ module Analyses
       @space.budget_entries.for_month(month).expense.includes(:budget_item, transaction_type: :children)
     end
 
-    def spent_by_parent_type
-      @space.transactions.joins(:transaction_type)
-            .where(transaction_types: { kind: "expense" }, transaction_date: @period.range)
-            .joins("LEFT JOIN transaction_types parents ON parents.id = transaction_types.parent_id")
-            .group(Arel.sql("COALESCE(parents.id, transaction_types.id)"),
-                   Arel.sql("COALESCE(parents.name, transaction_types.name)"))
-            .sum(Arel.sql("ABS(transactions.amount)"))
+    def planned_type_ids
+      plan_rows.flat_map { |r| r.entry.transaction_type&.subtree_ids }.compact
+    end
+
+    def spent_by_parent_type(excluding: [])
+      scope = @space.transactions.joins(:transaction_type)
+                    .where(transaction_types: { kind: "expense" }, transaction_date: @period.range)
+      scope = scope.where.not(transaction_type_id: excluding) if excluding.any?
+      scope.joins("LEFT JOIN transaction_types parents ON parents.id = transaction_types.parent_id")
+           .group(Arel.sql("COALESCE(parents.id, transaction_types.id)"),
+                  Arel.sql("COALESCE(parents.name, transaction_types.name)"))
+           .sum(Arel.sql("ABS(transactions.amount)"))
     end
 
     def abs_sum(kinds, range)
@@ -137,10 +143,8 @@ module Analyses
       first = @space.transactions.minimum(:transaction_date)
       return { no_data: true } if first.nil? || ([ range.end, Date.current ].min - [ range.begin, first ].max).to_i + 1 < 7
 
-      previous = abs_sum(CONSUMED, range)
-      return { no_data: true } if previous.zero?
-
-      delta(previous, range)
+      # A zero base still compares (as an FCFA gap) — only missing data declines.
+      delta(abs_sum(CONSUMED, range), range)
     end
 
     def comparison_window

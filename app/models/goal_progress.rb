@@ -111,10 +111,19 @@ class GoalProgress
 
   def observed_monthly_pace
     bom = Date.current.beginning_of_month
-    range = (bom << 3)..(bom - 1)
+    net = net_inflow((bom << 3)..(bom - 1))
+    return (net / 3).round(2) if net.positive?
+
+    # Young data: this month's flow is the only rhythm there is.
+    net_inflow(bom..Date.current).round(2)
+  end
+
+  private
+
+  def net_inflow(range)
     scope = goal.account.transactions.joins(:transaction_type).where(transaction_date: range)
     inflow = scope.where(transaction_types: { kind: "transfer_in" }).sum("ABS(transactions.amount)").to_f
     outflow = scope.where(transaction_types: { kind: "transfer_out" }).sum("ABS(transactions.amount)").to_f
-    ((inflow - outflow) / 3).round(2)
+    inflow - outflow
   end
 end

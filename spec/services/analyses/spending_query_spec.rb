@@ -140,6 +140,18 @@ RSpec.describe Analyses::SpendingQuery do
       expect(rows.find { |r| r.name == "Loisirs X" }.other).to be(false)
     end
 
+    it "never re-counts a planned child under its unplanned parent (total = plan + off-plan)" do
+      housing = type("expense", "Housing X")
+      rent = create(:transaction_type, space: space, kind: "expense", name: "Rent X", parent: housing)
+      item = create(:budget_item, space: space, transaction_type: rent, amount: 250_000)
+      create(:budget_entry, space: space, budget_item: item, transaction_type: rent, planned_amount: 250_000)
+
+      spend(250_000, type: rent)
+
+      expect(query.offplan_categories.map(&:name)).not_to include("Housing X")
+      expect(query.plan[:spent_on_plan] + query.offplan_categories.sum(&:spent)).to eq(query.spent_total)
+    end
+
     it "keeps subcategory spend inside its planned parent, not off-plan" do
       child = create(:transaction_type, space: space, kind: "expense", name: "Marché X", parent: groceries)
       spend(5_000, type: child)

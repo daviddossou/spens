@@ -45,8 +45,8 @@ en:
       overruns_more: "%{count} smaller overruns"
       overruns_more_cta: "See"
       within_title:
-        one: "%{count} line inside its plan"
-        other: "%{count} lines inside their plan"
+        one: "%{count} category inside its plan"
+        other: "%{count} categories inside their plan"
       fold_totals: "%{spent} spent · %{planned} planned"
       fold_toggle: "See"
       offplan_title:
@@ -78,3 +78,6 @@ en:
         other: "%{count} other accounts"
       adjust_budget: "Adjust my budget"
       adjust_budget_sub: "The line-by-line detail lives on the Budget page"
+      offplan_more:
+        one: "+ %{count} more"
+        other: "+ %{count} more"

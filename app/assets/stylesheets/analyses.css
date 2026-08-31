@@ -645,3 +645,24 @@ details.analyses-fold:not([open]) > .analyses-fold__summary .analyses-fold__togg
   font-size: var(--font-size-label);
   opacity: 0.75;
 }
+
+.analyses-allgood {
+  border-top: 1px solid var(--border-light);
+  padding-top: 0.875rem;
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-success-dark);
+}
+
+.analyses-slim__bar {
+  position: relative;
+  overflow: visible;
+}
+
+.analyses-slim__tick {
+  position: absolute;
+  top: -2px;
+  bottom: -2px;
+  width: 2px;
+  background: var(--color-charcoal-black);
+  transform: translateX(-1px);
+}
