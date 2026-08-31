@@ -109,6 +109,19 @@
           </button>
         </div>
 
+        <%# The rule is always stated — one tap opens its settings (frequency,
+            end date, rollover) instead of hiding them two levels deep. %>
+        <%
+          rule_bits = [ summary_freq[current_freq] ]
+          rule_bits << (bounded ? t("budgets.form.summary_until", date: l(ends_on, format: :day_month)) : t("budgets.form.summary_never"))
+          rule_bits << (item&.rollover ? summary_rollover[:on] : summary_rollover[:off]) if is_expense
+        %>
+        <div class="budget-rule-hint" data-budget-scope-target="ruleHint">
+          <span class="budget-rule-hint__text"><%= rule_bits.join(" · ") %></span>
+          <button type="button" class="budget-rule-hint__button" data-scope="rule"
+                  data-action="budget-scope#setScope"><%= t(".edit_rule") %></button>
+        </div>
+
         <%# The rule's own fields — only when "every month" is chosen. %>
         <div class="budget-scope__rule hidden" data-budget-scope-target="ruleBlock"
              data-controller="budget-line"
@@ -134,7 +147,9 @@
             </div>
           <% end %>
 
-          <details class="budget-modify">
+          <%# Open by default: reaching the rule already took one tap — the
+              frequency/end/rollover settings must be visible, not folded again. %>
+          <details class="budget-modify" open>
             <summary class="budget-modify__summary">
               <span class="budget-modify__text">
                 <span class="budget-modify__main" data-budget-line-target="summaryMain"></span>
