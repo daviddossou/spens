@@ -22,7 +22,6 @@ en:
       add_transaction: "Add Transaction"
       quick_add: "Quick add"
       loading: "Loading more..."
-      has_note: "Has note"
       search:
         placeholder: "Search transactions…"
         aria_label: "Search transactions by description, category or amount"

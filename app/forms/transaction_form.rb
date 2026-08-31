@@ -16,6 +16,7 @@ class TransactionForm < BaseForm
   attribute :transaction_date, :date, default: -> { Date.current }
   attribute :transaction_type_name, :string
   attribute :note, :string
+  attribute :label, :string
   attribute :description, :string
   attribute :contact_name, :string
   attribute :direction, :string
@@ -77,6 +78,7 @@ class TransactionForm < BaseForm
       payload[:transaction_date] ||= @transaction.transaction_date
       payload[:transaction_type_name] ||= @transaction.transaction_type.name
       payload[:note] ||= @transaction.note
+      payload[:label] ||= @transaction.label
       payload[:account_name] ||= @transaction.account&.name
       payload[:contact_name] ||= @transaction.debt&.name
       payload[:direction] ||= @transaction.debt&.direction
@@ -109,6 +111,7 @@ class TransactionForm < BaseForm
       transaction_date: payload[:transaction_date] || Date.current,
       transaction_type_name: payload[:transaction_type_name],
       note: payload[:note],
+      label: payload[:label],
       description: payload[:description],
       contact_name: payload[:contact_name],
       direction: payload[:direction],

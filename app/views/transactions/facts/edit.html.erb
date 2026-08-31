@@ -1,0 +1,58 @@
+<%# One fact, one selector: opened from a detail-page row, saved through the
+    regular transactions#update (full-form path, ledger-safe). %>
+<%= turbo_frame_tag "modal" do %>
+  <div class="page-container page-container--narrow">
+    <header class="page-header fact-sheet__header">
+      <h2 class="page-header__title"><%= t(".title_#{@fact}") %></h2>
+    </header>
+
+    <div class="page-content">
+      <%= form_with model: @form, url: transaction_path(id: @transaction.id), method: :patch,
+                    data: { turbo_frame: "_top" } do |f| %>
+        <div class="fact-sheet__field">
+          <% case @fact %>
+          <% when "category" %>
+            <%= render Forms::InputFieldComponent.new(
+              form: f,
+              field: :transaction_type_name,
+              label: t('transactions.form.transaction_type_label'),
+              required: true,
+              autocomplete: true,
+              autocomplete_options: @form.transaction_type_options,
+              default_autocomplete_options: @form.default_transaction_type_options,
+              allow_create: true,
+              placeholder: t('transactions.form.transaction_type_placeholder')
+            ) %>
+          <% when "account" %>
+            <%= render Forms::InputFieldComponent.new(
+              form: f,
+              field: :account_name,
+              label: t('transactions.form.account_label'),
+              autocomplete: true,
+              autocomplete_options: @form.account_suggestions,
+              default_autocomplete_options: @form.default_account_suggestions,
+              allow_create: true,
+              placeholder: t('transactions.form.account_placeholder'),
+              field_data: { tom_select_currency_value: get_currency_symbol(current_space.currency) }
+            ) %>
+          <% when "date" %>
+            <%= render Forms::InputFieldComponent.new(
+              form: f,
+              field: :transaction_date,
+              type: :date_field,
+              label: t('transactions.form.date_label', default: t('transactions.show.date'))
+            ) %>
+          <% end %>
+        </div>
+
+        <%= render Ui::ButtonComponent.new(
+          text: t('.save'),
+          variant: :primary,
+          size: :lg,
+          full_width: true,
+          type: :submit
+        ) %>
+      <% end %>
+    </div>
+  </div>
+<% end %>

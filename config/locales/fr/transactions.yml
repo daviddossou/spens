@@ -158,9 +158,18 @@ fr:
       success: "Transaction modifiée !"
     destroy:
       success: "Transaction supprimée !"
+    facts:
+      edit:
+        title_category: "Changer la catégorie"
+        title_account: "Changer le compte"
+        title_date: "Changer la date"
+        save: "Enregistrer"
+
     show:
       add_transaction: "Ajouter une transaction"
       quick_add: "Ajout rapide"
+      more_actions: "Plus d'actions"
+      no_account: "Aucun compte"
       edit: "Modifier"
       delete: "Supprimer"
       delete_confirmation: "Es-tu sûr de vouloir supprimer cette transaction ? Les soldes seront ajustés."

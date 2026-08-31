@@ -29,7 +29,6 @@ fr:
       add_transaction: "Ajouter"
       quick_add: "Ajout rapide"
       loading: "Chargement..."
-      has_note: "Avec note"
       search:
         placeholder: "Rechercher une transaction…"
         aria_label: "Rechercher une transaction par description, catégorie ou montant"

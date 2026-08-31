@@ -21,7 +21,8 @@ class BuildTransaction < TransactionWriter
       account: account,
       transaction_type: find_or_create_transaction_type,
       amount: amount,
-      description: transaction_type_name
+      description: transaction_type_name,
+      label: label
     )
     build_fee(account: account, parent: txn)
     txn

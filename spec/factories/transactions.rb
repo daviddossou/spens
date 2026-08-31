@@ -5,6 +5,7 @@
 #  id                  :uuid             not null, primary key
 #  amount              :float            not null
 #  description         :string           not null
+#  label               :string
 #  note                :text
 #  transaction_date    :date             not null, indexed
 #  created_at          :datetime         not null

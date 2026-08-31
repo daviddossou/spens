@@ -83,7 +83,7 @@ module QuickEntry
         kind: kind, amount: amount, account_name: rules.account_name,
         transaction_type_name: type_name, fee_amount: rules.fee_amount,
         transaction_date: rules.transaction_date, description: rules.description,
-        note: ai.phrase, unresolved: unresolved
+        note: raw_note, label: ai.label, unresolved: unresolved
       )
     end
 
@@ -91,6 +91,12 @@ module QuickEntry
     def default_category_name(kind)
       key = kind == "income" ? "other_income" : "other_expense"
       TransactionTaxonomy.name(key, @locale)
+    end
+
+    # note = the raw phrase the user typed, kept verbatim as searchable proof of what
+    # was dictated. The short title label is a separate output (ai.label).
+    def raw_note
+      @text.to_s.strip.presence
     end
 
     # Auto-create only when BOTH ends resolve to existing accounts; otherwise prefill the form
@@ -107,7 +113,7 @@ module QuickEntry
       Draft.new(
         kind: "transfer", amount: rules.amount, from_account_name: from, to_account_name: to,
         fee_amount: rules.fee_amount, transaction_date: rules.transaction_date,
-        description: rules.description, note: ai.phrase, unresolved: unresolved
+        description: rules.description, note: raw_note, unresolved: unresolved
       )
     end
 
@@ -127,7 +133,7 @@ module QuickEntry
         contact_name: contact,
         direction: rules.direction.presence || (resolved == "debt_in" ? "borrowed" : "lent"),
         transaction_date: rules.transaction_date, description: rules.description,
-        note: ai.phrase, unresolved: unresolved
+        note: raw_note, unresolved: unresolved
       )
     end
 

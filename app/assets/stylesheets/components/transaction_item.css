@@ -154,20 +154,6 @@
   color: var(--text-muted);
 }
 
-.transaction-item__note {
-  margin-top: 0.5rem;
-  display: flex;
-  align-items: center;
-  font-size: 0.75rem;
-  color: var(--text-muted);
-}
-
-.transaction-item__note svg {
-  width: 1rem;
-  height: 1rem;
-  margin-right: 0.25rem;
-}
-
 /* A provider fee, hung under its parent — never a row of its own. */
 .transaction-item__fee {
   display: flex;
