@@ -168,7 +168,6 @@
   </div>
 </div>
 
-<%= render Ui::FabComponent.new(url: new_quick_entry_path, label: t('.quick_add'), icon: :bolt, secondary: true) %>
-<%# One button: the prequalified transaction sheet — the person is known, the
-    repayment is preselected, and all four intents stay one tap away. %>
-<%= render Ui::FabComponent.new(url: new_transaction_path(contact_name: @debt.name, kind: @relation.repayment_kind, direction: @relation.repayment_direction, person_locked: 1), label: t('.add_transaction')) %>
+<%# One button: the dictation sheet, carrying this person as its context pill —
+    the direction is never presumed, the phrase (or the form) decides it. %>
+<%= render Ui::FabComponent.new(url: new_quick_entry_path(debt_id: @debt.id), label: t('.add_transaction')) %>

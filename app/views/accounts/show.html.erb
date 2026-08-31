@@ -119,6 +119,5 @@
   </div>
 </div>
 
-<%= render Ui::FabComponent.new(url: new_quick_entry_path, label: t('.quick_add'), icon: :bolt, secondary: true) %>
-<%# The frequent gesture — record a movement on this account — stays on the thumb. %>
-<%= render Ui::FabComponent.new(url: new_transaction_path(account_id: @account.id), label: t('.add_transaction')) %>
+<%# One button: the dictation sheet, carrying this account as its context pill. %>
+<%= render Ui::FabComponent.new(url: new_quick_entry_path(account_id: @account.id), label: t('.add_transaction')) %>
