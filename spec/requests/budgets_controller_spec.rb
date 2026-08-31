@@ -9,7 +9,12 @@ RSpec.describe BudgetsController, type: :request do
   let(:space) { user.spaces.first }
   let(:month) { Date.current.beginning_of_month }
 
-  before { sign_in user, scope: :user }
+  # Fixed mid-month noon: the controller reads dates in the user's time zone,
+  # and a real month boundary would shift its "today" past the spec's.
+  before do
+    travel_to Time.zone.local(2026, 8, 18, 12)
+    sign_in user, scope: :user
+  end
 
   describe "GET #index" do
     it "shows the empty state when no items exist" do

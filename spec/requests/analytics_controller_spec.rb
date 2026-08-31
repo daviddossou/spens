@@ -9,7 +9,12 @@ RSpec.describe AnalyticsController, type: :request do
   let(:space) { user.spaces.first }
   let(:account) { create(:account, user: user) }
 
-  before { sign_in user, scope: :user }
+  # Fixed mid-month noon: the controller reads dates in the user's time zone,
+  # and a real midnight boundary would shift its "today" past the spec's.
+  before do
+    travel_to Time.zone.local(2026, 8, 18, 12)
+    sign_in user, scope: :user
+  end
 
   def spend(amount, name: "Courses X", on: Date.current)
     type = space.transaction_types.find_by(name: name) ||
@@ -62,7 +67,7 @@ RSpec.describe AnalyticsController, type: :request do
       expect(response.body).not_to include(I18n.t("analytics.index.section_between"))
     end
 
-    it "shows the net first, both gross lists, and the two-sided net note" do
+    it "nets per person BEFORE aggregating — someone on both sides appears once" do
       create(:debt, user: user, name: "Mariam", direction: "lent", total_lent: 80_000, total_reimbursed: 0)
       create(:debt, user: user, name: "Gilchrist", direction: "lent", total_lent: 28_000, total_reimbursed: 0)
       create(:debt, :borrowed, user: user, name: "Gilchrist", direction: "borrowed", total_lent: 150_000, total_reimbursed: 0)
@@ -71,14 +76,13 @@ RSpec.describe AnalyticsController, type: :request do
 
       expect(response.body).to include(I18n.t("analytics.index.settle_today"))
       expect(response.body).to include("Mariam")
-      expect(response.body).to include(I18n.t("analytics.index.who_owes_you"))
-      expect(response.body).to include(I18n.t("analytics.index.whom_you_owe"))
-      # Gilchrist on both sides: gross on each list + an explicit net note (122 000).
-      expect(response.body).to include(I18n.t("analytics.index.both_sides_you_owe", amount: "122,000"))
+      # Gilchrist once, at his 122 000 net on the owing side — never on both.
+      expect(response.body.scan("Gilchrist").size).to eq(1)
+      expect(response.body).to include("122,000")
     end
   end
 
-  it "states the moved money apart, never in the spent total" do
+  it "states the lent money as an addition under the hero, never in the total" do
     spend(10_000)
     debt_type = create(:transaction_type, space: space, kind: "debt_out", name: "Prêt X")
     create(:transaction, space: space, user: user, account: account,
@@ -86,6 +90,7 @@ RSpec.describe AnalyticsController, type: :request do
 
     get analytics_path
     expect(assigns(:spending).spent_total).to eq(10_000)
-    expect(response.body).to include(I18n.t("analytics.index.moved_label"))
+    expect(assigns(:spending).lent_total).to eq(50_000)
+    expect(response.body).to include(I18n.t("analytics.index.lent_line", amount: "50,000"))
   end
 end
