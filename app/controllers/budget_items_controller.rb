@@ -46,7 +46,7 @@ class BudgetItemsController < ApplicationController
     # Removal takes effect from a given month (default: now); earlier months keep
     # their history. From a started month you drop it "from next month" so the
     # month you're on keeps the spending already logged against it.
-    from = params[:from_month].present? ? Date.parse(params[:from_month]).beginning_of_month : Date.current.beginning_of_month
+    from = parse_month(params[:from_month]) || Date.current.beginning_of_month
 
     ActiveRecord::Base.transaction do
       if from <= Date.current.beginning_of_month
@@ -71,9 +71,16 @@ class BudgetItemsController < ApplicationController
   end
 
   def month_param
-    Date.parse("#{params[:month]}-01").beginning_of_month
-  rescue ArgumentError, TypeError
-    Date.current.beginning_of_month
+    parse_month(params[:month]) || Date.current.beginning_of_month
+  end
+
+  # Reads a "YYYY-MM" slug or a full date; nil when absent or malformed.
+  def parse_month(value)
+    return nil if value.blank?
+
+    (value.match?(/\A\d{4}-\d{2}\z/) ? Date.parse("#{value}-01") : Date.parse(value)).beginning_of_month
+  rescue Date::Error, TypeError
+    nil
   end
 
   def month_slug(date)
