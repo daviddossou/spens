@@ -70,6 +70,22 @@ RSpec.describe TaxonomyExport do
     it "stays silent rather than dividing by zero with no transactions" do
       expect(described_class.call(gaps: false)[:coverage]).to eq(transactions: 0)
     end
+
+    it "ignores the kinds the taxonomy does not cover" do
+      spend_on(type_for("fuel", name: "Fuel"), count: 3)
+
+      # These kinds have no taxonomy, so their template_key is always nil.
+      %w[transfer_out debt_in initial_balance adjustment].each_with_index do |kind, i|
+        noise = create(:transaction_type, space: space, kind: kind, name: "Noise #{i}")
+        spend_on(noise, count: 5)
+      end
+
+      coverage = described_class.call(gaps: false)[:coverage]
+
+      expect(coverage[:transactions]).to eq(3)
+      expect(coverage[:custom_category]).to eq(transactions: 0, percent: 0.0)
+      expect(coverage[:uncovered]).to eq(transactions: 0, percent: 0.0)
+    end
   end
 
   describe "gaps" do

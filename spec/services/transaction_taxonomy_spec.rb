@@ -31,7 +31,8 @@ RSpec.describe TransactionTaxonomy do
   end
 
   it "lists child keys of a parent" do
-    expect(described_class.child_keys("electricity_water")).to contain_exactly("electricity", "water")
+    expect(described_class.child_keys("electricity_water"))
+      .to contain_exactly("electricity", "water", "cooking_gas", "charcoal_wood")
   end
 
   it "gives every node a name in both languages" do

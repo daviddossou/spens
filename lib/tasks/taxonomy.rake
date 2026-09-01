@@ -77,4 +77,18 @@ namespace :taxonomy do
       puts "NON COUVERT            : #{c[:uncovered][:transactions]} (#{c[:uncovered][:percent]}%)"
     end
   end
+
+  # One-off restructure (2026-09). Unlike import_nodes it renames, moves and retires nodes,
+  # so it stays a separate, explicit task. Idempotent.
+  #   bin/rails taxonomy:apply_restructure
+  desc "Sync taxonomy_nodes to the YML and adopt legacy template categories"
+  task apply_restructure: :environment do
+    nodes = Taxonomy::SyncNodes.new.call
+    puts "nodes: #{nodes.created} created, #{nodes.renamed} renamed, " \
+         "#{nodes.moved} moved, #{nodes.deactivated} deactivated"
+
+    types = Taxonomy::AdoptLegacyTypes.new.call
+    puts "types: #{types.adopted} adopted, #{types.merged} merged, " \
+         "#{types.reparented} reparented, #{types.skipped} skipped"
+  end
 end

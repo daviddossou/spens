@@ -11,12 +11,14 @@
 
 aliases:
   # ---------------- Food & Groceries ----------------
-  groceries: ["marché", "supermarché", "épicerie", "alimentation", "grocery", "groceries",
+  groceries: ["provisions", "provisions du mois", "courses du mois", "ravitaillement",
+    "stock maison", "monthly provisions", "monthly shopping", "stock up",
+    "marché", "supermarché", "épicerie", "alimentation", "grocery", "groceries",
     "supermarket", "food shopping", "erevan", "mont sinai", "franc prix", "j'adore", "carrefour",
     "intermarché", "auchan", "leclerc", "bonprix", "socofrais", "club sococé", "tokpa yoyo",
     "marché ganhi", "dantokpa", "gbegamey", "aïdjèdo", "wologuèdè", "cadjèhoun", "menontin"]
-  monthly_provisions: ["provisions", "provisions du mois", "courses du mois", "ravitaillement",
-    "stock maison", "monthly provisions", "monthly shopping", "stock up"]
+  # monthly_provisions merged into groceries (64 tx against 0 — the distinction did not
+  # exist for users); its phrases are carried over above.
 
   # ---------------- Eating out ----------------
   restaurant_maquis: ["maquis", "restaurant", "resto", "déjeuner", "dîner", "cantine", "atassinon",
@@ -117,8 +119,10 @@ aliases:
   medical_supplies: ["lunettes", "lunettes médicales", "eyeglasses", "verres correcteurs",
     "prothèse", "fauteuil roulant", "béquilles", "tensiomètre", "matériel médical", "appareil auditif",
     "glasses", "medical device", "wheelchair", "crutches"]
-  health_insurance: ["assurance santé", "assurance maladie", "assurance vie", "mutuelle",
-    "health insurance"]
+  health_insurance: ["assurance santé", "assurance maladie", "mutuelle", "health insurance"]
+  vehicle_insurance: ["assurance auto", "assurance véhicule", "assurance voiture", "assurance moto",
+    "carte brune", "car insurance", "vehicle insurance", "motor insurance"]
+  life_insurance: ["assurance vie", "assurance décès", "prévoyance", "life insurance"]
 
   # ---------------- Education ----------------
   school_fees: ["écolage", "frais de scolarité", "scolarité", "inscription", "frais d'inscription",
@@ -164,6 +168,8 @@ aliases:
   donations: ["don", "donation", "quête", "dîme", "offrande", "zakat", "sadaqa", "aumône",
     "charité", "contribution religieuse", "collecte", "quete", "dime", "aumone", "offering",
     "tithe", "charity", "alms"]
+  pets: ["vétérinaire", "veto", "croquettes", "nourriture chien", "nourriture chat", "animalerie",
+    "vet", "pet food", "pet shop", "grooming"]
   childcare: ["garderie", "garde d'enfants", "crèche", "nounou", "baby sitter", "babysitting",
     "frais de garde", "childcare", "daycare", "nursery"]
 
@@ -237,11 +243,11 @@ aliases:
     "rent received"]
   investment_return: ["rendement", "retour sur investissement", "investment return", "plus-value",
     "gain placement", "returns", "capital gain"]
-  bank_cashback: ["intérêt créditeur", "bank cashback", "credit interest", "agios créditeurs"]
+  # bank_cashback merged into cashback_rewards — the same notion seen twice.
   refund: ["remboursement", "refund", "retour argent", "remboursement reçu", "reimbursement"]
   loan_repayment_received: ["remboursement de prêt", "loan repayment", "dette remboursée",
     "prêt remboursé", "loan repaid"]
-  cashback_rewards: ["cashback", "remise", "récompense", "rewards", "points", "points fidélité"]
+  cashback_rewards: ["intérêt créditeur", "bank cashback", "credit interest", "agios créditeurs", "cashback", "remise", "récompense", "rewards", "points", "points fidélité"]
   gift_received: ["cadeau reçu", "gift received", "don reçu", "argent cadeau"]
   betting_winnings: ["gain", "gains de paris", "winnings", "jackpot", "gain loto", "gain pari"]
   grant_scholarship: ["bourse", "subvention", "grant", "scholarship", "bourse d'étude", "aide étude"]

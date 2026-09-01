@@ -43,8 +43,11 @@ class TaxonomyExport
 
   # The two questions a "parents only" decision hangs on: how often does spend fall into a
   # catch-all bucket, and how often did a user have to invent a category outright.
+  #
+  # Scoped to the kinds the taxonomy covers: transfers, debts and the neutral family carry a
+  # nil template_key by design, so counting them reads every transfer leg as user-invented.
   def coverage
-    total = Transaction.count
+    total = categorised_transactions.count
     return { transactions: 0 } if total.zero?
 
     { transactions: total,
@@ -53,18 +56,24 @@ class TaxonomyExport
       uncovered: share(catch_all_transactions + custom_transactions, total) }
   end
 
+  def categorised_transactions
+    Transaction.where(transaction_type_id: TransactionType.where(kind: TransactionTaxonomy::KINDS).select(:id))
+  end
+
   def share(count, total)
     { transactions: count, percent: (count * 100.0 / total).round(2) }
   end
 
   def catch_all_transactions
-    @catch_all_transactions ||=
-      Transaction.where(transaction_type_id: TransactionType.where(template_key: CATCH_ALL_KEYS).select(:id)).count
+    @catch_all_transactions ||= count_on(TransactionType.where(template_key: CATCH_ALL_KEYS))
   end
 
   def custom_transactions
-    @custom_transactions ||=
-      Transaction.where(transaction_type_id: TransactionType.where(template_key: nil).select(:id)).count
+    @custom_transactions ||= count_on(TransactionType.where(template_key: nil))
+  end
+
+  def count_on(types)
+    categorised_transactions.where(transaction_type_id: types.select(:id)).count
   end
 
   def tree
