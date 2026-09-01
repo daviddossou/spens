@@ -30,13 +30,19 @@ module PickerHelper
   # (Tour 32b-4). The balance column is formatted as ONE column, so a single
   # small account keeps every amount exact (Tour 32d).
   def picker_account_rows(suggestions, currency = nil, savings_first: false)
-    entries = suggestions.map { |s| { name: s[:name] || s["name"], balance: (s[:balance] || s["balance"]).to_f } }
-    entries.sort_by! { |e| [ savings_first && !picker_savings?(e[:name]) ? 1 : 0, -e[:balance] ] }
+    entries = suggestions.map do |s|
+      balance = s[:balance] || s["balance"]
+      # A template account does not exist yet, so it has no balance to show and
+      # no say in the column's format.
+      { name: s[:name] || s["name"], balance: balance&.to_f }
+    end
+    entries.sort_by! { |e| [ e[:balance] ? 0 : 1, savings_first && !picker_savings?(e[:name]) ? 1 : 0, -(e[:balance] || 0) ] }
 
     labels = money_column(entries.map { |e| e[:balance] }, currency, compact: true)
     entries.each_with_index.map do |entry, i|
       icon, label = picker_icon_and_label(entry[:name])
-      { value: entry[:name], label: label, icon: icon, meta: labels[i] }
+      { value: entry[:name], label: label, icon: icon,
+        meta: entry[:balance] ? labels[i] : nil, balance: entry[:balance] }
     end
   end
 

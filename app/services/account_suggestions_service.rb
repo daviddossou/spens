@@ -17,7 +17,7 @@ class AccountSuggestionsService
     user_suggestions = user_accounts.map { |name, balance| { name: name, balance: balance } }
 
     templates = Account.templates(I18n.locale).values
-    template_suggestions = templates.map { |name| { name: name, balance: 0 } }
+    template_suggestions = templates.map { |name| { name: name, balance: nil } }
 
     existing_names = user_accounts.map(&:first)
     template_suggestions.reject! { |t| existing_names.include?(t[:name]) }
@@ -44,7 +44,7 @@ class AccountSuggestionsService
     return user_suggestions if user_suggestions.length >= 10
 
     templates = Account.templates(I18n.locale).values
-    template_suggestions = templates.map { |name| { name: name, balance: 0 } }
+    template_suggestions = templates.map { |name| { name: name, balance: nil } }
 
     existing_names = user_accounts.map(&:first)
     available_templates = template_suggestions.reject { |t| existing_names.include?(t[:name]) }

@@ -4,7 +4,7 @@
 # keyboard. The value it submits is the same NAME the forms already posted, so
 # creation by name on submit keeps working untouched.
 class Forms::PickerFieldComponent < ViewComponent::Base
-  def initialize(form:, field:, rows:, label:, placeholder:, title: nil,
+  def initialize(form:, field:, rows:, label:, placeholder:, title: nil, help_text: nil,
                  allow_create: false, grouped: false, empty_label: nil,
                  id: nil, chain_to: nil, chain_reason: nil, field_data: {})
     @form = form
@@ -13,6 +13,7 @@ class Forms::PickerFieldComponent < ViewComponent::Base
     @label = label
     @placeholder = placeholder
     @title = title || label
+    @help_text = help_text
     @allow_create = allow_create
     @grouped = grouped
     @empty_label = empty_label
@@ -24,7 +25,7 @@ class Forms::PickerFieldComponent < ViewComponent::Base
 
   private
 
-  attr_reader :form, :field, :rows, :label, :placeholder, :title,
+  attr_reader :form, :field, :rows, :label, :placeholder, :title, :help_text,
               :allow_create, :grouped, :empty_label, :id, :chain_to, :chain_reason, :field_data
 
   def current_value

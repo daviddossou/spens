@@ -3,6 +3,10 @@
     <%= form.label field, label, class: "form-label" %>
   </div>
 
+  <% if help_text.present? %>
+    <p class="form-help-text"><%= help_text %></p>
+  <% end %>
+
   <div class="mt-1">
     <%= form.hidden_field field, data: { picker_target: "input" }.merge(field_data) %>
     <button type="button" class="picker__control" data-action="picker#open"

@@ -53,12 +53,11 @@
       <span class="form-label" data-debt-form-target="accountLabel"><%= t(".account_label.#{dir}") %></span>
       <span class="tx-detail__hint"><%= t(".account_optional") %></span>
     </div>
-    <%= render Forms::InputFieldComponent.new(
-      form: form, field: :account_name, label: "", required: false,
-      autocomplete: true, autocomplete_options: form.object.account_suggestions,
-      default_autocomplete_options: form.object.default_account_suggestions, allow_create: true,
+    <%= render Forms::PickerFieldComponent.new(
+      form: form, field: :account_name, label: "", title: t('picker.account'),
       placeholder: t(".account_placeholder.#{dir}"),
-      field_data: { tom_select_currency_value: currency_symbol }) %>
+      rows: picker_account_rows(form.object.account_suggestions, current_space.currency),
+      allow_create: true, empty_label: t('picker.no_account')) %>
   </div>
 
   <%# Deadline / advance / note — collapsed; the recurring stuff most debts skip. %>
