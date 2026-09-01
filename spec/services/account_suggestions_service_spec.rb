@@ -83,14 +83,14 @@ RSpec.describe AccountSuggestionsService do
 
   describe '#all_with_balances' do
     context 'when user has no accounts' do
-      it 'returns only template suggestions with zero balances' do
+      it 'returns only template suggestions with no balance' do
         results = service.all_with_balances
         templates = Account.templates(I18n.locale).values
 
         expect(results).to all(have_key(:name))
         expect(results).to all(have_key(:balance))
         expect(results.map { |r| r[:name] }).to match_array(templates)
-        expect(results.map { |r| r[:balance] }).to all(eq(0))
+        expect(results.map { |r| r[:balance] }).to all(be_nil)
       end
 
       it 'returns hashes with name and balance keys' do
@@ -117,7 +117,7 @@ RSpec.describe AccountSuggestionsService do
         expect(checking[:balance]).to eq(500.0)
       end
 
-      it 'returns templates with zero balance' do
+      it 'returns templates with no balance' do
         results = service.all_with_balances
         template_name = Account.templates(I18n.locale).values.first
 
@@ -125,7 +125,7 @@ RSpec.describe AccountSuggestionsService do
         user_account_names = [ 'My Savings', 'My Checking' ]
         template_result = results.find { |r| r[:name] == template_name && !user_account_names.include?(r[:name]) }
 
-        expect(template_result[:balance]).to eq(0) if template_result
+        expect(template_result[:balance]).to be_nil if template_result
       end
 
       it 'returns user accounts and templates' do
@@ -288,13 +288,13 @@ RSpec.describe AccountSuggestionsService do
 
   describe '#defaults_with_balances' do
     context 'when user has no accounts' do
-      it 'returns up to 10 template suggestions with zero balances' do
+      it 'returns up to 10 template suggestions with no balance' do
         results = service.defaults_with_balances
 
         expect(results.size).to eq(10)
         expect(results).to all(have_key(:name))
         expect(results).to all(have_key(:balance))
-        expect(results.map { |r| r[:balance] }).to all(eq(0))
+        expect(results.map { |r| r[:balance] }).to all(be_nil)
       end
 
       it 'returns templates as hashes' do
@@ -326,12 +326,12 @@ RSpec.describe AccountSuggestionsService do
         expect(results[2]).to eq({ name: 'Account 1', balance: 100.0 })
       end
 
-      it 'fills remaining slots with templates at zero balance' do
+      it 'fills remaining slots with templates with no balance' do
         results = service.defaults_with_balances
         template_results = results[3..-1] # Get results after user accounts
 
         expect(template_results.size).to eq(7)
-        expect(template_results.map { |r| r[:balance] }).to all(eq(0))
+        expect(template_results.map { |r| r[:balance] }).to all(be_nil)
       end
 
       it 'does not duplicate templates already used by user' do
@@ -436,14 +436,14 @@ RSpec.describe AccountSuggestionsService do
         expect(overdraft[:balance]).to eq(-50.0)
       end
 
-      it 'includes accounts with zero balances' do
+      it 'includes accounts with no balance' do
         results = service.defaults_with_balances
         empty = results.find { |r| r[:name] == 'Empty' }
 
         expect(empty[:balance]).to eq(0.0)
       end
 
-      it 'distinguishes user account with zero balance from template' do
+      it 'distinguishes user account with no balance from template' do
         results = service.defaults_with_balances
         user_empty = results.find { |r| r[:name] == 'Empty' }
 

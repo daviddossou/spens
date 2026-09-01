@@ -152,6 +152,13 @@ class BudgetItemForm < BaseForm
     TransactionTypeSuggestionsService.new(space, kind).default_options
   end
 
+  # Categories a live budget line already covers: the layer groups on them, so a
+  # duplicate is visible before it is created (Tour 32b-3).
+  def planned_type_names
+    space.budget_items.active.where(kind: kind)
+         .joins(:transaction_type).pluck("transaction_types.name")
+  end
+
   def account_suggestions
     AccountSuggestionsService.new(space).all_with_balances
   end

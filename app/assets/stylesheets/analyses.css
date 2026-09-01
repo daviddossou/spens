@@ -9,25 +9,6 @@
   background: var(--color-off-white);
 }
 
-.analyses-rangebar__head {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 0.75rem;
-  margin-bottom: 0.5rem;
-}
-
-.analyses-rangebar__title {
-  font-size: var(--font-size-headline);
-  font-weight: var(--font-weight-bold);
-  color: var(--text-dark);
-}
-
-.analyses-rangebar__range {
-  font-size: var(--font-size-body);
-  color: var(--text-muted);
-}
-
 .analyses-ranges {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -53,10 +34,21 @@
   box-shadow: var(--shadow-resting);
 }
 
+/* Two dates side by side, the button on its own line: a single flex row put
+   « Appliquer » half off-screen in French. */
 .analyses-custom {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 0.5rem;
   margin-top: 0.5rem;
+}
+
+.analyses-custom input[type="date"] {
+  min-width: 0;
+}
+
+.analyses-custom input[type="submit"] {
+  grid-column: 1 / -1;
 }
 
 .analyses-section__title {

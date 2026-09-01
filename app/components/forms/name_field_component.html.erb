@@ -1,0 +1,18 @@
+<div class="form-field" data-controller="name-chips"
+     data-name-chips-suggestions-value="<%= suggestions.to_json %>"
+     <% if see_all_title.present? %>
+       data-name-chips-see-all-label-value="<%= t('picker.see_all') %>"
+       data-name-chips-see-all-title-value="<%= see_all_title %>"
+     <% end %>>
+  <div class="form-label-wrapper">
+    <%= form.label field, label, class: "form-label" %>
+  </div>
+
+  <div class="mt-1">
+    <%= form.text_field field, class: "form-input", placeholder: placeholder, autocomplete: "off",
+          data: input_data %>
+  </div>
+
+  <%# A shortcut, never the only way in: what is typed always wins. %>
+  <div class="name-chips" data-name-chips-target="chips" hidden></div>
+</div>

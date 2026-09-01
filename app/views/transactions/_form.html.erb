@@ -79,25 +79,25 @@
           <div class="transfer-block__row">
             <span class="transfer-block__prefix"><%= t('budgets.form.transfer_from') %></span>
             <div class="transfer-block__field">
-              <%= render Forms::InputFieldComponent.new(
-                form: f, field: :from_account_name, label: "", required: true,
-                autocomplete: true, autocomplete_options: @form.account_suggestions,
-                default_autocomplete_options: @form.default_account_suggestions, allow_create: true,
+              <%= render Forms::PickerFieldComponent.new(
+                form: f, field: :from_account_name, label: "",
+                title: t('picker.account_from'), id: "transfer-from",
                 placeholder: t('transactions.form.from_account_placeholder'),
-                field_data: { tom_select_currency_value: get_currency_symbol(current_space.currency),
-                              action: "tom-select:change->transaction-form#syncBalances" }) %>
+                rows: picker_account_rows(@form.account_suggestions, current_space.currency),
+                allow_create: true, chain_to: "#transfer-to", chain_reason: t('picker.same_account'), chain_label: t('picker.from_short'),
+                field_data: { action: "tom-select:change->transaction-form#syncBalances" }) %>
             </div>
           </div>
           <div class="transfer-block__row">
             <span class="transfer-block__prefix"><%= t('budgets.form.transfer_to') %></span>
             <div class="transfer-block__field">
-              <%= render Forms::InputFieldComponent.new(
-                form: f, field: :to_account_name, label: "", required: true,
-                autocomplete: true, autocomplete_options: @form.account_suggestions,
-                default_autocomplete_options: @form.default_account_suggestions, allow_create: true,
+              <%= render Forms::PickerFieldComponent.new(
+                form: f, field: :to_account_name, label: "",
+                title: t('picker.account_to'), id: "transfer-to",
                 placeholder: t('transactions.form.to_account_placeholder'),
-                field_data: { tom_select_currency_value: get_currency_symbol(current_space.currency),
-                              action: "tom-select:change->transaction-form#syncBalances" }) %>
+                rows: picker_account_rows(@form.account_suggestions, current_space.currency),
+                allow_create: true,
+                field_data: { action: "tom-select:change->transaction-form#syncBalances" }) %>
             </div>
           </div>
         </div>
@@ -115,16 +115,12 @@
         <%= f.hidden_field :contact_name %>
       <% elsif !@form.debt_id.present? %>
         <div class="transaction-form__contact">
-          <%= render Forms::InputFieldComponent.new(
-            form: f,
-            field: :contact_name,
+          <%= render Forms::NameFieldComponent.new(
+            form: f, field: :contact_name,
             label: t('transactions.form.contact_name_label'),
-            autocomplete: true,
-            autocomplete_options: @form.debt_person_suggestions,
-            allow_create: true,
             placeholder: t('transactions.form.contact_name_placeholder'),
-            field_data: { action: "tom-select:change->debt-fields#onPersonChange change->debt-fields#onPersonChange" }
-          ) %>
+            suggestions: @form.debt_person_suggestions, see_all_title: t('picker.people'),
+            field_data: { action: "input->debt-fields#onPersonChange change->debt-fields#onPersonChange" }) %>
         </div>
       <% end %>
 
@@ -163,46 +159,31 @@
 
       <!-- Account (optional) -->
       <div class="transaction-form__account">
-        <%= render Forms::InputFieldComponent.new(
-          form: f,
-          field: :account_name,
-          label: t('transactions.form.account_label'),
-          autocomplete: true,
-          autocomplete_options: @form.account_suggestions,
-          default_autocomplete_options: @form.default_account_suggestions,
-          allow_create: true,
+        <%= render Forms::PickerFieldComponent.new(
+          form: f, field: :account_name,
+          label: t('transactions.form.account_label'), title: t('picker.account'),
           placeholder: t('transactions.form.account_placeholder'),
-          field_data: { tom_select_currency_value: get_currency_symbol(current_space.currency) }
-        ) %>
+          rows: picker_account_rows(@form.account_suggestions, current_space.currency),
+          allow_create: true) %>
       </div>
     <% else %>
       <!-- Regular Mode: category first (what), then account -->
       <div class="transaction-form__transaction-type">
-        <%= render Forms::InputFieldComponent.new(
-          form: f,
-          field: :transaction_type_name,
-          label: t('transactions.form.transaction_type_label'),
-          required: true,
-          autocomplete: true,
-          autocomplete_options: @form.transaction_type_options,
-          default_autocomplete_options: @form.default_transaction_type_options,
-          allow_create: true,
-          placeholder: t('transactions.form.transaction_type_placeholder')
-        ) %>
+        <%= render Forms::PickerFieldComponent.new(
+          form: f, field: :transaction_type_name,
+          label: t('transactions.form.transaction_type_label'), title: t('picker.category'),
+          placeholder: t('transactions.form.transaction_type_placeholder'),
+          rows: picker_category_rows(@form.transaction_type_options, planned_names: @form.planned_type_names),
+          allow_create: true, grouped: true) %>
       </div>
 
       <div class="transaction-form__account">
-        <%= render Forms::InputFieldComponent.new(
-          form: f,
-          field: :account_name,
-          label: t('transactions.form.account_label'),
-          autocomplete: true,
-          autocomplete_options: @form.account_suggestions,
-          default_autocomplete_options: @form.default_account_suggestions,
-          allow_create: true,
+        <%= render Forms::PickerFieldComponent.new(
+          form: f, field: :account_name,
+          label: t('transactions.form.account_label'), title: t('picker.account'),
           placeholder: t('transactions.form.account_placeholder'),
-          field_data: { tom_select_currency_value: get_currency_symbol(current_space.currency) }
-        ) %>
+          rows: picker_account_rows(@form.account_suggestions, current_space.currency),
+          allow_create: true) %>
       </div>
     <% end %>
 

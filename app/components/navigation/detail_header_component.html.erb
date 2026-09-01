@@ -11,6 +11,9 @@
 
     <div class="app-header__center">
       <h1 class="app-header__title"><%= title %></h1>
+      <% if subtitle.present? %>
+        <p class="app-header__subtitle"><%= subtitle %></p>
+      <% end %>
     </div>
 
     <div class="app-header__right">

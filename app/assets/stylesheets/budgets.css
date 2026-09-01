@@ -1217,10 +1217,14 @@
   border-radius: var(--radius-lg);
 }
 
-/* The prefix overlays the field so the field itself spans the full block width —
-   otherwise the tom-select dropdown aligns to a narrow cell and breaks out. */
+/* The prefix used to overlay the field because a dropdown had to span the whole
+   block. Choices live in a layer now, so it gets a real column and cannot
+   collide with the field however long the label runs. */
 .transfer-block__row {
-  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding-left: var(--space-lg);
 }
 
 .transfer-block__row + .transfer-block__row {
@@ -1228,11 +1232,9 @@
 }
 
 .transfer-block__prefix {
-  position: absolute;
-  left: var(--space-lg);
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 2;
+  flex-shrink: 0;
+  /* A fixed column so DE and VERS start their fields on the same line. */
+  min-width: 3rem;
   pointer-events: none;
   font-size: 11px;
   font-weight: var(--font-weight-semibold);
@@ -1242,6 +1244,7 @@
 }
 
 .transfer-block__field {
+  flex: 1;
   min-width: 0;
 }
 
@@ -1255,13 +1258,12 @@
   display: none;
 }
 
-.transfer-block .form-input,
-.transfer-block .ts-control,
-.transfer-block .ts-wrapper.single .ts-control {
+.transfer-block .picker__control {
   border: none !important;
+  border-radius: 0 !important;
   box-shadow: none !important;
   background: transparent !important;
-  padding: 0.5rem var(--space-lg) 0.5rem 3rem !important;
+  padding: 0.75rem var(--space-lg) 0.75rem 0 !important;
 }
 
 /* ── Debt: balance, sentence cards, auto clear-date ──────────── */

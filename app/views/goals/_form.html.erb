@@ -28,18 +28,14 @@
     <% if disable_account_field %>
       <%= form.hidden_field :account_name %>
     <% end %>
-    <%= render Forms::InputFieldComponent.new(
-      form: form, field: :account_name, label: t(".account_label"), required: false,
-      autocomplete: !(disable_account_field.presence || false),
-      autocomplete_options: @form.account_suggestions,
-      default_autocomplete_options: @form.default_account_suggestions,
-      allow_create: !(disable_account_field.presence || false),
-      placeholder: t(".account_placeholder"), help_text: t(".account_help"),
-      disabled: (disable_account_field || false),
-      field_data: {
-        goal_form_target: "accountName",
-        tom_select_currency_value: currency_symbol
-      }) %>
+    <% unless disable_account_field %>
+      <%= render Forms::PickerFieldComponent.new(
+        form: form, field: :account_name, label: t(".account_label"), title: t('picker.account'),
+        placeholder: t(".account_placeholder"), help_text: t(".account_help"),
+        rows: picker_account_rows(@form.account_suggestions, current_space.currency, savings_first: true),
+        allow_create: true,
+        field_data: { goal_form_target: "accountName" }) %>
+    <% end %>
   </div>
 
   <%# Already put aside — the starting point. %>
