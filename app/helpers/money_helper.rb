@@ -70,10 +70,10 @@ module MoneyHelper
     end
   end
 
-  # "35 k", "145 k", "1,2 M" — a fine space keeps the number from reading as an
-  # identifier ("35k"), lowercase k, at most 1 meaningful decimal.
+  # "35 K", "145 K", "1,2 M" — a fine space keeps the number from reading as an
+  # identifier ("35K"), at most 1 meaningful decimal.
   def abbreviated_money(abs)
-    value, unit = abs >= MILLION ? [ abs / MILLION.to_f, "M" ] : [ abs / 1_000.0, "k" ]
+    value, unit = abs >= MILLION ? [ abs / MILLION.to_f, "M" ] : [ abs / 1_000.0, "K" ]
     rounded = value.round(1)
     body = (rounded % 1).zero? ? number_with_delimiter(rounded.to_i) : number_with_precision(rounded, precision: 1)
     "#{body}#{NNBSP}#{unit}"
