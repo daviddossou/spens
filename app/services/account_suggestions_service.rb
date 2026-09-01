@@ -12,6 +12,13 @@ class AccountSuggestionsService
     (user_accounts + templates).uniq
   end
 
+  # Template names the space has not used yet — what a NEW account could be
+  # called, with nothing that already exists mixed in.
+  def template_names
+    taken = @space.accounts.pluck(:name).map(&:downcase).to_set
+    Account.templates(I18n.locale).values.reject { |name| taken.include?(name.downcase) }
+  end
+
   def all_with_balances
     user_accounts = ranked_accounts.pluck(:name, :balance)
     user_suggestions = user_accounts.map { |name, balance| { name: name, balance: balance } }

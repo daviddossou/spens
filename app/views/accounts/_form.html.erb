@@ -18,15 +18,11 @@
 
   <%# Name — the existing searchable field, kept as is. No asterisk. %>
   <div class="account-form__field">
-    <%= render Forms::InputFieldComponent.new(
-      form: form, field: :account_name, label: t('.name_label'), required: false,
-      autocomplete: true, autocomplete_options: @form.account_suggestions,
-      default_autocomplete_options: @form.default_account_suggestions, allow_create: true,
+    <%= render Forms::NameFieldComponent.new(
+      form: form, field: :account_name, label: t('.name_label'),
       placeholder: t('.name_placeholder'),
-      field_data: {
-        account_form_target: "name",
-        tom_select_currency_value: currency_symbol
-      }) %>
+      suggestions: @form.name_suggestions,
+      field_data: { account_form_target: "name", action: "input->account-form#onField" }) %>
   </div>
 
   <%# Spending or savings? — an explicit two-card choice (same pattern as the

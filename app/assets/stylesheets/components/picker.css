@@ -300,3 +300,43 @@ body.picker-layer-open {
   font-size: 0.875rem;
   color: var(--text-muted);
 }
+
+/* ---- Naming a person or an account: chips, never a list (Tour 30d) ---- */
+
+/* One row, glued under the field: 40px that survive any keyboard. */
+.name-chips {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.name-chips::-webkit-scrollbar {
+  display: none;
+}
+
+.name-chip {
+  flex-shrink: 0;
+  min-height: 36px;
+  padding: 0.375rem 0.75rem;
+  border: 1px solid var(--border-default);
+  border-radius: 999px;
+  background: var(--bg-surface);
+  font-size: 0.875rem;
+  color: var(--text-dark);
+  white-space: nowrap;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.name-chip:active {
+  background: var(--bg-off-white);
+}
+
+.name-chip--all {
+  border-style: dashed;
+  color: var(--color-primary);
+  font-weight: 600;
+}

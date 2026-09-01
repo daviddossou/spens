@@ -129,11 +129,11 @@
          data-budget-debt-labels-value="<%= debt_labels.to_json %>">
       <%= f.hidden_field :kind, data: { budget_debt_target: "kindInput" } %>
 
-      <%= render Forms::InputFieldComponent.new(
-        form: f, field: :contact_name, label: t('budgets.form.debt_who'), required: true,
-        autocomplete: true, autocomplete_options: @form.debt_person_suggestions, allow_create: true,
+      <%= render Forms::NameFieldComponent.new(
+        form: f, field: :contact_name, label: t('budgets.form.debt_who'),
         placeholder: t('budgets.form.contact_placeholder'),
-        field_data: { action: "tom-select:change->budget-debt#onPersonChange change->budget-debt#onPersonChange" }) %>
+        suggestions: @form.debt_person_suggestions, see_all_title: t('picker.people'),
+        field_data: { action: "input->budget-debt#onPersonChange change->budget-debt#onPersonChange" }) %>
 
       <p class="debt-balance" data-budget-debt-target="balance" hidden></p>
 

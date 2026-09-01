@@ -115,16 +115,12 @@
         <%= f.hidden_field :contact_name %>
       <% elsif !@form.debt_id.present? %>
         <div class="transaction-form__contact">
-          <%= render Forms::InputFieldComponent.new(
-            form: f,
-            field: :contact_name,
+          <%= render Forms::NameFieldComponent.new(
+            form: f, field: :contact_name,
             label: t('transactions.form.contact_name_label'),
-            autocomplete: true,
-            autocomplete_options: @form.debt_person_suggestions,
-            allow_create: true,
             placeholder: t('transactions.form.contact_name_placeholder'),
-            field_data: { action: "tom-select:change->debt-fields#onPersonChange change->debt-fields#onPersonChange" }
-          ) %>
+            suggestions: @form.debt_person_suggestions, see_all_title: t('picker.people'),
+            field_data: { action: "input->debt-fields#onPersonChange change->debt-fields#onPersonChange" }) %>
         </div>
       <% end %>
 

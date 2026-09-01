@@ -60,6 +60,11 @@ class AccountForm < BaseForm
     false
   end
 
+  # Only names you could still want: templates minus the ones already taken.
+  def name_suggestions
+    AccountSuggestionsService.new(space).template_names
+  end
+
   def account_suggestions
     AccountSuggestionsService.new(space).all_with_balances
   end
