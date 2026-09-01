@@ -65,7 +65,7 @@ map:
   household_items_furniture:  household_items
   cleaning:                   cleaning_laundry
   security_services:          security_guard
-  insurance:                  home_insurance         # 3 tx — see note below
+  insurance:                  insurance              # 3 tx — generic, so it sits on the parent
 
   # ---- Transport ----
   fuel_transport:             fuel                   # 1 tx
@@ -109,7 +109,7 @@ map:
   wallet_loss:                misc_expense
   bank_account_loss:          misc_expense
   unexpected:                 unexpected_expense
-  pets_animals:               misc_expense           # no pets node — see note
+  pets_animals:               pets
 
   # ---- Deliberately unmapped ----
   transfer_in:                ~   # structural kind, outside the taxonomy
@@ -118,14 +118,9 @@ map:
 
 # JUDGEMENT CALLS
 #
-# insurance -> home_insurance
-#   "🛡️ Assurances" is ambiguous: home or health? home_insurance is the majority
-#   reading, but 3 transactions settle nothing. A dedicated `insurance` parent
-#   would be more honest if the volume grows.
-#
-# pets_animals -> misc_expense
-#   No pets node exists, so this buries them in Miscellaneous. Worth creating if
-#   the need shows up again.
+# insurance -> insurance (the parent, not a child)
+#   "🛡️ Assurances" does not say home or health. The taxonomy allows a transaction
+#   on a parent, so it lands there rather than being guessed into one branch.
 #
 # general_income -> uncategorized_income
 #   16 transactions, the largest income orphan. Filed in the catch-all rather than

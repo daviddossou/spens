@@ -119,8 +119,10 @@ aliases:
   medical_supplies: ["lunettes", "lunettes médicales", "eyeglasses", "verres correcteurs",
     "prothèse", "fauteuil roulant", "béquilles", "tensiomètre", "matériel médical", "appareil auditif",
     "glasses", "medical device", "wheelchair", "crutches"]
-  health_insurance: ["assurance santé", "assurance maladie", "assurance vie", "mutuelle",
-    "health insurance"]
+  health_insurance: ["assurance santé", "assurance maladie", "mutuelle", "health insurance"]
+  vehicle_insurance: ["assurance auto", "assurance véhicule", "assurance voiture", "assurance moto",
+    "carte brune", "car insurance", "vehicle insurance", "motor insurance"]
+  life_insurance: ["assurance vie", "assurance décès", "prévoyance", "life insurance"]
 
   # ---------------- Education ----------------
   school_fees: ["écolage", "frais de scolarité", "scolarité", "inscription", "frais d'inscription",
@@ -166,6 +168,8 @@ aliases:
   donations: ["don", "donation", "quête", "dîme", "offrande", "zakat", "sadaqa", "aumône",
     "charité", "contribution religieuse", "collecte", "quete", "dime", "aumone", "offering",
     "tithe", "charity", "alms"]
+  pets: ["vétérinaire", "veto", "croquettes", "nourriture chien", "nourriture chat", "animalerie",
+    "vet", "pet food", "pet shop", "grooming"]
   childcare: ["garderie", "garde d'enfants", "crèche", "nounou", "baby sitter", "babysitting",
     "frais de garde", "childcare", "daycare", "nursery"]
 

@@ -30,9 +30,6 @@ expense:
       rent:
         en: 🏠 Rent
         fr: 🏠 Loyer
-      home_insurance:
-        en: 🛡️ Home insurance
-        fr: 🛡️ Assurance habitation
       security_guard:
         en: 🔒 Security & Guard
         fr: 🔒 Sécurité & Gardien
@@ -112,9 +109,22 @@ expense:
       medical_supplies:
         en: 🩼 Medical devices & supplies
         fr: 🩼 Matériel & Dispositifs médicaux
+  insurance:
+    en: 🛡️ Insurance
+    fr: 🛡️ Assurances
+    children:
+      home_insurance:
+        en: 🛡️ Home insurance
+        fr: 🛡️ Assurance habitation
       health_insurance:
         en: 🛡️ Health insurance
         fr: 🛡️ Assurance santé
+      vehicle_insurance:
+        en: 🚗 Vehicle insurance
+        fr: 🚗 Assurance véhicule
+      life_insurance:
+        en: 🕊️ Life insurance
+        fr: 🕊️ Assurance vie
   education:
     en: 🎓 Education
     fr: 🎓 Éducation
@@ -138,6 +148,9 @@ expense:
       childcare:
         en: 👶 Childcare
         fr: 👶 Garde d'enfants
+      pets:
+        en: 🐾 Pets
+        fr: 🐾 Animaux de compagnie
   transaction_fees:
     en: 💳 Fees & taxes
     fr: 💳 Frais & Impôts

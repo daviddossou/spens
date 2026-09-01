@@ -24,6 +24,9 @@ Statut : **proposition à arbitrer**, pas une décision.
    un mélange. C'est la condition pour pré-remplir le formulaire.
 3. **Deux terrains, un arbre.** Afrique de l'Ouest et diaspora. Aucun nœud
    spécifique à un terrain ne doit occuper une place de parent.
+5. **Les clés ne changent jamais.** `TaxonomyNode` les rend immuables, et les 49
+   nœuds référencés par un espace incluent tous les parents qu'on aurait voulu
+   renommer. Seuls les noms affichés bougent : une clé est interne et jamais vue.
 4. **Le nom de l'utilisateur est sacré.** On rattache, on ne renomme jamais.
 
 ## Essentialité — trois valeurs, pas deux
@@ -39,7 +42,7 @@ confort, et l'appeler « vital » fausse le ratio. D'où la troisième valeur.
 
 ---
 
-# DÉPENSES — 21 parents (17 aujourd'hui)
+# DÉPENSES — 22 parents (17 aujourd'hui)
 
 ## VITAL
 
@@ -49,7 +52,7 @@ confort, et l'appeler « vital » fausse le ratio. D'où la troisième valeur.
   La distinction « provisions du mois » vs « provisions » n'existe pas pour les
   utilisateurs : 64 contre 0. Elle coûte un choix et n'apporte rien.
 
-### 2. `housing` — 🏠 Logement · (scindé de `housing_home`)
+### 2. `housing_home` — 🏠 Logement · (scindé ; clé conservée)
 - `rent` (8) — garder
 - `home_insurance` (1) — garder
 - `security_guard` (0) — garder (pertinent Afrique de l'Ouest)
@@ -57,7 +60,7 @@ confort, et l'appeler « vital » fausse le ratio. D'où la troisième valeur.
 > Scission motivée : `housing_home` mélangeait loyer (vital) et décoration
 > (confort). Aucun défaut d'essentialité n'était honnête.
 
-### 3. `utilities` — 💡 Énergie, Eau & Cuisson (fusion)
+### 3. `electricity_water` — 💡 Énergie, Eau & Cuisson (fusion ; clé conservée)
 - `electricity` (0), `water` (0) — garder
 - `cooking_gas` (0), `charcoal_wood` (0) — **DÉPLACER** depuis `kitchen_supplies`
 > `kitchen_supplies` est à 0 tx / 0 espace. Gaz et charbon *sont* de l'énergie
@@ -74,19 +77,37 @@ confort, et l'appeler « vital » fausse le ratio. D'où la troisième valeur.
 - `goods_transport` (0) — **DÉPLACER** vers `other_expense/business_work_expense`
 > Le transport de marchandises est une dépense pro, pas un déplacement personnel.
 
-### 6. `health` — 💊 Santé · 1 tx — inchangé
+### 6. `health` — 💊 Santé · 1 tx
+- `health_insurance` — **DÉPLACER** vers le nouveau parent `insurance`
 
-### 7. `education` — 🎓 Éducation · 0 tx — inchangé
+### 7. `insurance` — 🛡️ Assurances — **NOUVEAU PARENT** · `vital`
+- `home_insurance` (1 tx) — déplacé depuis `housing_home`
+- `health_insurance` (0) — déplacé depuis `health`
+- `vehicle_insurance` — **CRÉER**
+- `life_insurance` — **CRÉER** (« assurance vie » quittait `health_insurance`)
+
+> L'assurance est un poste récurrent et budgétable, en Afrique de l'Ouest comme
+> en diaspora. Dispersée entre Logement et Santé, elle était invisible : on ne
+> pouvait pas répondre à « combien me coûtent mes assurances ». La clé legacy
+> `insurance` pointe sur le **parent**, pas sur un enfant : « 🛡️ Assurances » ne
+> dit ni habitation ni santé, et la taxonomie autorise une transaction sur un
+> parent — mieux que deviner.
+
+### 8. `education` — 🎓 Éducation · 0 tx — inchangé
 > 0 usage, mais indispensable structurellement (scolarité = poste majeur).
 > À garder même vide.
 
-### 8. `family_obligations` — 🤝 Soutien & Obligations (scindé de `family_social`)
+### 9. `family_obligations` — 🤝 Soutien & Obligations (scindé de `family_social`)
 - `family_support` (0) — garder
 - `childcare` (0) — garder
+- `pets` — **CRÉER** (clé legacy `pets_animals`)
+
+> Les animaux sont des personnes à charge : récurrents, subis, non ajustables.
+> Ils vont ici et non sous `family_social`, devenu « Cadeaux & Cérémonies ».
 > En Afrique de l'Ouest le soutien familial est **subi et récurrent**, pas un
 > plaisir. Le mettre avec les cadeaux le rendait ajustable, ce qu'il n'est pas.
 
-### 9. `fees_taxes` — 💳 Frais & Impôts · 19 tx (unification)
+### 10. `transaction_fees` — 💳 Frais & Impôts · 19 tx (unification)
 - `mobile_money_fees` (12), `withdrawal_send_fees` (2), `taxes` (5) — garder
 - `bank_fees` (0) — garder
 - `investment_fees` (7) — **DÉPLACER** depuis `savings_investment`
@@ -95,7 +116,7 @@ confort, et l'appeler « vital » fausse le ratio. D'où la troisième valeur.
 > 28 transactions de frais errent dans les gaps. Tous les frais au même endroit :
 > c'est un poste réel et croissant en économie mobile money + diaspora.
 
-### 10. `money_transfers` — 💸 Envois d'argent — **NOUVEAU PARENT**
+### 11. `money_transfers` — 💸 Envois d'argent — **NOUVEAU PARENT**
 - `remittance_sent` — envoi à la famille
 - `household_contribution_out` — contribution au ménage commun
 > **Trou structurel** : l'income a `transfers_received`, la dépense n'avait aucun
@@ -104,21 +125,21 @@ confort, et l'appeler « vital » fausse le ratio. D'où la troisième valeur.
 
 ## CONFORT
 
-### 11. `eating_out` — 🍽️ Repas à l'extérieur · 29 tx
+### 12. `eating_out` — 🍽️ Repas à l'extérieur · 29 tx
 - `food_delivery` (18), `restaurant_maquis` (7), `cafe_snacks` (3) — garder
 - `street_food` (0), `bar_buvette` (0) — garder
 > `food_delivery` domine : signal diaspora net. Ne pas le sous-estimer.
 
-### 12. `home_equipment` — 🛋️ Maison & Équipement (scindé de `housing_home`)
+### 13. `home_equipment` — 🛋️ Maison & Équipement (scindé de `housing_home`)
 - `household_items` (0), `home_repairs` (2), `home_supplies` (0),
   `cleaning_laundry` (0), `domestic_help` (0) — déplacés depuis `housing_home`
 - `kitchen_utensils`, `kitchen_consumables` — déplacés depuis `kitchen_supplies`
 
-### 13. `clothing_accessories` — 👕 Vêtements & Accessoires (scindé)
+### 14. `clothing_personal_care` — 👕 Vêtements & Accessoires (scindé ; clé conservée)
 - `clothing_shoes` (2), `tailoring` (0) — garder
 - `jewelry_accessories` — **CRÉER** (bijoux, sacs, montres — gap : « Bijoux »)
 
-### 14. `personal_care` — 💇 Soins & Beauté (scindé)
+### 15. `personal_care` — 💇 Soins & Beauté (scindé)
 - `salon_beauty` (0), `cosmetics` (1) — garder
 - `cosmetics` accueille aussi le parfum
 
@@ -129,22 +150,22 @@ confort, et l'appeler « vital » fausse le ratio. D'où la troisième valeur.
 > « Shopping » a été écarté : c'est un mode d'achat, pas un besoin — le nœud
 > deviendrait un aimant à fourre-tout.
 
-### 15. `recreation_lifestyle` — 🎬 Loisirs & Style de vie · 1 tx
+### 16. `recreation_lifestyle` — 🎬 Loisirs & Style de vie · 1 tx
 - `outings`, `betting_games`, `sport_fitness`, `photo` — garder
 - `subscriptions_fun` (0) — **SUPPRIMER**, absorbé par le parent `subscriptions` (18)
 
-### 16. `celebrations_gifts` — 🎁 Cadeaux & Cérémonies (scindé de `family_social`)
+### 17. `family_social` — 🎁 Cadeaux & Cérémonies (scindé ; clé conservée)
 - `gifts` (0), `ceremonies` (0), `donations` (0)
 > Gaps rattachés : « Cadeaux (Dépense) » 10, « Quête / Offrande » 7,
 > « Myri/Maman/Doris (Cadeaux) » 8.
 > ⚠️ Les cadeaux nommés par personne signalent un besoin de dimension
 > **personne**, pas de nouveaux nœuds. Ne pas créer « Cadeaux Maman ».
 
-### 17. `technology_tools` — 💻 Technologie & Matériel · 2 tx
+### 18. `technology_tools` — 💻 Technologie & Matériel · 2 tx
 - `electronics` (2), `appliances`, `computer_accessories` — garder
 - `software_digital` (0) — **DÉPLACER** vers le nouveau parent `subscriptions`
 
-### 18. `subscriptions` — 🔁 Abonnements — **NOUVEAU PARENT** · `confort`
+### 19. `subscriptions` — 🔁 Abonnements — **NOUVEAU PARENT** · `confort`
 - `streaming_media` — Netflix, Spotify, Prime, YouTube
 - `cloud_storage` — Google One, iCloud, Dropbox
 - `software_tools` — Canva, Notion, applications
@@ -170,11 +191,11 @@ confort, et l'appeler « vital » fausse le ratio. D'où la troisième valeur.
 > Les vrais outils professionnels (Hetzner, SaaS métier) vont dans
 > `other_expense/business_work_expense` — ce ne sont pas des dépenses de ménage.
 
-### 19. `travel` — ✈️ Voyage · 0 tx — inchangé
+### 20. `travel` — ✈️ Voyage · 0 tx — inchangé
 
 ## ÉPARGNE
 
-### 20. `savings_investment` — 💰 Épargne & Investissement · 7 tx
+### 21. `savings_investment` — 💰 Épargne & Investissement · 7 tx
 - `savings_deposit`, `tontine`, `investment`, `land_construction` — garder
 - `investment_fees` — **SORTIR** vers `fees_taxes`
 - `investment_loss` — **CRÉER** (gap : « Perte investissement » 5)
@@ -184,7 +205,7 @@ confort, et l'appeler « vital » fausse le ratio. D'où la troisième valeur.
 
 ## NEUTRE
 
-### 21. `other_expense` — ❓ Autre · 1 tx
+### 22. `other_expense` — ❓ Autre · 1 tx
 - inchangé. Reste un **dernier recours**, jamais un classeur.
 
 ---
@@ -214,17 +235,18 @@ confort, et l'appeler « vital » fausse le ratio. D'où la troisième valeur.
 
 | | Avant | Après |
 |---|---|---|
-| Parents dépense | 17 | 21 |
+| Parents dépense | 17 | 22 |
 | Parents à 0 usage | 4 | 2 |
 | Parents non homogènes | 3 | 0 |
 
-**Scissions** : `housing_home` → `housing` + `home_equipment` ;
-`family_social` → `family_obligations` + `celebrations_gifts` ;
-`clothing_personal_care` → `clothing_accessories` + `personal_care`
-**Fusions** : `kitchen_supplies` → `utilities` + `home_equipment` ;
+**Scissions** (la clé d'origine reste sur la moitié principale) :
+`housing_home` garde le logement, `home_equipment` est créé ;
+`family_social` garde cadeaux & cérémonies, `family_obligations` est créé ;
+`clothing_personal_care` garde les vêtements, `personal_care` est créé
+**Fusions** : `kitchen_supplies` → `electricity_water` + `home_equipment` ;
 `monthly_provisions` → `groceries` ; `bank_cashback` → `cashback_rewards`
-**Nouveaux parents** : `money_transfers`, `subscriptions`
-**Nœuds créés** : 7 · **Nœuds déplacés** : 8 · **Nœuds fusionnés** : 4
+**Nouveaux parents** : `money_transfers`, `subscriptions`, `insurance`
+**Nœuds créés** : 10 · **Nœuds déplacés** : 10 · **Nœuds fusionnés** : 4
 
 # Hors périmètre — deux correctifs d'implémentation
 

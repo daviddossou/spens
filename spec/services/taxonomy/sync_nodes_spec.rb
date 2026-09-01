@@ -83,7 +83,7 @@ RSpec.describe Taxonomy::SyncNodes do
       orphans = TaxonomyNode.active.where.not(parent_key: nil)
                             .where.not(parent_key: TaxonomyNode.active.parents.select(:key))
       expect(orphans).to be_empty
-      expect(TaxonomyNode.active.parents.where(kind: "expense").count).to eq(21)
+      expect(TaxonomyNode.active.parents.where(kind: "expense").count).to eq(22)
     end
   end
 end
