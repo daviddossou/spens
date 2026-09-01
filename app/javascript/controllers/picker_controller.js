@@ -67,6 +67,12 @@ export default class extends Controller {
     const next = this.pickerFor(this.chainToValue)
     if (!next) return null
 
+    // A destination already chosen is an answer, not a blank to fill again —
+    // only run on when it is missing, or when the source just picked has made
+    // it impossible.
+    const destination = next.inputTarget.value
+    if (destination && destination !== value) return null
+
     return next.request({
       step: "2 / 2",
       context: { label: this.chainLabelValue, value: value, action: this.changeLabelValue },
