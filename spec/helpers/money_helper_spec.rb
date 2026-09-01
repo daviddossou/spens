@@ -2,7 +2,11 @@
 
 require "rails_helper"
 
+# Tour 28c: one formatter for every displayed amount.
 RSpec.describe MoneyHelper, type: :helper do
+  NBSP = MoneyHelper::NBSP
+  FINE = " " # French thousands separator
+
   let(:user) { create(:user, currency: "USD") }
   let(:space) { user.spaces.first }
 
@@ -12,139 +16,74 @@ RSpec.describe MoneyHelper, type: :helper do
     allow(helper).to receive(:current_space).and_return(space)
   end
 
-  describe "#format_money" do
-    it "formats zero amount with the currency symbol" do
-      expect(helper.format_money(0)).to eq("0 $")
-      expect(helper.format_money(nil)).to eq("0 $")
+  describe "#money" do
+    it "tells a real zero apart from no data" do
+      expect(helper.money(0)).to eq("0#{NBSP}$")
+      expect(helper.money(nil)).to eq("—")
     end
 
-    it "formats positive amount with currency symbol" do
-      result = helper.format_money(1000, "USD")
-      expect(result).to eq("1,000 $")
+    it "always attaches the currency with a non-breaking space" do
+      expect(helper.money(1_000, "USD")).to eq("1,000#{NBSP}$")
+      expect(helper.money(5_000, "XOF")).to eq("5,000#{NBSP}FCFA")
+      expect(helper.money(2_500, "EUR")).to eq("2,500#{NBSP}€")
     end
 
-    it "formats XOF currency" do
-      result = helper.format_money(5000, "XOF")
-      expect(result).to eq("5,000 FCFA")
+    it "separates French thousands with a fine non-breaking space" do
+      I18n.with_locale(:fr) do
+        expect(helper.money(12_500, "XOF")).to eq("12#{FINE}500#{NBSP}FCFA")
+      end
     end
 
-    it "formats EUR currency" do
-      result = helper.format_money(2500, "EUR")
-      expect(result).to eq("2,500 €")
+    it "keeps cents only when they exist" do
+      expect(helper.money(1_234.56, "USD")).to eq("1,234.56#{NBSP}$")
+      expect(helper.money(60.0, "USD")).to eq("60#{NBSP}$")
     end
 
-    it "uses current user currency if not specified" do
-      result = helper.format_money(1000)
-      expect(result).to include("$")
+    it "is absolute by default, signed only on demand" do
+      expect(helper.money(-1_000, "USD")).to eq("1,000#{NBSP}$")
+      expect(helper.money(-1_000, "USD", sign: :auto)).to eq("−#{NBSP}1,000#{NBSP}$")
+      expect(helper.money(1_000, "USD", sign: :auto)).to eq("1,000#{NBSP}$")
+      expect(helper.money(1_000, "USD", sign: :always)).to eq("+#{NBSP}1,000#{NBSP}$")
+      expect(helper.money(0, "USD", sign: :always)).to eq("0#{NBSP}$")
     end
 
-    it "formats amounts with two decimal precision" do
-      result = helper.format_money(1234.56, "USD")
-      expect(result).to eq("1,234.56 $")
+    it "never abbreviates under 10 000, even compact" do
+      expect(helper.money(9_999, "USD", compact: true)).to eq("9,999#{NBSP}$")
     end
 
-    it "uses absolute value for negative amounts" do
-      result = helper.format_money(-1000, "USD")
-      expect(result).to eq("1,000 $")
-    end
-  end
-
-  describe "#smart_format_money" do
-    it "formats small amounts without abbreviation" do
-      result = helper.smart_format_money(500, "USD")
-      expect(result).to eq("500 $")
+    it "abbreviates compact amounts with a lowercase k, then M" do
+      expect(helper.money(40_000, "USD", compact: true)).to eq("40k#{NBSP}$")
+      expect(helper.money(145_000, "USD", compact: true)).to eq("145k#{NBSP}$")
+      expect(helper.money(2_000_000, "USD", compact: true)).to eq("2M#{NBSP}$")
     end
 
-    it "shows thousands in full below the six-digit threshold" do
-      result = helper.smart_format_money(5000, "USD")
-      expect(result).to eq("5,000 $")
+    it "keeps at most one meaningful decimal in abbreviations" do
+      expect(helper.money(1_200_000, "USD", compact: true)).to eq("1.2M#{NBSP}$")
+      expect(helper.money(12_500, "USD", compact: true)).to eq("12.5k#{NBSP}$")
+      I18n.with_locale(:fr) do
+        expect(helper.money(1_200_000, "XOF", compact: true)).to eq("1,2M#{NBSP}FCFA")
+      end
     end
 
-    it "abbreviates six-digit amounts with K, no decimals" do
-      result = helper.smart_format_money(470_790, "USD")
-      expect(result).to include("471K")
-      expect(result).to include("$")
-    end
-
-    it "abbreviates millions with M" do
-      result = helper.smart_format_money(5_000_000, "USD")
-      expect(result).to include("5M")
-    end
-
-    it "abbreviates billions with B" do
-      result = helper.smart_format_money(5_000_000_000, "USD")
-      expect(result).to include("5B")
-    end
-
-    it "includes title attribute with full amount" do
-      result = helper.smart_format_money(500_000, "USD")
-      expect(result).to include("title=")
-      expect(result).to include("500,000")
-    end
-
-    it "returns span element for accessibility" do
-      result = helper.smart_format_money(500_000, "USD")
-      expect(result).to include("<span")
-      expect(result).to include("cursor-help")
-      expect(result).to include('aria-label')
-    end
-
-    it "uses custom threshold" do
-      result = helper.smart_format_money(500, "USD", threshold: 100)
-      expect(result).to include("0.5K")
-    end
-
-    it "formats decimal abbreviations" do
-      result = helper.smart_format_money(1_500_000, "USD")
-      expect(result).to include("1.5M")
-    end
-
-    it "removes .0 from whole numbers" do
-      result = helper.smart_format_money(200_000, "USD")
-      expect(result).to include("200K")
-      expect(result).not_to include("200.0K")
-    end
-
-    it "drops decimals on whole sub-threshold amounts" do
-      expect(helper.smart_format_money(60, "USD")).to eq("60 $")
-    end
-
-    it "keeps two decimals on sub-threshold amounts with cents" do
-      expect(helper.smart_format_money(218.37, "USD")).to eq("218.37 $")
-      expect(helper.smart_format_money(0.5, "USD")).to eq("0.50 $")
-    end
-
-    # Regression: a sub-cent magnitude that rounds to zero must not render
-    # as "-0.0" (negative zero) — it reads as a clean "0".
-    it "renders sub-cent magnitudes that round to zero as plain zero" do
-      expect(helper.smart_format_money(-0.004, "USD")).to eq("0 $")
-      expect(helper.smart_format_money(0, "USD")).to eq("0 $")
+    it "shows the full number outside compact contexts, whatever the size" do
+      expect(helper.money(1_200_000, "USD")).to eq("1,200,000#{NBSP}$")
     end
   end
 
-  describe "#get_currency_symbol" do
-    it "returns FCFA for XOF" do
-      expect(helper.get_currency_symbol("XOF")).to eq("FCFA")
+  describe "#money_pair" do
+    it "never mixes two formats in a pair — the larger decides" do
+      expect(helper.money_pair(5_000, 500_000, "USD", compact: true))
+        .to eq([ "5k#{NBSP}$", "500k#{NBSP}$" ])
     end
 
-    it "returns FCFA for XAF" do
-      expect(helper.get_currency_symbol("XAF")).to eq("FCFA")
+    it "stays full when neither side reaches the floor" do
+      expect(helper.money_pair(5_000, 8_000, "USD", compact: true))
+        .to eq([ "5,000#{NBSP}$", "8,000#{NBSP}$" ])
     end
 
-    it "returns € for EUR" do
-      expect(helper.get_currency_symbol("EUR")).to eq("€")
-    end
-
-    it "returns $ for USD" do
-      expect(helper.get_currency_symbol("USD")).to eq("$")
-    end
-
-    it "returns £ for GBP" do
-      expect(helper.get_currency_symbol("GBP")).to eq("£")
-    end
-
-    it "returns currency code for unknown currencies" do
-      expect(helper.get_currency_symbol("JPY")).to eq("JPY")
+    it "leaves exact pairs exact" do
+      expect(helper.money_pair(94_000, 96_000, "USD"))
+        .to eq([ "94,000#{NBSP}$", "96,000#{NBSP}$" ])
     end
   end
 end

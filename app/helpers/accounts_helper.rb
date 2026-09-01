@@ -5,7 +5,7 @@ module AccountsHelper
   # can't be compared, and "145K" next to "145 000" can't. Space-delimited,
   # currency at the end, never abbreviated.
   def account_money(value)
-    smart_format_money(value, current_space.currency, sign: :never, threshold: Float::INFINITY)
+    money(value, current_space.currency)
   end
 
   # "dernier mouvement aujourd'hui / hier / il y a N jours" — our own keys, since

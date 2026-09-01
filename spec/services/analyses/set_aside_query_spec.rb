@@ -3,6 +3,9 @@
 require "rails_helper"
 
 RSpec.describe Analyses::SetAsideQuery do
+  # Fixed mid-month noon: month-boundary days would flip the period under the specs.
+  before { travel_to Time.zone.local(2026, 8, 18, 12) }
+
   let(:space) { create(:space) }
   let(:savings) { create(:account, space: space, name: "Épargne", set_aside: true) }
   let(:everyday) { create(:account, space: space, name: "Courant", set_aside: false) }

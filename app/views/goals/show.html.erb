@@ -28,9 +28,9 @@
     <%# Hero: how much is saved against the target, the progress bar, and the
         one-line verdict (remaining · months left · on track). %>
     <div class="goal-hero">
-      <p class="goal-hero__amount"><%= smart_format_money(@progress&.current || @account.balance, current_space.currency, sign: :never, threshold: Float::INFINITY) %></p>
+      <p class="goal-hero__amount"><%= money(@progress&.current || @account.balance) %></p>
       <% if @progress&.target_set? %>
-        <p class="goal-hero__target"><%= t('.hero_of', target: smart_format_money(@progress.target, current_space.currency, sign: :never, threshold: Float::INFINITY)) %></p>
+        <p class="goal-hero__target"><%= t('.hero_of', target: money(@progress.target)) %></p>
         <div class="goal-hero__bar" role="progressbar" aria-valuenow="<%= @progress.percentage %>" aria-valuemin="0" aria-valuemax="100">
           <div class="goal-hero__bar-fill<%= " goal-hero__bar-fill--settled" if @progress.settled? %>" style="width: <%= @progress.percentage %>%;"></div>
         </div>
@@ -51,8 +51,8 @@
           </svg>
         </span>
         <div class="goal-rhythm__text">
-          <p class="goal-rhythm__monthly"><%= t('.rhythm_title', amount: smart_format_money(@progress.monthly.round, current_space.currency, sign: :never, threshold: Float::INFINITY)) %></p>
-          <p class="goal-rhythm__sub"><%= t('.rhythm_sub', target: smart_format_money(@progress.target, current_space.currency, sign: :never, threshold: Float::INFINITY), month: l(@progress.deadline, format: :month_year)) %></p>
+          <p class="goal-rhythm__monthly"><%= t('.rhythm_title', amount: money(@progress.monthly.round)) %></p>
+          <p class="goal-rhythm__sub"><%= t('.rhythm_sub', target: money(@progress.target), month: l(@progress.deadline, format: :month_year)) %></p>
         </div>
       </div>
     <% end %>

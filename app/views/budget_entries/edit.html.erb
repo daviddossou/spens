@@ -86,7 +86,7 @@
           </p>
           <div class="debt-reactivate">
             <div class="debt-reactivate__text">
-              <p class="debt-reactivate__title"><%= t(".revert_title", amount: smart_format_money(rule_amount, current_space.currency, sign: :never, threshold: Float::INFINITY)) %></p>
+              <p class="debt-reactivate__title"><%= t(".revert_title", amount: money(rule_amount)) %></p>
               <p class="debt-reactivate__sub"><%= t(".revert_sub") %></p>
             </div>
             <%= link_to t(".revert_button"), revert_budget_entry_path(id: @budget_entry.id),
@@ -202,7 +202,7 @@
 
         <%# Reassurance: which months move, and that the rule/history is safe. %>
         <div class="budget-scope-note" data-budget-scope-target="noteMonth">
-          <%= t(".note_month", amount: smart_format_money(rule_amount, current_space.currency, sign: :never, threshold: Float::INFINITY), month: next_month_name.capitalize) %>
+          <%= t(".note_month", amount: money(rule_amount), month: next_month_name.capitalize) %>
         </div>
         <div class="budget-scope-note budget-scope-note--amber hidden" data-budget-scope-target="noteRule">
           <% if bounded %>

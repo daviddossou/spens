@@ -68,15 +68,20 @@ module Ui
     end
 
     def formatted_remaining
-      helpers.smart_format_money(remaining_value, currency)
+      helpers.money(remaining_value, currency, compact: true)
     end
 
+    # The pair reads in one format — the larger side decides.
     def formatted_current_value
-      helpers.smart_format_money(current_value, currency)
+      formatted_pair.first
     end
 
     def formatted_target_value
-      helpers.smart_format_money(target_value, currency)
+      formatted_pair.last
+    end
+
+    def formatted_pair
+      @formatted_pair ||= helpers.money_pair(current_value, target_value, currency, compact: true)
     end
 
     def bar
@@ -88,20 +93,18 @@ module Ui
       )
     end
 
-    # Compact two-sided caption for the row variant: "74% repaid · 629K / 855K".
+    # Compact two-sided caption for the row variant: "74% repaid · 629k / 855k".
     def meta
       tag.div(
         safe_join([
           tag.span("#{percentage}% #{progress_label}"),
-          # safe_join keeps the html_safe spans smart_format_money returns for
-          # abbreviated values, so they render instead of being escaped.
-          tag.span(safe_join([ formatted_current_value, " / ", formatted_target_value ]))
+          tag.span("#{formatted_current_value} / #{formatted_target_value}")
         ]),
         class: "commitment-card__meta"
       )
     end
 
-    # Natural-language progress for the summary variant: "629K repaid of 855K".
+    # Natural-language progress for the summary variant: "629k repaid of 855k".
     def progress_summary
       connector = I18n.t("commitment.of", default: "of")
       safe_join([ formatted_current_value, " #{progress_label} #{connector} ", formatted_target_value ])

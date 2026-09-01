@@ -46,22 +46,22 @@
           <%= @period.month? ? t('.spent_title_month', month: l(range.begin, format: :month_only)) \
                              : t('.spent_title_range', from: l(range.begin, format: :day_month), to: l(range.end, format: :day_month)) %>
         </p>
-        <p class="analyses-hero"><%= smart_format_money(@spending.spent_total, current_space.currency, sign: :never, threshold: Float::INFINITY) %></p>
+        <p class="analyses-hero"><%= money(@spending.spent_total) %></p>
 
         <% if comparison %>
           <% if comparison[:no_data] %>
             <p class="analyses-compare analyses-compare--quiet"><%= t('.no_comparison') %></p>
           <% elsif comparison[:monthly_average] %>
-            <p class="analyses-compare analyses-compare--quiet"><%= t('.monthly_average', amount: smart_format_money(comparison[:monthly_average], current_space.currency, sign: :never, threshold: Float::INFINITY)) %></p>
+            <p class="analyses-compare analyses-compare--quiet"><%= t('.monthly_average', amount: money(comparison[:monthly_average])) %></p>
           <% else %>
             <% up = (comparison[:percent] || comparison[:amount]).positive? %>
             <% delta = comparison[:percent] ? "#{'↑ ' if up}#{'↓ ' unless up}#{comparison[:percent].abs} %" \
-                                            : "#{up ? '+' : '−'} #{strip_tags(smart_format_money((comparison[:amount]).abs, current_space.currency, sign: :never, threshold: Float::INFINITY))}" %>
+                                            : money(comparison[:amount], sign: :always) %>
             <p class="analyses-compare">
               <span class="analyses-compare__chip <%= up ? 'analyses-compare__chip--up' : 'analyses-compare__chip--down' %>"><%= delta %></span>
               <span class="analyses-compare__ref">
-                <%= @period.month? ? t('.vs_past_month', month: l(comparison[:range].begin, format: :month_only), amount: strip_tags(smart_format_money(comparison[:previous], current_space.currency, sign: :never, threshold: Float::INFINITY)).gsub("&nbsp;", " ")) \
-                                   : t('.vs_past_range', amount: strip_tags(smart_format_money(comparison[:previous], current_space.currency, sign: :never, threshold: Float::INFINITY)).gsub("&nbsp;", " ")) %>
+                <%= @period.month? ? t('.vs_past_month', month: l(comparison[:range].begin, format: :month_only), amount: money(comparison[:previous])) \
+                                   : t('.vs_past_range', amount: money(comparison[:previous])) %>
               </span>
             </p>
           <% end %>
@@ -80,7 +80,7 @@
             <div class="analyses-row__head">
               <span class="analyses-row__label"><%= t('.plan_label') %></span>
               <span class="analyses-row__value<%= ' analyses-row__value--over' if over %>">
-                <%= format_money_number(plan[:spent_on_plan]) %> / <%= format_money_number(plan[:planned]) %>
+                <%= money(plan[:spent_on_plan]) %> / <%= money(plan[:planned]) %>
               </span>
             </div>
             <div class="analyses-bar<%= ' analyses-bar--over' if over %>">
@@ -93,11 +93,11 @@
             <%# The verdict in money — the phrase IS the tick's legend, never its definition. %>
             <p class="analyses-row__caption analyses-row__caption--verdict">
               <% if ongoing %>
-                <%= pace_gap.positive? ? t('.plan_verdict_over', amount: format_money_number(pace_gap)) \
-                                       : (pace_gap.negative? ? t('.plan_verdict_under', amount: format_money_number(pace_gap.abs)) : t('.plan_verdict_on')) %>
+                <%= pace_gap.positive? ? t('.plan_verdict_over', amount: money(pace_gap)) \
+                                       : (pace_gap.negative? ? t('.plan_verdict_under', amount: money(pace_gap.abs)) : t('.plan_verdict_on')) %>
               <% else %>
-                <%= final_gap.positive? ? t('.plan_done_kept', amount: format_money_number(final_gap)) \
-                                        : (final_gap.negative? ? t('.plan_done_over', amount: format_money_number(final_gap.abs)) : t('.plan_done_exact')) %>
+                <%= final_gap.positive? ? t('.plan_done_kept', amount: money(final_gap)) \
+                                        : (final_gap.negative? ? t('.plan_done_over', amount: money(final_gap.abs)) : t('.plan_done_exact')) %>
               <% end %>
             </p>
           </div>
@@ -120,10 +120,10 @@
               <span class="analyses-splitbar__plaisir" style="width: <%= (split[:plaisir] / total * 100).round(1) %>%;"></span>
             </div>
             <p class="analyses-row__caption">
-              <strong><%= format_money_number(split[:essential]) %></strong> <%= t('.essential_amount') %>
-              &nbsp; <strong><%= format_money_number(split[:plaisir]) %></strong> <%= t('.plaisir_amount') %>
+              <strong><%= money(split[:essential]) %></strong> <%= t('.essential_amount') %>
+              &nbsp; <strong><%= money(split[:plaisir]) %></strong> <%= t('.plaisir_amount') %>
               <% if split[:unclassified].positive? %>
-                &nbsp; <strong><%= format_money_number(split[:unclassified]) %></strong> <%= t('.unclassified_amount') %>
+                &nbsp; <strong><%= money(split[:unclassified]) %></strong> <%= t('.unclassified_amount') %>
               <% end %>
             </p>
           </div>
@@ -137,7 +137,7 @@
         <%# Money that left the accounts as loans — an addition, never a subtraction. %>
         <% if @spending.lent_total.positive? %>
           <a href="#analyses-between" class="analyses-moved">
-            <span><%= t('.lent_line', amount: format_money_number(@spending.lent_total)) %></span>
+            <span><%= t('.lent_line', amount: money(@spending.lent_total)) %></span>
             <span class="analyses-moved__amount">›</span>
           </a>
         <% end %>
@@ -164,7 +164,7 @@
             <p class="analyses-row__caption">
               <%= t(".rhythm_biggest.#{@period.granularity}_html",
                     date: l(@rhythm.biggest.starts_on, format: @period.granularity == :month ? :month_only : :day_month),
-                    amount: format_money_number(@rhythm.biggest.amount),
+                    amount: money(@rhythm.biggest.amount),
                     category: @rhythm.biggest_category ? t('.rhythm_biggest_category', name: @rhythm.biggest_category) : "") %>
             </p>
           <% end %>
@@ -204,7 +204,7 @@
             <summary class="analyses-fold__summary">
               <span class="analyses-fold__text">
                 <span class="analyses-fold__title"><%= t('.within_title', count: within.size) %></span>
-                <span class="analyses-fold__sub"><%= t('.fold_totals', spent: format_money_number(within.sum(&:spent)), planned: format_money_number(within.sum(&:planned))) %></span>
+                <span class="analyses-fold__sub"><%= t('.fold_totals', spent: money(within.sum(&:spent)), planned: money(within.sum(&:planned))) %></span>
               </span>
               <span class="analyses-fold__toggle"><%= t('.fold_toggle') %></span>
             </summary>
@@ -220,7 +220,7 @@
                     <i class="analyses-slim__tick" style="left: <%= [ row.prorated / row.planned * 100, 100 ].min.round(1) %>%;" aria-hidden="true"></i>
                   <% end %>
                 </span>
-                <span class="analyses-slim__amount"><%= format_money_number(row.spent) %></span>
+                <span class="analyses-slim__amount"><%= money(row.spent) %></span>
               <% end %>
             <% end %>
           </details>
@@ -235,7 +235,7 @@
               <span class="analyses-fold__text">
                 <span class="analyses-fold__title"><%= t('.offplan_title', count: offplan.size) %></span>
                 <span class="analyses-fold__sub">
-                  <%= t('.offplan_totals', spent: format_money_number(offplan.sum(&:spent))) %>
+                  <%= t('.offplan_totals', spent: money(offplan.sum(&:spent))) %>
                   · <%= t('.coverage', with_plan: plan[:categories_with_plan], total: [ plan[:categories_total], plan[:categories_with_plan] ].max) %>
                 </span>
               </span>
@@ -245,7 +245,7 @@
             <% offplan.first(3).each do |row| %>
               <div class="analyses-slim">
                 <span class="analyses-slim__name"><%= row.name %></span>
-                <span class="analyses-slim__amount"><%= format_money_number(row.spent) %></span>
+                <span class="analyses-slim__amount"><%= money(row.spent) %></span>
                 <% if row.other %>
                   <%= link_to t('.offplan_classify'), dashboard_path(q: row.name), class: "analyses-slim__action", data: { turbo_frame: "_top" } %>
                 <% else %>
@@ -258,7 +258,7 @@
             <% if offplan.size > 3 %>
               <div class="analyses-slim analyses-slim--muted">
                 <span class="analyses-slim__name"><%= t('.offplan_more', count: offplan.size - 3) %></span>
-                <span class="analyses-slim__amount"><%= format_money_number(offplan.drop(3).sum(&:spent)) %></span>
+                <span class="analyses-slim__amount"><%= money(offplan.drop(3).sum(&:spent)) %></span>
               </div>
             <% end %>
           </details>
@@ -282,16 +282,16 @@
       <div class="analyses-card">
         <p class="analyses-card__label"><%= t('.settle_today') %></p>
         <p class="analyses-hero <%= net.negative? ? 'analyses-hero--negative' : 'analyses-hero--positive' %>">
-          <%= smart_format_money(net, current_space.currency, sign: :always, threshold: Float::INFINITY) %>
+          <%= money(net, sign: :always) %>
         </p>
         <div class="analyses-debt-chips">
           <div class="analyses-debt-chip analyses-debt-chip--in">
             <span class="analyses-debt-chip__label"><%= t('.owed_to_you') %></span>
-            <span class="analyses-debt-chip__value"><%= format_money_number(total_owed) %></span>
+            <span class="analyses-debt-chip__value"><%= money(total_owed) %></span>
           </div>
           <div class="analyses-debt-chip analyses-debt-chip--out">
             <span class="analyses-debt-chip__label"><%= t('.you_owe') %></span>
-            <span class="analyses-debt-chip__value"><%= format_money_number(total_owing) %></span>
+            <span class="analyses-debt-chip__value"><%= money(total_owing) %></span>
           </div>
         </div>
 
@@ -305,7 +305,7 @@
                 <span class="analyses-person__body">
                   <span class="analyses-person__head">
                     <span class="analyses-person__name"><%= relation.name %></span>
-                    <span class="analyses-person__amount"><%= format_money_number(relation.public_send(reader)) %></span>
+                    <span class="analyses-person__amount"><%= money(relation.public_send(reader)) %></span>
                   </span>
                   <span class="analyses-person__bar analyses-person__bar--<%= side %>">
                     <span style="width: <%= (relation.public_send(reader) / max * 100).round(1) %>%;"></span>
@@ -330,7 +330,7 @@
         <% saved_max = months.map { |_, v| v.abs }.max %>
         <div class="analyses-card">
           <p class="analyses-card__label"><%= t('.saved_title', month: l(Date.current, format: :month_only)) %></p>
-          <p class="analyses-hero"><%= smart_format_money(months.last.last, current_space.currency, sign: :never, threshold: Float::INFINITY) %></p>
+          <p class="analyses-hero"><%= money(months.last.last) %></p>
           <% if @set_aside.streak >= 2 %>
             <span class="analyses-streak"><%= t('.saved_streak', count: @set_aside.streak) %></span>
           <% end %>
@@ -354,7 +354,7 @@
               <span class="analyses-person__head">
                 <span class="analyses-person__name"><%= progress.name || progress.account.name %></span>
                 <span class="analyses-goal__figures">
-                  <%= format_money_number(progress.current) %><% if progress.target_set? %> / <%= format_money_number(progress.target) %><% end %>
+                  <% cur, tgt = money_pair(progress.current, progress.target_set? ? progress.target : nil) %><%= cur %><% if progress.target_set? %> / <%= tgt %><% end %>
                 </span>
               </span>
               <span class="analyses-person__bar"><span style="width: <%= progress.percentage %>%; background: var(--color-primary);"></span></span>
@@ -384,13 +384,13 @@
           <% @accounts.first(3).each do |account| %>
             <div class="analyses-slim">
               <span class="analyses-slim__name"><%= account.name %></span>
-              <span class="analyses-slim__amount"><%= format_money_number(account.balance) %></span>
+              <span class="analyses-slim__amount"><%= money(account.balance) %></span>
             </div>
           <% end %>
           <% if @accounts.size > 3 %>
             <div class="analyses-slim analyses-slim--muted">
               <span class="analyses-slim__name"><%= t('.accounts_more', count: @accounts.size - 3) %></span>
-              <span class="analyses-slim__amount"><%= format_money_number(@accounts.drop(3).sum(&:balance)) %></span>
+              <span class="analyses-slim__amount"><%= money(@accounts.drop(3).sum(&:balance)) %></span>
             </div>
           <% end %>
         </div>

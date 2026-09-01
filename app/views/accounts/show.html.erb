@@ -54,7 +54,7 @@
       <div class="account-month">
         <div class="account-month__head">
           <span class="account-month__title"><%= t('.this_month') %></span>
-          <span class="account-month__net"><%= smart_format_money(@month_in - @month_out, current_space.currency, sign: :always, threshold: Float::INFINITY) %></span>
+          <span class="account-month__net"><%= money(@month_in - @month_out, sign: :always) %></span>
         </div>
         <div class="account-month__cells">
           <div class="account-month__cell">

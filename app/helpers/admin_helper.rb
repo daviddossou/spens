@@ -123,7 +123,7 @@ module AdminHelper
   end
 
   def admin_signed_amount(txn)
-    "#{admin_outflow?(txn) ? '−' : '+'} #{format_money(txn.amount, txn.space.currency)}"
+    "#{admin_outflow?(txn) ? '−' : '+'} #{money(txn.amount, txn.space.currency)}"
   end
 
   # Human-friendly target for an audit-log row (the record may since have been deleted).

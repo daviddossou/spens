@@ -3,7 +3,7 @@ fr:
     of: "sur"
   number:
     format:
-      delimiter: " "
+      delimiter: " " # espace fine insécable : les milliers ne se coupent jamais
       separator: ","
   date:
     formats:

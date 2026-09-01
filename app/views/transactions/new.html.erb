@@ -12,8 +12,8 @@
         <h2 class="transaction-form__title"><%= t(".subtitle.#{title_key}") %></h2>
         <% if @person_locked %>
           <% net = @relation.net %>
-          <% balance = net > 0 ? t(".person_you_owe", amount: smart_format_money(net, current_space.currency, sign: :never, threshold: Float::INFINITY)) \
-                     : net < 0 ? t(".person_they_owe", amount: smart_format_money(-net, current_space.currency, sign: :never, threshold: Float::INFINITY)) \
+          <% balance = net > 0 ? t(".person_you_owe", amount: money(net)) \
+                     : net < 0 ? t(".person_they_owe", amount: money(-net)) \
                      : t(".person_settled") %>
           <p class="transaction-form__subtitle"><%= t(".person_subtitle", name: @relation.name, balance: balance) %></p>
         <% else %>

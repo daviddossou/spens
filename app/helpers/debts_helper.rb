@@ -79,7 +79,7 @@ module DebtsHelper
     return if debt.total_reimbursed.to_f.zero?
 
     t("debts.closed.detail.#{debt.direction}",
-      moved: smart_format_money(debt.total_reimbursed, current_space.currency, sign: :never),
-      total: smart_format_money(debt.total_lent, current_space.currency, sign: :never))
+      moved: money(debt.total_reimbursed, current_space.currency),
+      total: money(debt.total_lent, current_space.currency))
   end
 end

@@ -10,7 +10,7 @@
         <div class="debts-totals__cell">
           <span class="debts-totals__label"><%= t(".owed_to_me_label") %></span>
           <span class="debts-totals__value debts-totals__value--lent">
-            <%= smart_format_money(@total_owed_to_me, current_space.currency, sign: :never, threshold: 1_000) %>
+            <%= money(@total_owed_to_me, compact: true) %>
           </span>
           <span class="debts-totals__meta">
             <%= @owed_to_me.any? ? t(".people_count", count: @owed_to_me.size) : t(".nothing_ongoing") %>
@@ -20,7 +20,7 @@
         <div class="debts-totals__cell">
           <span class="debts-totals__label"><%= t(".i_owe_label") %></span>
           <span class="debts-totals__value debts-totals__value--borrowed">
-            <%= smart_format_money(@total_i_owe, current_space.currency, sign: :never, threshold: 1_000) %>
+            <%= money(@total_i_owe, compact: true) %>
           </span>
           <span class="debts-totals__meta">
             <%= @i_owe.any? ? t(".people_count", count: @i_owe.size) : t(".nothing_ongoing") %>
@@ -126,7 +126,7 @@
                     </span>
                   </span>
                   <span class="debt-closed-row__amount <%= 'debt-closed-row__amount--struck' if debt.written_off? %>">
-                    <%= smart_format_money(debt.total_lent, current_space.currency, sign: :never) %>
+                    <%= money(debt.total_lent) %>
                   </span>
                 <% end %>
               <% end %>

@@ -91,6 +91,6 @@ RSpec.describe AnalyticsController, type: :request do
     get analytics_path
     expect(assigns(:spending).spent_total).to eq(10_000)
     expect(assigns(:spending).lent_total).to eq(50_000)
-    expect(response.body).to include(I18n.t("analytics.index.lent_line", amount: "50,000"))
+    expect(response.body).to include(I18n.t("analytics.index.lent_line", amount: "50,000\u00A0FCFA"))
   end
 end

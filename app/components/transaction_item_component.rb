@@ -18,7 +18,7 @@ class TransactionItemComponent < ViewComponent::Base
     @row ||= MovementRow.new(
       transaction,
       currency: currency,
-      formatter: ->(amount) { helpers.format_money_number(amount.abs) }
+      formatter: ->(amount) { helpers.money(amount.abs) }
     )
   end
 
@@ -47,13 +47,9 @@ class TransactionItemComponent < ViewComponent::Base
     row.muted? ? "transaction-item__amount--muted" : "transaction-item__amount--strong"
   end
 
-  # Full amounts in the list (no "K"); the sign follows the row's rule.
+  # Full amounts in the list (no "k"); the sign follows the row's rule.
   def display_amount(movement, transaction_for_amount)
-    helpers.smart_format_money(
-      transaction_for_amount.amount,
-      currency,
-      sign: movement.show_sign? ? :always : :never,
-      threshold: Float::INFINITY
-    )
+    helpers.money(transaction_for_amount.amount, currency,
+                  sign: movement.show_sign? ? :always : :none)
   end
 end

@@ -56,4 +56,17 @@ class ApplicationController < ActionController::Base
     @grouped_transactions = @transactions.group_by(&:transaction_date)
     @has_more = listed.count > (@page * @per_page)
   end
+
+  private
+
+  # Reads a "YYYY-MM" slug or a full date; nil when absent or malformed —
+  # never Date.parse on a raw param (an empty one resolves off the system
+  # clock, bypassing the user's time zone at month boundaries).
+  def parse_month(value)
+    return nil if value.blank?
+
+    (value.match?(/\A\d{4}-\d{2}\z/) ? Date.parse("#{value}-01") : Date.parse(value)).beginning_of_month
+  rescue Date::Error, TypeError
+    nil
+  end
 end

@@ -3,6 +3,9 @@
 require "rails_helper"
 
 RSpec.describe Analyses::RhythmQuery do
+  # Fixed mid-month noon: month-boundary days would flip the period under the specs.
+  before { travel_to Time.zone.local(2026, 8, 18, 12) }
+
   let(:space) { create(:space) }
   let(:account) { create(:account, space: space) }
   let(:groceries) { create(:transaction_type, space: space, kind: "expense", name: "Provisions X") }
