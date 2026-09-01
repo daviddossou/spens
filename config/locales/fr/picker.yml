@@ -1,0 +1,15 @@
+fr:
+  picker:
+    back: "Retour"
+    search: "Rechercher"
+    create: "Créer"
+    empty: "Rien ne correspond"
+    group_planned: "Dans ton plan"
+    group_rest: "Tout le reste"
+    change: "Changer"
+    same_account: "compte de départ"
+    category: "Catégorie"
+    account: "Compte"
+    account_from: "Depuis quel compte ?"
+    account_to: "Vers quel compte ?"
+    no_account: "Aucun — l'argent est déjà sorti"

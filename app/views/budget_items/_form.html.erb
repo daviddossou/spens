@@ -77,11 +77,11 @@
   <% if @form.category_kind? %>
     <%= f.hidden_field :kind %>
     <div class="budget-item-form__type">
-      <%= render Forms::InputFieldComponent.new(
-        form: f, field: :transaction_type_name, label: t('budgets.form.type_label'), required: true,
-        autocomplete: true, autocomplete_options: @form.transaction_type_options,
-        default_autocomplete_options: @form.default_transaction_type_options,
-        allow_create: true, placeholder: t('budgets.form.type_placeholder')) %>
+      <%= render Forms::PickerFieldComponent.new(
+        form: f, field: :transaction_type_name, label: t('budgets.form.type_label'),
+        title: t('picker.category'), placeholder: t('budgets.form.type_placeholder'),
+        rows: picker_category_rows(@form.transaction_type_options, planned_names: @form.planned_type_names),
+        allow_create: true, grouped: true) %>
     </div>
   <% elsif @form.transfer_kind? %>
     <%= f.hidden_field :kind %>

@@ -1,0 +1,36 @@
+<%# The choice layer (Tour 31/32c). One shell for the whole app, mounted beside
+    the sheet rather than inside it: the form is never unmounted, so the amount
+    and the other fields survive a trip through it. %>
+<div id="picker-layer" class="picker-layer" data-controller="picker-layer"
+     data-picker-layer-target="root"
+     data-picker-layer-create-label-value="<%= t('picker.create') %>"
+     data-picker-layer-empty-value="<%= t('picker.empty') %>"
+     data-picker-layer-planned-value="<%= t('picker.group_planned') %>"
+     data-picker-layer-rest-value="<%= t('picker.group_rest') %>"
+     hidden>
+  <header class="picker-layer__head">
+    <button type="button" class="picker-layer__back" data-action="picker-layer#back"
+            aria-label="<%= t('picker.back') %>">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <path d="M15 18l-6-6 6-6" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+    </button>
+    <h2 class="picker-layer__title" data-picker-layer-target="title"></h2>
+    <span class="picker-layer__step" data-picker-layer-target="step"></span>
+  </header>
+
+  <%# Always present, never focused on opening: the keyboard is asked for, never imposed. %>
+  <div class="picker-layer__search">
+    <svg class="picker-layer__search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+      <circle cx="11" cy="11" r="7" /><path d="M20 20l-3.5-3.5" stroke-linecap="round" />
+    </svg>
+    <input type="search" class="picker-layer__field" data-picker-layer-target="search"
+           data-action="input->picker-layer#filter" autocomplete="off"
+           placeholder="<%= t('picker.search') %>">
+  </div>
+
+  <%# The step-1 recap on a two-step pick, e.g. "DEPUIS  Banque   Changer". %>
+  <div class="picker-layer__context" data-picker-layer-target="context" hidden></div>
+
+  <ul class="picker-layer__list" data-picker-layer-target="list"></ul>
+</div>

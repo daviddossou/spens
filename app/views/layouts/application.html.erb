@@ -88,6 +88,10 @@
           </div>
         </div>
       </div>
+
+      <%# Sibling of the sheet, never inside it: opening a choice must not
+          unmount the form underneath (Tour 32c). %>
+      <%= render "shared/picker_layer" %>
     <% end %>
   </body>
 </html>

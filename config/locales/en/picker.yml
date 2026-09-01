@@ -1,0 +1,15 @@
+en:
+  picker:
+    back: "Back"
+    search: "Search"
+    create: "Create"
+    empty: "Nothing matches"
+    group_planned: "In your plan"
+    group_rest: "Everything else"
+    change: "Change"
+    same_account: "source account"
+    category: "Category"
+    account: "Account"
+    account_from: "From which account?"
+    account_to: "To which account?"
+    no_account: "None — the money already left"
