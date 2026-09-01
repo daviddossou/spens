@@ -8,14 +8,16 @@
   comparison = @spending.comparison
 %>
 
+<%# Analyses is a destination you come back from, not a tab you live in: it
+    takes the detail bar, and the range you are reading rides in it. %>
+<% content_for :header do %>
+  <%= render Navigation::DetailHeaderComponent.new(
+        back_url: dashboard_path, title: t('.page_title'), subtitle: range_label) %>
+<% end %>
+
 <div class="page-container page-container--narrow">
   <div class="page-content analyses">
     <div class="analyses-rangebar">
-      <%# The app header already says "Analyses"; the sticky bar carries the
-          one thing filtering needs: what range you're on. %>
-      <div class="analyses-rangebar__head">
-        <span class="analyses-rangebar__range"><%= range_label %></span>
-      </div>
       <nav class="analyses-ranges" aria-label="<%= t('.page_title') %>">
         <% Analyses::Period::KINDS.each do |kind| %>
           <%= link_to t(".ranges.#{kind}"),
