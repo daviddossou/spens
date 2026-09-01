@@ -1,76 +1,39 @@
 module MoneyHelper
-  # Format currency with proper symbol placement and formatting
-  def format_money(amount, currency_code = nil)
+  # The single money formatter (Tour 28c): every displayed amount goes through
+  # here so the whole app speaks one format. The currency is always attached
+  # (non-breaking space); nil means "no data" and renders an em dash, while a
+  # real zero says "0 FCFA".
+  NBSP = "\u00A0"
+  ABBREVIATE_AT = 10_000
+  MILLION = 1_000_000
+
+  # sign: :none (absolute, default), :auto ("−" on negatives), :always ("+"/"−").
+  # compact: abbreviates from 10 000 up ("40k", "1,2M") — never below.
+  def money(amount, currency_code = nil, compact: false, sign: :none)
+    return "—" if amount.nil?
+
     currency_code ||= current_space&.currency || "XOF"
-    "#{format_money_number((amount || 0).abs.round(2))} #{get_currency_symbol(currency_code)}"
+    abs = amount.abs.round(2)
+    body = compact && abs >= ABBREVIATE_AT ? abbreviated_money(abs) : plain_money(abs)
+    "#{money_sign(amount, sign)}#{body}#{NBSP}#{get_currency_symbol(currency_code)}"
   end
 
-  # Smart number formatting with abbreviations (K, M, B) and hover for full value.
-  # The threshold is magnitude-based, not currency-based: below it the full
-  # locale-formatted number shows (1 350 €, 99 999 FCFA); from six digits up
-  # the amount abbreviates the same way in every currency (472K, 1.25M).
-  # sign: :auto (default) shows '-' for negatives only
-  # sign: :always shows '+' or '-'
-  # sign: :never shows no sign
-  def smart_format_money(amount, currency_code = nil, threshold: 100_000, sign: :auto)
-    currency_code ||= current_space&.currency || "XOF"
-    currency_symbol = get_currency_symbol(currency_code)
-    abs_amount = (amount || 0).abs.round(2)
-    negative = (amount || 0).negative? && abs_amount.positive?
+  # A pair reads in ONE format: if the larger abbreviates, the smaller follows
+  # even under the floor ("5k / 500k FCFA", never "5 000 / 500k FCFA").
+  def money_pair(first, second, currency_code = nil, compact: false)
+    force = compact && [ first.to_f.abs, second.to_f.abs ].max >= ABBREVIATE_AT
+    [ first, second ].map do |amount|
+      next "—" if amount.nil?
 
-    prefix = case sign
-    when :always
-      abs_amount.zero? ? "" : (negative ? "- " : "+ ")
-    when :never
-      ""
-    else # :auto
-      negative ? "-" : ""
-    end
-
-    # If below threshold, show full number
-    if abs_amount < threshold
-      return "#{prefix}#{format_money_number(abs_amount)} #{currency_symbol}"
-    end
-
-    # Calculate abbreviated value. K amounts are six digits by construction,
-    # so decimals are false precision (971K, not 970.79K).
-    abbreviated, suffix = if abs_amount >= 1_000_000_000
-      [ (abs_amount / 1_000_000_000.0).round(2), "B" ]
-    elsif abs_amount >= 1_000_000
-      [ (abs_amount / 1_000_000.0).round(2), "M" ]
-    else
-      [ (abs_amount / 1_000.0).round(abs_amount >= 100_000 ? 0 : 2).to_f, "K" ]
-    end
-
-    # Abbreviated values stay terse: drop a trailing ".0" on whole multiples
-    # (5K, not 5.0K) but keep meaningful decimals (2.21K).
-    abbreviated_str = (abbreviated % 1).zero? ? abbreviated.to_i.to_s : abbreviated.to_s
-    full_amount = format_money_number(abs_amount)
-
-    content_tag :span,
-                "#{prefix}#{abbreviated_str}#{suffix} #{currency_symbol}",
-                title: "#{prefix}#{full_amount} #{currency_symbol}",
-                class: "cursor-help",
-                tabindex: "0",
-                role: "button",
-                "aria-label": "#{prefix}#{full_amount} #{currency_symbol}",
-                data: { toggle: "tooltip" }
-  end
-
-  # Render a money magnitude with a thousands delimiter, showing 2 decimals
-  # only when the value has cents — whole amounts drop the trailing ".00"
-  # (60 -> "60", 218.37 -> "218.37", 0.5 -> "0.50", 2.21 -> "2.21").
-  def format_money_number(abs_amount)
-    if (abs_amount % 1).zero?
-      number_with_delimiter(abs_amount.to_i)
-    else
-      number_with_precision(abs_amount, precision: 2,
-                            delimiter: I18n.t("number.format.delimiter", default: ","),
-                            separator: I18n.t("number.format.separator", default: "."))
+      if force && amount.abs.round(2).positive?
+        currency_code ||= current_space&.currency || "XOF"
+        "#{abbreviated_money(amount.abs.round(2), force: true)}#{NBSP}#{get_currency_symbol(currency_code)}"
+      else
+        money(amount, currency_code, compact: compact)
+      end
     end
   end
 
-  # Get currency symbol or code for display
   def get_currency_symbol(currency_code)
     case currency_code
     when "XOF", "XAF"
@@ -84,5 +47,38 @@ module MoneyHelper
     else
       currency_code
     end
+  end
+
+  private
+
+  def money_sign(amount, sign)
+    negative = amount.negative? && amount.abs.round(2).positive?
+    case sign
+    when :always
+      amount.abs.round(2).zero? ? "" : (negative ? "−#{NBSP}" : "+#{NBSP}")
+    when :auto
+      negative ? "−#{NBSP}" : ""
+    else
+      ""
+    end
+  end
+
+  # Whole amounts drop the trailing ".00"; cents keep 2 decimals.
+  def plain_money(abs)
+    if (abs % 1).zero?
+      number_with_delimiter(abs.to_i)
+    else
+      number_with_precision(abs, precision: 2, delimiter: I18n.t("number.format.delimiter", default: ","))
+    end
+  end
+
+  # "40k", "145k", "1,2M" — lowercase k, at most 1 meaningful decimal.
+  def abbreviated_money(abs, force: false)
+    return plain_money(abs) if abs < ABBREVIATE_AT && !force
+
+    value, unit = abs >= MILLION ? [ abs / MILLION.to_f, "M" ] : [ abs / 1_000.0, "k" ]
+    rounded = value.round(1)
+    body = (rounded % 1).zero? ? number_with_delimiter(rounded.to_i) : number_with_precision(rounded, precision: 1)
+    "#{body}#{unit}"
   end
 end
