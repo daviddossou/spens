@@ -63,11 +63,9 @@ class BudgetsController < ApplicationController
   end
 
   def set_month
-    @month = begin
-      Date.parse("#{params[:month]}-01")
-    rescue ArgumentError, TypeError
-      Date.current
-    end.beginning_of_month
+    # Strict parse: Date.parse("-01") on a missing param "succeeds" off the
+    # system clock, bypassing the user's time zone at month boundaries.
+    @month = (parse_month(params[:month]) || Date.current.beginning_of_month)
   end
 
   def load_budget_data

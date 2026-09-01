@@ -74,15 +74,6 @@ class BudgetItemsController < ApplicationController
     parse_month(params[:month]) || Date.current.beginning_of_month
   end
 
-  # Reads a "YYYY-MM" slug or a full date; nil when absent or malformed.
-  def parse_month(value)
-    return nil if value.blank?
-
-    (value.match?(/\A\d{4}-\d{2}\z/) ? Date.parse("#{value}-01") : Date.parse(value)).beginning_of_month
-  rescue Date::Error, TypeError
-    nil
-  end
-
   def month_slug(date)
     date.strftime("%Y-%m")
   end
