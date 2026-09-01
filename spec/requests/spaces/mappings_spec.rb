@@ -41,9 +41,9 @@ RSpec.describe Spaces::MappingsController, type: :request do
     it "retargets a personal alias" do
       row = LearnedAlias.personal_teach(space: space, phrase: "carrefour", taxonomy_key: "groceries")
 
-      patch space_mapping_path(space_id: space.id, id: row.id), params: { taxonomy_key: "monthly_provisions" }
+      patch space_mapping_path(space_id: space.id, id: row.id), params: { taxonomy_key: "street_food" }
 
-      expect(row.reload.taxonomy_key).to eq("monthly_provisions")
+      expect(row.reload.taxonomy_key).to eq("street_food")
     end
   end
 

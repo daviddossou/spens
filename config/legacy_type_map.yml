@@ -1,0 +1,133 @@
+# Legacy template key -> current taxonomy key.
+#
+# Spaces created before the taxonomy migration carry categories from the old
+# `transaction_type_templates` i18n set. `transaction_types:sync_template_names`
+# only adopts a legacy row when its key ALSO exists in the taxonomy — the 75 keys
+# below have no counterpart, so their rows stayed keyless and read as
+# "categories the user invented" (114 transactions in the 2026-09-01 production
+# export).
+#
+# This table gives each one a home. Keys on the right MUST exist in
+# config/transaction_taxonomy.yml. Rows the user renamed by hand are never
+# touched: matching is on the normalized LEGACY name, as sync_template_names does.
+#
+# `~` = deliberately unmapped (structural kinds, or no honest target).
+map:
+  # ---- Food ----
+  food_restaurant:            restaurant_maquis      # 20 tx
+  dining_out:                 restaurant_maquis
+  shopping_errands:           groceries              # 15 tx — "🛍️ Courses"
+  groceries_enjoyment:        groceries
+  cafe_coffee:                cafe_snacks
+
+  # ---- Generic income ----
+  general_income:             uncategorized_income   # 16 tx
+  petty_cash_income:          uncategorized_income
+  allowance:                  allowance_perdiem
+  performance_bonuses:        bonus
+  interest_credit_bank:       interest               # 2 tx
+  rewards_cashback:           cashback_rewards       # 3 tx
+  refund_reimbursement:       refund                 # 5 tx
+  loan_repayment:             loan_repayment_received
+
+  # ---- Gifts, donations, family ----
+  gifts_expense:              gifts                  # 10 tx
+  gifts_income:               gift_received          # 1 tx
+  collection_offering:        donations              # 7 tx
+  religious_contribution:     donations
+  charity_donation:           donations
+  donations_tips_expense:     donations
+  donations_tips_income:      gift_received
+  wedding_celebration:        ceremonies
+  family_expenses:            family_support
+  family_support_expense:     family_support
+  financial_support_expense:  family_support
+  family_support_income:      family_support_received
+  financial_support_income:   family_support_received
+  children_childcare:         childcare
+
+  # ---- Fees ----
+  online_purchase_fees:       online_payment_fees    # 9 tx  (new node)
+  bank_account_fees:          bank_fees              # 8 tx
+  conversion_fees:            currency_conversion_fees # 1 tx (new node)
+  delivery_fees:              online_payment_fees
+  mobile_money_loss:          mobile_money_fees
+
+  # ---- Subscriptions (the legacy set already had them) ----
+  music_streaming:            subscriptions_fun      # 3 tx
+  streaming_services:         subscriptions_fun      # 1 tx
+  subscriptions_memberships:  other_subscriptions    # (new node)
+
+  # ---- Housing & home ----
+  housing:                    rent
+  home_improvement:           home_repairs
+  maintenance_repairs:        home_repairs
+  household_items_furniture:  household_items
+  cleaning:                   cleaning_laundry
+  security_services:          security_guard
+  insurance:                  home_insurance         # 3 tx — see note below
+
+  # ---- Transport ----
+  fuel_transport:             fuel                   # 1 tx
+  car_maintenance:            vehicle_upkeep
+  parking_toll:               parking_tolls
+
+  # ---- Telecom & tech ----
+  telecommunication_internet: telecom_internet
+  technology_electronics:     electronics            # 1 tx
+  communication_pc:           computer_accessories
+
+  # ---- Leisure, culture, sport ----
+  entertainment:              outings                # 1 tx
+  leisure:                    outings
+  culture_events:             outings
+  sports_fitness:             sport_fitness
+  health_fitness:             sport_fitness
+  sports_betting_expense:     betting_games
+  sports_betting_winnings:    betting_winnings
+  holidays:                   tourism
+  tourist_activities:         tourism
+
+  # ---- Personal care ----
+  beauty_personal_care:       cosmetics              # 1 tx
+  clothing_shopping:          clothing_shoes         # the old "Clothing & Shopping"
+  medical_care_pharmacy:      pharmacy
+
+  # ---- Education ----
+  education_tuition:          school_fees
+  training_event:             tuition_courses        # 2 tx
+  career_training:            tuition_courses
+
+  # ---- Work ----
+  business_expenses:          business_work_expense
+  work_expenses:              business_work_expense
+
+  # ---- Deliberate catch-alls ----
+  expense_other:              misc_expense           # 1 tx
+  money_out:                  misc_expense           # 3 tx
+  money_loss:                 misc_expense
+  wallet_loss:                misc_expense
+  bank_account_loss:          misc_expense
+  unexpected:                 unexpected_expense
+  pets_animals:               misc_expense           # no pets node — see note
+
+  # ---- Deliberately unmapped ----
+  transfer_in:                ~   # structural kind, outside the taxonomy
+  transfer_out:               ~   # same
+  debt_repayment:             ~   # belongs to debts, not to a category
+
+# JUDGEMENT CALLS
+#
+# insurance -> home_insurance
+#   "🛡️ Assurances" is ambiguous: home or health? home_insurance is the majority
+#   reading, but 3 transactions settle nothing. A dedicated `insurance` parent
+#   would be more honest if the volume grows.
+#
+# pets_animals -> misc_expense
+#   No pets node exists, so this buries them in Miscellaneous. Worth creating if
+#   the need shows up again.
+#
+# general_income -> uncategorized_income
+#   16 transactions, the largest income orphan. Filed in the catch-all rather than
+#   guessed: "Entrée d'argent" does not say where the money came from, so the user
+#   has to reclassify these by hand.

@@ -19,10 +19,10 @@ RSpec.describe QuickEntry::CorrectionLearner do
   end
 
   it "re-teaches a KNOWN word personally when the user overrides the built-in mapping" do
-    # "carrefour" is a built-in groceries alias; the user re-categorised to monthly provisions.
+    # "carrefour" is a built-in groceries alias; the user re-categorised to street food.
     transaction = attempt_for(
       text: "5k carrefour bank",
-      type_name: TransactionTaxonomy.name("monthly_provisions", :en),
+      type_name: TransactionTaxonomy.name("street_food", :en),
       draft: { "kind" => "expense", "amount" => 5000, "transaction_type_name" => groceries_name,
                "transaction_date" => Date.current.iso8601 }
     )
@@ -31,11 +31,11 @@ RSpec.describe QuickEntry::CorrectionLearner do
 
     personal = LearnedAlias.for_space(space).find_by(phrase: "carrefour")
     expect(personal).to be_active
-    expect(personal.taxonomy_key).to eq("monthly_provisions")
+    expect(personal.taxonomy_key).to eq("street_food")
 
     # And the next identical utterance resolves to the user's own category.
     draft = QuickEntry::Parser.parse("5k carrefour", space: space, locale: :en)
-    expect(draft.transaction_type_name).to eq(TransactionTaxonomy.name("monthly_provisions", :en))
+    expect(draft.transaction_type_name).to eq(TransactionTaxonomy.name("street_food", :en))
   end
 
   it "learns via template_key when the type's legacy name drifted from the taxonomy" do

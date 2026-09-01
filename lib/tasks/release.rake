@@ -6,5 +6,7 @@ namespace :release do
   desc "Run post-deploy tasks"
   task run_after: :environment do
     Rake::Task["transactions:convert_onboarding_initial_balances"].invoke
+    Rake::Task["taxonomy:apply_restructure"].invoke
+    Rake::Task["quick_entry:import_system_aliases"].invoke
   end
 end

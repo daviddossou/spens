@@ -110,7 +110,7 @@ class TransactionType < ApplicationRecord
           salary sales side_hustle commission_income remittance
           bonus rental_income investment_return interest allowance_perdiem
           business_income refund cashback_rewards gift_received grant_scholarship
-          dividends family_support_received social_support loan_repayment_received bank_cashback
+          dividends family_support_received social_support loan_repayment_received betting_winnings
         ]
       else
         []

@@ -29,9 +29,9 @@ RSpec.describe FindOrCreateTransactionTypeService do
     end
 
     it "shares one parent row across sibling subcategories" do
-      groceries_parent = call("🛒 Groceries").parent
-      provisions_parent = call("📦 Monthly provisions").parent
-      expect(provisions_parent).to eq(groceries_parent)
+      restaurant_parent = call(TransactionTaxonomy.name("restaurant_maquis", :en)).parent
+      street_food_parent = call(TransactionTaxonomy.name("street_food", :en)).parent
+      expect(street_food_parent).to eq(restaurant_parent)
     end
 
     it "adopts an existing same-named row instead of duplicating it" do
