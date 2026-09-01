@@ -4,11 +4,12 @@ module MoneyHelper
   # (non-breaking space); nil means "no data" and renders an em dash, while a
   # real zero says "0 FCFA".
   NBSP = "\u00A0"
+  NNBSP = "\u202F" # espace fine insécable, before the k/M unit
   ABBREVIATE_AT = 10_000
   MILLION = 1_000_000
 
   # sign: :none (absolute, default), :auto ("−" on negatives), :always ("+"/"−").
-  # compact: abbreviates from 10 000 up ("40k", "1,2M") — never below.
+  # compact: abbreviates from 10 000 up ("35 k", "1,2 M") — never below.
   def money(amount, currency_code = nil, compact: false, sign: :none)
     return "—" if amount.nil?
 
@@ -18,20 +19,17 @@ module MoneyHelper
     "#{money_sign(amount, sign)}#{body}#{NBSP}#{get_currency_symbol(currency_code)}"
   end
 
-  # A pair reads in ONE format: if the larger abbreviates, the smaller follows
-  # even under the floor ("5k / 500k FCFA", never "5 000 / 500k FCFA").
-  def money_pair(first, second, currency_code = nil, compact: false)
-    force = compact && [ first.to_f.abs, second.to_f.abs ].max >= ABBREVIATE_AT
-    [ first, second ].map do |amount|
-      next "—" if amount.nil?
+  # A column reads in ONE format, and its SMALLEST value decides (Tour 32d):
+  # a single amount under the floor puts the whole column in exact, so adding a
+  # small account never reformats the amounts above it. nil abstains.
+  def money_column(amounts, currency_code = nil, compact: false)
+    known = amounts.compact
+    abbreviate = compact && known.any? && known.all? { |a| a.abs.round(2) >= ABBREVIATE_AT }
+    amounts.map { |a| money(a, currency_code, compact: abbreviate) }
+  end
 
-      if force && amount.abs.round(2).positive?
-        currency_code ||= current_space&.currency || "XOF"
-        "#{abbreviated_money(amount.abs.round(2), force: true)}#{NBSP}#{get_currency_symbol(currency_code)}"
-      else
-        money(amount, currency_code, compact: compact)
-      end
-    end
+  def money_pair(first, second, currency_code = nil, compact: false)
+    money_column([ first, second ], currency_code, compact: compact)
   end
 
   def get_currency_symbol(currency_code)
@@ -72,13 +70,12 @@ module MoneyHelper
     end
   end
 
-  # "40k", "145k", "1,2M" — lowercase k, at most 1 meaningful decimal.
-  def abbreviated_money(abs, force: false)
-    return plain_money(abs) if abs < ABBREVIATE_AT && !force
-
+  # "35 k", "145 k", "1,2 M" — a fine space keeps the number from reading as an
+  # identifier ("35k"), lowercase k, at most 1 meaningful decimal.
+  def abbreviated_money(abs)
     value, unit = abs >= MILLION ? [ abs / MILLION.to_f, "M" ] : [ abs / 1_000.0, "k" ]
     rounded = value.round(1)
     body = (rounded % 1).zero? ? number_with_delimiter(rounded.to_i) : number_with_precision(rounded, precision: 1)
-    "#{body}#{unit}"
+    "#{body}#{NNBSP}#{unit}"
   end
 end

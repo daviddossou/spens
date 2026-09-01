@@ -2,6 +2,8 @@
 
 require "rails_helper"
 
+NNBSP = MoneyHelper::NNBSP
+
 RSpec.describe Ui::StatCardComponent, type: :component do
   let(:label) { "Total Balance" }
   let(:value) { 5000.0 }
@@ -120,7 +122,7 @@ RSpec.describe Ui::StatCardComponent, type: :component do
       let(:value) { 1_500_000.0 }
 
       it "renders abbreviated value" do
-        expect(rendered.css(".stat-card__value").text).to include("1.5M")
+        expect(rendered.css(".stat-card__value").text).to include("1.5%sM" % NNBSP)
       end
     end
 

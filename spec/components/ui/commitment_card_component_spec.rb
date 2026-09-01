@@ -82,12 +82,10 @@ RSpec.describe Ui::CommitmentCardComponent, type: :component do
   describe "formatting" do
     before { render_inline(component) }
 
-    it "keeps the pair in one format — the larger side decides" do
-      expect(component.formatted_current_value.to_s).to include("5k").and include("FCFA")
-    end
-
-    it "formats the target value with abbreviation and currency" do
-      expect(component.formatted_target_value.to_s).to include("10k").and include("FCFA")
+    it "keeps the pair in one format — the SMALLER side decides" do
+      # 5 000 is under the floor, so the pair stays exact rather than rounding it away.
+      expect(component.formatted_current_value.to_s).to include("5,000").and include("FCFA")
+      expect(component.formatted_target_value.to_s).to include("10,000").and include("FCFA")
     end
   end
 
@@ -159,7 +157,7 @@ RSpec.describe Ui::CommitmentCardComponent, type: :component do
       component = build(current_value: 1_000_000_000.0, target_value: 2_000_000_000.0)
       render_inline(component)
       expect(component.percentage).to eq(50)
-      expect(component.formatted_current_value.to_s).to include("1,000M").and include("FCFA")
+      expect(component.formatted_current_value.to_s).to include("1,000%sM" % NNBSP).and include("FCFA")
     end
   end
 
