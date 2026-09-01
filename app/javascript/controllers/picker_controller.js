@@ -13,7 +13,9 @@ export default class extends Controller {
     emptyLabel: String,
     grouped: Boolean,
     chainTo: String,
-    chainReason: String
+    chainReason: String,
+    chainLabel: String,
+    changeLabel: String
   }
 
   connect() {
@@ -67,7 +69,7 @@ export default class extends Controller {
 
     return next.request({
       step: "2 / 2",
-      context: { label: this.titleValue, value: value, action: this.element.dataset.pickerChangeLabel },
+      context: { label: this.chainLabelValue, value: value, action: this.changeLabelValue },
       onContextAction: () => this.request({ step: "1 / 2" }),
       disabled: { [value]: this.chainReasonValue }
     })

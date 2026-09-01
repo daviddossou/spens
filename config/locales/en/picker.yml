@@ -6,6 +6,7 @@ en:
     empty: "Nothing matches"
     group_planned: "In your plan"
     group_rest: "Everything else"
+    from_short: "From"
     change: "Change"
     same_account: "source account"
     category: "Category"

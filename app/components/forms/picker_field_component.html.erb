@@ -9,8 +9,7 @@
 
   <div class="mt-1">
     <%= form.hidden_field field, data: { picker_target: "input" }.merge(field_data) %>
-    <button type="button" class="picker__control" data-action="picker#open"
-            data-picker-change-label="<%= t('picker.change') %>">
+    <button type="button" class="picker__control" data-action="picker#open">
       <span class="<%= value_classes %>" data-picker-target="label"><%= display_label %></span>
       <svg class="picker__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
         <path d="M9 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round" />

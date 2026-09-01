@@ -89,23 +89,23 @@
       <div class="transfer-block__row">
         <span class="transfer-block__prefix"><%= t('budgets.form.transfer_from') %></span>
         <div class="transfer-block__field">
-          <%= render Forms::InputFieldComponent.new(
-            form: f, field: :from_account_name, label: "", required: true,
-            autocomplete: true, autocomplete_options: @form.account_suggestions,
-            default_autocomplete_options: @form.default_account_suggestions, allow_create: true,
+          <%= render Forms::PickerFieldComponent.new(
+            form: f, field: :from_account_name, label: "",
+            title: t('picker.account_from'), id: "transfer-from",
             placeholder: t('budgets.form.from_account_placeholder'),
-            field_data: { tom_select_currency_value: currency_symbol }) %>
+            rows: picker_account_rows(@form.account_suggestions, current_space.currency),
+            allow_create: true, chain_to: "#transfer-to", chain_reason: t('picker.same_account'), chain_label: t('picker.from_short')) %>
         </div>
       </div>
       <div class="transfer-block__row">
         <span class="transfer-block__prefix"><%= t('budgets.form.transfer_to') %></span>
         <div class="transfer-block__field">
-          <%= render Forms::InputFieldComponent.new(
-            form: f, field: :to_account_name, label: "", required: true,
-            autocomplete: true, autocomplete_options: @form.account_suggestions,
-            default_autocomplete_options: @form.default_account_suggestions, allow_create: true,
+          <%= render Forms::PickerFieldComponent.new(
+            form: f, field: :to_account_name, label: "",
+            title: t('picker.account_to'), id: "transfer-to",
             placeholder: t('budgets.form.to_account_placeholder'),
-            field_data: { tom_select_currency_value: currency_symbol }) %>
+            rows: picker_account_rows(@form.account_suggestions, current_space.currency),
+            allow_create: true) %>
         </div>
       </div>
     </div>
