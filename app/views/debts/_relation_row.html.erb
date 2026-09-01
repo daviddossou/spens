@@ -19,8 +19,8 @@
     <% if relation.two_way? %>
       <span class="debt-relation__sub">
         <%= t("debts.index.two_way_sub_html",
-              owed: smart_format_money(relation.owed_to_me, currency, sign: :never),
-              i_owe: smart_format_money(relation.i_owe, currency, sign: :never)) %>
+              owed: money(relation.owed_to_me, currency),
+              i_owe: money(relation.i_owe, currency)) %>
       </span>
     <% elsif partial %>
       <span class="debt-relation__bar">
@@ -31,7 +31,7 @@
 
   <span class="debt-relation__amount-col">
     <span class="debt-relation__amount debt-relation__amount--<%= relation.net_direction %>">
-      <%= smart_format_money(relation.net_amount, currency, sign: :never) %>
+      <%= money(relation.net_amount, currency) %>
     </span>
     <% if relation.two_way? %>
       <span class="debt-relation__amount-sub"><%= t("debts.index.net_label") %></span>

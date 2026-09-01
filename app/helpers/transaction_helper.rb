@@ -53,7 +53,7 @@ module TransactionHelper
       counted + (txn.fee&.amount || 0)
     end
 
-    content_tag(:span, smart_format_money(total, currency, sign: :always, threshold: Float::INFINITY),
+    content_tag(:span, money(total, currency, sign: :always),
                 class: "transaction-group__total")
   end
 

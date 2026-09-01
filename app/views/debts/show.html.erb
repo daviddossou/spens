@@ -38,25 +38,25 @@
           both gross totals below and a one-tap way to offset them. %>
       <div class="debt-hero debt-hero--<%= @relation.net_direction %>">
         <p class="debt-hero__label"><%= t("debts.hero.#{@relation.net_direction}", name: @debt.name) %></p>
-        <p class="debt-hero__amount"><%= smart_format_money(@relation.net_amount, current_space.currency, sign: :never) %></p>
+        <p class="debt-hero__amount"><%= money(@relation.net_amount) %></p>
         <p class="debt-hero__progress"><%= t(".net_hero_sub") %></p>
         <div class="debt-subtotals">
           <div class="debt-subtotals__cell">
             <span class="debt-subtotals__label"><%= t(".subtotal_owed") %></span>
-            <span class="debt-subtotals__value debt-subtotals__value--lent"><%= smart_format_money(@relation.owed_to_me, current_space.currency, sign: :never) %></span>
+            <span class="debt-subtotals__value debt-subtotals__value--lent"><%= money(@relation.owed_to_me) %></span>
           </div>
           <div class="debt-subtotals__divider"></div>
           <div class="debt-subtotals__cell">
             <span class="debt-subtotals__label"><%= t(".subtotal_i_owe") %></span>
-            <span class="debt-subtotals__value debt-subtotals__value--borrowed"><%= smart_format_money(@relation.i_owe, current_space.currency, sign: :never) %></span>
+            <span class="debt-subtotals__value debt-subtotals__value--borrowed"><%= money(@relation.i_owe) %></span>
           </div>
         </div>
       </div>
 
       <div class="debt-compensate">
         <div class="debt-compensate__text">
-          <p class="debt-compensate__title"><%= t(".compensate_title", amount: smart_format_money(@relation.offsettable, current_space.currency, sign: :never, threshold: Float::INFINITY)) %></p>
-          <p class="debt-compensate__sub"><%= t(".compensate_sub.#{@relation.net_direction}", net: smart_format_money(@relation.net_amount, current_space.currency, sign: :never, threshold: Float::INFINITY)) %></p>
+          <p class="debt-compensate__title"><%= t(".compensate_title", amount: money(@relation.offsettable)) %></p>
+          <p class="debt-compensate__sub"><%= t(".compensate_sub.#{@relation.net_direction}", net: money(@relation.net_amount)) %></p>
         </div>
         <%= link_to t(".compensate_button"), debt_compensation_path(debt_id: @debt.id),
               class: "btn btn-primary debt-compensate__btn",
@@ -70,7 +70,7 @@
           back if the person pays after all. %>
       <div class="debt-abandoned debt-abandoned--<%= @debt.direction %>">
         <span class="debt-abandoned__badge"><%= debt_status_label(@debt) %></span>
-        <span class="debt-abandoned__amount"><%= smart_format_money(@debt.remaining_balance, current_space.currency, sign: :never) %></span>
+        <span class="debt-abandoned__amount"><%= money(@debt.remaining_balance) %></span>
         <p class="debt-abandoned__note">
           <%= t(".abandoned_on.#{@debt.direction}", date: l(@debt.updated_at.to_date, format: :long)) %>
         </p>
@@ -92,7 +92,7 @@
       <div class="debt-closed-card debt-closed-card--<%= @debt.status %>">
         <span class="debt-closed-card__badge"><%= debt_status_label(@debt) %></span>
         <div class="debt-closed-card__hero">
-          <span class="debt-closed-card__amount"><%= smart_format_money(closed_debt_amount(@debt), current_space.currency, sign: :never) %></span>
+          <span class="debt-closed-card__amount"><%= money(closed_debt_amount(@debt)) %></span>
           <span class="debt-closed-card__label"><%= closed_debt_amount_label(@debt) %></span>
         </div>
         <% if closed_debt_detail(@debt) %>
@@ -108,7 +108,7 @@
         <div class="debt-schedule__head">
           <div class="debt-schedule__plan">
             <p class="debt-schedule__monthly">
-              <%= t(".schedule.monthly", amount: smart_format_money(schedule[:monthly], current_space.currency, sign: :never)) %>
+              <%= t(".schedule.monthly", amount: money(schedule[:monthly])) %>
             </p>
             <p class="debt-schedule__timeline">
               <%= t(".schedule.settled_in", month: l(schedule[:ends_on], format: :month_year)) %>
@@ -127,7 +127,7 @@
           </span>
           <p class="debt-schedule__budget-text">
             <%= t(".schedule.budget.#{schedule[:incoming] ? 'lent_html' : 'borrowed_html'}",
-                  amount: smart_format_money(schedule[:monthly], current_space.currency, sign: :never)) %>
+                  amount: money(schedule[:monthly])) %>
           </p>
         </div>
       </div>

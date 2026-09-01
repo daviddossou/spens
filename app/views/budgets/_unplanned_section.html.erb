@@ -27,7 +27,7 @@
   <div class="hors-plan">
     <div class="hors-plan__header">
       <div class="hors-plan__header-text">
-        <p class="hors-plan__title"><%= t('budgets.unplanned.card_title_html', amount: smart_format_money(expense_total, current_space.currency)) %></p>
+        <p class="hors-plan__title"><%= t('budgets.unplanned.card_title_html', amount: money(expense_total)) %></p>
         <p class="hors-plan__subtitle"><%= t('budgets.unplanned.card_subtitle') %></p>
       </div>
       <span class="hors-plan__count" aria-hidden="true"><%= rows.size %></span>
@@ -39,7 +39,7 @@
           <div class="hors-plan__row-text">
             <span class="hors-plan__name"><%= row[:name] %></span>
             <span class="hors-plan__meta">
-              <% amount_str = smart_format_money(row[:amount], current_space.currency, sign: (row[:sign] == :in ? :always : :auto)) %>
+              <% amount_str = money(row[:amount], sign: (row[:sign] == :in ? :always : :auto)) %>
               <% if row[:recurring] %>
                 <%= t('budgets.unplanned.meta_recurring_html', amount: amount_str, month: prev_month_name) %>
               <% else %>

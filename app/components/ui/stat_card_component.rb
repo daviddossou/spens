@@ -18,10 +18,8 @@ class Ui::StatCardComponent < ViewComponent::Base
 
   attr_reader :label, :value, :currency, :trend, :variant, :icon, :sublabel, :footnote
 
-  # The hero total is shown in full — "K" hid up to a few thousand FCFA.
   def formatted_value
-    threshold = @abbreviate ? nil : Float::INFINITY
-    helpers.smart_format_money(value, currency, **(threshold ? { threshold: threshold } : {}))
+    helpers.money(value, currency, compact: @abbreviate)
   end
 
   def hero?

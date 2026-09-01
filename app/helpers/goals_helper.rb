@@ -1,14 +1,10 @@
 # frozen_string_literal: true
 
 module GoalsHelper
-  # Below five digits the list gets crowded, so from 10 000 up amounts abbreviate
-  # (40K, 145K, 1M) — the currency always shows, per the app's money format.
-  GOAL_ABBREVIATE_AT = 10_000
-
   # A list amount in the app's money format: currency always shown, abbreviated
-  # from five digits up (40K FCFA, 500K FCFA).
+  # from five digits up (40k FCFA, 500k FCFA).
   def goal_money(value)
-    smart_format_money(value, current_space.currency, sign: :never, threshold: GOAL_ABBREVIATE_AT)
+    money(value, current_space.currency, compact: true)
   end
 
   # First-day starters on the empty goals list: a tap opens the create sheet with
@@ -20,12 +16,12 @@ module GoalsHelper
     end
   end
 
-  # "30K FCFA par mois jusqu'en août 2027" with a deadline, "À ton rythme, sans
+  # "30k FCFA par mois jusqu'en août 2027" with a deadline, "À ton rythme, sans
   # date" without one. The pace rounds to a clean thousand once it abbreviates.
   def goal_rhythm_text(progress)
     return t("goals.rhythm.no_deadline") unless progress.monthly
 
-    amount = progress.monthly >= GOAL_ABBREVIATE_AT ? (progress.monthly / 1000.0).round * 1000 : progress.monthly.round
+    amount = progress.monthly >= MoneyHelper::ABBREVIATE_AT ? (progress.monthly / 1000.0).round * 1000 : progress.monthly.round
     t("goals.rhythm.on_pace_html", amount: goal_money(amount), month: l(progress.deadline, format: :month_year))
   end
 
@@ -45,7 +41,7 @@ module GoalsHelper
     parts = []
     if progress.remaining.positive?
       parts << t("goals.hero.remaining",
-                 amount: smart_format_money(progress.remaining, current_space.currency, sign: :never, threshold: Float::INFINITY))
+                 amount: money(progress.remaining, current_space.currency))
       parts << t("goals.hero.months_left", count: progress.months_left) if progress.months_left
     end
     if (chip = goal_status_chip(progress))

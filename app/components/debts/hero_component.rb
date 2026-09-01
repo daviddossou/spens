@@ -29,7 +29,7 @@ module Debts
     end
 
     def money(value)
-      helpers.smart_format_money(value, @currency, sign: :never)
+      helpers.money(value, @currency)
     end
   end
 end

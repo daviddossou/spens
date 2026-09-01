@@ -144,7 +144,7 @@ class TransactionItemComponentPreview < ViewComponent::Preview
 
     Object.new.tap do |helpers_stub|
       helpers_stub.define_singleton_method(:current_user) { user_stub }
-      helpers_stub.define_singleton_method(:smart_format_money) do |amount, currency|
+      helpers_stub.define_singleton_method(:money) do |amount, currency = nil, **|
         # Simple money formatting for preview
         formatted = format("%.2f", amount.abs)
         case currency.upcase

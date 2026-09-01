@@ -72,7 +72,7 @@
               <td><%= debt.name %></td>
               <td><%= admin_badge(debt.direction) %></td>
               <td><%= admin_badge(debt.status, tone: debt.status == "paid" ? :success : :warning) %></td>
-              <td><%= format_money(debt.remaining_balance, debt.space.currency) %></td>
+              <td><%= money(debt.remaining_balance, debt.space.currency) %></td>
             </tr>
           <% end %>
         </tbody>

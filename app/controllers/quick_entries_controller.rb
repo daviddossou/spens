@@ -88,6 +88,6 @@ class QuickEntriesController < ApplicationController
   def success_notice(transaction)
     t("quick_entries.create.created",
       category: transaction.transaction_type.name,
-      amount: helpers.format_money(transaction.amount, current_space.currency))
+      amount: helpers.money(transaction.amount, current_space.currency))
   end
 end

@@ -37,7 +37,7 @@
         <% if over? %>
           <span class="budget-row__over-label">· ↑ <%= t("budgets.row.over_by_html", amount: formatted_overage) %></span>
         <% elsif !fulfilled? && actual < planned %>
-          <span class="budget-row__left-label">· <%= t("budgets.row.#{left_label_key}", amount: helpers.smart_format_money(planned - actual, currency)) %></span>
+          <span class="budget-row__left-label">· <%= t("budgets.row.#{left_label_key}", amount: helpers.money(planned - actual, currency)) %></span>
         <% end %>
       </span>
       <% if essential_label.present? %>

@@ -1,5 +1,5 @@
 <%
-  row = MovementRow.new(@transaction, formatter: ->(amount) { format_money_number(amount.abs) })
+  row = MovementRow.new(@transaction, formatter: ->(amount) { money(amount.abs) })
   editable = %w[income expense].include?(@transaction.transaction_type.kind)
 %>
 <% content_for :page_title, row.title %>
@@ -35,8 +35,7 @@
         <%= TransactionIconService.icon_svg_by_name(row.icon_name) %>
       </div>
       <p class="movement-hero__amount <%= 'movement-hero__amount--muted' if row.muted? %>">
-        <%= smart_format_money(@transaction.amount, current_space.currency,
-              sign: row.show_sign? ? :always : :never, threshold: Float::INFINITY) %>
+        <%= money(@transaction.amount, sign: row.show_sign? ? :always : :none) %>
       </p>
       <% if row.subtitle.present? %>
         <p class="movement-hero__subtitle"><%= row.subtitle %></p>

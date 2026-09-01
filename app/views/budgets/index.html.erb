@@ -41,19 +41,19 @@
           <%= t('.hero_label') %> · <span class="budget-hero__suffix"><%= t(".hero_suffix_#{@mode}") %></span>
         </span>
         <span class="budget-hero__value <%= 'budget-hero__value--negative' if @hero_value.negative? %>">
-          <%= smart_format_money(@hero_value, current_space.currency, sign: :always) %>
+          <%= money(@hero_value, sign: :always) %>
         </span>
         <% if @mode == :plan %>
           <span class="budget-hero__sublabel"><%= t('.hero_flow_html',
-                income: smart_format_money(@planned_income, current_space.currency),
-                expense: smart_format_money(@planned_expense, current_space.currency)) %></span>
+                income: money(@planned_income),
+                expense: money(@planned_expense)) %></span>
         <% elsif @mode == :live %>
           <span class="budget-hero__sublabel"><%= t('.hero_sub_live_html',
-                planned: smart_format_money(@projected_net, current_space.currency),
-                offplan: content_tag(:span, smart_format_money(@offplan_net, current_space.currency, sign: :always),
+                planned: money(@projected_net),
+                offplan: content_tag(:span, money(@offplan_net, sign: :always),
                                      class: ("budget-hero__offplan-amount" if @offplan_net.negative?))) %></span>
         <% else %>
-          <span class="budget-hero__sublabel"><%= t('.actual_so_far_html', amount: smart_format_money(@actual_net, current_space.currency, sign: :always)) %></span>
+          <span class="budget-hero__sublabel"><%= t('.actual_so_far_html', amount: money(@actual_net, sign: :always)) %></span>
         <% end %>
       </div>
 
@@ -79,9 +79,9 @@
             <h3 class="budget-section__title"><%= t(".section_#{section}") %></h3>
             <span class="budget-section__total">
               <% if @mode == :plan %>
-                <%= smart_format_money(planned, current_space.currency) %>
+                <%= money(planned) %>
               <% else %>
-                <%= smart_format_money(actual, current_space.currency) %> / <%= smart_format_money(planned, current_space.currency) %>
+                <%= money(actual) %> / <%= money(planned) %>
               <% end %>
             </span>
           </div>

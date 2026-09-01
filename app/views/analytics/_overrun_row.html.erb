@@ -1,7 +1,7 @@
 <%= link_to edit_budget_entry_path(id: row.entry.id), class: "analyses-overrun", data: { turbo_frame: "modal" } do %>
   <div class="analyses-row__head">
     <span class="analyses-overrun__name"><%= row.name %></span>
-    <span class="analyses-overrun__gap">+ <%= format_money_number(row.gap.round) %></span>
+    <span class="analyses-overrun__gap">+ <%= money(row.gap.round) %></span>
   </div>
   <div class="analyses-bar analyses-bar--over">
     <span class="analyses-bar__fill" style="width: <%= row.planned.positive? ? [ row.spent / row.planned * 100, 100 ].min.round(1) : 100 %>%;"></span>
@@ -9,5 +9,5 @@
       <span class="analyses-bar__tick" style="left: <%= [ row.prorated / row.planned * 100, 100 ].min.round(1) %>%;" aria-hidden="true"></span>
     <% end %>
   </div>
-  <p class="analyses-row__caption"><%= t('analytics.index.overrun_caption', spent: format_money_number(row.spent), planned: format_money_number(row.planned)) %></p>
+  <p class="analyses-row__caption"><%= t('analytics.index.overrun_caption', spent: money(row.spent), planned: money(row.planned)) %></p>
 <% end %>

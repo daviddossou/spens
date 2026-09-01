@@ -4,8 +4,9 @@
 <%= link_to goal_path(id: goal.account_id), class: "goal-card" do %>
   <div class="goal-card__head">
     <span class="goal-card__name"><%= goal.name %></span>
+    <% saved, target = money_pair(progress.current, progress.target_set? ? progress.target : nil, compact: true) %>
     <span class="goal-card__amount">
-      <span class="goal-card__saved"><%= goal_money(progress.current) %></span><% if progress.target_set? %><span class="goal-card__target"> / <%= goal_money(progress.target) %></span><% end %>
+      <span class="goal-card__saved"><%= saved %></span><% if progress.target_set? %><span class="goal-card__target"> / <%= target %></span><% end %>
     </span>
   </div>
 

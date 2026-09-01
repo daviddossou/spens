@@ -53,7 +53,7 @@ module Budgets
     # so "chaque mois" gives way to "habituellement 120K". _html so the
     # abbreviated-money span survives interpolation.
     def usually_label
-      t("budgets.row.usually_html", amount: helpers.smart_format_money(entry.rule_amount, currency))
+      t("budgets.row.usually_html", amount: helpers.money(entry.rule_amount, currency))
     end
 
     # Meta subline under the name: the Vital/Confort tag (expense) or the
@@ -147,19 +147,19 @@ module Budgets
     end
 
     def formatted_carried
-      helpers.smart_format_money(carried, currency)
+      helpers.money(carried, currency)
     end
 
     def formatted_planned
-      helpers.smart_format_money(planned, currency)
+      helpers.money(planned, currency)
     end
 
     def formatted_actual
-      helpers.smart_format_money(actual, currency)
+      helpers.money(actual, currency)
     end
 
     def formatted_overage
-      helpers.smart_format_money(overage, currency)
+      helpers.money(overage, currency)
     end
 
     def frequency_label
