@@ -54,14 +54,14 @@ RSpec.describe MoneyHelper, type: :helper do
     end
 
     it "spaces the unit off the number so it never reads as an identifier" do
-      expect(helper.money(40_000, "USD", compact: true)).to eq("40#{NNBSP}K#{NBSP}$")
-      expect(helper.money(145_000, "USD", compact: true)).to eq("145#{NNBSP}K#{NBSP}$")
+      expect(helper.money(40_000, "USD", compact: true)).to eq("40#{NNBSP}k#{NBSP}$")
+      expect(helper.money(145_000, "USD", compact: true)).to eq("145#{NNBSP}k#{NBSP}$")
       expect(helper.money(2_000_000, "USD", compact: true)).to eq("2#{NNBSP}M#{NBSP}$")
     end
 
     it "keeps at most one meaningful decimal in abbreviations" do
       expect(helper.money(1_200_000, "USD", compact: true)).to eq("1.2#{NNBSP}M#{NBSP}$")
-      expect(helper.money(12_500, "USD", compact: true)).to eq("12.5#{NNBSP}K#{NBSP}$")
+      expect(helper.money(12_500, "USD", compact: true)).to eq("12.5#{NNBSP}k#{NBSP}$")
       I18n.with_locale(:fr) do
         expect(helper.money(1_200_000, "XOF", compact: true)).to eq("1,2#{NNBSP}M#{NBSP}FCFA")
       end
@@ -80,7 +80,7 @@ RSpec.describe MoneyHelper, type: :helper do
 
     it "abbreviates only when every amount clears the floor" do
       expect(helper.money_column([ 105_000, 35_000 ], "USD", compact: true))
-        .to eq([ "105#{NNBSP}K#{NBSP}$", "35#{NNBSP}K#{NBSP}$" ])
+        .to eq([ "105#{NNBSP}k#{NBSP}$", "35#{NNBSP}k#{NBSP}$" ])
     end
 
     it "treats a real zero as a small amount — it holds the column exact" do
@@ -90,7 +90,7 @@ RSpec.describe MoneyHelper, type: :helper do
 
     it "lets a nil abstain rather than decide" do
       expect(helper.money_column([ 500_000, nil ], "USD", compact: true))
-        .to eq([ "500#{NNBSP}K#{NBSP}$", "—" ])
+        .to eq([ "500#{NNBSP}k#{NBSP}$", "—" ])
     end
 
     it "stays exact when the column never asked to abbreviate" do
