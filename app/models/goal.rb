@@ -38,6 +38,15 @@ class Goal < ApplicationRecord
   validates :target_amount, numericality: { greater_than: 0 }, allow_nil: true
 
   ##
+  # Callbacks
+  # A goal is the app's definition of money set aside, so its account carries the
+  # flag — one flag then drives the dashboard's "mis de côté", the budget's
+  # committed line and the picker order. Dropping the goal leaves it: the account
+  # is still a savings account, it just has no target any more.
+  after_save :mark_account_set_aside
+  after_destroy :retire_plan_line
+
+  ##
   # Instance Methods
   def target_set?
     target_amount.to_f.positive?
@@ -51,5 +60,23 @@ class Goal < ApplicationRecord
     return nil unless target_set?
 
     [ target_amount - current_amount, 0 ].max
+  end
+
+  private
+
+  def mark_account_set_aside
+    account.update_column(:set_aside, true) unless account.set_aside?
+  end
+
+  # The goal owns the source-less line that plans its monthly contribution.
+  # Without this, deleting the goal leaves the plan committing money every month
+  # to a target that no longer exists.
+  def retire_plan_line
+    line = space.budget_items.active
+                .find_by(kind: "transfer", to_account_id: account_id, from_account_id: nil)
+    return if line.nil?
+
+    line.update!(active: false)
+    Budgets::RematerializeItem.call(line)
   end
 end

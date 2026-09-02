@@ -158,6 +158,16 @@
   color: var(--color-muted-strong);
 }
 
+/* Set apart from the flow subline: it answers a different question — not what
+   moved, but what is left free once the goals are served. */
+.budget-hero__committed {
+  margin: var(--space-sm) 0 0;
+  padding-top: var(--space-sm);
+  border-top: 1px solid var(--color-separator);
+  font-size: 0.875rem;
+  color: var(--color-muted-strong);
+}
+
 /* Planned totals pair (read-only summary view) */
 .budget-totals {
   display: grid;

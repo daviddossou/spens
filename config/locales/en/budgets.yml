@@ -88,7 +88,7 @@ en:
       debt_settled_html: "Cleared in %{date} at this rate"
       # Transfer: no impact
       transfer_impact_title: "Effect on your plan"
-      transfer_impact_body_html: "None. A transfer counts as neither spending nor savings this month — <strong>the money stays yours</strong>, it just changes account."
+      transfer_impact_body_html: "Between everyday accounts, none: <strong>the money is still yours</strong>, it just changes account. Into a savings account it is still yours too — but it is no longer part of what you can spend."
       # Dynamic button
       cta_add_plan: "Add to plan"
       cta_need_amount: "Enter an amount"
@@ -124,6 +124,7 @@ en:
       previous_month: "Previous month"
       next_month: "Next month"
       projected_net: "Planned savings"
+      committed_html: "of which <strong>%{committed}</strong> promised to your goals · <strong>%{free}</strong> stays free"
       actual_so_far_html: "So far on plan: %{amount}"
       # Mode banner + contextual month subtitle
       mode_plan: "Plan"

@@ -84,7 +84,8 @@
                 title: t('picker.account_from'), id: "transfer-from",
                 placeholder: t('transactions.form.from_account_placeholder'),
                 rows: picker_account_rows(@form.account_suggestions, current_space.currency),
-                allow_create: true, chain_to: "#transfer-to", chain_reason: t('picker.same_account'), chain_label: t('picker.from_short'),
+                allow_create: true, chain_to: "#transfer-to",
+                chain_reason: t('picker.same_account'), chain_label: t('picker.from_short'),
                 field_data: { action: "tom-select:change->transaction-form#syncBalances" }) %>
             </div>
           </div>
