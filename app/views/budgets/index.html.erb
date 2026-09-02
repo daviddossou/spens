@@ -55,6 +55,15 @@
         <% else %>
           <span class="budget-hero__sublabel"><%= t('.actual_so_far_html', amount: money(@actual_net, sign: :always)) %></span>
         <% end %>
+
+        <%# Money promised to a savings account is kept, so it stays inside the
+            hero — but it is no longer free, and that is the number you cannot
+            read anywhere else. %>
+        <% if @committed_to_goals.positive? %>
+          <p class="budget-hero__committed">
+            <%= t('.committed_html', committed: money(@committed_to_goals), free: money(@free_value)) %>
+          </p>
+        <% end %>
       </div>
 
       <% if @planned_expense_total.positive? && @mode != :wrap_up %>
