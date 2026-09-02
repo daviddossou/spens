@@ -39,10 +39,10 @@ en:
         month_html: "Your biggest month: <strong>%{date}, %{amount}</strong>%{category}"
       rhythm_biggest_category: " — %{name}"
       all_in_plan: "Everything is inside your plan"
-      overruns_title: "What overflowed"
+      overruns_title: "Ahead of pace"
       overruns_count: "%{shown} of %{total}"
-      overrun_caption: "%{spent} spent · %{planned} planned"
-      overruns_more: "%{count} smaller overruns"
+      overrun_caption: "%{spent} spent · %{prorated} expected so far"
+      overruns_more: "%{count} more, smaller"
       overruns_more_cta: "See"
       within_title:
         one: "%{count} category inside its plan"

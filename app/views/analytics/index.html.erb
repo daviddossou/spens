@@ -50,10 +50,8 @@
         </p>
         <p class="analyses-hero"><%= money(@spending.spent_total) %></p>
 
-        <% if comparison %>
-          <% if comparison[:no_data] %>
-            <p class="analyses-compare analyses-compare--quiet"><%= t('.no_comparison') %></p>
-          <% elsif comparison[:monthly_average] %>
+        <% if comparison && !comparison[:no_data] %>
+          <% if comparison[:monthly_average] %>
             <p class="analyses-compare analyses-compare--quiet"><%= t('.monthly_average', amount: money(comparison[:monthly_average])) %></p>
           <% else %>
             <% up = (comparison[:percent] || comparison[:amount]).positive? %>
