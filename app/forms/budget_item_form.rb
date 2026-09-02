@@ -29,7 +29,9 @@ class BudgetItemForm < BaseForm
   validate :ends_on_not_before_starts_on
 
   validates :transaction_type_name, presence: true, if: :category_kind?
-  validates :from_account_name, :to_account_name, presence: true, if: :transfer_kind?
+  # The source is optional, as it is on the model: « mets X de côté » is a
+  # complete instruction, and it is the shape a goal's own line already takes.
+  validates :to_account_name, presence: true, if: :transfer_kind?
   validate :different_accounts_for_transfer, if: :transfer_kind?
   validates :contact_name, presence: true, if: :debt_kind?
 
@@ -209,7 +211,7 @@ class BudgetItemForm < BaseForm
     when "transfer"
       {
         transaction_type: nil, debt: nil,
-        from_account: FindOrCreateAccountService.new(space, from_account_name).call,
+        from_account: from_account_name.presence && FindOrCreateAccountService.new(space, from_account_name).call,
         to_account: FindOrCreateAccountService.new(space, to_account_name).call
       }
     when *BudgetItem::DEBT_KINDS

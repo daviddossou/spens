@@ -15,4 +15,5 @@ fr:
     account: "Compte"
     account_from: "Depuis quel compte ?"
     account_to: "Vers quel compte ?"
+    any_account: "Peu importe — depuis n'importe quel compte"
     no_account: "Aucun — l'argent est déjà sorti"

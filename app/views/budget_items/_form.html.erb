@@ -94,7 +94,9 @@
             title: t('picker.account_from'), id: "transfer-from",
             placeholder: t('budgets.form.from_account_placeholder'),
             rows: picker_account_rows(@form.account_suggestions, current_space.currency),
-            allow_create: true, chain_to: "#transfer-to", chain_reason: t('picker.same_account'), chain_label: t('picker.from_short')) %>
+            allow_create: true, chain_to: "#transfer-to",
+            chain_reason: t('picker.same_account'), chain_label: t('picker.from_short'),
+            empty_label: t('picker.any_account')) %>
         </div>
       </div>
       <div class="transfer-block__row">
@@ -238,8 +240,9 @@
     </div>
   </details>
 
-  <%# A transfer moves money between your accounts — it changes neither spending
-      nor savings, so its impact is spelled out as nil. %>
+  <%# A transfer moves money between your accounts. Between everyday ones that
+      changes nothing; into a savings account it commits the money, so the copy
+      names both cases rather than promising no effect. %>
   <% if @form.transfer_kind? %>
     <div class="transfer-impact">
       <span class="transfer-impact__title"><%= t('budgets.form.transfer_impact_title') %></span>
