@@ -1,0 +1,158 @@
+<%
+  content_for :title, t("guide.meta.title")
+  content_for :description, t("guide.meta.description")
+  pdf = { href: "/guide-spens.pdf", download: "Guide-Spens-Apprendre-a-epargner.pdf" }
+  edition_year = 2026
+%>
+
+<div data-controller="landing--guide-tracking"
+     data-landing--guide-tracking-url-value="<%= meta_events_path %>"
+     data-landing--guide-tracking-events-value="<%= (@meta_guide_event_ids || {}).to_json %>">
+<div class="landing-dark">
+  <nav class="landing-nav guide-nav">
+    <%= link_to root_path, class: "landing-nav__brand" do %>
+      <%= image_tag "spens-logo-white.png", alt: "Spens", class: "landing-nav__logo" %>
+    <% end %>
+    <div class="landing-nav__spacer"></div>
+    <%= link_to t("guide.nav.site"), root_path, class: "landing-nav__link guide-nav__link" %>
+    <a href="#telecharger" class="landing-nav__cta"><%= t("guide.nav.cta") %></a>
+  </nav>
+
+  <header class="guide-hero">
+    <div class="guide-hero__copy">
+      <div class="guide-hero__badge"><%= t("guide.hero.badge", year: edition_year) %></div>
+      <h1 class="guide-hero__title"><%= t("guide.hero.title") %></h1>
+      <p class="guide-hero__subtitle"><%= t("guide.hero.subtitle") %></p>
+      <div class="guide-hero__cta-row">
+        <a href="<%= pdf[:href] %>" download="<%= pdf[:download] %>" class="landing-btn-light guide-btn-download"
+           data-controller="landing--guide-download"
+           data-action="landing--guide-download#redirect landing--guide-tracking#lead"
+           data-landing--guide-tracking-placement-param="hero"
+           data-landing--guide-download-url-value="<%= guide_thanks_path %>"><%= t("guide.hero.cta") %><span class="guide-btn-download__arrow" aria-hidden="true">↓</span></a>
+        <span class="guide-hero__cta-note"><%= t("guide.hero.cta_note") %></span>
+      </div>
+    </div>
+    <div class="guide-hero__visual">
+      <div class="guide-cover">
+        <div class="guide-cover__eyebrow"><%= t("guide.hero.cover.eyebrow", year: edition_year) %></div>
+        <div class="guide-cover__middle">
+          <div class="guide-cover__title"><%= t("guide.hero.cover.title") %></div>
+          <div class="guide-cover__steps"><%= t("guide.hero.cover.steps") %></div>
+        </div>
+        <div class="guide-cover__brand"><span class="guide-cover__dot" aria-hidden="true"></span>spens</div>
+      </div>
+      <div class="guide-hero__stat">
+        <div class="guide-hero__stat-label"><%= t("guide.hero.stat.label") %></div>
+        <div class="guide-hero__stat-amount"><%= t("guide.hero.stat.amount") %></div>
+        <div class="guide-hero__stat-note"><%= t("guide.hero.stat.note") %></div>
+      </div>
+    </div>
+  </header>
+</div>
+
+<section class="landing-sect guide-sect--question">
+  <div class="landing-container guide-split">
+    <div class="guide-split__head">
+      <div class="landing-eyebrow"><%= t("guide.question.eyebrow") %></div>
+      <h2 class="landing-h2"><%= t("guide.question.title") %></h2>
+    </div>
+    <div class="guide-question__body">
+      <p><%= t("guide.question.p1") %></p>
+      <p><%= t("guide.question.p2") %></p>
+      <p class="guide-question__punch"><%= t("guide.question.p3") %></p>
+    </div>
+  </div>
+</section>
+
+<section class="landing-sect guide-sect--steps">
+  <div class="landing-container">
+    <div class="landing-sect__intro">
+      <div class="landing-eyebrow"><%= t("guide.steps.eyebrow") %></div>
+      <h2 class="landing-h2"><%= t("guide.steps.title") %></h2>
+      <p class="landing-sect__sub"><%= t("guide.steps.subtitle") %></p>
+    </div>
+    <div class="landing-grid-3">
+      <% t("guide.steps.items").each_with_index do |s, i| %>
+        <div class="guide-step">
+          <div class="guide-step__head">
+            <span class="guide-step__num"><%= format("%02d", i + 1) %></span>
+            <span class="guide-step__phase"><%= s[:step] %></span>
+          </div>
+          <div class="guide-step__title"><%= s[:title] %></div>
+          <div class="guide-step__desc"><%= s[:desc] %></div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</section>
+
+<section class="landing-sect landing-sect--mist" data-landing--guide-tracking-target="extract">
+  <div class="landing-container guide-example">
+    <div class="guide-example__copy">
+      <div class="landing-eyebrow landing-eyebrow--deep"><%= t("guide.example.eyebrow") %></div>
+      <h2 class="landing-h2"><%= t("guide.example.title") %></h2>
+      <p class="guide-example__body"><%= t("guide.example.body") %></p>
+      <p class="guide-example__note"><%= t("guide.example.note") %></p>
+    </div>
+    <div class="guide-ledger">
+      <div class="guide-ledger__title"><%= t("guide.example.card_title") %></div>
+      <% t("guide.example.rows").each do |r| %>
+        <div class="guide-ledger__row">
+          <span class="guide-ledger__label"><%= r[:label] %></span>
+          <span class="guide-ledger__val"><%= r[:val] %></span>
+        </div>
+      <% end %>
+      <div class="guide-ledger__total">
+        <span><%= t("guide.example.total_label") %></span>
+        <span class="guide-ledger__total-val"><%= t("guide.example.total_val") %></span>
+      </div>
+      <div class="guide-ledger__gap">
+        <span><%= t("guide.example.gap_label") %></span>
+        <span class="guide-ledger__gap-val"><%= t("guide.example.gap_val") %></span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="landing-sect">
+  <div class="landing-container guide-split guide-split--audience">
+    <div class="guide-split__head">
+      <div class="landing-eyebrow"><%= t("guide.audience.eyebrow") %></div>
+      <h2 class="landing-h2"><%= t("guide.audience.title") %></h2>
+    </div>
+    <div class="guide-audience">
+      <% t("guide.audience.items").each do |item| %>
+        <div class="guide-audience__item">
+          <span class="guide-audience__check" aria-hidden="true">✓</span>
+          <span><%= item %></span>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</section>
+
+<footer id="telecharger" class="landing-sect landing-sect--dark guide-final">
+  <div class="guide-final__inner">
+    <h2 class="guide-final__title"><%= t("guide.final.title") %></h2>
+    <p class="guide-final__body"><%= t("guide.final.body") %></p>
+    <a href="<%= pdf[:href] %>" download="<%= pdf[:download] %>" class="landing-btn-light landing-btn-light--lg guide-btn-download"
+       data-controller="landing--guide-download"
+       data-action="landing--guide-download#redirect landing--guide-tracking#lead"
+       data-landing--guide-tracking-placement-param="final"
+       data-landing--guide-download-url-value="<%= guide_thanks_path %>"><%= t("guide.final.cta") %><span class="guide-btn-download__arrow" aria-hidden="true">↓</span></a>
+    <div class="guide-final__facts">
+      <% t("guide.final.facts").each do |fact| %>
+        <span><%= fact %></span>
+      <% end %>
+    </div>
+  </div>
+  <div class="landing-container guide-final__footer">
+    <span><%= t("landing.footer.copyright", year: Date.current.year) %></span>
+    <div class="guide-final__footer-links">
+      <%= link_to t("guide.nav.site"), root_path %>
+      <%= link_to t("landing.footer.privacy"), privacy_path %>
+      <a href="mailto:djidenou@hey.com"><%= t("landing.footer.contact") %></a>
+    </div>
+  </div>
+</footer>
+</div>

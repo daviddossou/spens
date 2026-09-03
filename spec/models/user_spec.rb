@@ -3,6 +3,7 @@
 # Table name: users
 #
 #  id                     :uuid             not null, primary key
+#  acquisition            :jsonb            not null
 #  admin                  :boolean          default(FALSE), not null
 #  current_sign_in_at     :datetime
 #  current_sign_in_ip     :string

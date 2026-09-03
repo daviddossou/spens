@@ -1,0 +1,685 @@
+/* Guide lead-magnet page (landing/guide.html.erb) — shares the landing vocabulary */
+
+/* ── Nav ─────────────────────────────────────────────── */
+.guide-nav .guide-nav__link {
+  display: inline;
+}
+
+/* ── Hero ────────────────────────────────────────────── */
+.guide-hero {
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: 64px 48px 88px;
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 56px;
+  align-items: center;
+  color: #fff;
+}
+
+.guide-hero__copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 22px;
+}
+
+.guide-hero__badge {
+  display: inline-flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-primary-20);
+  letter-spacing: 0.02em;
+}
+
+.guide-hero__title {
+  margin: 0;
+  font-size: 50px;
+  font-weight: 800;
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+.guide-hero__subtitle {
+  margin: 0;
+  font-size: 18px;
+  line-height: 1.55;
+  color: var(--color-muted-on-dark);
+  max-width: 520px;
+  text-wrap: pretty;
+}
+
+.guide-hero__cta-row {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex-wrap: wrap;
+  margin-top: 6px;
+}
+
+.guide-hero__cta-note {
+  font-size: 13px;
+  color: var(--color-muted-on-dark);
+}
+
+/* a.… outranks .landing-btn-light's display:inline-block */
+a.guide-btn-download {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.guide-btn-download__arrow {
+  font-size: 18px;
+  line-height: 1;
+}
+
+/* Book cover mockup + floating stat card */
+.guide-hero__visual {
+  display: flex;
+  justify-content: center;
+  position: relative;
+}
+
+.guide-cover {
+  width: 300px;
+  aspect-ratio: 210 / 297;
+  background: linear-gradient(160deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+  border-radius: 6px;
+  box-shadow: 0 40px 80px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.08);
+  padding: 30px 26px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transform: rotate(-3deg);
+  color: #fff;
+}
+
+.guide-cover__eyebrow {
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  color: var(--color-primary-20);
+}
+
+.guide-cover__middle {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.guide-cover__title {
+  font-size: 26px;
+  line-height: 1.12;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  text-wrap: pretty;
+}
+
+.guide-cover__steps {
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--color-primary-20);
+}
+
+.guide-cover__brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  font-size: 15px;
+}
+
+.guide-cover__dot {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #fff;
+  display: inline-block;
+}
+
+.guide-hero__stat {
+  position: absolute;
+  right: 20px;
+  bottom: -26px;
+  background: #fff;
+  color: var(--color-charcoal-black);
+  border-radius: 12px;
+  padding: 14px 18px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 170px;
+}
+
+.guide-hero__stat-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-slate-gray);
+}
+
+.guide-hero__stat-amount {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--color-success-dark);
+  letter-spacing: -0.02em;
+}
+
+.guide-hero__stat-note {
+  font-size: 11px;
+  color: var(--color-slate-gray);
+}
+
+/* ── Two-column heading/body sections ────────────────── */
+.guide-split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 56px;
+  align-items: start;
+}
+
+.guide-split--audience {
+  grid-template-columns: 0.9fr 1.1fr;
+}
+
+.guide-sect--question {
+  padding-bottom: 48px;
+}
+
+.guide-question__body {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  font-size: 17px;
+  line-height: 1.6;
+  color: var(--color-text-secondary);
+  padding-top: 34px;
+}
+
+.guide-question__body p {
+  margin: 0;
+  text-wrap: pretty;
+}
+
+.guide-question__punch {
+  font-weight: 600;
+  color: var(--color-charcoal-black);
+}
+
+/* ── Steps ───────────────────────────────────────────── */
+.guide-sect--steps {
+  padding-top: 24px;
+}
+
+.guide-step {
+  background: #fff;
+  border: 1px solid #e4e6f0;
+  border-radius: 14px;
+  padding: 26px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.guide-step__head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.guide-step__num {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  background: var(--color-primary-20);
+  color: var(--color-primary-dark);
+  font-weight: 700;
+  font-size: 13px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.guide-step__phase {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-slate-gray);
+}
+
+.guide-step__title {
+  font-size: 19px;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  line-height: 1.25;
+  text-wrap: pretty;
+}
+
+.guide-step__desc {
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--color-text-secondary);
+  text-wrap: pretty;
+}
+
+/* ── Awa example ─────────────────────────────────────── */
+.guide-example {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 56px;
+  align-items: center;
+}
+
+.guide-example__copy {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.guide-example__copy .landing-h2 {
+  margin-bottom: 0;
+}
+
+.guide-example__body {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.6;
+  color: #3a3f5c;
+  text-wrap: pretty;
+}
+
+.guide-example__note {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.6;
+  color: #3a3f5c;
+  font-style: italic;
+}
+
+.guide-ledger {
+  background: #fff;
+  border-radius: 16px;
+  padding: 28px 30px;
+  box-shadow: 0 24px 60px rgba(40, 42, 51, 0.18);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.guide-ledger__title {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-slate-gray);
+  margin-bottom: 10px;
+}
+
+.guide-ledger__row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 15px;
+  padding: 9px 0;
+  border-bottom: 1px solid #eef0f6;
+}
+
+.guide-ledger__label {
+  color: var(--color-text-secondary);
+}
+
+.guide-ledger__val {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.guide-ledger__total {
+  display: flex;
+  justify-content: space-between;
+  font-size: 15px;
+  font-weight: 600;
+  padding: 12px 0 4px;
+}
+
+.guide-ledger__total-val {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.guide-ledger__gap {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--color-warning-20);
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin-top: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #9a4b12;
+}
+
+.guide-ledger__gap-val {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Audience ────────────────────────────────────────── */
+.guide-audience {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.guide-audience__item {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  background: #fff;
+  border: 1px solid #e4e6f0;
+  border-radius: 12px;
+  padding: 18px;
+  font-size: 15px;
+  line-height: 1.5;
+  color: #3a3f5c;
+}
+
+.guide-audience__check {
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
+  background: var(--color-primary);
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 12px;
+  margin-top: 1px;
+}
+
+/* ── Final CTA + footer ──────────────────────────────── */
+.guide-final {
+  padding-top: 96px;
+  padding-bottom: 40px;
+}
+
+.guide-final__inner {
+  max-width: 720px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 22px;
+}
+
+.guide-final__title {
+  margin: 0;
+  font-size: 40px;
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+.guide-final__body {
+  margin: 0;
+  font-size: 17px;
+  line-height: 1.55;
+  color: var(--color-primary-20);
+  max-width: 540px;
+  text-wrap: pretty;
+}
+
+.guide-final__facts {
+  display: flex;
+  gap: 22px;
+  font-size: 13px;
+  color: var(--color-muted-on-dark);
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.guide-final__footer {
+  margin-top: 72px;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  padding-top: 22px;
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--color-muted-on-dark);
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.guide-final__footer-links {
+  display: flex;
+  gap: 18px;
+}
+
+.guide-final__footer a {
+  color: var(--color-muted-on-dark);
+}
+
+.guide-final__footer a:hover {
+  color: #fff;
+}
+
+/* ── Thank-you page (landing/guide_thanks.html.erb) ──── */
+.guide-thanks-hero {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 72px 24px 80px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 20px;
+  color: #fff;
+}
+
+.guide-thanks-hero__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(46, 139, 87, 0.18);
+  border: 1px solid rgba(46, 139, 87, 0.4);
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #8fe0b0;
+}
+
+.guide-thanks-hero__title {
+  margin: 0;
+  font-size: 46px;
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+.guide-thanks-hero__subtitle {
+  margin: 0;
+  font-size: 18px;
+  line-height: 1.55;
+  color: var(--color-muted-on-dark);
+  max-width: 560px;
+  text-wrap: pretty;
+}
+
+.guide-thanks-hero__cta-row {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 6px;
+}
+
+.guide-btn-primary {
+  display: inline-block;
+  background: var(--color-primary);
+  color: #fff;
+  font-size: 16px;
+  font-weight: 700;
+  padding: 15px 28px;
+  border-radius: 10px;
+  white-space: nowrap;
+  transition: background 0.15s ease;
+}
+
+.guide-btn-primary:hover {
+  background: var(--color-primary-dark);
+  color: #fff;
+}
+
+.guide-thanks-hero__retry {
+  font-size: 14px;
+  color: var(--color-primary-20);
+}
+
+.guide-thanks-hero__retry:hover {
+  color: #fff;
+}
+
+.guide-thanks-hero__note {
+  font-size: 13px;
+  color: var(--color-muted-on-dark);
+}
+
+/* Why Spens */
+.guide-why {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 56px;
+  align-items: center;
+}
+
+.guide-why__copy {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.guide-why__copy .landing-h2 {
+  margin-bottom: 0;
+}
+
+.guide-why__list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  font-size: 16px;
+  line-height: 1.55;
+  color: #3a3f5c;
+}
+
+.guide-why__item {
+  display: flex;
+  gap: 12px;
+}
+
+.guide-why__num {
+  color: var(--color-primary-dark);
+  font-weight: 700;
+}
+
+.guide-why__visual {
+  display: flex;
+  justify-content: center;
+}
+
+.guide-why__screenshot {
+  width: 300px;
+  max-width: 100%;
+  height: auto;
+  border-radius: 32px;
+  border: 1px solid #b5bae0;
+  box-shadow: 0 24px 60px rgba(40, 42, 51, 0.22);
+  display: block;
+}
+
+.guide-final__title--long {
+  font-size: 34px;
+}
+
+/* ── Responsive ──────────────────────────────────────── */
+@media (max-width: 900px) {
+  .guide-nav .guide-nav__link {
+    display: none;
+  }
+
+  .guide-hero {
+    grid-template-columns: 1fr;
+    gap: 64px;
+    padding: 48px 28px 88px;
+  }
+
+  .guide-split,
+  .guide-split--audience,
+  .guide-example,
+  .guide-why {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+
+  .guide-question__body {
+    padding-top: 0;
+  }
+
+  .guide-audience {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .guide-hero {
+    padding: 36px 18px 80px;
+  }
+
+  .guide-hero__title {
+    font-size: 33px;
+  }
+
+  .guide-hero__subtitle {
+    font-size: 16px;
+  }
+
+  .guide-hero__cta-row {
+    width: 100%;
+  }
+
+  .guide-hero__cta-row .guide-btn-download {
+    width: 100%;
+    box-sizing: border-box;
+    justify-content: center;
+  }
+
+  .guide-cover {
+    width: min(260px, 80%);
+  }
+
+  .guide-hero__stat {
+    right: 0;
+  }
+
+  .guide-final__title {
+    font-size: 28px;
+  }
+
+  .guide-ledger {
+    padding: 22px 18px;
+  }
+}

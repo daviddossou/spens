@@ -3,6 +3,7 @@
 # Table name: users
 #
 #  id                     :uuid             not null, primary key
+#  acquisition            :jsonb            not null
 #  admin                  :boolean          default(FALSE), not null
 #  current_sign_in_at     :datetime
 #  current_sign_in_ip     :string
@@ -43,6 +44,7 @@ class User < ApplicationRecord
   has_many :transactions, through: :spaces
   has_many :debts, through: :spaces
   has_many :invitations, foreign_key: :invited_by_id, dependent: :destroy
+  has_many :meta_conversions, dependent: :destroy
 
   ##
   # Constants
@@ -76,6 +78,12 @@ class User < ApplicationRecord
 
   def otp_expired?
     otp_sent_at.nil? || otp_sent_at < OTP_VALIDITY.ago
+  end
+
+  # Marketing consent captured at registration (acquisition["consent"]); gates
+  # every server-side Meta send for this user — CAPI is not a consent bypass.
+  def meta_consented?
+    acquisition["consent"] == true
   end
 
   private

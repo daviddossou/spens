@@ -1,0 +1,24 @@
+<%# Meta Pixel: loads only with configuration AND explicit consent (mkt_consent
+    cookie). PageView carries the server-issued event_id so the CAPI double is
+    deduplicated; queued events (e.g. CompleteRegistration sent server-side on
+    the previous request) are flushed here with their original ids. %>
+<% if Meta.pixel_enabled? && meta_consent_state == "granted" %>
+  <script>
+    !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+    n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+    document,'script','https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', <%= Meta.pixel_id.to_json.html_safe %><% if user_signed_in? %>, { em: <%= current_user.email.to_json.html_safe %> }<% end %>);
+    <% if @meta_page_view_id %>
+      fbq('track', 'PageView', {}, { eventID: <%= @meta_page_view_id.to_json.html_safe %> });
+    <% else %>
+      fbq('track', 'PageView');
+    <% end %>
+    <% meta_pixel_queue!.each do |event| %>
+      fbq('track', <%= event["name"].to_json.html_safe %>, {}, { eventID: <%= event["id"].to_json.html_safe %> });
+    <% end %>
+  </script>
+  <noscript><img height="1" width="1" style="display:none" alt=""
+    src="https://www.facebook.com/tr?id=<%= Meta.pixel_id %>&ev=PageView&noscript=1"></noscript>
+<% end %>

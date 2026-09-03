@@ -96,8 +96,8 @@ en:
           body: "A target amount per account, visible progress that makes you want to continue."
         - title: "Easy-to-Understand Finances"
           body: "Income and expenses by category and by month. You see where the money goes, and you cut what serves no purpose."
-        - title: "Smart entry"
-          body: "Write \"taxi 1500\": Spens guesses the amount and category so you log twice as fast."
+        - title: "It learns from you"
+          body: "Correct a category once and Spens remembers it — next time it gets it right on its own. The more you use it, the more it sounds like you."
     accounts:
       eyebrow: "Start right away"
       title: "Take stock of your accounts."

@@ -39,6 +39,8 @@ class Goal < ApplicationRecord
 
   ##
   # Callbacks
+  # Meta activation milestone: end of guide chapter 4 (CAPI-only, once per user).
+  after_create_commit -> { Meta::Activation.record(space&.user, :spens_first_goal) }
   # A goal is the app's definition of money set aside, so its account carries the
   # flag — one flag then drives the dashboard's "mis de côté", the budget's
   # committed line and the picker order. Dropping the goal leaves it: the account

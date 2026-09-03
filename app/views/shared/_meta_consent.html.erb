@@ -1,0 +1,16 @@
+<%# Marketing-consent banner: shown until the visitor decides. Accepting reloads
+    the page so the pixel partial boots; declining just hides the banner. No
+    cookie is dropped and no event is sent (pixel or CAPI) before "granted". %>
+<% if Meta.pixel_enabled? && meta_consent_state.nil? %>
+  <div class="consent-banner" data-controller="consent" role="dialog" aria-live="polite"
+       aria-label="<%= t("consent.aria_label") %>">
+    <p class="consent-banner__text">
+      <%= t("consent.text") %>
+      <%= link_to t("consent.privacy"), privacy_path, class: "consent-banner__link" %>
+    </p>
+    <div class="consent-banner__actions">
+      <button type="button" class="consent-banner__btn consent-banner__btn--ghost" data-action="consent#decline"><%= t("consent.decline") %></button>
+      <button type="button" class="consent-banner__btn" data-action="consent#accept"><%= t("consent.accept") %></button>
+    </div>
+  </div>
+<% end %>

@@ -40,6 +40,11 @@ class Account < ApplicationRecord
   validates :balance, presence: true, numericality: true
 
   ##
+  # Callbacks
+  # Meta activation milestone: end of guide chapter 1 (CAPI-only, once per user).
+  after_create_commit -> { Meta::Activation.record(user || space&.user, :spens_first_account) }
+
+  ##
   # Scopes
   # An account is a savings account when it has a goal attached.
   scope :with_saving_goals, -> { joins(:goal) }

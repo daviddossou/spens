@@ -1,0 +1,7 @@
+fr:
+  consent:
+    aria_label: "Consentement aux cookies"
+    text: "On utilise des cookies pour améliorer ton expérience, personnaliser pubs et contenus, et analyser notre trafic. En cliquant sur « Accepter », tu acceptes leur utilisation."
+    privacy: "Utilisation des cookies"
+    accept: "Accepter"
+    decline: "Refuser"

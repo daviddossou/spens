@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_08_30_141113) do
+ActiveRecord::Schema[8.0].define(version: 2026_09_03_213127) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -185,6 +185,15 @@ ActiveRecord::Schema[8.0].define(version: 2026_08_30_141113) do
     t.index ["user_id"], name: "index_memberships_on_user_id"
   end
 
+  create_table "meta_conversions", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "user_id", null: false
+    t.string "event_name", null: false
+    t.uuid "event_id", null: false
+    t.datetime "created_at", null: false
+    t.index ["user_id", "event_name"], name: "index_meta_conversions_on_user_id_and_event_name", unique: true
+    t.index ["user_id"], name: "index_meta_conversions_on_user_id"
+  end
+
   create_table "quick_entry_attempts", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.uuid "space_id", null: false
     t.uuid "user_id", null: false
@@ -301,6 +310,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_08_30_141113) do
     t.datetime "otp_sent_at"
     t.boolean "admin", default: false, null: false
     t.string "time_zone"
+    t.jsonb "acquisition", default: {}, null: false
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
@@ -327,6 +337,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_08_30_141113) do
   add_foreign_key "learned_keywords", "spaces"
   add_foreign_key "memberships", "spaces"
   add_foreign_key "memberships", "users"
+  add_foreign_key "meta_conversions", "users"
   add_foreign_key "quick_entry_attempts", "spaces"
   add_foreign_key "quick_entry_attempts", "transactions", on_delete: :nullify
   add_foreign_key "quick_entry_attempts", "users"
