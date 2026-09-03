@@ -65,4 +65,34 @@ RSpec.describe Goal, type: :model do
       expect(build(:goal, target_amount: nil).remaining).to be_nil
     end
   end
+
+  describe "the account it lives on" do
+    it "marks it set aside — a goal is what set aside means" do
+      account = create(:account, set_aside: false)
+      create(:goal, space: account.space, account: account)
+
+      expect(account.reload.set_aside).to be(true)
+    end
+
+    it "retires the plan line it owns when it is dropped" do
+      account = create(:account)
+      goal = create(:goal, space: account.space, account: account, target_amount: 100_000,
+                           deadline: Date.current.end_of_month >> 2)
+      Budgets::SyncGoalPlanService.call(goal) # the form's own path
+      line = account.space.budget_items.active.find_by(kind: "transfer", to_account_id: account.id)
+      expect(line).to be_present
+
+      goal.destroy!
+
+      expect(line.reload.active).to be(false)
+    end
+
+    it "leaves the flag alone when the goal is dropped: it is still a savings account" do
+      account = create(:account, set_aside: false)
+      goal = create(:goal, space: account.space, account: account)
+      goal.destroy!
+
+      expect(account.reload.set_aside).to be(true)
+    end
+  end
 end

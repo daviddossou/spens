@@ -21,12 +21,18 @@ module DebtsHelper
     line = debt.repayment_line
     return unless line&.ends_on && line.amount.to_f.positive?
 
-    # Repayment starts next month (you don't pay the month you take the money on),
-    # so the remaining installments run from next month to the deadline.
-    start = [ Date.current.beginning_of_month.next_month, line.ends_on.beginning_of_month ].min
-    target = line.ends_on.beginning_of_month
-    installments = [ (target.year - start.year) * 12 + (target.month - start.month) + 1, 1 ].max
-    { monthly: line.amount, ends_on: line.ends_on, installments: installments, incoming: debt.lent? }
+    # Count the installments from what is still OWED, not from the calendar. The
+    # monthly amount is fixed when the plan is made and nothing recomputes it
+    # afterwards, so a month passing without a payment — or a partial repayment —
+    # would otherwise leave a count that no longer adds up to the balance.
+    monthly = line.amount.to_f
+    installments = (debt.remaining_balance / monthly).ceil
+    return if installments <= 0
+
+    # Repayment starts next month: you don't pay the month you take the money on.
+    start = Date.current.beginning_of_month.next_month
+    { monthly: line.amount, ends_on: start >> (installments - 1),
+      installments: installments, incoming: debt.lent? }
   end
 
   # Label for a closed debt in the history list: written-off (direction-aware) or settled.

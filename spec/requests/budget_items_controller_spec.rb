@@ -39,6 +39,20 @@ RSpec.describe BudgetItemsController, type: :request do
       expect(item.ends_on).to eq((month >> 3).to_date)
     end
 
+    it "creates a source-less savings line: « mets X de côté » is a complete instruction" do
+      savings = create(:account, space: space, user: user)
+
+      post budget_items_path, params: { budget_item: {
+        kind: "transfer", to_account_name: savings.name, from_account_name: "",
+        amount: 55_000, frequency: "monthly", starts_on: month
+      } }
+
+      expect(response).to have_http_status(:see_other)
+      line = space.budget_items.active.find_by(kind: "transfer")
+      expect(line.to_account).to eq(savings)
+      expect(line.from_account).to be_nil
+    end
+
     it "re-renders on validation failure" do
       post budget_items_path, params: { budget_item: { kind: "expense", transaction_type_name: "", amount: "" } }
       expect(response).to have_http_status(:unprocessable_entity)

@@ -88,7 +88,7 @@ fr:
       debt_settled_html: "Se solde en %{date} à ce rythme"
       # Transfert : impact nul
       transfer_impact_title: "Effet sur ton plan"
-      transfer_impact_body_html: "Aucun. Un transfert n'entre ni dans tes dépenses ni dans ton épargne du mois — <strong>l'argent reste à toi</strong>, il change juste de compte."
+      transfer_impact_body_html: "Entre comptes du quotidien, aucun : <strong>l'argent reste à toi</strong>, il change juste de compte. Vers un compte d'épargne, il reste à toi aussi — mais il ne fait plus partie de ce que tu peux dépenser."
       # Bouton dynamique
       cta_add_plan: "Ajouter au plan"
       cta_need_amount: "Entre un montant"
@@ -124,6 +124,7 @@ fr:
       previous_month: "Mois précédent"
       next_month: "Mois suivant"
       projected_net: "Épargne prévue"
+      committed_html: "dont <strong>%{committed}</strong> promis à tes objectifs · <strong>%{free}</strong> restent libres"
       actual_so_far_html: "Réalisé sur le plan : %{amount}"
       # Bandeau de mode + sous-titre contextuel du mois
       mode_plan: "Plan"

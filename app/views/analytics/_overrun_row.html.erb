@@ -9,5 +9,5 @@
       <span class="analyses-bar__tick" style="left: <%= [ row.prorated / row.planned * 100, 100 ].min.round(1) %>%;" aria-hidden="true"></span>
     <% end %>
   </div>
-  <p class="analyses-row__caption"><%= t('analytics.index.overrun_caption', spent: money(row.spent), planned: money(row.planned)) %></p>
+  <p class="analyses-row__caption"><%= t('analytics.index.overrun_caption', spent: money(row.spent), prorated: money(row.prorated.round)) %></p>
 <% end %>

@@ -60,6 +60,21 @@ class BudgetsController < ApplicationController
     when :wrap_up then @actual_net
     else @projected_outcome + @offplan_net
     end
+
+    # A transfer between everyday accounts is neutral, but one INTO a set-aside
+    # account is not: it turns free money into committed money. It never leaves
+    # the hero — moving money to savings is keeping it — but it is no longer
+    # available to spend, so the page states it. Coming back out of savings, the
+    # same line credits it back.
+    set_aside_ids = current_space.accounts.set_aside.pluck(:id)
+    @committed_to_goals = @sections[:transfer].sum do |entry|
+      item = entry.budget_item
+      amount = @mode == :wrap_up ? @actuals_by_entry[entry] : entry.planned_amount
+      into = set_aside_ids.include?(item.to_account_id) ? amount : 0
+      back = set_aside_ids.include?(item.from_account_id) ? amount : 0
+      into - back
+    end
+    @free_value = @hero_value - @committed_to_goals
   end
 
   def set_month

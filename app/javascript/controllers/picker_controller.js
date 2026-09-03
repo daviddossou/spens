@@ -45,6 +45,7 @@ export default class extends Controller {
   commit(row, typed) {
     const value = row ? row.value : ""
     this.inputTarget.value = value
+    this.inputTarget.dataset.pickerAnswered = "true"
 
     if (row && row.balance !== undefined && row.balance !== null) {
       this.inputTarget.dataset.balance = row.balance

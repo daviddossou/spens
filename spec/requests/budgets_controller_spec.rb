@@ -49,6 +49,47 @@ RSpec.describe BudgetsController, type: :request do
       expect(assigns(:planned_expense_total)).to eq(120_000)
     end
 
+    it "states what a savings transfer commits, without taking it out of the hero" do
+      salary = create(:transaction_type, space: space, kind: "income", name: "Salaire")
+      rent = create(:transaction_type, space: space, kind: "expense", name: "Loyer")
+      create(:budget_item, space: space, kind: "income", transaction_type: salary, amount: 500_000, starts_on: month)
+      create(:budget_item, space: space, transaction_type: rent, amount: 400_000, starts_on: month)
+
+      savings = create(:account, space: space, user: user)
+      create(:goal, space: space, account: savings) # a goal marks its account set aside
+      create(:budget_item, space: space, kind: "transfer", to_account: savings,
+                           from_account: nil, transaction_type: nil, amount: 55_000, starts_on: month)
+
+      get budgets_path(view: "plan")
+
+      # Moving money to savings is keeping it, so the hero does not shrink...
+      expect(assigns(:hero_value)).to eq(500_000 - 400_000)
+      # ...but 55 000 of it is promised, so only 45 000 is genuinely free.
+      expect(assigns(:committed_to_goals)).to eq(55_000)
+      expect(assigns(:free_value)).to eq(45_000)
+    end
+
+    it "leaves a transfer between everyday accounts neutral" do
+      from = create(:account, space: space, user: user)
+      to = create(:account, space: space, user: user)
+      create(:budget_item, space: space, kind: "transfer", from_account: from, to_account: to,
+                           transaction_type: nil, amount: 30_000, starts_on: month)
+
+      get budgets_path(view: "plan")
+      expect(assigns(:committed_to_goals)).to eq(0)
+    end
+
+    it "credits back a transfer that leaves a savings account" do
+      savings = create(:account, space: space, user: user)
+      create(:goal, space: space, account: savings)
+      everyday = create(:account, space: space, user: user)
+      create(:budget_item, space: space, kind: "transfer", from_account: savings, to_account: everyday,
+                           transaction_type: nil, amount: 20_000, starts_on: month)
+
+      get budgets_path(view: "plan")
+      expect(assigns(:committed_to_goals)).to eq(-20_000)
+    end
+
     it "hides the vital/confort card when no expenses are planned" do
       income_type = create(:transaction_type, space: space, kind: "income", name: "💰 Salaire")
       create(:budget_item, space: space, kind: "income", transaction_type: income_type, amount: 150_000, starts_on: month)
