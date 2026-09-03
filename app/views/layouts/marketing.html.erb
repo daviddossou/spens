@@ -3,9 +3,9 @@
   <head>
     <title><%= content_for(:title) || t("landing.meta.title") %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-    <meta name="description" content="<%= t("landing.meta.description") %>">
-    <meta property="og:title" content="<%= t("landing.meta.title") %>">
-    <meta property="og:description" content="<%= t("landing.meta.description") %>">
+    <meta name="description" content="<%= content_for(:description) || t("landing.meta.description") %>">
+    <meta property="og:title" content="<%= content_for(:title) || t("landing.meta.title") %>">
+    <meta property="og:description" content="<%= content_for(:description) || t("landing.meta.description") %>">
     <meta property="og:image" content="/icon-512.png">
     <meta property="og:type" content="website">
     <%= csrf_meta_tags %>
@@ -29,9 +29,11 @@
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
     <%= render "shared/posthog" %>
+    <%= render "shared/meta_pixel" %>
   </head>
 
   <body class="landing-body">
     <%= yield %>
+    <%= render "shared/meta_consent" %>
   </body>
 </html>

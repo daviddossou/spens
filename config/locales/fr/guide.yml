@@ -1,0 +1,133 @@
+fr:
+  guide:
+    meta:
+      title: "Guide Spens — Apprendre à épargner"
+      description: "Guide gratuit de 45 pages : comprends où va ton argent, construis un budget qui te ressemble et mets en place un système d'épargne que tu peux tenir."
+    nav:
+      site: "spens.me"
+      cta: "Télécharger le guide"
+    hero:
+      badge: "Guide gratuit · 45 pages · Édition %{year}"
+      title: "Apprendre à épargner, même quand on pense ne pas gagner assez."
+      subtitle: "Comprends où va ton argent, construis un budget qui te ressemble et mets en place un système d'épargne que tu peux réellement tenir. En six étapes, avec des actions concrètes à chaque chapitre."
+      cta: "Télécharger le guide (PDF)"
+      cta_note: "Sans email. Sans inscription. Téléchargement immédiat."
+      cover:
+        eyebrow: "GUIDE SPENS · %{year}"
+        title: "Apprendre à épargner, même quand on pense ne pas gagner assez"
+        steps: "Voir · Comprendre · Décider · Épargner · Organiser · Ajuster"
+      stat:
+        label: "10 % de 150 000 FCFA"
+        amount: "540 000 FCFA"
+        note: "mis de côté en trois ans"
+    question:
+      eyebrow: "Pourquoi ce guide"
+      title: "Comment se fait-il que, depuis que tu gagnes de l'argent, tu n'aies pas réussi à en garder davantage ?"
+      p1: "Ton argent entre, puis ressort : loyer, transport, nourriture, factures, famille, sorties, imprévus… et à la fin, il reste souvent beaucoup moins que ce que tu aurais imaginé. Sans que tu saches vraiment où c'est parti."
+      p2: "Gagner plus ne garantit pas que tu épargneras plus. Quand les revenus augmentent, le train de vie suit. Ce n'est donc pas seulement une question de combien tu gagnes. C'est une question de ce que tu fais de ce que tu gagnes."
+      p3: "Ce guide ne cherche pas un budget parfait. Il t'aide à construire un système que tu pourras encore utiliser dans un an."
+    steps:
+      eyebrow: "Ce que tu vas faire"
+      title: "Six étapes. Une action concrète à chaque fois."
+      subtitle: "Ne lis pas ce guide, utilise-le. Chaque chapitre se termine par quelque chose à faire avant de passer à la suite."
+      items:
+        - step: "Voir"
+          title: "Combien as-tu exactement ?"
+          desc: "Banque, mobile money, cash, tontine : rassemble tout ce que tu as à un seul endroit et obtiens ton vrai point de départ."
+        - step: "Voir"
+          title: "Où part ton argent ?"
+          desc: "Note chaque mouvement au moment où il se produit. Pas pour devenir comptable, pour ne plus te demander où c'est passé."
+        - step: "Comprendre"
+          title: "Combien te faut-il pour vivre ?"
+          desc: "Calcule ton socle essentiel : ce qui doit être payé quoi qu'il arrive. Ce qui reste, c'est ta marge."
+        - step: "Décider"
+          title: "Pour quoi veux-tu épargner ?"
+          desc: "De l'argent sans destination finit par servir à autre chose. Commence par ta réserve, puis un objectif à la fois."
+        - step: "Épargner"
+          title: "Combien peux-tu réellement mettre de côté ?"
+          desc: "Ton épargne n'est plus ce qui reste, elle part en premier. Un montant fixe ou un pourcentage, mais un que tu peux tenir."
+        - step: "Organiser · Ajuster"
+          title: "Un budget qui tient dans le temps"
+          desc: "Organise le reste de ton mois, suis tes dettes et ce qu'on te doit, puis ajuste quand tes revenus changent."
+    example:
+      eyebrow: "Un exemple suivi tout au long du guide"
+      title: "Awa gagne 150 000 FCFA par mois. Où sont passés 140 000 FCFA ?"
+      body: "À la fin du mois, il lui restait 10 000 FCFA. Elle retrouve 115 500 FCFA de dépenses. Le reste a disparu de sa mémoire. Le guide te fait refaire le même calcul avec ton propre mois, puis construire ton socle essentiel, ta marge et ta règle d'épargne à partir de tes chiffres."
+      note: "Le montant sera différent chez toi. L'écart existera quand même."
+      card_title: "Le mois dernier d'Awa"
+      rows:
+        - label: "Loyer"
+          val: "− 40 000 FCFA"
+        - label: "Nourriture"
+          val: "− 30 000 FCFA"
+        - label: "Transport"
+          val: "− 15 000 FCFA"
+        - label: "Crédit et forfait Internet"
+          val: "− 13 000 FCFA"
+        - label: "Envoyé à la famille"
+          val: "− 10 000 FCFA"
+        - label: "Électricité et eau"
+          val: "− 7 500 FCFA"
+      total_label: "Total retrouvé"
+      total_val: "115 500 FCFA"
+      gap_label: "Dépensé sans pouvoir dire où"
+      gap_val: "24 500 FCFA"
+    audience:
+      eyebrow: "Ce guide est pour toi si"
+      title: "Tu n'as pas besoin de gagner plus pour commencer."
+      items:
+        - "Tu n'arrives à épargner qu'une infime partie de ce que tu gagnes chaque mois."
+        - "Tes fins de mois sont serrées, même quand le mois avait bien commencé."
+        - "Tu jongles entre banque, cash et mobile money et tu perds le fil du total."
+        - "Tu te dis que tu commenceras à épargner quand tu gagneras plus."
+    thanks:
+      meta:
+        title: "Merci — Guide Spens"
+        description: "Ton guide se télécharge. Chaque action du guide est réalisable gratuitement dans Spens : crée ton compte et fais la première dès aujourd'hui."
+      nav:
+        back: "← Retour au guide"
+      hero:
+        badge: "✓ Ton guide se télécharge"
+        title: "Le guide te dit quoi faire. Spens est l'endroit où tu le fais."
+        subtitle: "Chaque étape du guide te demande une action : créer tes comptes, noter une dépense, fixer un objectif. Toutes sont réalisables gratuitement dans Spens, en deux minutes."
+        cta: "Créer mon compte Spens"
+        retry: "Le téléchargement n'a pas démarré ?"
+        note: "Gratuit au lancement · avantage aux premiers inscrits"
+      actions:
+        eyebrow: "Ce que le guide te demande de faire dans Spens"
+        title: "Quatre actions, dès le premier chapitre."
+        items:
+          - ch: "Chapitre 1"
+            title: "Crée tes comptes"
+            desc: "Banque, mobile money, cash, caisse, tontine. Renseigne le solde exact de chacun : Spens affiche ton total."
+          - ch: "Chapitre 2"
+            title: "Note tes mouvements"
+            desc: "Reprends ce que tu as dépensé depuis ce matin. « 500 zem » suffit pour enregistrer une dépense."
+          - ch: "Chapitre 3"
+            title: "Saisis ton socle"
+            desc: "Tes revenus et tes dépenses essentielles, marquées « Vital ». Ta marge apparaît."
+          - ch: "Chapitre 4"
+            title: "Fixe ton objectif"
+            desc: "Un nom précis, un montant cible, une échéance. Spens en déduit le rythme mensuel à tenir."
+      why:
+        eyebrow: "Pourquoi Spens"
+        title: "Tout ton argent au même endroit. Un seul total, toujours juste."
+        items:
+          - "Banque, cash et mobile money réunis."
+          - "Saisie en 3 secondes : écris « 500 zem », Spens devine le reste."
+          - "Budget prévu contre réel, ligne par ligne."
+          - "Objectifs d'épargne avec progression visible et rythme mensuel calculé."
+          - "Dettes et remboursements suivis, personne par personne."
+        screenshot_alt: "Tableau de bord Spens : total des comptes, entrées et sorties du mois, dettes et transactions"
+      final:
+        title: "Ce ne sont pas les informations que tu retiendras qui changeront ta situation. Ce sont les habitudes que tu commenceras."
+        body: "Crée ton compte, puis ouvre le guide au chapitre 1. Première action : renseigner tes comptes. Moins de cinq minutes."
+        cta: "Commencer sur Spens"
+    final:
+      title: "Ce n'est pas gagner plus. C'est garder une partie de ce que tu gagnes déjà."
+      body: "Télécharge le guide, ouvre-le à la page 5 et fais la première étape aujourd'hui. Ça prend moins de cinq minutes."
+      cta: "Télécharger le guide gratuit"
+      facts:
+        - "PDF · 45 pages"
+        - "Aucun email demandé"
+        - "Chaque action réalisable gratuitement avec Spens"

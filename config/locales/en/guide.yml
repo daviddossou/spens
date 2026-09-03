@@ -1,0 +1,133 @@
+en:
+  guide:
+    meta:
+      title: "Spens Guide — Learn to save"
+      description: "Free 45-page guide: understand where your money goes, build a budget that fits your life and set up a savings system you can actually keep."
+    nav:
+      site: "spens.me"
+      cta: "Download the guide"
+    hero:
+      badge: "Free guide · 45 pages · %{year} edition"
+      title: "Learn to save, even when you think you don't earn enough."
+      subtitle: "Understand where your money goes, build a budget that fits your life and set up a savings system you can actually keep. Six steps, with concrete actions in every chapter."
+      cta: "Download the guide (PDF)"
+      cta_note: "No email. No sign-up. Instant download."
+      cover:
+        eyebrow: "SPENS GUIDE · %{year}"
+        title: "Learn to save, even when you think you don't earn enough"
+        steps: "See · Understand · Decide · Save · Organize · Adjust"
+      stat:
+        label: "10% of 150,000 FCFA"
+        amount: "540,000 FCFA"
+        note: "set aside in three years"
+    question:
+      eyebrow: "Why this guide"
+      title: "How is it that, ever since you started earning money, you haven't managed to keep more of it?"
+      p1: "Your money comes in, then goes out: rent, transport, food, bills, family, going out, surprises… and at the end there's often much less left than you would have imagined. Without really knowing where it went."
+      p2: "Earning more doesn't guarantee you'll save more. When income goes up, lifestyle follows. So it's not just a question of how much you earn. It's a question of what you do with what you earn."
+      p3: "This guide isn't after a perfect budget. It helps you build a system you'll still be using a year from now."
+    steps:
+      eyebrow: "What you're going to do"
+      title: "Six steps. One concrete action every time."
+      subtitle: "Don't read this guide, use it. Every chapter ends with something to do before moving on."
+      items:
+        - step: "See"
+          title: "How much do you have, exactly?"
+          desc: "Bank, mobile money, cash, tontine: gather everything you have in one place and get your true starting point."
+        - step: "See"
+          title: "Where does your money go?"
+          desc: "Record each movement as it happens. Not to become an accountant — so you stop wondering where it went."
+        - step: "Understand"
+          title: "How much do you need to live?"
+          desc: "Work out your essential base: what must be paid no matter what. What's left is your margin."
+        - step: "Decide"
+          title: "What do you want to save for?"
+          desc: "Money without a destination ends up used for something else. Start with your reserve, then one goal at a time."
+        - step: "Save"
+          title: "How much can you really set aside?"
+          desc: "Your savings are no longer what's left — they go out first. A fixed amount or a percentage, but one you can keep up."
+        - step: "Organize · Adjust"
+          title: "A budget that lasts"
+          desc: "Organize the rest of your month, track your debts and what you're owed, then adjust when your income changes."
+    example:
+      eyebrow: "One example followed throughout the guide"
+      title: "Awa earns 150,000 FCFA a month. Where did 140,000 FCFA go?"
+      body: "At the end of the month, she had 10,000 FCFA left. She can account for 115,500 FCFA of spending. The rest vanished from her memory. The guide has you redo the same maths with your own month, then build your essential base, your margin and your savings rule from your own numbers."
+      note: "The amount will be different for you. The gap will be there all the same."
+      card_title: "Awa's last month"
+      rows:
+        - label: "Rent"
+          val: "− 40,000 FCFA"
+        - label: "Food"
+          val: "− 30,000 FCFA"
+        - label: "Transport"
+          val: "− 15,000 FCFA"
+        - label: "Airtime and Internet plan"
+          val: "− 13,000 FCFA"
+        - label: "Sent to family"
+          val: "− 10,000 FCFA"
+        - label: "Electricity and water"
+          val: "− 7,500 FCFA"
+      total_label: "Total accounted for"
+      total_val: "115,500 FCFA"
+      gap_label: "Spent without being able to say where"
+      gap_val: "24,500 FCFA"
+    audience:
+      eyebrow: "This guide is for you if"
+      title: "You don't need to earn more to start."
+      items:
+        - "You only manage to save a tiny share of what you earn each month."
+        - "Your month-ends are tight, even when the month started well."
+        - "You juggle bank, cash and mobile money and lose track of the total."
+        - "You tell yourself you'll start saving when you earn more."
+    thanks:
+      meta:
+        title: "Thank you — Spens Guide"
+        description: "Your guide is downloading. Every action in the guide can be done for free in Spens: create your account and do the first one today."
+      nav:
+        back: "← Back to the guide"
+      hero:
+        badge: "✓ Your guide is downloading"
+        title: "The guide tells you what to do. Spens is where you do it."
+        subtitle: "Every step of the guide asks you for an action: create your accounts, record an expense, set a goal. All of them can be done for free in Spens, in two minutes."
+        cta: "Create my Spens account"
+        retry: "Download didn't start?"
+        note: "Free at launch · early sign-ups get the advantage"
+      actions:
+        eyebrow: "What the guide asks you to do in Spens"
+        title: "Four actions, from the very first chapter."
+        items:
+          - ch: "Chapter 1"
+            title: "Create your accounts"
+            desc: "Bank, mobile money, cash, savings box, tontine. Enter each exact balance: Spens shows your total."
+          - ch: "Chapter 2"
+            title: "Record your movements"
+            desc: "Catch up on what you've spent since this morning. \"500 zem\" is enough to record an expense."
+          - ch: "Chapter 3"
+            title: "Enter your essential base"
+            desc: "Your income and essential expenses, marked \"Vital\". Your margin appears."
+          - ch: "Chapter 4"
+            title: "Set your goal"
+            desc: "A precise name, a target amount, a deadline. Spens works out the monthly pace to keep."
+      why:
+        eyebrow: "Why Spens"
+        title: "All your money in one place. One total, always right."
+        items:
+          - "Bank, cash and mobile money together."
+          - "3-second entry: type \"500 zem\", Spens figures out the rest."
+          - "Planned vs actual budget, line by line."
+          - "Savings goals with visible progress and a computed monthly pace."
+          - "Debts and repayments tracked, person by person."
+        screenshot_alt: "Spens dashboard: accounts total, money in and out this month, debts and transactions"
+      final:
+        title: "It's not the information you'll remember that will change your situation. It's the habits you'll start."
+        body: "Create your account, then open the guide at chapter 1. First action: enter your accounts. Less than five minutes."
+        cta: "Start on Spens"
+    final:
+      title: "It's not about earning more. It's about keeping part of what you already earn."
+      body: "Download the guide, open it at page 5 and do the first step today. It takes less than five minutes."
+      cta: "Download the free guide"
+      facts:
+        - "PDF · 45 pages"
+        - "No email required"
+        - "Every action doable for free with Spens"

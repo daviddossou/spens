@@ -1,0 +1,80 @@
+<%
+  content_for :title, t("guide.thanks.meta.title")
+  content_for :description, t("guide.thanks.meta.description")
+  sign_up = new_user_registration_path
+%>
+
+<div class="landing-dark">
+  <nav class="landing-nav guide-nav">
+    <%= link_to root_path, class: "landing-nav__brand" do %>
+      <%= image_tag "spens-logo-white.png", alt: "Spens", class: "landing-nav__logo" %>
+    <% end %>
+    <div class="landing-nav__spacer"></div>
+    <%= link_to t("guide.thanks.nav.back"), guide_path, class: "landing-nav__link guide-nav__link" %>
+  </nav>
+
+  <header class="guide-thanks-hero">
+    <div class="guide-thanks-hero__badge"><%= t("guide.thanks.hero.badge") %></div>
+    <h1 class="guide-thanks-hero__title"><%= t("guide.thanks.hero.title") %></h1>
+    <p class="guide-thanks-hero__subtitle"><%= t("guide.thanks.hero.subtitle") %></p>
+    <div class="guide-thanks-hero__cta-row">
+      <%= link_to t("guide.thanks.hero.cta"), sign_up, class: "guide-btn-primary" %>
+      <a href="/guide-spens.pdf" download="Guide-Spens-Apprendre-a-epargner.pdf" class="guide-thanks-hero__retry"><%= t("guide.thanks.hero.retry") %></a>
+    </div>
+    <div class="guide-thanks-hero__note"><%= t("guide.thanks.hero.note") %></div>
+  </header>
+</div>
+
+<section class="landing-sect">
+  <div class="landing-container">
+    <div class="landing-sect__intro">
+      <div class="landing-eyebrow"><%= t("guide.thanks.actions.eyebrow") %></div>
+      <h2 class="landing-h2"><%= t("guide.thanks.actions.title") %></h2>
+    </div>
+    <div class="landing-grid-4">
+      <% t("guide.thanks.actions.items").each do |a| %>
+        <div class="guide-step">
+          <div class="guide-step__phase"><%= a[:ch] %></div>
+          <div class="guide-step__title"><%= a[:title] %></div>
+          <div class="guide-step__desc"><%= a[:desc] %></div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</section>
+
+<section class="landing-sect landing-sect--mist">
+  <div class="landing-container guide-why">
+    <div class="guide-why__copy">
+      <div class="landing-eyebrow landing-eyebrow--deep"><%= t("guide.thanks.why.eyebrow") %></div>
+      <h2 class="landing-h2"><%= t("guide.thanks.why.title") %></h2>
+      <div class="guide-why__list">
+        <% t("guide.thanks.why.items").each_with_index do |item, i| %>
+          <div class="guide-why__item">
+            <span class="guide-why__num"><%= format("%02d", i + 1) %></span>
+            <span><%= item %></span>
+          </div>
+        <% end %>
+      </div>
+    </div>
+    <div class="guide-why__visual">
+      <%= image_tag "guide-dashboard-awa.png", alt: t("guide.thanks.why.screenshot_alt"), class: "guide-why__screenshot", loading: "lazy" %>
+    </div>
+  </div>
+</section>
+
+<footer class="landing-sect landing-sect--dark guide-final">
+  <div class="guide-final__inner">
+    <h2 class="guide-final__title guide-final__title--long"><%= t("guide.thanks.final.title") %></h2>
+    <p class="guide-final__body"><%= t("guide.thanks.final.body") %></p>
+    <%= link_to t("guide.thanks.final.cta"), sign_up, class: "landing-btn-light landing-btn-light--lg" %>
+  </div>
+  <div class="landing-container guide-final__footer">
+    <span><%= t("landing.footer.copyright", year: Date.current.year) %></span>
+    <div class="guide-final__footer-links">
+      <%= link_to t("guide.nav.site"), root_path %>
+      <%= link_to t("landing.footer.privacy"), privacy_path %>
+      <a href="mailto:djidenou@hey.com"><%= t("landing.footer.contact") %></a>
+    </div>
+  </div>
+</footer>
