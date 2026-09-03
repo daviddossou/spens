@@ -1,0 +1,7 @@
+en:
+  consent:
+    aria_label: "Cookie consent"
+    text: "We use cookies to improve your browsing experience, show you personalized ads or content, and analyze our traffic. By clicking \"Accept\", you agree to our use of cookies."
+    privacy: "Cookie policy"
+    accept: "Accept"
+    decline: "Decline"

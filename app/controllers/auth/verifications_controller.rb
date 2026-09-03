@@ -20,6 +20,7 @@ class Auth::VerificationsController < ApplicationController
 
       Analytics.identify(user)
       Analytics.track(user, context == "sign_up" ? "user_signed_up" : "user_signed_in")
+      track_meta_conversion(user, context)
 
       accepted_space = accept_pending_invitation(user)
 
@@ -71,6 +72,19 @@ class Auth::VerificationsController < ApplicationController
   def clear_otp_session
     session.delete(:otp_user_id)
     session.delete(:otp_context)
+  end
+
+  # Sign-up: CompleteRegistration on both channels — CAPI now, pixel queued for
+  # the next page load, both with the same server-generated event_id.
+  # Sign-in 30+ days after creation: spens_month_2, the retention milestone.
+  def track_meta_conversion(user, context)
+    if context == "sign_up"
+      event_id = SecureRandom.uuid
+      meta_send_server_event("CompleteRegistration", event_id: event_id, user: user)
+      meta_queue_pixel_event("CompleteRegistration", event_id) if meta_consented?
+    elsif user.created_at <= 30.days.ago
+      Meta::Activation.record(user, :spens_month_2)
+    end
   end
 
   def log_otp(user)

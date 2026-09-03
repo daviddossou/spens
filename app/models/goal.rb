@@ -38,6 +38,11 @@ class Goal < ApplicationRecord
   validates :target_amount, numericality: { greater_than: 0 }, allow_nil: true
 
   ##
+  # Callbacks
+  # Meta activation milestone: end of guide chapter 4 (CAPI-only, once per user).
+  after_create_commit -> { Meta::Activation.record(space&.user, :spens_first_goal) }
+
+  ##
   # Instance Methods
   def target_set?
     target_amount.to_f.positive?

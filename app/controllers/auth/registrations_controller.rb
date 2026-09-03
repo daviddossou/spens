@@ -13,6 +13,13 @@ class Auth::RegistrationsController < ApplicationController
   def create
     @user = User.new(registration_params)
     @user.password = SecureRandom.hex(32)
+    # First-touch attribution (utm_*, fbclid, guide_link) + marketing consent and
+    # Meta cookies, frozen at creation so later CAPI events keep their source.
+    @user.acquisition = (session[:meta_first_touch] || {}).merge(
+      "consent" => meta_consented?,
+      "fbp" => cookies[:_fbp],
+      "fbc" => meta_fbc
+    ).compact_blank
 
     if @user.save
       # Create default space (membership auto-created via callback)

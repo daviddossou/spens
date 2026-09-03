@@ -46,6 +46,12 @@ class BudgetEntry < ApplicationRecord
   validates :budget_item_id, uniqueness: { scope: [ :space_id, :month ] }
 
   ##
+  # Callbacks
+  # Meta activation milestone: the month's budget counts as filled once it plans
+  # both income and expenses (CAPI-only, once per user) — the guide's end goal.
+  after_create_commit :record_meta_budget_complete
+
+  ##
   # Scopes
   scope :for_month, ->(month) { where(month: month.beginning_of_month) }
   scope :income, -> { where(kind: "income") }
@@ -75,5 +81,14 @@ class BudgetEntry < ApplicationRecord
   # Drop the exception: the month goes back to whatever the rule plans.
   def revert_to_rule!
     update!(planned_amount: rule_amount, overridden: false, overridden_at: nil)
+  end
+
+  private
+
+  def record_meta_budget_complete
+    scope = space.budget_entries.for_month(month)
+    return unless scope.income.exists? && scope.expense.exists?
+
+    Meta::Activation.record(space.user, :spens_budget_complete)
   end
 end

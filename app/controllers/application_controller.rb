@@ -12,6 +12,7 @@ class ApplicationController < ActionController::Base
   include OnboardingRedirection
   include Impersonation
   include AnalyticsTracking
+  include MetaTracking
 
   protected
 

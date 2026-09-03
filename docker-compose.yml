@@ -46,6 +46,9 @@ services:
       - REDIS_URL=redis://redis:6379/0
       - RAILS_ENV=development
       - RAILS_MAX_THREADS=5
+      - META_PIXEL_ID=${META_PIXEL_ID:-}
+      - META_CAPI_TOKEN=${META_CAPI_TOKEN:-}
+      - META_TEST_EVENT_CODE=${META_TEST_EVENT_CODE:-}
       - BUNDLE_PATH=/usr/local/bundle
     depends_on:
       db:

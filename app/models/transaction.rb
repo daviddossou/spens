@@ -65,6 +65,12 @@ class Transaction < ApplicationRecord
   validates :transaction_date, presence: true
 
   ##
+  # Callbacks
+  # Meta activation milestones (CAPI-only, once per user): first recorded
+  # movement, and first transfer into a goal account — the pivotal saving moment.
+  after_create_commit :record_meta_milestones
+
+  ##
   # Scopes
   scope :transfer_group, ->(group_id) { where(transfer_group_id: group_id) }
 
@@ -107,5 +113,15 @@ class Transaction < ApplicationRecord
       out: legs.find { |t| t.transaction_type.kind == "transfer_out" },
       in: legs.find { |t| t.transaction_type.kind == "transfer_in" }
     }
+  end
+
+  private
+
+  def record_meta_milestones
+    actor = user || space&.user
+    Meta::Activation.record(actor, :spens_first_transaction)
+    if transaction_type&.kind == "transfer_in" && account&.goal.present?
+      Meta::Activation.record(actor, :spens_first_saving)
+    end
   end
 end
