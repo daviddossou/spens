@@ -96,8 +96,8 @@ fr:
           body: "Un montant cible par compte, une progression visible qui donne envie de continuer."
         - title: "Des finances lisibles"
           body: "Revenus et dépenses par catégorie et par mois. Tu vois où part l'argent, et tu coupes ce qui ne sert à rien."
-        - title: "Une saisie intelligente"
-          body: "Écris « taxi 1500 » : Spens devine le montant et la catégorie pour que tu enregistres 2 fois plus vite."
+        - title: "Elle apprend de toi"
+          body: "Corrige une catégorie une fois : Spens s'en souvient et la devine seule la prochaine fois. Plus tu l'utilises, plus elle te ressemble."
     accounts:
       eyebrow: "Commence tout de suite"
       title: "Fais le point de tes comptes."
