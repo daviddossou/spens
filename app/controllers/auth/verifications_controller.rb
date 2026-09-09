@@ -19,7 +19,11 @@ class Auth::VerificationsController < ApplicationController
       sign_in(user)
 
       Analytics.identify(user)
-      Analytics.track(user, context == "sign_up" ? "user_signed_up" : "user_signed_in")
+      if context == "sign_up"
+        Analytics.track(user, "user_signed_up", Analytics.acquisition_properties(user))
+      else
+        Analytics.track(user, "user_signed_in")
+      end
       track_meta_conversion(user, context)
 
       accepted_space = accept_pending_invitation(user)

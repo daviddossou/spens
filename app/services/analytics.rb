@@ -5,6 +5,10 @@
 module Analytics
   module_function
 
+  # First-touch attribution copied from users.acquisition onto the PostHog
+  # person and the sign-up event, so ad performance reads through to activation.
+  ACQUISITION_KEYS = %w[utm_source utm_medium utm_campaign utm_content guide_link landed_at].freeze
+
   def track(user, event, properties = {})
     client&.capture(distinct_id: distinct_id(user), event: event, properties: properties)
   rescue StandardError => e
@@ -14,10 +18,17 @@ module Analytics
   def identify(user)
     client&.identify(
       distinct_id: distinct_id(user),
-      properties: { email: user.email, first_name: user.first_name, created_at: user.created_at&.iso8601 }
+      properties: {
+        email: user.email, first_name: user.first_name, created_at: user.created_at&.iso8601,
+        **acquisition_properties(user)
+      }
     )
   rescue StandardError => e
     Rails.logger.warn("[Analytics] identify failed: #{e.message}")
+  end
+
+  def acquisition_properties(user)
+    user.try(:acquisition)&.slice(*ACQUISITION_KEYS) || {}
   end
 
   def distinct_id(user)

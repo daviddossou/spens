@@ -5,9 +5,10 @@
   edition_year = 2026
 %>
 
-<div data-controller="landing--guide-tracking"
-     data-landing--guide-tracking-url-value="<%= meta_events_path %>"
-     data-landing--guide-tracking-events-value="<%= (@meta_guide_event_ids || {}).to_json %>">
+<div data-controller="landing--meta-events"
+     data-landing--meta-events-url-value="<%= meta_events_path %>"
+     data-landing--meta-events-page-value="guide"
+     data-landing--meta-events-events-value="<%= (@meta_guide_event_ids || {}).to_json %>">
 <div class="landing-dark">
   <nav class="landing-nav guide-nav">
     <%= link_to root_path, class: "landing-nav__brand" do %>
@@ -26,8 +27,8 @@
       <div class="guide-hero__cta-row">
         <a href="<%= pdf[:href] %>" download="<%= pdf[:download] %>" class="landing-btn-light guide-btn-download"
            data-controller="landing--guide-download"
-           data-action="landing--guide-download#redirect landing--guide-tracking#lead"
-           data-landing--guide-tracking-placement-param="hero"
+           data-action="landing--guide-download#redirect landing--meta-events#lead"
+           data-landing--meta-events-placement-param="hero"
            data-landing--guide-download-url-value="<%= guide_thanks_path %>"><%= t("guide.hero.cta") %><span class="guide-btn-download__arrow" aria-hidden="true">↓</span></a>
         <span class="guide-hero__cta-note"><%= t("guide.hero.cta_note") %></span>
       </div>
@@ -86,7 +87,7 @@
   </div>
 </section>
 
-<section class="landing-sect landing-sect--mist" data-landing--guide-tracking-target="extract">
+<section class="landing-sect landing-sect--mist" data-landing--meta-events-target="milestone">
   <div class="landing-container guide-example">
     <div class="guide-example__copy">
       <div class="landing-eyebrow landing-eyebrow--deep"><%= t("guide.example.eyebrow") %></div>
@@ -137,8 +138,8 @@
     <p class="guide-final__body"><%= t("guide.final.body") %></p>
     <a href="<%= pdf[:href] %>" download="<%= pdf[:download] %>" class="landing-btn-light landing-btn-light--lg guide-btn-download"
        data-controller="landing--guide-download"
-       data-action="landing--guide-download#redirect landing--guide-tracking#lead"
-       data-landing--guide-tracking-placement-param="final"
+       data-action="landing--guide-download#redirect landing--meta-events#lead"
+       data-landing--meta-events-placement-param="final"
        data-landing--guide-download-url-value="<%= guide_thanks_path %>"><%= t("guide.final.cta") %><span class="guide-btn-download__arrow" aria-hidden="true">↓</span></a>
     <div class="guide-final__facts">
       <% t("guide.final.facts").each do |fact| %>

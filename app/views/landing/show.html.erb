@@ -20,6 +20,10 @@
   sign_up = new_user_registration_path
 %>
 
+<div data-controller="landing--meta-events"
+     data-landing--meta-events-url-value="<%= meta_events_path %>"
+     data-landing--meta-events-page-value="landing"
+     data-landing--meta-events-events-value="<%= (@meta_landing_event_ids || {}).to_json %>">
 <div class="landing-dark">
   <nav class="landing-nav">
     <%= link_to root_path, class: "landing-nav__brand" do %>
@@ -52,7 +56,8 @@
         <% end %>
       </div>
     </div>
-    <%= link_to t("landing.nav.cta"), sign_up, class: "landing-nav__cta" %>
+    <%= link_to t("landing.nav.cta"), sign_up, class: "landing-nav__cta",
+                data: { action: "landing--meta-events#signup", "landing--meta-events-placement-param": "nav" } %>
   </nav>
 
   <header class="landing-hero">
@@ -60,7 +65,8 @@
     <h1 class="landing-hero__title"><%= t("landing.hero.title") %></h1>
     <p class="landing-hero__subtitle"><%= t("landing.hero.subtitle") %></p>
     <div class="landing-hero__cta-row">
-      <%= link_to t("landing.hero.cta"), sign_up, class: "landing-btn-light landing-btn-light--lg" %>
+      <%= link_to t("landing.hero.cta"), sign_up, class: "landing-btn-light landing-btn-light--lg",
+                  data: { action: "landing--meta-events#signup", "landing--meta-events-placement-param": "hero" } %>
     </div>
     <div class="landing-hero__row">
       <div class="landing-hero__side">
@@ -105,7 +111,7 @@
   </header>
 </div>
 
-<section class="landing-sect landing-sect--gray" data-controller="landing--diagnostic"
+<section class="landing-sect landing-sect--gray" data-landing--meta-events-target="milestone" data-controller="landing--diagnostic"
          data-landing--diagnostic-tiers-value="<%= {
            none: { title: t("landing.diagnostic.tiers.none.title"), line: t("landing.diagnostic.tiers.none.line") },
            low: { title: t("landing.diagnostic.tiers.low.title"), line: t("landing.diagnostic.tiers.low.line") },
@@ -136,7 +142,8 @@
         <div class="landing-recap__title" data-landing--diagnostic-target="title" aria-live="polite"><%= t("landing.diagnostic.tiers.none.title") %></div>
         <div class="landing-recap__line" data-landing--diagnostic-target="line"><%= t("landing.diagnostic.tiers.none.line") %></div>
       </div>
-      <%= link_to t("landing.diagnostic.cta"), sign_up, class: "landing-btn-light" %>
+      <%= link_to t("landing.diagnostic.cta"), sign_up, class: "landing-btn-light",
+                  data: { action: "landing--meta-events#signup", "landing--meta-events-placement-param": "diagnostic" } %>
     </div>
   </div>
 </section>
@@ -284,7 +291,8 @@
         <div class="landing-recap__label"><%= t("landing.accounts.total_label") %></div>
         <div class="landing-recap__total"><span data-landing--accounts-target="total">0</span> <span data-currency-label>XOF</span></div>
       </div>
-      <%= link_to t("landing.accounts.cta"), sign_up, class: "landing-btn-light", data: { action: "landing--accounts#save" } %>
+      <%= link_to t("landing.accounts.cta"), sign_up, class: "landing-btn-light",
+                  data: { action: "landing--accounts#save landing--meta-events#signup", "landing--meta-events-placement-param": "accounts" } %>
     </div>
     <p class="landing-acc__note" data-landing--accounts-target="note" hidden><%= t("landing.accounts.note") %></p>
   </div>
@@ -297,7 +305,8 @@
         <div class="landing-eyebrow"><%= t("landing.pricing.launch.eyebrow") %></div>
         <div class="landing-price__amount"><%= t("landing.pricing.launch.price") %></div>
         <p class="landing-price__body"><%= t("landing.pricing.launch.body") %></p>
-        <%= link_to t("landing.pricing.launch.cta"), sign_up, class: "landing-price__cta" %>
+        <%= link_to t("landing.pricing.launch.cta"), sign_up, class: "landing-price__cta",
+                    data: { action: "landing--meta-events#signup", "landing--meta-events-placement-param": "pricing" } %>
       </div>
       <div class="landing-price landing-price--premium">
         <div class="landing-eyebrow landing-eyebrow--muted"><%= t("landing.pricing.premium.eyebrow") %></div>
@@ -313,7 +322,8 @@
   <div class="landing-container">
     <h2 class="landing-h2 landing-h2--on-dark landing-final__title"><%= t("landing.final.title") %></h2>
     <p class="landing-final__body"><%= t("landing.final.body") %></p>
-    <%= link_to t("landing.final.cta"), sign_up, class: "landing-btn-light landing-btn-light--lg" %>
+    <%= link_to t("landing.final.cta"), sign_up, class: "landing-btn-light landing-btn-light--lg",
+                data: { action: "landing--meta-events#signup", "landing--meta-events-placement-param": "final" } %>
     <div class="landing-final__footer">
       <span><%= t("landing.footer.copyright", year: Date.current.year) %></span>
       <%= link_to t("landing.footer.privacy"), privacy_path %>
@@ -323,3 +333,4 @@
     </div>
   </div>
 </footer>
+</div>
