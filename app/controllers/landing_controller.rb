@@ -7,7 +7,13 @@ class LandingController < ApplicationController
   def show
     return redirect_to dashboard_path if user_signed_in?
     # The Android app opens straight on sign-in; the landing is a web thing.
-    redirect_to new_user_session_path if turbo_native_app?
+    return redirect_to new_user_session_path if turbo_native_app?
+
+    # Server-issued dedup ids for the browser-triggered events on this page.
+    @meta_landing_event_ids = {
+      view_content: meta_issue_event_id(:view_content),
+      signup_start: meta_issue_event_id(:signup_start)
+    }
   end
 
   # Lead-magnet page for the free savings guide (PDF download, no email gate).

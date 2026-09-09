@@ -9,8 +9,10 @@ class MetaEventsController < ApplicationController
   EVENTS = {
     "view_content" => "ViewContent",
     "lead_hero" => "Lead",
-    "lead_final" => "Lead"
+    "lead_final" => "Lead",
+    "signup_start" => "spens_signup_start"
   }.freeze
+  SIGNUP_PLACEMENTS = %w[nav hero diagnostic accounts pricing final].freeze
 
   def create
     event_name = EVENTS[params[:event]]
@@ -19,8 +21,9 @@ class MetaEventsController < ApplicationController
 
     custom_data = {}
     custom_data[:content_name] = params[:event].delete_prefix("lead_") if event_name == "Lead"
+    custom_data[:content_name] = params[:placement].presence_in(SIGNUP_PLACEMENTS) if event_name == "spens_signup_start"
 
-    meta_send_server_event(event_name, event_id: event_id, user: current_user, custom_data: custom_data)
+    meta_send_server_event(event_name, event_id: event_id, user: current_user, custom_data: custom_data.compact)
     head :no_content
   end
 end
