@@ -33,6 +33,8 @@ Rails.application.routes.draw do
     get "guide", to: "landing#guide", as: :guide
     get "guide/thanks", to: "landing#guide_thanks", as: :guide_thanks
     post "meta/events", to: "meta_events#create", as: :meta_events
+    # Short redirects printed in the guide PDF (QR codes + links)
+    get "g/:code", to: "short_links#show", as: :short_link
     get "privacy", to: "legal#privacy", as: :privacy
     get "terms", to: "legal#terms", as: :terms
     get "dashboard", to: "home#show"
