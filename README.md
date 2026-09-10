@@ -67,7 +67,7 @@ URL-scoped locale (`/en/...`, `/fr/...`) with automatic detection from browser h
 | Assets | Propshaft |
 | Money | money-rails, countries gem |
 | Email | Brevo SMTP |
-| Testing | RSpec, FactoryBot, SimpleCov |
+| Testing | RSpec, FactoryBot, SimpleCov, Vitest, jsdom |
 | Code Quality | RuboCop (Rails + RSpec cops), Brakeman |
 | Deployment | Kamal 2, Docker, GHCR |
 
@@ -86,6 +86,7 @@ URL-scoped locale (`/en/...`, `/fr/...`) with automatic detection from browser h
 ### Prerequisites
 
 - Docker and Docker Compose
+- Node.js 20.19+ (Node 22 is configured in `.nvmrc`) for JavaScript specs
 - ngrok account (optional, for tunneling)
 
 ### Setup
@@ -139,6 +140,10 @@ The app is available at http://localhost:3000.
 
 # Full backtrace debugging
 ./bin/docker-manage test-debug
+
+# Run Stimulus controller specs (or keep them running in watch mode)
+npm run test:javascript
+npm run test:javascript:watch
 ```
 
 ### Code Quality
