@@ -218,13 +218,6 @@
   background-color: var(--color-off-white, #EBEDF7);
 }
 
-.app-header__dropdown-item--disabled {
-  color: var(--text-muted, #8D909F);
-  cursor: default;
-  pointer-events: none;
-  opacity: 0.6;
-}
-
 .app-header__dropdown-item--danger {
   color: var(--color-danger, #F44336);
 }
