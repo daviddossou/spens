@@ -1,24 +1,23 @@
 # frozen_string_literal: true
 
-# DEV-ONLY time travel, for building demo data and taking screenshots.
+# DEV-ONLY time travel, OPT-IN via a single env var. Fully inert unless BOTH:
+#   - Rails.env.development?
+#   - ENV["DEV_TIME_TRAVEL"] holds a parseable datetime
+# When off, nothing is prepended and no middleware is added — real clock only.
 #
-# When tmp/fake_now.txt exists and holds a parseable datetime (e.g.
-# "2026-08-28 12:00:00"), every web request sees that instant as "now".
+# To enable (for demo data / screenshots): set the instant in the web container's
+# env and restart web, e.g.
+#   DEV_TIME_TRAVEL="2026-08-28 12:00:00"   (docker-compose or shell)
+#   docker compose restart web
+# Unset it (or leave it blank) to return to the real clock.
+#
 # The app uses zone-aware Time.current / Date.current everywhere (no raw
 # Date.today / Time.now), so overriding the current TimeZone is sufficient.
-#
-# Change the date by editing the file — no restart needed. Disable by deleting
-# the file, or remove this initializer entirely (then restart web).
-if Rails.env.development?
+if Rails.env.development? && ENV["DEV_TIME_TRAVEL"].to_s.strip.present?
   module DevTimeTravel
-    FILE = Rails.root.join("tmp", "fake_now.txt")
-
-    # Parsed override for the current request, or nil when disabled.
+    # The configured instant, or nil if it can't be parsed (then: real clock).
     def self.override
-      return nil unless File.exist?(FILE)
-
-      raw = File.read(FILE).strip
-      raw.empty? ? nil : Time.find_zone("UTC").parse(raw)
+      Time.find_zone("UTC").parse(ENV["DEV_TIME_TRAVEL"].to_s.strip)
     rescue StandardError
       nil
     end
