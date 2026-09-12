@@ -87,6 +87,20 @@
               data: { transaction_form_target: "amount", action: "input->transaction-form#syncCta" } %>
         <span class="budget-amount__currency"><%= get_currency_symbol(current_space.currency) %></span>
       </div>
+      <% if filled.include?('amount') %>
+        <p class="transaction-form__read-hint"><%= t('transactions.new.phrase_read') %></p>
+      <% elsif Array(@amount_candidates).size > 1 %>
+        <div class="amount-candidates" role="group" aria-label="<%= t('transactions.new.amount_ambiguous') %>">
+          <p class="amount-candidates__hint"><%= t('transactions.new.amount_ambiguous') %></p>
+          <div class="pill-choice amount-candidates__pills">
+            <% @amount_candidates.each do |candidate| %>
+              <button type="button" class="pill<%= ' pill--active' if @form.amount.to_f == candidate.to_f %>"
+                      data-amount="<%= candidate % 1 == 0 ? candidate.to_i : candidate %>"
+                      data-action="transaction-form#pickAmount"><%= money(candidate, current_space.currency) %></button>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
     </div>
 
     <!-- Transfer Mode: From and To Accounts -->

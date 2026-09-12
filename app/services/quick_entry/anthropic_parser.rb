@@ -119,6 +119,8 @@ module QuickEntry
       {
         model: self.class.config[:model],
         max_tokens: MAX_TOKENS,
+        # Parsing, not writing: the same phrase must always read the same way.
+        temperature: 0,
         system: system_prompt,
         messages: [ { role: "user", content: text } ],
         tools: [ tool_schema ],

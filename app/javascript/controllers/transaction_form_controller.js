@@ -91,6 +91,15 @@ export default class extends Controller {
     }
   }
 
+  // A tapped candidate becomes the amount; the input event lets the phrase controller lock it.
+  pickAmount(event) {
+    if (!this.hasAmountTarget) return
+    const pill = event.currentTarget
+    this.amountTarget.value = pill.dataset.amount
+    this.amountTarget.dispatchEvent(new Event("input", { bubbles: true }))
+    pill.closest(".amount-candidates__pills")?.querySelectorAll(".pill").forEach((p) => p.classList.toggle("pill--active", p === pill))
+  }
+
   // The submit button carries the amount ("Save 24.90 €") and names what's
   // missing while it's blank ("Enter an amount").
   syncCta() {

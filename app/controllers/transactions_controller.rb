@@ -70,12 +70,36 @@ class TransactionsController < ApplicationController
   # Precedence, lowest first: carried query params < what the phrase parsed <
   # fields the user set by hand (locked) < the POST body. Kind defaults to expense.
   def build_form(payload = {})
-    # POST body (payload) wins over carried query params; kind defaults to expense.
-    merged = carried_params.merge(payload.to_h.symbolize_keys)
+    merged = carried_params
+    @text = params[:text].to_s.strip.presence
+    @filled_fields = []
+    if @text && payload.blank?
+      parse = parse_phrase(@text, ai: params[:ai] == "1")
+      parsed = parse.draft.to_form_payload.slice(*PARSED_KEYS)
+      parsed.delete(:kind) unless parse.ai_draft || phrase_decided_kind?(parsed)
+      # Rules alone left gaps: the sheet asks for one AI pass once the user pauses.
+      @phrase_needs_ai = params[:ai] != "1" && !parse.draft.confident? && phrase_settled?(parse.draft) &&
+                         QuickEntry::Coordinator.ai_enabled?
+      @phrase_attempt = log_attempt(@text, parse) if parse.ai_draft
+      # A category belongs to a kind: a locked or carried kind that differs drops it.
+      chosen_kind = locked_params[:kind].presence || merged[:kind].presence
+      parsed.delete(:transaction_type_name) if chosen_kind && parsed[:kind] && parsed[:kind] != chosen_kind
+      # Today is the parser's default, not something the phrase said.
+      parsed.delete(:transaction_date) if parsed[:transaction_date] == Date.current
+      @filled_fields = (parsed.keys - locked_params.keys - %i[note label]).map(&:to_s)
+      # Several numbers and no winner: the best guess stays, the user picks (or types).
+      if parse.draft.amount_ambiguous? && locked_params[:amount].blank?
+        @amount_candidates = parse.draft.amount_candidates.uniq
+        @filled_fields.delete("amount")
+      end
+      merged = merged.merge(parsed)
+    end
+    merged = merged.merge(locked_params).merge(payload.to_h.symbolize_keys)
     merged[:kind] = merged[:kind].presence || "expense"
 
     @form = TransactionForm.new(current_space, merged)
     @form.user = current_user
+    @form.quick_entry_attempt_id = @phrase_attempt.id if @phrase_attempt
 
     # Opened from a person's page: the "who" is known, so the field hides and the
     # cards lock open. Keep the relation for the header balance line.
@@ -99,31 +123,7 @@ class TransactionsController < ApplicationController
   def carried_params
     CARRIED_PARAM_KEYS.index_with { |key| params[key] }.compact
   end
-    @form.quick_entry_attempt_id = @phrase_attempt.id if @phrase_attempt
 
-  def transaction_params
-    params.require(:transaction).permit(
-      :kind,
-      :account_name,
-      :from_account_name,
-      :to_account_name,
-      :amount,
-      :fee_amount,
-      :transaction_date,
-      :transaction_type_name,
-      :note,
-      :debt_id,
-      :description,
-      :contact_name,
-      :direction,
-      :quick_entry_attempt_id
-    )
-  end
-
-  # The quick-entry fallback prefilled this form: link the created transaction back to the
-  # attempt so what the user completed (e.g. the category they picked) feeds the learning
-  # loop. Best-effort — never breaks the submission.
-  def link_quick_entry_attempt
   PARSED_KEYS = %i[
     kind amount account_name from_account_name to_account_name transaction_type_name
     fee_amount transaction_date note label contact_name direction debt_id
@@ -197,6 +197,29 @@ class TransactionsController < ApplicationController
     nil
   end
 
+  def transaction_params
+    params.require(:transaction).permit(
+      :kind,
+      :account_name,
+      :from_account_name,
+      :to_account_name,
+      :amount,
+      :fee_amount,
+      :transaction_date,
+      :transaction_type_name,
+      :note,
+      :debt_id,
+      :description,
+      :contact_name,
+      :direction,
+      :quick_entry_attempt_id
+    )
+  end
+
+  # The quick-entry fallback prefilled this form: link the created transaction back to the
+  # attempt so what the user completed (e.g. the category they picked) feeds the learning
+  # loop. Best-effort — never breaks the submission.
+  def link_quick_entry_attempt
     id = params.dig(:transaction, :quick_entry_attempt_id)
     return if id.blank?
 
@@ -209,6 +232,7 @@ class TransactionsController < ApplicationController
     # attempt is linked here — so it sees the link and stays off the request path.
   rescue StandardError => e
     Rails.logger.warn("quick-entry attempt linking failed: #{e.message}")
+    nil
   end
 
   def update_params
@@ -219,4 +243,3 @@ class TransactionsController < ApplicationController
     )
   end
 end
-    nil

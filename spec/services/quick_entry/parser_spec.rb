@@ -19,6 +19,31 @@ RSpec.describe QuickEntry::Parser do
       expect(parse("2.5k groceries").amount).to eq(2500)
     end
 
+    it "prefers the number carrying the currency when several appear, and keeps the date apart" do
+      draft = parse("Attieke 25 boules DD Trade Republic à 10€ le 15 août", locale: :fr)
+      expect(draft.amount).to eq(10)
+      expect(draft.amount_candidates).to eq([ 25, 10 ])
+      expect(draft.unresolved).not_to include(:amount)
+      expect(draft.transaction_date).to eq(Date.new(Date.current.year, 8, 15))
+      expect(parse("$20 lunch and 5 tip").amount).to eq(20)
+    end
+
+    it "flags several bare numbers as ambiguous, best guess first" do
+      draft = parse("25 boules attieke 10 chacune", locale: :fr)
+      expect(draft.amount).to eq(25)
+      expect(draft.amount_candidates).to eq([ 25, 10 ])
+      expect(draft.unresolved).to include(:amount)
+      expect(draft).not_to be_confident
+    end
+
+    it "does not count a fee as a competing amount" do
+      create(:account, space: space, name: "Ecobank")
+      create(:account, space: space, name: "Mobile money")
+      draft = parse("transferred 50000 from Ecobank to Mobile money with 500 fee")
+      expect(draft.amount).to eq(50_000)
+      expect(draft.unresolved).not_to include(:amount)
+    end
+
     it "reads spelled-out numbers (EN and FR)" do
       expect(parse("two thousand").amount).to eq(2000)
       expect(parse("deux mille cinq cents", locale: :fr).amount).to eq(2500)
@@ -139,6 +164,20 @@ RSpec.describe QuickEntry::Parser do
 
     it "is blank when no account is mentioned" do
       expect(parse("2000 zem").account_name).to be_nil
+    end
+
+    it "maps a brand only to an account named after it, never to a sibling operator" do
+      create(:account, space: space, name: "Moov Money")
+      expect(parse("3500 groceries yesterday MTN").account_name).to be_nil
+
+      create(:account, space: space, name: "MTN MoMo")
+      expect(parse("3500 groceries yesterday MTN").account_name).to eq("MTN MoMo")
+    end
+
+    it "maps a generic instrument word to any account of its group" do
+      create(:account, space: space, name: "Moov Money")
+      expect(parse("3500 groceries by momo").account_name).to eq("Moov Money")
+      expect(parse("3500 provisions en espèces", locale: :fr).account_name).to be_nil
     end
   end
 

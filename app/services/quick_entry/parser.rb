@@ -30,6 +30,7 @@ module QuickEntry
       detect_date # first: date digits are blanked out before amount detection reads the text
       @amount = detect_amount
       @fee = detect_fee(@amount)
+      @amount_ambiguous = ambiguous_amount?
 
       return transfer_draft if transfer?
       return debt_draft if debt?
@@ -54,7 +55,7 @@ module QuickEntry
       person = detect_person
 
       unresolved = []
-      unresolved << :amount if @amount.blank?
+      unresolved << :amount if @amount.blank? || @amount_ambiguous
       unresolved << :debt if person.blank?
 
       Draft.new(
@@ -66,7 +67,8 @@ module QuickEntry
         fee_amount: @fee,
         transaction_date: detect_date,
         description: @text.presence,
-        unresolved: unresolved
+        unresolved: unresolved,
+        amount_candidates: amount_candidates.map(&:first)
       )
     end
 
@@ -103,7 +105,7 @@ module QuickEntry
       accounts = transfer_accounts
 
       unresolved = []
-      unresolved << :amount if @amount.blank?
+      unresolved << :amount if @amount.blank? || @amount_ambiguous
       unresolved << :from_account if accounts[:from].blank?
       unresolved << :to_account if accounts[:to].blank?
 
@@ -115,7 +117,8 @@ module QuickEntry
         fee_amount: @fee,
         transaction_date: detect_date,
         description: @text.presence,
-        unresolved: unresolved
+        unresolved: unresolved,
+        amount_candidates: amount_candidates.map(&:first)
       )
     end
 
@@ -123,7 +126,7 @@ module QuickEntry
       type_name, kind = resolve_category(@kind)
 
       unresolved = []
-      unresolved << :amount if @amount.blank?
+      unresolved << :amount if @amount.blank? || @amount_ambiguous
       unresolved << :category if type_name.blank?
 
       Draft.new(
@@ -135,7 +138,8 @@ module QuickEntry
         transaction_date: detect_date,
         description: @text.presence,
         debt_id: nil,
-        unresolved: unresolved
+        unresolved: unresolved,
+        amount_candidates: amount_candidates.map(&:first)
       )
     end
 
@@ -147,8 +151,9 @@ module QuickEntry
 
     # Transliterated + downcased, keeping word boundaries (CategoryText.normalize strips them)
     # so prepositions and number runs can be read positionally.
+    # Currency symbols would transliterate to "?", so they become words first.
     def loose_text
-      @loose_text ||= I18n.transliterate(@text).downcase
+      @loose_text ||= I18n.transliterate(@text.gsub(/[€$£]/, CURRENCY_SYMBOL_WORDS)).downcase
     end
 
     def loose_tokens
@@ -223,8 +228,38 @@ module QuickEntry
 
     # --- amount -------------------------------------------------------------
 
+    # One number: that's it. Several: a number carrying the currency ("10€", "5000 fcfa")
+    # wins; otherwise the first is a best guess and the draft is flagged ambiguous, so the
+    # AI (then the user) settles it instead of an arbitrary pick.
     def detect_amount
-      amount_in(amount_source)
+      candidates = amount_candidates
+      return NumberWords.parse(amount_source, @lang) if candidates.empty?
+
+      marked = candidates.select(&:last)
+      return marked.first.first if marked.size == 1
+
+      candidates.first.first
+    end
+
+    CURRENCY_SYMBOL_WORDS = { "€" => " eur ", "$" => " usd ", "£" => " gbp " }.freeze
+    CURRENCY_MARK = /\A\s*(?:eur\b|euros?\b|usd\b|gbp\b|fcfa\b|cfa\b|xof\b|francs?\b|f\b|dollars?\b)/i
+    CURRENCY_PREFIX = /\b(?:eur|usd|gbp)\s*\z/i
+
+    # [[value, currency_marked?], …] in reading order, dates already blanked out.
+    def amount_candidates
+      @amount_candidates ||= amount_source.to_enum(:scan, /\d+(?:[.,]\d+)?\s*[km]\b|\d[\d .,]*\d|\d/i).map do
+        m = Regexp.last_match
+        value = amount_in(m[0]) or next
+        marked = m.post_match.match?(CURRENCY_MARK) || m.pre_match.match?(CURRENCY_PREFIX)
+        [ value, marked ]
+      end.compact
+    end
+
+    def ambiguous_amount?
+      values = amount_candidates.map(&:first).uniq - [ @fee ]
+      return false if values.size < 2
+
+      amount_candidates.count(&:last) != 1
     end
 
     # The utterance with date substrings blanked, so "le 16 juin" or "16/06" can never be
@@ -422,14 +457,26 @@ module QuickEntry
       end
       return direct if direct
 
+      # An instrument word: a brand ("mtn") only resolves to an account named after it; a
+      # generic word ("momo", "cash") resolves to any account of its group.
+      generic = Keywords.generic_instruments(@lang)
       Keywords.instruments(@lang).each_value do |phrases|
-        next unless match_any?(phrases)
+        matched = phrases.select { |p| match_any?(p) }
+        next if matched.empty?
 
-        hit = names.find { |name| phrases.any? { |p| CategoryText.normalize(name).include?(CategoryText.normalize(p)) } }
+        named = account_containing(names, matched)
+        return named if named
+        next if matched.any? { |p| generic.exclude?(p) }
+
+        hit = account_containing(names, phrases)
         return hit if hit
       end
 
       nil
+    end
+
+    def account_containing(names, phrases)
+      names.find { |name| phrases.any? { |p| CategoryText.normalize(name).include?(CategoryText.normalize(p)) } }
     end
 
     # Source/destination of a transfer, each resolved to an existing account named after a

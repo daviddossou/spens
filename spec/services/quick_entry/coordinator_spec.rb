@@ -47,6 +47,50 @@ RSpec.describe QuickEntry::Coordinator do
   context "with the LLM enabled" do
     before { allow(QuickEntry::LlmParser).to receive(:enabled?).and_return(true) }
 
+    it "lets the AI settle an ambiguous amount when it picks one of the candidates" do
+      stub_llm(kind: "expense", amount: 10, category_key: "groceries", category_name: TransactionTaxonomy.name("groceries", :en))
+      draft = draft_for("25 balls of attieke 10 each")
+      expect(draft.amount).to eq(10)
+      expect(draft.unresolved).not_to include(:amount)
+    end
+
+    it "keeps the amount unresolved when the AI computes a total that isn't in the phrase" do
+      stub_llm(kind: "expense", amount: 250, category_key: "groceries", category_name: TransactionTaxonomy.name("groceries", :en))
+      draft = draft_for("25 balls of attieke 10 each")
+      expect(draft.amount).to eq(25)
+      expect(draft.amount_candidates).to eq([ 25, 10 ])
+      expect(draft.unresolved).to include(:amount)
+      expect(draft).not_to be_confident
+    end
+
+    it "ignores an AI transfer that names no two existing accounts (a mentioned account is not a transfer)" do
+      create(:account, space: space, name: "MTN Momo")
+      stub_llm(kind: "transfer", amount: 1000, to_account: "MTN Momo")
+
+      draft = draft_for("attieke 1000 on my MTN Momo")
+      expect(draft.kind).to eq("expense")
+      expect(draft.account_name).to eq("MTN Momo")
+    end
+
+    it "ignores an AI debt that names no person" do
+      stub_llm(kind: "debt", amount: 25, direction: "lent")
+
+      draft = draft_for("attieke 25 balls")
+      expect(draft.kind).to eq("expense")
+      expect(draft.amount).to eq(25)
+    end
+
+    it "ignores an AI transfer whose two ends are both unknown accounts" do
+      stub_llm(kind: "transfer", amount: 1000, from_account: "Attieke", to_account: "Balls")
+
+      expect(draft_for("attieke 1000 balls").kind).to eq("expense")
+    end
+
+    it "derives the kind from the AI's category, never from a contradicting stated kind" do
+      stub_llm(kind: "income", amount: 3000, category_key: "groceries", category_name: TransactionTaxonomy.name("groceries", :en))
+      expect(draft_for("3000 ndogou").kind).to eq("expense")
+    end
+
     def stub_llm(**attrs)
       llm = instance_double(QuickEntry::LlmParser, parse: QuickEntry::LlmParser::Result.new(**attrs))
       allow(QuickEntry::LlmParser).to receive(:new).and_return(llm)
@@ -119,13 +163,12 @@ RSpec.describe QuickEntry::Coordinator do
       expect(draft).to be_confident
     end
 
-    it "still prefills the form when the AI cannot name the person" do
+    it "reads an AI debt without a named person as a plain expense (the user can still pick Debt)" do
       stub_llm(kind: "debt", amount: 2000, person: nil, direction: "lent")
 
       draft = draft_for("dépanné quelqu'un de 2000", locale: :fr)
-      expect(draft.kind).to eq("debt_out")
-      expect(draft.contact_name).to be_nil
-      expect(draft).not_to be_confident
+      expect(draft.kind).to eq("expense")
+      expect(draft.amount).to eq(2000)
     end
   end
 end

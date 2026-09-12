@@ -19,6 +19,7 @@ module QuickEntry
       def date(lang)    = section(lang, "date")
       def weekdays(lang) = section(lang, "weekdays")
       def instruments(lang) = section(lang, "instruments")
+      def generic_instruments(lang) = Array(for_lang(lang)["generic_instruments"])
       def transfer_prepositions(lang) = section(lang, "transfer_prepositions")
       def fee(lang)     = Array(for_lang(lang)["fee"])
       def extractor_stopwords(lang) = Array(for_lang(lang)["extractor_stopwords"])
