@@ -24,8 +24,9 @@ module QuickEntry
     end
 
     def call
-      rules = apply_context(DebtLinker.link(Parser.parse(@text, space: @space, locale: @locale), text: @text, space: @space))
-      return Result.new(draft: rules, ai_draft: nil) if rules.confident? || form_ready?(rules) || !ai_parser
+      rules = Parser.parse(@text, space: @space, locale: @locale).with(note: raw_note)
+      rules = apply_context(DebtLinker.link(rules, text: @text, space: @space))
+      return Result.new(draft: rules, ai_draft: nil) if !@ai || rules.confident? || form_ready?(rules) || !ai_parser
 
       ai = ai_parser.new(space: @space, locale: @locale).parse(@text)
       return Result.new(draft: rules, ai_draft: nil) unless ai

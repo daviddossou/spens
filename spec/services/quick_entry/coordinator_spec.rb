@@ -14,6 +14,15 @@ RSpec.describe QuickEntry::Coordinator do
     expect(draft.transaction_type_name).to eq(TransactionTaxonomy.name("moto_taxi", :en))
   end
 
+  it "keeps the raw text as the note on a rules-only draft" do
+    create(:account, space: space, name: "Compte bancaire")
+
+    draft = draft_for("essence JNP 5000 compte bancaire", locale: :fr)
+
+    expect(draft).to be_confident
+    expect(draft.note).to eq("essence JNP 5000 compte bancaire")
+  end
+
   it "parses a French utterance even in an English session (language auto-detection)" do
     create(:account, space: space, name: "Orabank")
     create(:account, space: space, name: "Mobile money")
