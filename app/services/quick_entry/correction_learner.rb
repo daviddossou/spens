@@ -24,14 +24,24 @@ module QuickEntry
 
       @transaction.reload
       diff = compute_diff
-      return if diff.empty?
+      if diff.empty?
+        # An untouched parse on first save is a "kept" — a later edit with no diff changes nothing.
+        resolve!("kept") if @attempt.pending?
+        return
+      end
 
       @attempt.update!(outcome: "edited", corrections: diff)
+      Analytics.track_quick_entry_resolved(@attempt)
       teach_category(diff["transaction_type_name"]) if diff.key?("transaction_type_name")
       teach_kind(diff["kind"]) if diff.key?("kind")
     end
 
     private
+
+    def resolve!(outcome)
+      @attempt.update!(outcome: outcome)
+      Analytics.track_quick_entry_resolved(@attempt)
+    end
 
     def compute_diff
       draft = @attempt.rules_draft

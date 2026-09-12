@@ -140,7 +140,7 @@ RSpec.describe QuickEntry::CorrectionLearner do
     expect(LearnedAlias.count).to eq(0)
   end
 
-  it "does nothing when the parse matched (no diff)" do
+  it "marks the attempt kept when the parse matched (no diff)" do
     transaction = attempt_for(
       text: "2000 groceries",
       type_name: groceries_name,
@@ -151,7 +151,7 @@ RSpec.describe QuickEntry::CorrectionLearner do
     described_class.learn(transaction)
 
     expect(LearnedAlias.count).to eq(0)
-    expect(QuickEntryAttempt.find_by(transaction_id: transaction.id).outcome).to eq("pending")
+    expect(QuickEntryAttempt.find_by(transaction_id: transaction.id).outcome).to eq("kept")
   end
 
   it "ignores transactions that didn't come from quick-entry" do

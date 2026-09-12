@@ -18,6 +18,7 @@ class SpacesController < ApplicationController
 
     if @space.save
       set_current_space(@space)
+      Analytics.group_identify(@space)
       redirect_to onboarding_path, notice: t(".success"), status: :see_other
     else
       render :new, status: :unprocessable_entity
@@ -33,6 +34,7 @@ class SpacesController < ApplicationController
     @space = current_user.spaces.find(params[:id])
 
     if @space.update(space_params)
+      Analytics.group_identify(@space)
       redirect_to spaces_path, notice: t(".success"), status: :see_other
     else
       render :edit, status: :unprocessable_entity
