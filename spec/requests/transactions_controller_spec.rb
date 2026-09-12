@@ -757,6 +757,10 @@ RSpec.describe "Transactions phrase fill", type: :request do
       expect(response.body.scan("phrase-band__input").size).to eq(1)
       # The mic ships hidden: only a browser exposing speech recognition reveals it.
       expect(response.body).to match(/class="phrase-band__mic" hidden/)
+
+      # The Android app's WebView declares the API but can't run it: no mic at all there.
+      get new_transaction_path, headers: { "User-Agent" => "Turbo Native Android Mozilla/5.0 (Linux; Android 14; wv)" }
+      expect(response.body).not_to include("phrase-band__mic")
       # A hover prefetch of a kind card would otherwise read as a manual kind choice.
       expect(response.body).to include('data-turbo-prefetch="false"')
     end

@@ -9,9 +9,13 @@ export default class extends Controller {
   static targets = ["input", "button"]
   static values = { lang: String, listeningLabel: String, idleLabel: String }
 
+  // Android WebViews (the Spens app included) declare the API without a working engine.
+  static WEBVIEW = /Turbo Native|; wv\)/
+
   connect() {
     const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition
     if (!Recognition || !this.hasButtonTarget) return
+    if (this.constructor.WEBVIEW.test(navigator.userAgent)) return
 
     this.Recognition = Recognition
     this.buttonTarget.hidden = false
