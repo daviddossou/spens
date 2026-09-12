@@ -468,8 +468,7 @@
   color: var(--text-muted);
 }
 
-/* Context pill */
-.quick-entry__pill {
+.phrase-band__mic {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -479,7 +478,51 @@
   flex-shrink: 0;
   border: 0;
   border-radius: var(--radius-full);
-  font-size: var(--font-size-body);
+  background: transparent;
+  color: var(--color-primary);
+  cursor: pointer;
+  transition: background-color 150ms ease-out;
+}
+
+.phrase-band__mic svg {
+  width: 20px;
+  height: 20px;
+}
+
+.phrase-band__mic:hover {
+  background: var(--color-primary-20);
+}
+
+.phrase-band__mic:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-focus);
+}
+
+.phrase-band__mic--listening {
+  color: var(--color-white);
+  background: var(--color-danger);
+  animation: phrase-mic-pulse 1.2s ease-out infinite;
+}
+
+.phrase-band__mic--listening:hover {
+  background: var(--color-danger-dark);
+}
+
+@keyframes phrase-mic-pulse {
+  0% { box-shadow: 0 0 0 0 rgba(var(--color-danger-rgb), 0.45); }
+  100% { box-shadow: 0 0 0 10px rgba(var(--color-danger-rgb), 0); }
+}
+
+.phrase-band__help,
+.phrase-band__status {
+  margin: 0;
+  font-size: var(--font-size-label);
+  line-height: 1.4;
+  color: var(--text-muted);
+}
+
+.phrase-band__status--ok {
+  color: var(--color-success-dark);
   font-weight: var(--font-weight-semibold);
 }
 
@@ -539,8 +582,40 @@
 .transaction-form__read-hint {
   margin: 0.25rem 0 0;
   text-align: center;
+  font-size: var(--font-size-label);
   font-weight: var(--font-weight-semibold);
   color: var(--color-primary);
-  text-decoration: none;
 }
-  font-size: var(--font-size-label);
+
+.transaction-form__read-hint::before {
+  content: "";
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  margin-right: 0.35rem;
+  vertical-align: middle;
+  border-radius: var(--radius-full);
+  background: var(--color-primary);
+}
+
+.transaction-form__toggle.is-filled .link-button::after {
+  content: "";
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  margin-left: 0.35rem;
+  vertical-align: middle;
+  border-radius: var(--radius-full);
+  background: var(--color-primary);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .phrase-band__field,
+  .phrase-band__mic {
+    transition: none;
+  }
+
+  .phrase-band__mic--listening {
+    animation: none;
+  }
+}
