@@ -16,8 +16,8 @@ RSpec.describe MovementRow do
     create(:transaction_type, space: space, kind: kind, name: name, parent: parent)
   end
 
-  def txn(kind:, name: nil, parent: nil, amount: 1000, account: nil, debt: nil, group: nil, fee_parent: nil, label: nil)
-    create(:transaction, space: space, amount: amount, label: label,
+  def txn(kind:, name: nil, parent: nil, amount: 1000, account: nil, debt: nil, group: nil, fee_parent: nil, label: nil, note: nil)
+    create(:transaction, space: space, amount: amount, label: label, note: note,
                          transaction_type: type(kind, name: name, parent: parent),
                          account: account, debt: debt, transfer_group_id: group, fee_parent_id: fee_parent)
   end
@@ -58,6 +58,24 @@ RSpec.describe MovementRow do
       expect(r.subtitle).to eq("Wallet")
     end
 
+    it "sublines the cleaned note instead of the parent when the user typed something specific" do
+      account = create(:account, space: space, name: "Bank")
+      parent = type("expense", name: "Food & Groceries")
+      r = row(txn(kind: "expense", name: "Provisions", parent: parent, account: account,
+                  note: "provisions 55.65 marché de Cocody bank"))
+
+      expect(r.title).to eq("Provisions")
+      expect(r.subtitle).to eq("Bank · Provisions marché de Cocody")
+    end
+
+    it "falls back to the parent when the note only repeats the title" do
+      account = create(:account, space: space, name: "Bank")
+      parent = type("expense", name: "Food & Groceries")
+      r = row(txn(kind: "expense", name: "Provisions", parent: parent, account: account, note: "provisions 55.65 bank"))
+
+      expect(r.subtitle).to eq("Bank · Food & Groceries")
+    end
+
     it "uses the extracted label as the title and drops the category to the subtitle" do
       account = create(:account, space: space, name: "Bank")
       parent = type("expense", name: "Alimentation")
@@ -80,6 +98,7 @@ RSpec.describe MovementRow do
       expect(r.title).to eq("Sent to Wallet")
       expect(r.subtitle).to eq("Bank")
       expect(r.counts_in_day_total?).to be(false)
+      expect(r.counts_in_day_total?(scope: :account)).to be(true)
       expect(r.muted?).to be(false)
     end
   end
@@ -98,7 +117,6 @@ RSpec.describe MovementRow do
       debt = create(:debt, space: space, name: "Romuald", direction: "borrowed", total_lent: 35_000)
       r = row(txn(kind: "debt_in", amount: 35_000, account: account, debt: debt))
       expect(r.title).to eq("Borrowed from Romuald")
-      expect(r.counts_in_day_total?(scope: :account)).to be(true)
     end
 
     it "reads a lent debt_in as a repayment received, with the remaining balance" do

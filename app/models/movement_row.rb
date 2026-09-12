@@ -161,9 +161,18 @@ class MovementRow
     @txn.label
   end
 
+  # The user's own words win over the generic roll-up, unless they only repeat the title.
   def category_subtitle
-    category = label.present? ? display_category : parent_category
-    [ account_name, category ].reject { |part| part.to_s.strip.empty? }.join(" · ")
+    detail = note_label || (label.present? ? display_category : parent_category)
+    [ account_name, detail ].reject { |part| part.to_s.strip.empty? }.join(" · ")
+  end
+
+  def note_label
+    return @note_label if defined?(@note_label)
+
+    cleaned = QuickEntry::NoteLabel.call(@txn.note, account_name: account_name)
+    repeats_title = cleaned.present? && CategoryText.normalize(cleaned) == CategoryText.normalize(title)
+    @note_label = repeats_title ? nil : cleaned.presence
   end
 
   # The category shown when a label owns the title: the parent (roll-up) if there is
