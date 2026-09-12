@@ -13,6 +13,7 @@ RSpec.describe OtpMailer, type: :mailer do
     it "renders the headers" do
       expect(mail.to).to eq([ user.email ])
       expect(mail.from).to eq([ "noreply@spens.me" ])
+      expect(mail.reply_to).to eq([ "contact@spens.me" ])
       expect(mail.subject).to eq(I18n.t("auth.mailer.otp.subject"))
     end
 

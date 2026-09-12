@@ -47,6 +47,9 @@ en:
     cash: [cash, in cash]
     momo: [momo, mobile money, mtn, moov, mtn momo, moov money, wave, orange money]
     bank: [bank, bank account, card, by card]
+  # Instrument words that name a KIND of account, not a brand: these may fall back to any
+  # account of their group. A brand (mtn, moov, wave…) only matches an account named after it.
+  generic_instruments: [cash, in cash, momo, mobile money, bank, bank account, card, by card]
   numbers:
     units:
       { zero: 0, one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8,
@@ -61,7 +64,8 @@ en:
 fr:
   kind:
     income:
-      [recu, reçu, recue, reçue, j'ai recu, salaire, paie, paye, paye par, paiement recu,
+      [recu, reçu, recue, reçue, j'ai recu, reception, réception, versement recu, versement reçu,
+       salaire, paie, paye, paye par, paiement recu,
        remboursement, rembourse, remboursé, remboursee, cashback, dividende, dividendes,
        interet, intérêt, prime, bonus, vendu, revenu, gagne, gagné, encaisse, encaissé]
     transfer:
@@ -92,6 +96,7 @@ fr:
     cash: [especes, espèces, liquide, en espece, cash]
     momo: [momo, mobile money, mtn, moov, mtn momo, moov money, wave, orange money]
     bank: [banque, compte bancaire, carte, par carte]
+  generic_instruments: [especes, espèces, liquide, en espece, cash, momo, mobile money, banque, compte bancaire, carte, par carte]
   numbers:
     units:
       { zero: 0, zéro: 0, un: 1, une: 1, deux: 2, trois: 3, quatre: 4, cinq: 5, six: 6,

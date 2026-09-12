@@ -34,9 +34,12 @@
       <div class="movement-hero__icon transaction-item__icon <%= "transaction-item__icon--#{row.family}" %>" aria-hidden="true">
         <%= TransactionIconService.icon_svg_by_name(row.icon_name) %>
       </div>
-      <p class="movement-hero__amount <%= 'movement-hero__amount--muted' if row.muted? %>">
+      <%# The amount is the fastest way into the full edit form. %>
+      <%= link_to edit_transaction_path(id: @transaction.id),
+            class: "movement-hero__amount#{' movement-hero__amount--muted' if row.muted?}",
+            aria: { label: t('.edit') }, data: { turbo_frame: "modal" } do %>
         <%= money(@transaction.amount, sign: row.show_sign? ? :always : :none) %>
-      </p>
+      <% end %>
       <% if row.subtitle.present? %>
         <p class="movement-hero__subtitle"><%= row.subtitle %></p>
       <% end %>
@@ -100,3 +103,6 @@
     </p>
   </div>
 </div>
+
+<%= render Ui::FabComponent.new(url: new_transaction_path(account_id: @transaction.account_id),
+                                label: t('.add_transaction')) %>

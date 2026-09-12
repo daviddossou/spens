@@ -45,6 +45,41 @@ RSpec.describe TransactionHelper, type: :helper do
     end
   end
 
+  describe "#movement_day_total" do
+    let(:space) { create(:space, currency: "EUR") }
+    let(:bank) { create(:account, space: space, name: "Bank") }
+    let(:wallet) { create(:account, space: space, name: "Wallet") }
+
+    def txn(kind, amount, account)
+      create(:transaction, space: space, amount: amount, account: account,
+                           transaction_type: create(:transaction_type, space: space, kind: kind))
+    end
+
+    before do
+      helper.define_singleton_method(:current_space) { nil }
+      allow(helper).to receive(:current_space).and_return(space)
+    end
+
+    it "ignores transfers in the space scope" do
+      group = SecureRandom.uuid
+      out_leg = txn("transfer_out", -20_000, bank)
+      in_leg = txn("transfer_in", 20_000, wallet)
+      [ out_leg, in_leg ].each { |t| t.update!(transfer_group_id: group) }
+      expense = txn("expense", -1_000, bank)
+
+      html = helper.movement_day_total([ out_leg, in_leg, expense ])
+      expect(html).to include(helper.money(-1_000, "EUR", sign: :always))
+    end
+
+    it "counts transfers in the account scope, where they move the balance" do
+      out_leg = txn("transfer_out", -20_000, bank)
+      expense = txn("expense", -1_000, bank)
+
+      html = helper.movement_day_total([ out_leg, expense ], scope: :account)
+      expect(html).to include(helper.money(-21_000, "EUR", sign: :always))
+    end
+  end
+
   describe "#transaction_top_level_options" do
     it "always offers the four top-level cards in order" do
       form = instance_double(TransactionForm, kind: "expense", debt_transaction?: false)

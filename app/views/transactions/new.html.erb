@@ -1,26 +1,55 @@
 <% content_for :title, t('.title') %>
 
+<%# The phrase is the first field: it lives OUTSIDE the "transaction_form" frame so it
+    keeps focus while every pause in typing reloads the fields below, prefilled. The
+    heading is outside too and follows the reloaded form's kind via the controller. %>
+<% heading = transaction_form_heading(@form, person_locked: @person_locked, relation: @relation) %>
 <%= turbo_frame_tag "modal" do %>
-  <div class="page-container page-container--narrow">
-    <%= turbo_frame_tag "transaction_form" do %>
-      <%
-        title_key = @form.debt_transaction? ? (@form.debt_id.present? ? "from_debt" : "debt") : @form.kind
-        type_key = @form.kind == "transfer" ? "transfer" : (@form.debt_transaction? ? "debt" : (@form.kind == "income" ? "income" : "expense"))
-        tx_date = l(@form.transaction_date || Date.current, format: "%-d %B")
-      %>
-      <header class="page-header transaction-form__header">
-        <h2 class="transaction-form__title"><%= t(".subtitle.#{title_key}") %></h2>
-        <% if @person_locked %>
-          <% net = @relation.net %>
-          <% balance = net > 0 ? t(".person_you_owe", amount: money(net)) \
-                     : net < 0 ? t(".person_they_owe", amount: money(-net)) \
-                     : t(".person_settled") %>
-          <p class="transaction-form__subtitle"><%= t(".person_subtitle", name: @relation.name, balance: balance) %></p>
-        <% else %>
-          <p class="transaction-form__subtitle"><%= t(".new_subtitle_html", type: t(".new_type_#{type_key}"), date: tx_date) %></p>
-        <% end %>
-      </header>
+  <div class="page-container page-container--narrow"
+       data-controller="phrase-fill"
+       data-phrase-fill-url-value="<%= new_transaction_path(carried_params) %>"
+       data-phrase-fill-pending-value="<%= t('.phrase_reading') %>">
+    <header class="page-header transaction-form__header">
+      <h2 class="transaction-form__title" data-phrase-fill-target="title"><%= heading[:title] %></h2>
+      <p class="transaction-form__subtitle" data-phrase-fill-target="subtitle"><%= heading[:subtitle] %></p>
+    </header>
 
+    <div class="phrase-band">
+      <div class="phrase-band__field"
+           data-controller="dictation"
+           data-dictation-lang-value="<%= I18n.locale == :fr ? 'fr-FR' : 'en-US' %>"
+           data-dictation-idle-label-value="<%= t('.dictate') %>"
+           data-dictation-listening-label-value="<%= t('.dictating') %>">
+        <svg class="phrase-band__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 3l1.8 4.7L18.5 9.5l-4.7 1.8L12 16l-1.8-4.7L5.5 9.5l4.7-1.8L12 3zM5 17l.7 1.8L7.5 19.5l-1.8.7L5 22l-.7-1.8L2.5 19.5l1.8-.7L5 17z"/>
+        </svg>
+        <%= text_field_tag :text, @text,
+              id: "phrase",
+              form: "transaction-form",
+              class: "phrase-band__input",
+              autofocus: true,
+              autocomplete: "off",
+              autocapitalize: "off",
+              enterkeyhint: "done",
+              placeholder: t(".phrase_placeholder_#{phrase_context_key}"),
+              aria: { label: t('.phrase_label') },
+              data: { phrase_fill_target: "input", dictation_target: "input",
+                      action: "input->phrase-fill#type keydown->phrase-fill#submitOnEnter" } %>
+        <%# Only shown where the browser exposes the phone's speech recognition. %>
+        <button type="button" class="phrase-band__mic" hidden
+                aria-label="<%= t('.dictate') %>" aria-pressed="false"
+                data-dictation-target="button" data-action="dictation#toggle">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 15a3 3 0 003-3V6a3 3 0 10-6 0v6a3 3 0 003 3z"/>
+            <path stroke-linecap="round" stroke-linejoin="round" d="M19 11a7 7 0 01-14 0M12 18v3m-3 0h6"/>
+          </svg>
+        </button>
+      </div>
+      <p class="phrase-band__help" data-phrase-fill-target="help"<%= " hidden" if @text.present? %>><%= t('.phrase_help') %></p>
+      <p class="phrase-band__status" data-phrase-fill-target="status" hidden aria-live="polite"></p>
+    </div>
+
+    <%= turbo_frame_tag "transaction_form" do %>
       <div class="page-content">
         <%= render 'form' %>
       </div>

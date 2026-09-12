@@ -119,11 +119,11 @@ RSpec.describe Navigation::HeaderComponent, type: :component do
         expect(settings_link.text).to include(I18n.t("navigation.header.settings"))
       end
 
-      it "renders the contact support item as disabled" do
+      it "links contact support to the support mailbox" do
         rendered = render_inline(component)
-        disabled_item = rendered.css(".app-header__dropdown-item--disabled").first
-        expect(disabled_item).to be_present
-        expect(disabled_item.text).to include(I18n.t("navigation.header.contact_support"))
+        support_link = rendered.css('a.app-header__dropdown-item[href="mailto:support@spens.me"]').first
+        expect(support_link).to be_present
+        expect(support_link.text).to include(I18n.t("navigation.header.contact_support"))
       end
 
       it "renders a log out link" do

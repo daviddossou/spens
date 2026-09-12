@@ -89,6 +89,13 @@ RSpec.describe Account, type: :model do
     end
   end
 
+  describe 'balance rounding' do
+    it 'never persists a negative zero' do
+      account = create(:account, space: create(:space), balance: -0.004)
+      expect(account.reload.balance.to_s).to eq('0.0')
+    end
+  end
+
   describe 'database constraints' do
     it 'has a default balance of 0.0' do
       account = described_class.new(name: 'Test', space: create(:space))

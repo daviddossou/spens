@@ -47,9 +47,6 @@ Rails.application.routes.draw do
                          constraints: { fact: /category|account|date/ }
     end
 
-    # Quick add: parse one natural-language utterance into a transaction (typed now, voice later)
-    resource :quick_entry, only: [ :new, :create ]
-
     # Goals
     resources :goals, only: [ :index, :show, :new, :create, :edit, :update, :destroy ]
 

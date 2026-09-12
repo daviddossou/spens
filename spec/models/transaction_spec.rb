@@ -261,7 +261,7 @@ RSpec.describe Transaction, type: :model do
 
   describe 'defaults' do
     it 'uses today for transaction_date if set explicitly in factory' do
-      expect(transaction.transaction_date).to eq(Date.today)
+      expect(transaction.transaction_date).to eq(Date.current)
     end
   end
 

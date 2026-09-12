@@ -39,7 +39,7 @@
        data-infinite-scroll-page-value="<%= @has_more ? @page + 1 : 0 %>">
     <%# Hero: the balance, and in one line whether it's free to spend or reserved. %>
     <div class="account-hero">
-      <p class="account-hero__amount<%= " account-hero__amount--negative" if @account.balance.negative? %>"><%= account_money(@account.balance) %></p>
+      <p class="account-hero__amount<%= " account-hero__amount--negative" if money_negative?(@account.balance) %>"><%= account_money(@account.balance) %></p>
       <p class="account-hero__sub">
         <% if @account.goal.present? %>
           <%= t('.hero_reserved') %>
@@ -95,7 +95,8 @@
       <h2 class="commitment-section-title"><%= t('.movements') %></h2>
       <% if @transactions.any? %>
         <div id="transactions-container" class="transactions-timeline">
-          <%= render partial: "shared/transactions_list", locals: { grouped_transactions: @grouped_transactions } %>
+          <%= render partial: "shared/transactions_list",
+                     locals: { grouped_transactions: @grouped_transactions, day_total_scope: :account } %>
         </div>
 
         <div id="loading-spinner"
@@ -119,4 +120,4 @@
   </div>
 </div>
 
-<%= render Ui::FabComponent.new(url: new_quick_entry_path(account_id: @account.id), label: t('.add_transaction')) %>
+<%= render Ui::FabComponent.new(url: new_transaction_path(account_id: @account.id), label: t('.add_transaction')) %>

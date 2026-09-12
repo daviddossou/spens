@@ -30,7 +30,7 @@ module RoundsMoney
   def round_money_attributes
     money_attributes.each do |attribute|
       value = self[attribute]
-      self[attribute] = value.round(2) if value.is_a?(Numeric)
+      self[attribute] = value.round(2) + 0.0 if value.is_a?(Numeric)
     end
   end
 end

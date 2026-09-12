@@ -45,7 +45,7 @@ FactoryBot.define do
 
     sequence(:description) { |n| "Transaction #{n}" }
     amount { 12.34 }
-    transaction_date { Date.today }
+    transaction_date { Date.current }
     note { "Optional note" }
     debt { nil }
 

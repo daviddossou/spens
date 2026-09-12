@@ -11,12 +11,18 @@ module QuickEntry
     DEBT_KINDS = %w[debt_in debt_out].freeze
     DIRECTION_KIND = { "lent" => "debt_out", "borrowed" => "debt_in" }.freeze
 
-    def self.call(text, space:, locale: I18n.locale, context: {})
-      new(text, space: space, locale: locale, context: context).call
+    # ai: false keeps it to the rules parser — what the form's live fill runs on every keystroke.
+    def self.call(text, space:, locale: I18n.locale, context: {}, ai: true)
+      new(text, space: space, locale: locale, context: context, ai: ai).call
     end
 
-    def initialize(text, space:, locale: I18n.locale, context: {})
+    def self.ai_enabled?
+      AnthropicParser.enabled? || LlmParser.enabled?
+    end
+
+    def initialize(text, space:, locale: I18n.locale, context: {}, ai: true)
       @text = text
+      @ai = ai
       @space = space
       @locale = locale
       # The sheet's pill; applied only where the phrase said nothing.
@@ -24,8 +30,9 @@ module QuickEntry
     end
 
     def call
-      rules = apply_context(DebtLinker.link(Parser.parse(@text, space: @space, locale: @locale), text: @text, space: @space))
-      return Result.new(draft: rules, ai_draft: nil) if rules.confident? || form_ready?(rules) || !ai_parser
+      rules = Parser.parse(@text, space: @space, locale: @locale).with(note: raw_note)
+      rules = apply_context(DebtLinker.link(rules, text: @text, space: @space))
+      return Result.new(draft: rules, ai_draft: nil) if !@ai || rules.confident? || form_ready?(rules) || !ai_parser
 
       ai = ai_parser.new(space: @space, locale: @locale).parse(@text)
       return Result.new(draft: rules, ai_draft: nil) unless ai
@@ -56,13 +63,29 @@ module QuickEntry
     end
 
     # Rules keep precedence when they detected a structural kind; otherwise the AI's kind wins.
+    # Rules keep precedence when they detected a structural kind; otherwise the AI's kind wins —
+    # except a transfer with only one end named: a mentioned account ("… sur mon MTN") never
+    # turns a purchase into a transfer. Two named ends (one may be new) open the transfer form.
     def merge(rules, ai)
       kind = structural?(rules.kind) ? rules.kind : ai.kind
+      kind = "expense" if !structural?(rules.kind) && !ai_structural_backed?(kind, ai)
 
       case kind
       when "transfer"          then transfer_draft(rules, ai)
       when "debt", *DEBT_KINDS then debt_draft(rules, ai, kind)
       else                          backfill(rules, ai)
+      end
+    end
+
+    # The AI's own structural claim needs evidence in the phrase: a transfer names both ends
+    # (one of them an existing account), a debt names the person. Otherwise it's a purchase
+    # that happens to mention an account or a name.
+    def ai_structural_backed?(kind, ai)
+      case kind
+      when "transfer" then ai.from_account.present? && ai.to_account.present? &&
+                           (existing_account(ai.from_account) || existing_account(ai.to_account)).present?
+      when "debt", *DEBT_KINDS then ai.person.present?
+      else true
       end
     end
 
@@ -74,19 +97,39 @@ module QuickEntry
     # leave it uncategorised — fall back to the "Other" default so the entry always lands
     # somewhere (the note keeps the detail; the user can recategorise).
     def backfill(rules, ai)
-      kind = rules.transaction_type_name.present? ? rules.kind : (ai.kind.presence || rules.kind)
+      kind = rules.transaction_type_name.present? ? rules.kind : (ai_kind(ai).presence || rules.kind)
       type_name = rules.transaction_type_name.presence || ai.category_name.presence || default_category_name(kind)
-      amount = rules.amount || ai.amount
+      amount, amount_settled = settle_amount(rules, ai)
 
       unresolved = []
-      unresolved << :amount if amount.blank?
+      unresolved << :amount if amount.blank? || !amount_settled
 
       Draft.new(
         kind: kind, amount: amount, account_name: rules.account_name,
         transaction_type_name: type_name, fee_amount: rules.fee_amount,
         transaction_date: rules.transaction_date, description: rules.description,
-        note: raw_note, label: ai.label, unresolved: unresolved
+        note: raw_note, label: ai.label, unresolved: unresolved,
+        amount_candidates: rules.amount_candidates
       )
+    end
+
+    # The rules hesitated between several numbers: the AI's pick settles it only when it is
+    # one of them (a computed total like 25 × 10 isn't); otherwise the user confirms.
+    def settle_amount(rules, ai)
+      return [ rules.amount || ai.amount, true ] unless rules.amount_ambiguous?
+      return [ ai.amount, true ] if ai.amount && rules.amount_candidates.any? { |c| c.to_f == ai.amount.to_f }
+
+      [ rules.amount, false ]
+    end
+
+    # A category belongs to a kind: the model's stated kind can't contradict the category it
+    # picked (an expense category never makes an income).
+    # Only income/expense come out of here (backfill's world); anything else falls back to rules.
+    def ai_kind(ai)
+      category_kind = ai.category_key.presence && TransactionTaxonomy.kind_of(ai.category_key)
+      return category_kind if %w[income expense].include?(category_kind)
+
+      %w[income expense].include?(ai.kind) ? ai.kind : nil
     end
 
     # The "Other" parent for the kind — the last-resort category so quick add is never blank.
@@ -107,15 +150,17 @@ module QuickEntry
       from = existing_account(ai.from_account) || rules.from_account_name
       to   = existing_account(ai.to_account) || rules.to_account_name
 
+      amount, amount_settled = settle_amount(rules, ai)
       unresolved = []
-      unresolved << :amount if rules.amount.blank?
+      unresolved << :amount if amount.blank? || !amount_settled
       unresolved << :from_account if from.blank?
       unresolved << :to_account if to.blank?
 
       Draft.new(
-        kind: "transfer", amount: rules.amount, from_account_name: from, to_account_name: to,
+        kind: "transfer", amount: amount, from_account_name: from, to_account_name: to,
         fee_amount: rules.fee_amount, transaction_date: rules.transaction_date,
-        description: rules.description, note: raw_note, unresolved: unresolved
+        description: rules.description, note: raw_note, unresolved: unresolved,
+        amount_candidates: rules.amount_candidates
       )
     end
 
@@ -126,16 +171,17 @@ module QuickEntry
       resolved = DEBT_KINDS.include?(kind) ? kind : DIRECTION_KIND.fetch(ai.direction.to_s, "debt_out")
       contact = rules.contact_name.presence || ai.person
 
+      amount, amount_settled = settle_amount(rules, ai)
       unresolved = []
-      unresolved << :amount if rules.amount.blank?
+      unresolved << :amount if amount.blank? || !amount_settled
       unresolved << :debt if contact.blank?
 
       Draft.new(
-        kind: resolved, amount: rules.amount,
+        kind: resolved, amount: amount,
         contact_name: contact,
         direction: rules.direction.presence || (resolved == "debt_in" ? "borrowed" : "lent"),
         transaction_date: rules.transaction_date, description: rules.description,
-        note: raw_note, unresolved: unresolved
+        note: raw_note, unresolved: unresolved, amount_candidates: rules.amount_candidates
       )
     end
 
@@ -163,15 +209,15 @@ module QuickEntry
       return draft if target.blank?
 
       from = draft.from_account_name.presence || draft.account_name.presence
-      unresolved = []
-      unresolved << :amount if draft.amount.blank?
+      unresolved = draft.unresolved & [ :amount ]
+      unresolved << :amount if draft.amount.blank? && unresolved.empty?
       unresolved << :from_account if from.blank?
 
       Draft.new(
         kind: "transfer", amount: draft.amount, from_account_name: from,
         to_account_name: target, fee_amount: draft.fee_amount,
         transaction_date: draft.transaction_date, description: draft.description,
-        note: draft.note, unresolved: unresolved
+        note: draft.note, unresolved: unresolved, amount_candidates: draft.amount_candidates
       )
     end
 

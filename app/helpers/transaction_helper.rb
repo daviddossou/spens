@@ -35,13 +35,10 @@ module TransactionHelper
     TransactionKind.money_in?(kind) ? transaction.amount.abs : -transaction.amount.abs
   end
 
-  # A day-block header total: real in/out flows only (income/expense/debt) plus
-  # any fees hung under them; transfers and neutral reconciliations are excluded.
-  # A day made only of opening balances shows "hors totaux" instead of a figure.
-  # `transactions` are the day's top-level rows (fees already nested, not listed).
-  def movement_day_total(transactions, currency = nil)
+  # Day-block header total; transfers count only in the :account scope.
+  def movement_day_total(transactions, currency = nil, scope: :space)
     currency ||= current_space&.currency
-    contributes = ->(txn) { MovementRow.new(txn).counts_in_day_total? || txn.fee }
+    contributes = ->(txn) { MovementRow.new(txn).counts_in_day_total?(scope: scope) || txn.fee }
 
     if transactions.none?(&contributes) && transactions.any? { |t| MovementRow.new(t).out_of_totals? }
       return content_tag(:span, t("transactions.movement.day.out_of_totals"),
@@ -49,7 +46,7 @@ module TransactionHelper
     end
 
     total = transactions.sum do |txn|
-      counted = MovementRow.new(txn).counts_in_day_total? ? txn.amount : 0
+      counted = MovementRow.new(txn).counts_in_day_total?(scope: scope) ? txn.amount : 0
       counted + (txn.fee&.amount || 0)
     end
 
@@ -83,6 +80,24 @@ module TransactionHelper
   # Where a kind-selector card points: a fresh new-transaction form for create,
   # or the same transaction's edit form (with the target kind) when editing.
   # kind-switch JS appends the live field values to the href before navigating.
+  # The sheet's heading follows the kind ("What did you buy?" / "New expense · 11 Sept").
+  def transaction_form_heading(form, person_locked: false, relation: nil)
+    title_key = form.debt_transaction? ? (form.debt_id.present? ? "from_debt" : "debt") : form.kind
+    type_key = form.kind == "transfer" ? "transfer" : (form.debt_transaction? ? "debt" : (form.kind == "income" ? "income" : "expense"))
+    subtitle =
+      if person_locked && relation
+        net = relation.net
+        balance = net > 0 ? t("transactions.new.person_you_owe", amount: money(net)) \
+                : net < 0 ? t("transactions.new.person_they_owe", amount: money(-net)) \
+                : t("transactions.new.person_settled")
+        t("transactions.new.person_subtitle", name: relation.name, balance: balance)
+      else
+        t("transactions.new.new_subtitle_html", type: t("transactions.new.new_type_#{type_key}"),
+                                                 date: l(form.transaction_date || Date.current, format: "%-d %B"))
+      end
+    { title: t("transactions.new.subtitle.#{title_key}"), subtitle: subtitle }
+  end
+
   def transaction_kind_switch_path(form, target_kind)
     switch_params = form.kind_params(target_kind)
     if form.editing?

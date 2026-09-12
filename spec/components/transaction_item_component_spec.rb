@@ -113,6 +113,7 @@ RSpec.describe TransactionItemComponent, type: :component do
         user: user,
         transaction_type: transaction_type,
         account: nil,
+        note: nil,
         amount: 1000,
         description: "Cash payment",
         transaction_date: Date.today

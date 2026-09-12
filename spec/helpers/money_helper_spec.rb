@@ -18,6 +18,17 @@ RSpec.describe MoneyHelper, type: :helper do
     allow(helper).to receive(:current_space).and_return(space)
   end
 
+  describe "#money_negative?" do
+    it "is true only below zero once rounded to the cent" do
+      expect(helper.money_negative?(-12.34)).to be(true)
+      expect(helper.money_negative?(-0.005)).to be(true)
+      expect(helper.money_negative?(-2.8e-14)).to be(false)
+      expect(helper.money_negative?(-0.0)).to be(false)
+      expect(helper.money_negative?(0)).to be(false)
+      expect(helper.money_negative?(nil)).to be(false)
+    end
+  end
+
   describe "#money" do
     it "tells a real zero apart from no data" do
       expect(helper.money(0)).to eq("0#{NBSP}$")
