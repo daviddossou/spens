@@ -100,3 +100,6 @@
     </p>
   </div>
 </div>
+
+<%= render Ui::FabComponent.new(url: new_transaction_path(account_id: @transaction.account_id),
+                                label: t('.add_transaction')) %>

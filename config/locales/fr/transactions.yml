@@ -80,6 +80,7 @@ fr:
       note_label: "Note"
       note_help: "Ajoute des détails si besoin"
       note_placeholder: "ex. Déjeuner chez Fatou..."
+      show_more_details_date: "Plus de détails · date : %{date}"
       save_transaction: "Enregistrer la transaction"
       cta_save_amount: "Enregistrer %{amount}"
       cta_need_amount: "Saisis un montant"

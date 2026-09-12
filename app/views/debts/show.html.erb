@@ -168,4 +168,4 @@
   </div>
 </div>
 
-<%= render Ui::FabComponent.new(url: new_quick_entry_path(debt_id: @debt.id), label: t('.add_transaction')) %>
+<%= render Ui::FabComponent.new(url: new_transaction_path(kind: "debt_out", contact_name: @debt.name, person_locked: 1), label: t('.add_transaction')) %>

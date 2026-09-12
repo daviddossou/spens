@@ -80,6 +80,7 @@ en:
       note_label: "Note"
       note_help: "Add any extra details"
       note_placeholder: "e.g. Lunch with Fatou..."
+      show_more_details_date: "More details · date: %{date}"
       save_transaction: "Save transaction"
       cta_save_amount: "Save %{amount}"
       cta_need_amount: "Enter an amount"

@@ -11,12 +11,18 @@ module QuickEntry
     DEBT_KINDS = %w[debt_in debt_out].freeze
     DIRECTION_KIND = { "lent" => "debt_out", "borrowed" => "debt_in" }.freeze
 
-    def self.call(text, space:, locale: I18n.locale, context: {})
-      new(text, space: space, locale: locale, context: context).call
+    # ai: false keeps it to the rules parser — what the form's live fill runs on every keystroke.
+    def self.call(text, space:, locale: I18n.locale, context: {}, ai: true)
+      new(text, space: space, locale: locale, context: context, ai: ai).call
     end
 
-    def initialize(text, space:, locale: I18n.locale, context: {})
+    def self.ai_enabled?
+      AnthropicParser.enabled? || LlmParser.enabled?
+    end
+
+    def initialize(text, space:, locale: I18n.locale, context: {}, ai: true)
       @text = text
+      @ai = ai
       @space = space
       @locale = locale
       # The sheet's pill; applied only where the phrase said nothing.

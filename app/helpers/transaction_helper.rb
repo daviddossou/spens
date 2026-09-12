@@ -80,6 +80,24 @@ module TransactionHelper
   # Where a kind-selector card points: a fresh new-transaction form for create,
   # or the same transaction's edit form (with the target kind) when editing.
   # kind-switch JS appends the live field values to the href before navigating.
+  # The sheet's heading follows the kind ("What did you buy?" / "New expense · 11 Sept").
+  def transaction_form_heading(form, person_locked: false, relation: nil)
+    title_key = form.debt_transaction? ? (form.debt_id.present? ? "from_debt" : "debt") : form.kind
+    type_key = form.kind == "transfer" ? "transfer" : (form.debt_transaction? ? "debt" : (form.kind == "income" ? "income" : "expense"))
+    subtitle =
+      if person_locked && relation
+        net = relation.net
+        balance = net > 0 ? t("transactions.new.person_you_owe", amount: money(net)) \
+                : net < 0 ? t("transactions.new.person_they_owe", amount: money(-net)) \
+                : t("transactions.new.person_settled")
+        t("transactions.new.person_subtitle", name: relation.name, balance: balance)
+      else
+        t("transactions.new.new_subtitle_html", type: t("transactions.new.new_type_#{type_key}"),
+                                                 date: l(form.transaction_date || Date.current, format: "%-d %B"))
+      end
+    { title: t("transactions.new.subtitle.#{title_key}"), subtitle: subtitle }
+  end
+
   def transaction_kind_switch_path(form, target_kind)
     switch_params = form.kind_params(target_kind)
     if form.editing?

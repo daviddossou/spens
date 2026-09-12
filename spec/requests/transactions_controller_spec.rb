@@ -424,6 +424,28 @@ RSpec.describe TransactionsController, type: :request do
     end
   end
 
+  describe "GET #show" do
+    let(:account) { create(:account, user: user, name: "Cash") }
+    let(:transaction_type) { create(:transaction_type, user: user, kind: :expense, name: "Groceries") }
+    let(:transaction) do
+      create(:transaction, user: user, account: account, transaction_type: transaction_type, amount: -42.50)
+    end
+
+    it "links the hero amount to the edit form" do
+      get transaction_path(id: transaction.id)
+
+      expect(response.body).to match(/<a [^>]*class="movement-hero__amount[^"]*"[^>]*href="#{Regexp.escape(edit_transaction_path(id: transaction.id))}"|<a [^>]*href="#{Regexp.escape(edit_transaction_path(id: transaction.id))}"[^>]*class="movement-hero__amount/)
+    end
+
+    it "renders a FAB opening quick entry on the transaction's account" do
+      get transaction_path(id: transaction.id)
+
+      expect(response).to have_http_status(:success)
+      expect(response.body).to include("class=\"fab\"")
+      expect(response.body).to include(new_transaction_path(account_id: account.id))
+    end
+  end
+
   describe "GET #edit" do
     let(:account) { create(:account, user: user, name: "Cash") }
     let(:transaction_type) { create(:transaction_type, user: user, kind: :expense, name: "Groceries") }
@@ -569,6 +591,247 @@ RSpec.describe TransactionsController, type: :request do
         }
         expect(response).to redirect_to(new_user_session_path)
       end
+    end
+  end
+end
+
+# The phrase field: GET #new parses it (rules only) to prefill the form; hand-set fields
+# travel as locked[...] and win; POST #create with the phrase logs the attempt.
+RSpec.describe "Transactions phrase fill", type: :request do
+  include Devise::Test::IntegrationHelpers
+  include ActiveJob::TestHelper
+
+  let(:user) { create(:user) }
+  let(:space) { user.spaces.first }
+
+  before { sign_in user, scope: :user }
+
+  describe "GET #new with a phrase" do
+    it "prefills amount, category and account from the phrase and marks them as read" do
+      create(:account, space: space, name: "Wallet")
+
+      get new_transaction_path(text: "2000 zem yesterday wallet")
+
+      expect(response).to have_http_status(:success)
+      expect(response.body).to include('value="2000"')
+      expect(response.body).to include(TransactionTaxonomy.name("moto_taxi", :en))
+      expect(response.body).to include('value="Wallet"')
+      expect(response.body).to include("transaction-form__amount is-filled")
+      expect(response.body).to include("data-phrase-filled-count=\"")
+      expect(response.body).to include("More details · date: yesterday")
+    end
+
+    it "keeps a hand-set field over what the phrase says" do
+      create(:account, space: space, name: "Wallet")
+      create(:account, space: space, name: "Bank")
+
+      get new_transaction_path(text: "2000 zem wallet", locked: { account_name: "Bank", amount: "2500" })
+
+      expect(response.body).to include('value="Bank"')
+      expect(response.body).to include('value="2500"')
+      expect(response.body).not_to include("transaction-form__amount is-filled")
+    end
+
+    it "lets a locked kind survive a reload while the phrase still fills the rest" do
+      get new_transaction_path(kind: "income", text: "2000 zem", locked: { kind: "income" })
+
+      expect(response.body).to include('value="income"')
+      expect(response.body).to include('value="2000"')
+    end
+
+    it "defaults the account to the page's when the phrase names none" do
+      account = create(:account, space: space, name: "NSIA Banque")
+
+      get new_transaction_path(text: "2000 zem", account_id: account.id)
+
+      expect(response.body).to include('value="NSIA Banque"')
+    end
+
+    it "drops a parsed expense category when the user locked the kind to income" do
+      get new_transaction_path(kind: "income", text: "2000 zem", locked: { kind: "income" })
+
+      expect(response.body).not_to include(TransactionTaxonomy.name("moto_taxi", :en))
+      expect(response.body).to include('value="2000"')
+    end
+
+    it "opens as a deposit from a goal and reads the source account from the phrase" do
+      goal_account = create(:account, space: space, name: "Zanzibar")
+      create(:account, space: space, name: "MTN")
+
+      get new_transaction_path(kind: "transfer", account_id: goal_account.id, text: "25k from MTN")
+
+      expect(response.body).to include('value="MTN"')
+      expect(response.body).to include('value="Zanzibar"')
+      expect(response.body).to include('value="25000"')
+    end
+
+    it "opens locked on a person and keeps the debt kind for a nameless phrase" do
+      create(:debt, user: user, name: "Mariam", direction: "lent")
+
+      get new_transaction_path(kind: "debt_out", contact_name: "Mariam", person_locked: 1, text: "20k")
+
+      expect(response).to have_http_status(:success)
+      expect(response.body).to include('value="20000"')
+      expect(response.body).to include('value="Mariam"')
+    end
+
+    context "with the AI pass" do
+      let(:llm_result) do
+        QuickEntry::LlmParser::Result.new(
+          kind: "income", amount: 45_000, category_key: "gift_received",
+          category_name: TransactionTaxonomy.name("gift_received", :en), phrase: "from parents", label: "From parents"
+        )
+      end
+
+      before do
+        allow(QuickEntry::LlmParser).to receive(:enabled?).and_return(true)
+        allow(QuickEntry::LlmParser).to receive(:new).and_return(instance_double(QuickEntry::LlmParser, parse: llm_result))
+      end
+
+      it "flags a rules-only pass that left gaps so the sheet asks for the AI" do
+        get new_transaction_path(text: "received 45000 from parents")
+
+        expect(response.body).to include('data-phrase-needs-ai="true"')
+        expect(QuickEntry::LlmParser).not_to have_received(:new)
+      end
+
+      it "does not ask for the AI on a phrase without an amount or a second word" do
+        get new_transaction_path(text: "A")
+        expect(response.body).to include('data-phrase-needs-ai="false"')
+
+        get new_transaction_path(text: "45000")
+        expect(response.body).to include('data-phrase-needs-ai="false"')
+      end
+
+      it "does not ask for the AI when the rules were confident" do
+        get new_transaction_path(text: "2000 zem")
+
+        expect(response.body).to include('data-phrase-needs-ai="false"')
+      end
+
+      it "lets the AI decide the kind, category and label, and carries the logged attempt" do
+        get new_transaction_path(text: "received 45000 from parents", ai: "1")
+
+        expect(response.body).to include('value="income"')
+        expect(response.body).to include(TransactionTaxonomy.name("gift_received", :en))
+        expect(response.body).to include('value="From parents"')
+        attempt = QuickEntryAttempt.order(:created_at).last
+        expect(attempt.ai_used).to be(true)
+        expect(response.body).to include(attempt.id)
+        expect(response.body).to include('data-phrase-needs-ai="false"')
+      end
+
+      it "links the live attempt on save instead of logging a second one" do
+        get new_transaction_path(text: "received 45000 from parents", ai: "1")
+        attempt = QuickEntryAttempt.order(:created_at).last
+
+        expect do
+          post transactions_path, params: {
+            text: "received 45000 from parents",
+            transaction: { kind: "income", amount: 45_000, quick_entry_attempt_id: attempt.id,
+                           transaction_type_name: TransactionTaxonomy.name("gift_received", :en),
+                           note: "received 45000 from parents", transaction_date: Date.current }
+          }
+        end.not_to change { QuickEntryAttempt.count }
+
+        expect(attempt.reload.transaction_id).to eq(space.transactions.order(:created_at).last.id)
+        expect(attempt.source).to eq("ai")
+      end
+    end
+
+    it "asks which amount when the phrase holds several and nothing settles it" do
+      get new_transaction_path(text: "25 balls of attieke 10 each")
+
+      expect(response.body).to include('value="25"')
+      expect(response.body).to include("amount-candidates")
+      expect(response.body).to include('data-amount="25"')
+      expect(response.body).to include('data-amount="10"')
+      expect(response.body).not_to include("transaction-form__amount is-filled")
+    end
+
+    it "renders the phrase field once, outside the form frame, posting with the form" do
+      get new_transaction_path
+
+      expect(response.body).to include('id="phrase"')
+      expect(response.body).to include('form="transaction-form"')
+      expect(response.body.scan("phrase-band__input").size).to eq(1)
+      # The mic ships hidden: only a browser exposing speech recognition reveals it.
+      expect(response.body).to match(/class="phrase-band__mic" hidden/)
+      # A hover prefetch of a kind card would otherwise read as a manual kind choice.
+      expect(response.body).to include('data-turbo-prefetch="false"')
+    end
+  end
+
+  describe "POST #create with a phrase" do
+    let(:account) { create(:account, space: space, name: "Wallet") }
+    let(:category) { TransactionTaxonomy.name("moto_taxi", :en) }
+
+    def submit(text:, **fields)
+      post transactions_path, params: {
+        text: text,
+        transaction: { kind: "expense", amount: 2000, transaction_type_name: category,
+                       account_name: account.name, note: text, transaction_date: Date.current }.merge(fields)
+      }
+    end
+
+    it "creates the transaction, keeps the phrase as the note and logs a linked attempt" do
+      expect { submit(text: "2000 zem wallet") }.to change { space.transactions.count }.by(1)
+
+      transaction = space.transactions.order(:created_at).last
+      expect(transaction.note).to eq("2000 zem wallet")
+      expect(transaction.account).to eq(account)
+      attempt = QuickEntryAttempt.order(:created_at).last
+      expect(attempt.text).to eq("2000 zem wallet")
+      expect(attempt.transaction_id).to eq(transaction.id)
+      expect(attempt.ai_used).to be(false)
+      expect(response).to have_http_status(:see_other)
+    end
+
+    it "asks the AI for a category only when the form is submitted without one" do
+      allow(QuickEntry::LlmParser).to receive(:enabled?).and_return(true)
+      llm = instance_double(
+        QuickEntry::LlmParser,
+        parse: QuickEntry::LlmParser::Result.new(
+          kind: "expense", amount: 3000, category_key: "groceries",
+          category_name: TransactionTaxonomy.name("groceries", :en), phrase: "ndogou", label: "Ndogou"
+        )
+      )
+      allow(QuickEntry::LlmParser).to receive(:new).and_return(llm)
+
+      expect do
+        perform_enqueued_jobs { submit(text: "3000 ndogou", amount: 3000, transaction_type_name: "") }
+      end.to change { space.transactions.count }.by(1)
+
+      transaction = space.transactions.order(:created_at).last
+      expect(transaction.transaction_type.name).to eq(TransactionTaxonomy.name("groceries", :en))
+      expect(transaction.label).to eq("Ndogou")
+      expect(QuickEntryAttempt.order(:created_at).last.ai_used).to be(true)
+    end
+
+    it "learns from a category corrected in the form before the first save" do
+      groceries = TransactionTaxonomy.name("groceries", :en)
+
+      perform_enqueued_jobs { submit(text: "2000 zem", transaction_type_name: groceries) }
+
+      attempt = QuickEntryAttempt.order(:created_at).last
+      expect(attempt.outcome).to eq("edited")
+      expect(attempt.corrections["transaction_type_name"]).to include("from" => category, "to" => groceries)
+      expect(LearnedAlias.for_space(space).find_by(phrase: "zem")&.taxonomy_key).to eq("groceries")
+    end
+
+    it "never consults the AI when the category is already chosen" do
+      allow(QuickEntry::LlmParser).to receive(:enabled?).and_return(true)
+      expect(QuickEntry::LlmParser).not_to receive(:new)
+
+      submit(text: "2000 zem")
+      expect(response).to have_http_status(:see_other)
+    end
+
+    it "re-renders the sheet with the phrase kept when the form is invalid" do
+      submit(text: "zem wallet", amount: "")
+
+      expect(response).to have_http_status(:unprocessable_entity)
+      expect(response.body).to include('value="zem wallet"')
     end
   end
 end
