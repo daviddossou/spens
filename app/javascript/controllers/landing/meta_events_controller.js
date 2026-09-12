@@ -42,7 +42,8 @@ export default class extends Controller {
     const placement = event.params.placement
     this.#send(`lead_${placement}`, {
       fbq: ["track", "Lead", { content_name: placement }],
-      posthog: ["guide_download", { placement }]
+      posthog: ["guide_download", { placement }],
+      placement
     })
   }
 
