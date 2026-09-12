@@ -10,6 +10,11 @@ module MoneyHelper
 
   # sign: :none (absolute, default), :auto ("−" on negatives), :always ("+"/"−").
   # compact: abbreviates from 10 000 up ("35 k", "1,2 M") — never below.
+  # Red only for a real debit: sub-cent float noise and -0.0 read as zero.
+  def money_negative?(amount)
+    amount.to_f.round(2).negative?
+  end
+
   def money(amount, currency_code = nil, compact: false, sign: :none)
     return "—" if amount.nil?
 

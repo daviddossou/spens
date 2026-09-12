@@ -5,7 +5,7 @@
   <div class="account-row__body">
     <div class="account-row__head">
       <span class="account-row__name"><%= account.name %></span>
-      <span class="account-row__balance<%= " account-row__balance--negative" if account.balance.negative? %>"><%= account_money(account.balance) %></span>
+      <span class="account-row__balance<%= " account-row__balance--negative" if money_negative?(account.balance) %>"><%= account_money(account.balance) %></span>
     </div>
     <% if progress&.target_set? %>
       <div class="account-row__goal">

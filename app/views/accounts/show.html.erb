@@ -39,7 +39,7 @@
        data-infinite-scroll-page-value="<%= @has_more ? @page + 1 : 0 %>">
     <%# Hero: the balance, and in one line whether it's free to spend or reserved. %>
     <div class="account-hero">
-      <p class="account-hero__amount<%= " account-hero__amount--negative" if @account.balance.negative? %>"><%= account_money(@account.balance) %></p>
+      <p class="account-hero__amount<%= " account-hero__amount--negative" if money_negative?(@account.balance) %>"><%= account_money(@account.balance) %></p>
       <p class="account-hero__sub">
         <% if @account.goal.present? %>
           <%= t('.hero_reserved') %>
