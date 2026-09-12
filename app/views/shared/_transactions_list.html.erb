@@ -1,3 +1,4 @@
+<% day_total_scope = local_assigns.fetch(:day_total_scope, :space) %>
 <% grouped_transactions.each do |date, transactions| %>
   <div class="transaction-group">
     <!-- Day header: date on the left, the day's total on the right -->
@@ -5,7 +6,7 @@
       <h3 class="transaction-group__date">
         <%= l(date, format: :long) %>
       </h3>
-      <%= movement_day_total(transactions) %>
+      <%= movement_day_total(transactions, scope: day_total_scope) %>
     </div>
 
     <!-- One block per day, rows separated internally -->

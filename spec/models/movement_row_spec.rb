@@ -69,7 +69,7 @@ RSpec.describe MovementRow do
   end
 
   describe "transfers" do
-    it "names the OTHER account on each leg and never counts in day totals" do
+    it "names the OTHER account on each leg and counts in day totals only for an account" do
       group = SecureRandom.uuid
       bank = create(:account, space: space, name: "Bank")
       wallet = create(:account, space: space, name: "Wallet")
@@ -98,6 +98,7 @@ RSpec.describe MovementRow do
       debt = create(:debt, space: space, name: "Romuald", direction: "borrowed", total_lent: 35_000)
       r = row(txn(kind: "debt_in", amount: 35_000, account: account, debt: debt))
       expect(r.title).to eq("Borrowed from Romuald")
+      expect(r.counts_in_day_total?(scope: :account)).to be(true)
     end
 
     it "reads a lent debt_in as a repayment received, with the remaining balance" do

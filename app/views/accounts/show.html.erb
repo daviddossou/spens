@@ -95,7 +95,8 @@
       <h2 class="commitment-section-title"><%= t('.movements') %></h2>
       <% if @transactions.any? %>
         <div id="transactions-container" class="transactions-timeline">
-          <%= render partial: "shared/transactions_list", locals: { grouped_transactions: @grouped_transactions } %>
+          <%= render partial: "shared/transactions_list",
+                     locals: { grouped_transactions: @grouped_transactions, day_total_scope: :account } %>
         </div>
 
         <div id="loading-spinner"

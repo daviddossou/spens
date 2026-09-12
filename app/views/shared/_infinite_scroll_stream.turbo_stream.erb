@@ -1,7 +1,9 @@
 <%# Appends the next page of date-grouped transactions and refreshes the load trigger. %>
-<%# Locals: grouped_transactions, has_more %>
+<%# Locals: grouped_transactions, has_more, day_total_scope (optional) %>
 <%= turbo_stream.append "transactions-container" do %>
-  <%= render partial: "shared/transactions_list", locals: { grouped_transactions: grouped_transactions } %>
+  <%= render partial: "shared/transactions_list",
+             locals: { grouped_transactions: grouped_transactions,
+                       day_total_scope: local_assigns.fetch(:day_total_scope, :space) } %>
 <% end %>
 
 <% if has_more %>

@@ -83,10 +83,11 @@ class MovementRow
     @txn.fee_parent_id.present?
   end
 
-  # Day totals sum real in/out flows only (income, expense, debt), fees included;
-  # transfers and neutral reconciliations never count.
-  def counts_in_day_total?
-    %w[income expense debt_in debt_out].include?(kind)
+  # Transfers are neutral space-wide but move a single account's balance.
+  def counts_in_day_total?(scope: :space)
+    return true if %w[income expense debt_in debt_out].include?(kind)
+
+    scope == :account && TransactionKind.transfer?(kind)
   end
 
   # A day made only of opening balances carries "hors totaux", not a figure.
