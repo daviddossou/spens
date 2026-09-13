@@ -9,10 +9,32 @@ module Analytics
   # person and the sign-up event, so ad performance reads through to activation.
   ACQUISITION_KEYS = %w[utm_source utm_medium utm_campaign utm_content guide_link landed_at].freeze
 
+  # Per-request (or per-job) context merged into every event: platform (native app vs web),
+  # locale and the space, which also becomes the PostHog "space" group. Reset automatically
+  # between requests and jobs.
+  class Context < ActiveSupport::CurrentAttributes
+    attribute :platform, :locale, :space_id
+
+    def properties
+      { platform: platform, locale: locale, space_id: space_id }.compact
+    end
+  end
+
   def track(user, event, properties = {})
-    client&.capture(distinct_id: distinct_id(user), event: event, properties: properties)
+    attrs = { distinct_id: distinct_id(user), event: event, properties: Context.properties.merge(properties) }
+    attrs[:groups] = { space: Context.space_id } if Context.space_id
+    client&.capture(attrs)
   rescue StandardError => e
     Rails.logger.warn("[Analytics] track failed: #{e.message}")
+  end
+
+  # Outcome of a quick-entry parse (kept / edited / deleted), the parser's accuracy signal.
+  def track_quick_entry_resolved(attempt)
+    Context.set(space_id: attempt.space_id, locale: Context.locale || attempt.locale) do
+      track(attempt.user, "quick_entry_resolved",
+            outcome: attempt.outcome, source: attempt.source, ai_used: attempt.ai_used?,
+            corrected_fields: attempt.corrections&.keys || [])
+    end
   end
 
   def identify(user)
@@ -25,6 +47,16 @@ module Analytics
     )
   rescue StandardError => e
     Rails.logger.warn("[Analytics] identify failed: #{e.message}")
+  end
+
+  def group_identify(space)
+    client&.group_identify(
+      group_type: "space", group_key: space.id,
+      properties: { name: space.name, currency: space.currency, locale: space.locale,
+                    created_at: space.created_at&.iso8601 }.compact
+    )
+  rescue StandardError => e
+    Rails.logger.warn("[Analytics] group_identify failed: #{e.message}")
   end
 
   def acquisition_properties(user)
