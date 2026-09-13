@@ -52,8 +52,13 @@
                 planned: money(@projected_net),
                 offplan: content_tag(:span, money(@offplan_net, sign: :always),
                                      class: ("budget-hero__offplan-amount" if @offplan_net.negative?))) %></span>
-        <% else %>
+        <% elsif @offplan_net.zero? %>
           <span class="budget-hero__sublabel"><%= t('.actual_so_far_html', amount: money(@actual_net, sign: :always)) %></span>
+        <% else %>
+          <span class="budget-hero__sublabel"><%= t('.hero_sub_wrap_up_html',
+                planned: money(@actual_net, sign: :always),
+                offplan: content_tag(:span, money(@offplan_net, sign: :always),
+                                     class: ("budget-hero__offplan-amount" if @offplan_net.negative?))) %></span>
         <% end %>
 
         <%# Money promised to a savings account is kept, so it stays inside the
@@ -70,10 +75,10 @@
         <%= render "vital_confort", mode: @mode %>
       <% end %>
 
-      <%# Off-plan spending sits above the line sections in the live month —
-          it's what explains the gap between plan and reality. %>
-      <% if @mode == :live %>
-        <%= render "unplanned_section", read_only: false %>
+      <%# Off-plan spending sits above the line sections — it's what explains
+          the gap between plan and reality. A closed month only states it. %>
+      <% if @mode != :plan %>
+        <%= render "unplanned_section", read_only: @mode == :wrap_up %>
       <% end %>
 
       <%# All four sections always show, each with its total; an empty one states

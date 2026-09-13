@@ -1,6 +1,7 @@
-<%# Hors-plan card (En cours): money that moved outside the plan this month —
-    the honest account of what's widening the gap with the hero's projection.
+<%# Hors-plan card (En cours, Bilan): money that moved outside the plan this
+    month — the honest account of what's widening the gap with the hero.
     Recurring off-plan categories offer "Plan it"; one-offs just state themselves.
+    read_only (Bilan) drops the action: a closed month is only read.
     (The "One-off" dismiss action is a deferred product decision — see README.) %>
 <%
   month_slug = @month.strftime("%Y-%m")
@@ -28,7 +29,7 @@
     <div class="hors-plan__header">
       <div class="hors-plan__header-text">
         <p class="hors-plan__title"><%= t('budgets.unplanned.card_title_html', amount: money(expense_total)) %></p>
-        <p class="hors-plan__subtitle"><%= t('budgets.unplanned.card_subtitle') %></p>
+        <p class="hors-plan__subtitle"><%= t(read_only ? 'budgets.unplanned.card_subtitle_closed' : 'budgets.unplanned.card_subtitle') %></p>
       </div>
       <span class="hors-plan__count" aria-hidden="true"><%= rows.size %></span>
     </div>

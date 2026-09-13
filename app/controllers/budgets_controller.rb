@@ -54,10 +54,11 @@ class BudgetsController < ApplicationController
     end
 
     # The one hero figure — « Épargne du mois » — reads differently per mode:
-    # planned (the plan), à ce stade (the projection minus off-plan), finale.
+    # planned (the plan), à ce stade (the projection ± off-plan), finale (what
+    # actually moved, on plan and off). Only the plan reading ignores off-plan.
     @hero_value = case @mode
     when :plan then @projected_net
-    when :wrap_up then @actual_net
+    when :wrap_up then @actual_net + @offplan_net
     else @projected_outcome + @offplan_net
     end
 
