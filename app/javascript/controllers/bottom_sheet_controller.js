@@ -11,34 +11,33 @@ export default class extends Controller {
   frameLoaded(event) {
     // Only react to loads on the modal frame itself, not nested frames
     if (event.target !== this.frameTarget) return
-
-    if (this.frameTarget.children.length > 0) {
-      this.open()
-    } else if (this.isOpen) {
-      // Frame loaded empty content (e.g. redirect landed on a page where the
-      // layout's empty <turbo-frame id="modal"> was matched). Close the sheet
-      // and reload the page to reflect any changes made in the form.
-      this.close()
-      setTimeout(() => {
-        window.Turbo.visit(window.location.href, { action: "replace" })
-      }, 300)
-    }
+    if (this.frameTarget.children.length > 0) this.open()
   }
 
-  // Called when a frame response doesn't contain the expected frame ID.
-  // This happens after a successful form submission + redirect — the
-  // redirected page won't have <turbo-frame id="modal"> or "transaction_form".
+  // A form saved in the sheet redirects to a full page. That page carries the layout's
+  // empty <turbo-frame id="modal">, so Turbo renders nothing into the sheet. The response
+  // is the whole page (our layouts ignore turbo-rails' frame layout): render it as the
+  // page visit the controller asked for, instead of fetching it a second time.
+  async frameRendered(event) {
+    if (event.target !== this.frameTarget || !this.isOpen) return
+    const { fetchResponse } = event.detail
+    if (!fetchResponse || !fetchResponse.redirected || event.target.children.length > 0) return
+
+    const responseHTML = await fetchResponse.responseHTML
+    this.close()
+    window.Turbo.visit(fetchResponse.location, {
+      response: { redirected: true, statusCode: fetchResponse.statusCode, responseHTML }
+    })
+  }
+
+  // Same thing when the redirect target lacks the frame the form was submitted in (the
+  // nested "transaction_form" frame): Turbo hands us the response, visit it as a page.
   frameMissing(event) {
     if (!this.isOpen) return
 
     event.preventDefault()
     this.close()
-
-    // Navigate to the response URL with a full page visit
-    const response = event.detail.response
-    setTimeout(() => {
-      window.Turbo.visit(response.url, { action: "replace" })
-    }, 300)
+    event.detail.visit(event.detail.response)
   }
 
   open() {

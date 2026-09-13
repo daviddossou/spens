@@ -10,7 +10,7 @@ module Debts
     def create
       relation = DebtRelation.for(@debt)
       if CompensateDebtsService.new(relation, user: current_user).call
-        redirect_with_reload_to debt_path(id: relation.primary_debt.id), notice: t("debts.compensate.success"), status: :see_other
+        redirect_to debt_path(id: relation.primary_debt.id), notice: t("debts.compensate.success"), status: :see_other
       else
         redirect_to debt_path(id: @debt.id), alert: t("debts.compensate.error"), status: :see_other
       end

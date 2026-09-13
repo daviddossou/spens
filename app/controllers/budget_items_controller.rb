@@ -18,7 +18,7 @@ class BudgetItemsController < ApplicationController
     @form.user = current_user
 
     if @form.submit
-      redirect_with_reload_to budgets_path(month: month_slug(@form.starts_on)), notice: t(".success"), status: :see_other
+      redirect_to budgets_path(month: month_slug(@form.starts_on)), notice: t(".success"), status: :see_other
     else
       render :new, status: :unprocessable_entity
     end
@@ -34,7 +34,7 @@ class BudgetItemsController < ApplicationController
     @form.user = current_user
 
     if @form.submit
-      redirect_with_reload_to budgets_path(month: params[:month].presence), notice: t(".success"), status: :see_other
+      redirect_to budgets_path(month: params[:month].presence), notice: t(".success"), status: :see_other
     else
       render :edit, status: :unprocessable_entity
     end
@@ -59,7 +59,7 @@ class BudgetItemsController < ApplicationController
       @budget_item.budget_entries.where(month: from..).destroy_all
     end
 
-    redirect_with_reload_to budgets_path(month: params[:month].presence), notice: t(".success"), status: :see_other
+    redirect_to budgets_path(month: params[:month].presence), notice: t(".success"), status: :see_other
   end
 
   private

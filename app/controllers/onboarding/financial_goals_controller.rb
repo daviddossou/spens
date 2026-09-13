@@ -9,7 +9,7 @@ class Onboarding::FinancialGoalsController < OnboardingController
     build_form(financial_goals_params)
 
     if @form.submit
-      redirect_with_reload_to next_step_path, status: :see_other
+      redirect_to next_step_path, status: :see_other
     else
       render :show, status: :unprocessable_entity
     end

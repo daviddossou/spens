@@ -17,13 +17,12 @@
     <%# TomSelect CSS from CDN for searchable selects %>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.bootstrap5.min.css">
 
-    <%# Google Fonts: Geist Sans + Plus Jakarta Sans (fallback) %>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <%# Self-hosted fonts (app/assets/fonts), latin files preloaded. %>
+    <%= preload_link_tag asset_path("geist-latin.woff2"), as: "font", type: "font/woff2", crossorigin: "anonymous" %>
+    <%= preload_link_tag asset_path("plus-jakarta-sans-latin.woff2"), as: "font", type: "font/woff2", crossorigin: "anonymous" %>
 
-    <%# Includes all stylesheet files in app/assets/stylesheets %>
-    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%# One bundled stylesheet, built by the tailwind CLI from app/assets/tailwind/application.css %>
+    <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
 
     <%# TomSelect JavaScript from CDN - loaded before importmap to ensure global variable is available %>
     <script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>

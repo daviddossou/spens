@@ -15,9 +15,9 @@
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     <meta name="theme-color" content="#2c3044">
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <%# Self-hosted fonts (app/assets/fonts), latin files preloaded. %>
+    <%= preload_link_tag asset_path("geist-latin.woff2"), as: "font", type: "font/woff2", crossorigin: "anonymous" %>
+    <%= preload_link_tag asset_path("plus-jakarta-sans-latin.woff2"), as: "font", type: "font/woff2", crossorigin: "anonymous" %>
 
     <script nonce="<%= content_security_policy_nonce %>">
       // Installed PWA: skip the landing and go straight to sign-in.
@@ -26,7 +26,7 @@
       }
     </script>
 
-    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
     <%= render "shared/posthog" %>
     <%= render "shared/meta_pixel" %>

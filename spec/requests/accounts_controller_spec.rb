@@ -175,7 +175,7 @@ RSpec.describe AccountsController, type: :request do
       it "redirects to the account show page" do
         post accounts_path, params: { account: valid_attributes }
         created_account = Account.find_by(name: "New Account", space: space)
-        expect(response).to redirect_to("#{account_path(id: created_account.id)}?format=html")
+        expect(response).to redirect_to("#{account_path(id: created_account.id)}")
       end
 
       it "sets a success notice" do
@@ -264,7 +264,7 @@ RSpec.describe AccountsController, type: :request do
 
       it "redirects to the account show page" do
         patch account_path(id: account.id), params: { account: valid_update_attributes }
-        expect(response).to redirect_to("#{account_path(id: account.id)}?format=html")
+        expect(response).to redirect_to("#{account_path(id: account.id)}")
       end
 
       it "sets a success notice" do

@@ -32,7 +32,7 @@ class TransactionsController < ApplicationController
         QuickEntry::LearnTransactionJob.perform_later(@form.transaction.id, correction: true)
         Analytics.track(current_user, "transaction_created", source: "manual")
       end
-      redirect_with_reload_to transaction_path(id: @form.transaction.id), notice: t(".success"), status: :see_other
+      redirect_to transaction_path(id: @form.transaction.id), notice: t(".success"), status: :see_other
     else
       render :new, status: :unprocessable_entity
     end
@@ -50,7 +50,7 @@ class TransactionsController < ApplicationController
 
     if @form.submit
       QuickEntry::LearnTransactionJob.perform_later(@transaction.id, correction: true)
-      redirect_with_reload_to transaction_path(id: @transaction.id), notice: t(".success"), status: :see_other
+      redirect_to transaction_path(id: @transaction.id), notice: t(".success"), status: :see_other
     else
       render :edit, status: :unprocessable_entity
     end

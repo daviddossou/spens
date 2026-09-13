@@ -30,6 +30,16 @@ RSpec.describe HomeController, type: :request do
       end
     end
 
+    # Turbo follows a form redirect with the same Accept header, turbo-stream first. The
+    # first page must still be the HTML page, or a sign-in / onboarding redirect lands on a
+    # blank stream response (the bug that once forced ?format=html on every redirect).
+    it "renders the HTML page when Turbo asks for a stream first" do
+      get dashboard_path, headers: { "Accept" => "text/vnd.turbo-stream.html, text/html, application/xhtml+xml" }
+
+      expect(response.media_type).to eq("text/html")
+      expect(response.body).to include("<html")
+    end
+
     describe "analytics data" do
       context "total balance" do
         it "sums all account balances" do
