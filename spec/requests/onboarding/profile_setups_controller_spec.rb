@@ -101,7 +101,7 @@ RSpec.describe 'Onboarding::ProfileSetupsController', type: :request do
 
         expect(response).to have_http_status(:redirect)
         # Should redirect to account setup (next step)
-        expect(response).to redirect_to("#{onboarding_account_setups_path}?format=html")
+        expect(response).to redirect_to("#{onboarding_account_setups_path}")
       end
     end
 

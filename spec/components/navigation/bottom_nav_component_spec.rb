@@ -3,6 +3,17 @@
 require "rails_helper"
 
 RSpec.describe Navigation::BottomNavComponent, type: :component do
+  describe "rendering" do
+    it "preloads every tab but the current one into Turbo's cache" do
+      rendered = render_inline(described_class.new(current_path: "/dashboard"))
+      links = rendered.css("nav.bottom-nav a")
+
+      expect(links.size).to be >= 4
+      expect(links.find { |a| a["aria-current"] == "page" }["data-turbo-preload"]).to be_nil
+      expect(links.reject { |a| a["aria-current"] == "page" }).to all(satisfy { |a| a["data-turbo-preload"] == "true" })
+    end
+  end
+
   describe "#active?" do
     # Create Tab structs directly to test active? logic without needing route helpers
     let(:dashboard_tab) { described_class::Tab.new(key: :dashboard, label: "Dashboard", path: "/dashboard", icon: :dashboard) }

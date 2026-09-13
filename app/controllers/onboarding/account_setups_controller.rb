@@ -12,7 +12,7 @@ class Onboarding::AccountSetupsController < OnboardingController
     build_form(account_setup_params)
 
     if @form.submit
-      redirect_with_reload_to next_step_path, status: :see_other
+      redirect_to next_step_path, status: :see_other
     else
       render :show, status: :unprocessable_entity
     end

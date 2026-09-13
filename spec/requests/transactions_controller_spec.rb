@@ -125,7 +125,7 @@ RSpec.describe TransactionsController, type: :request do
       it "redirects to the transaction detail" do
         post transactions_path, params: { transaction: valid_attributes }
         created_transaction = Transaction.order(created_at: :desc).first
-        expect(response).to redirect_to("#{transaction_path(id: created_transaction.id)}?format=html")
+        expect(response).to redirect_to("#{transaction_path(id: created_transaction.id)}")
       end
 
       it "sets a success notice" do
@@ -152,7 +152,7 @@ RSpec.describe TransactionsController, type: :request do
 
         it "redirects with success notice" do
           post transactions_path, params: { transaction: transfer_attributes }
-          expect(response.location).to match(%r{/transactions/[^?]+\?format=html})
+          expect(response.location).to match(%r{/transactions/[^?]+$})
           expect(flash[:notice]).to be_present
         end
       end
@@ -220,17 +220,17 @@ RSpec.describe TransactionsController, type: :request do
 
         it "accepts custom transaction date" do
           post transactions_path, params: { transaction: attributes_with_date }
-          expect(response.location).to match(%r{/transactions/[^?]+\?format=html})
+          expect(response.location).to match(%r{/transactions/[^?]+$})
         end
 
         it "accepts note field" do
           post transactions_path, params: { transaction: valid_attributes.merge(note: 'Test note') }
-          expect(response.location).to match(%r{/transactions/[^?]+\?format=html})
+          expect(response.location).to match(%r{/transactions/[^?]+$})
         end
 
         it "accepts description field" do
           post transactions_path, params: { transaction: valid_attributes.merge(description: 'Custom description') }
-          expect(response.location).to match(%r{/transactions/[^?]+\?format=html})
+          expect(response.location).to match(%r{/transactions/[^?]+$})
         end
 
         it "stores a typed note as the human text, keeping the system description" do
@@ -384,7 +384,7 @@ RSpec.describe TransactionsController, type: :request do
       it "handles large decimal values" do
         attributes = base_attributes.merge(amount: 999_999_999.99)
         post transactions_path, params: { transaction: attributes }
-        expect(response.location).to match(%r{/transactions/[^?]+\?format=html})
+        expect(response.location).to match(%r{/transactions/[^?]+$})
         expect(flash[:notice]).to be_present
       end
     end
@@ -393,14 +393,14 @@ RSpec.describe TransactionsController, type: :request do
       it "handles special characters in account names" do
         attributes = base_attributes.merge(account_name: "Spëçîål Àççöunt €$£")
         post transactions_path, params: { transaction: attributes }
-        expect(response.location).to match(%r{/transactions/[^?]+\?format=html})
+        expect(response.location).to match(%r{/transactions/[^?]+$})
         expect(flash[:notice]).to be_present
       end
 
       it "handles special characters in notes" do
         attributes = base_attributes.merge(note: "Emoji test 🎉💰📈 and symbols @#$%")
         post transactions_path, params: { transaction: attributes }
-        expect(response.location).to match(%r{/transactions/[^?]+\?format=html})
+        expect(response.location).to match(%r{/transactions/[^?]+$})
         expect(flash[:notice]).to be_present
       end
     end
@@ -409,7 +409,7 @@ RSpec.describe TransactionsController, type: :request do
       it "accepts future transaction dates" do
         attributes = base_attributes.merge(transaction_date: 1.week.from_now.to_date)
         post transactions_path, params: { transaction: attributes }
-        expect(response.location).to match(%r{/transactions/[^?]+\?format=html})
+        expect(response.location).to match(%r{/transactions/[^?]+$})
         expect(flash[:notice]).to be_present
       end
     end
@@ -418,7 +418,7 @@ RSpec.describe TransactionsController, type: :request do
       it "handles amounts with many decimal places" do
         attributes = base_attributes.merge(amount: 100.123456)
         post transactions_path, params: { transaction: attributes }
-        expect(response.location).to match(%r{/transactions/[^?]+\?format=html})
+        expect(response.location).to match(%r{/transactions/[^?]+$})
         expect(flash[:notice]).to be_present
       end
     end
@@ -527,7 +527,7 @@ RSpec.describe TransactionsController, type: :request do
         patch transaction_path(id: transaction.id), params: {
           transaction: { amount: "50.00" }
         }
-        expect(response).to redirect_to("#{transaction_path(id: transaction.id)}?format=html")
+        expect(response).to redirect_to("#{transaction_path(id: transaction.id)}")
       end
 
       it "sets a success flash" do
@@ -837,5 +837,19 @@ RSpec.describe "Transactions phrase fill", type: :request do
       expect(response).to have_http_status(:unprocessable_entity)
       expect(response.body).to include('value="zem wallet"')
     end
+  end
+end
+
+# The layout: fonts are self-hosted and preloaded, nothing is fetched from Google.
+RSpec.describe "Application layout", type: :request do
+  include Devise::Test::IntegrationHelpers
+
+  it "serves the fonts from our assets and preloads the latin files" do
+    sign_in create(:user), scope: :user
+    get dashboard_path
+
+    expect(response.body).not_to include("fonts.googleapis.com")
+    expect(response.body).to match(%r{<link rel="preload" href="/assets/geist-latin-\w+\.woff2" as="font" type="font/woff2" crossorigin="anonymous"})
+    expect(response.body).to match(%r{<link rel="preload" href="/assets/plus-jakarta-sans-latin-\w+\.woff2" as="font"})
   end
 end

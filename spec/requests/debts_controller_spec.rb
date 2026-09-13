@@ -222,7 +222,7 @@ RSpec.describe DebtsController, type: :request do
       it 'redirects to the created debt' do
         post debts_path, params: { debt: valid_attributes }
         created_debt = Debt.order(created_at: :desc).first
-        expect(response).to redirect_to("#{debt_path(id: created_debt.id)}?format=html")
+        expect(response).to redirect_to("#{debt_path(id: created_debt.id)}")
       end
 
       it 'sets a success flash message' do
@@ -339,7 +339,7 @@ RSpec.describe DebtsController, type: :request do
 
       it 'redirects to the debt' do
         patch debt_path(id: debt.id), params: { debt: new_attributes }
-        expect(response).to redirect_to("#{debt_path(id: debt.id)}?format=html")
+        expect(response).to redirect_to("#{debt_path(id: debt.id)}")
       end
 
       it 'sets a success flash message' do

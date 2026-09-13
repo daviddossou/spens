@@ -10,7 +10,7 @@ module Debts
 
     def create
       if WriteOffDebtService.new(@debt, user: current_user).call
-        redirect_with_reload_to debt_path(id: @debt.id), notice: t("debts.write_off.success"), status: :see_other
+        redirect_to debt_path(id: @debt.id), notice: t("debts.write_off.success"), status: :see_other
       else
         redirect_to debt_path(id: @debt.id), alert: t("debts.write_off.error"), status: :see_other
       end
@@ -19,7 +19,7 @@ module Debts
     # Undo a write-off — the debt comes back as ongoing for its remaining balance.
     def destroy
       if ReactivateDebtService.new(@debt, user: current_user).call
-        redirect_with_reload_to debt_path(id: @debt.id), notice: t("debts.reactivate.success"), status: :see_other
+        redirect_to debt_path(id: @debt.id), notice: t("debts.reactivate.success"), status: :see_other
       else
         redirect_to debt_path(id: @debt.id), alert: t("debts.reactivate.error"), status: :see_other
       end

@@ -1,5 +1,58 @@
+/* The app's only stylesheet. The tailwind CLI inlines every import into one file
+   (app/assets/builds/tailwind.css) so a cold start makes one CSS request instead of ~50.
+   Order = the alphabetical order Propshaft used to link them, which the cascade relies on. */
 @import "tailwindcss";
 
 @theme {
   --font-sans: 'Geist', 'Plus Jakarta Sans', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
 }
+
+@import "../stylesheets/accounts.css";
+@import "../stylesheets/admin.css";
+@import "../stylesheets/analyses.css";
+@import "../stylesheets/budgets.css";
+@import "../stylesheets/colors.css";
+@import "../stylesheets/commitments.css";
+@import "../stylesheets/components.css";
+@import "../stylesheets/components/bottom_nav.css";
+@import "../stylesheets/components/bottom_sheet.css";
+@import "../stylesheets/components/button.css";
+@import "../stylesheets/components/card.css";
+@import "../stylesheets/components/checkbox.css";
+@import "../stylesheets/components/commitment_card.css";
+@import "../stylesheets/components/consent_banner.css";
+@import "../stylesheets/components/dashboard_summary.css";
+@import "../stylesheets/components/fab.css";
+@import "../stylesheets/components/flash_message.css";
+@import "../stylesheets/components/forms.css";
+@import "../stylesheets/components/grid.css";
+@import "../stylesheets/components/header.css";
+@import "../stylesheets/components/movement_detail.css";
+@import "../stylesheets/components/onboarding/account_line.css";
+@import "../stylesheets/components/onboarding/account_setup_form.css";
+@import "../stylesheets/components/picker.css";
+@import "../stylesheets/components/progress.css";
+@import "../stylesheets/components/pwa_install.css";
+@import "../stylesheets/components/selectable_card.css";
+@import "../stylesheets/components/stat_card.css";
+@import "../stylesheets/components/switcher.css";
+@import "../stylesheets/components/transaction_group.css";
+@import "../stylesheets/components/transaction_item.css";
+@import "../stylesheets/debts.css";
+@import "../stylesheets/fonts.css";
+@import "../stylesheets/goals.css";
+@import "../stylesheets/layout.css";
+@import "../stylesheets/layouts/auth.css";
+@import "../stylesheets/onboarding.css";
+@import "../stylesheets/pages/dashboard.css";
+@import "../stylesheets/pages/guide.css";
+@import "../stylesheets/pages/landing.css";
+@import "../stylesheets/pages/legal.css";
+@import "../stylesheets/pages/transaction_show.css";
+@import "../stylesheets/previews.css";
+@import "../stylesheets/spaces.css";
+@import "../stylesheets/tom-select.css";
+@import "../stylesheets/transactions.css";
+@import "../stylesheets/utilities.css";
+@import "../stylesheets/variables.css";
+@import "../../../vendor/assets/stylesheets/tom-select.bootstrap5.css";

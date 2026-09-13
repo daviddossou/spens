@@ -16,14 +16,14 @@ class BudgetEntriesController < ApplicationController
   # Rétablir — drop the exception and let the rule plan this month again.
   def revert
     @budget_entry.revert_to_rule!
-    redirect_with_reload_to budgets_path(month: month_param), notice: t(".reverted"), status: :see_other
+    redirect_to budgets_path(month: month_param), notice: t(".reverted"), status: :see_other
   end
 
   private
 
   def update_month
     if @budget_entry.override_to(params[:amount])
-      redirect_with_reload_to budgets_path(month: month_param), notice: t(".success"), status: :see_other
+      redirect_to budgets_path(month: month_param), notice: t(".success"), status: :see_other
     else
       render :edit, status: :unprocessable_entity
     end
@@ -35,7 +35,7 @@ class BudgetEntriesController < ApplicationController
     @form = BudgetItemForm.new(current_space, rule_payload)
 
     if @form.submit
-      redirect_with_reload_to budgets_path(month: month_param), notice: t(".rule_success"), status: :see_other
+      redirect_to budgets_path(month: month_param), notice: t(".rule_success"), status: :see_other
     else
       render :edit, status: :unprocessable_entity
     end

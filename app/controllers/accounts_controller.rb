@@ -40,7 +40,7 @@ class AccountsController < ApplicationController
     build_form(account_params)
 
     if @form.submit
-      redirect_with_reload_to account_path(id: @form.account.id), notice: t(".success"), status: :see_other
+      redirect_to account_path(id: @form.account.id), notice: t(".success"), status: :see_other
     else
       render :new, status: :unprocessable_entity
     end
@@ -59,7 +59,7 @@ class AccountsController < ApplicationController
     build_form(account_params.merge(id: @account.id))
 
     if @form.submit
-      redirect_with_reload_to account_path(id: @account.id), notice: t(".success"), status: :see_other
+      redirect_to account_path(id: @account.id), notice: t(".success"), status: :see_other
     else
       render :edit, status: :unprocessable_entity
     end

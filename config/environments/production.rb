@@ -25,6 +25,9 @@ Rails.application.configure do
   config.active_storage.service = :local
 
   # Assume all access to the app is happening through a SSL-terminating reverse proxy.
+  # Server-Timing header: lets the page split server time from network time (see lib/page_timing.js).
+  config.server_timing = true
+
   config.assume_ssl = true
 
   # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.

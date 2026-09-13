@@ -27,16 +27,15 @@
     <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#3F51B5">
 
-    <%# Google Fonts: Geist Sans + Plus Jakarta Sans (fallback) %>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <%# Geist + Plus Jakarta Sans are self-hosted (app/assets/fonts): no third-party
+        request on a cold start. The latin files are preloaded so text renders in the
+        right face on the first paint. %>
+    <%= preload_link_tag asset_path("geist-latin.woff2"), as: "font", type: "font/woff2", crossorigin: "anonymous" %>
+    <%= preload_link_tag asset_path("plus-jakarta-sans-latin.woff2"), as: "font", type: "font/woff2", crossorigin: "anonymous" %>
 
-    <%# Includes all stylesheet files in app/assets/stylesheets %>
-    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%# One bundled stylesheet, built by the tailwind CLI from app/assets/tailwind/application.css %>
+    <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
 
-    <%# TomSelect base CSS (vendored) %>
-    <%= stylesheet_link_tag "tom-select.bootstrap5", "data-turbo-track": "reload" %>
 
     <%= javascript_importmap_tags %>
     <%= render "shared/posthog" %>
@@ -83,7 +82,7 @@
             <%= turbo_frame_tag "modal",
               data: {
                 bottom_sheet_target: "frame",
-                action: "turbo:frame-load->bottom-sheet#frameLoaded turbo:frame-missing->bottom-sheet#frameMissing"
+                action: "turbo:frame-load->bottom-sheet#frameLoaded turbo:frame-render->bottom-sheet#frameRendered turbo:frame-missing->bottom-sheet#frameMissing"
               } %>
           </div>
         </div>
