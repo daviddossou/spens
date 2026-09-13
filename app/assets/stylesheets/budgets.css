@@ -135,11 +135,6 @@
   font-weight: var(--font-weight-semibold);
 }
 
-/* Finished month: the suffix rides on the dark hero card, so keep it light. */
-.budget-page--wrap_up .budget-hero__suffix {
-  color: var(--color-white);
-}
-
 .budget-hero__value {
   font-size: var(--font-size-hero);
   font-weight: var(--font-weight-bold);
@@ -493,7 +488,7 @@
   text-wrap: pretty;
 }
 
-/* Hors-plan card: amber-headed account of off-plan spending (En cours) */
+/* Hors-plan card: amber-headed account of off-plan spending (En cours, Bilan) */
 .hors-plan {
   background: var(--color-white);
   border-radius: var(--radius-xl);

@@ -143,6 +143,7 @@ en:
       hero_suffix_wrap_up: "final"
       hero_flow_html: "%{income} in · %{expense} out"
       hero_sub_live_html: "Planned %{planned} · %{offplan} off-plan"
+      hero_sub_wrap_up_html: "On plan %{planned} · %{offplan} off-plan"
       planned_income: "Planned income"
       planned_expenses: "Planned expenses"
       socle_label: "Essential floor"
@@ -190,9 +191,10 @@ en:
       show_more: "Show %{count} more"
       off_plan_html: "Off plan: %{amounts}"
       recurring: "already %{amount} in %{month}"
-      # Hors-plan card (En cours)
+      # Hors-plan card (En cours, Bilan)
       card_title_html: "%{amount} spent off plan"
       card_subtitle: "This is what's widening the gap with your plan"
+      card_subtitle_closed: "This is what widened the gap with your plan"
       meta_recurring_html: "%{amount} · also in %{month}"
       meta_once_html: "%{amount} · seen once"
       plan_it_pill: "Plan it"

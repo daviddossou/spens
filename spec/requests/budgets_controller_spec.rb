@@ -140,6 +140,34 @@ RSpec.describe BudgetsController, type: :request do
     end
   end
 
+  describe "off-plan spending" do
+    let(:past) { month << 1 }
+
+    before do
+      income_type = create(:transaction_type, space: space, kind: "income", name: "💰 Salaire")
+      create(:budget_item, space: space, kind: "income", transaction_type: income_type, amount: 1_000, starts_on: past)
+      surprise = create(:transaction_type, space: space, kind: "expense", name: "🔧 Réparations")
+      create(:transaction, space: space, transaction_type: surprise, amount: -300, transaction_date: past + 5)
+    end
+
+    it "is deducted from the Bilan hero and listed read-only" do
+      get budgets_path(month: past.strftime("%Y-%m"))
+
+      expect(assigns(:mode)).to eq(:wrap_up)
+      expect(assigns(:hero_value)).to eq(assigns(:actual_net) - 300)
+      expect(response.body).to include("Réparations")
+      expect(response.body).to include(I18n.t("budgets.unplanned.card_subtitle_closed"))
+      expect(response.body).not_to include(I18n.t("budgets.unplanned.plan_it_pill"))
+    end
+
+    it "stays out of the Plan reading" do
+      get budgets_path(month: past.strftime("%Y-%m"), view: "plan")
+
+      expect(assigns(:hero_value)).to eq(assigns(:projected_net))
+      expect(response.body).not_to include("Réparations")
+    end
+  end
+
   describe "GET #summary" do
     it "permanently redirects to the Budget page for that month (Bilan mode)" do
       get summary_budgets_path(month: (month << 1).strftime("%Y-%m"))
