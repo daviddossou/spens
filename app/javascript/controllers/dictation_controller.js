@@ -9,9 +9,13 @@ export default class extends Controller {
   static targets = ["input", "button"]
   static values = { lang: String, listeningLabel: String, idleLabel: String }
 
+  // Android WebViews (the Spens app included) declare the API without a working engine.
+  static WEBVIEW = /Turbo Native|; wv\)/
+
   connect() {
     const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition
     if (!Recognition || !this.hasButtonTarget) return
+    if (this.constructor.WEBVIEW.test(navigator.userAgent)) return
 
     this.Recognition = Recognition
     this.buttonTarget.hidden = false
@@ -33,6 +37,8 @@ export default class extends Controller {
     recognition.maxAlternatives = 1
 
     this.prefix = this.inputTarget.value.trim()
+    this.heard = false
+    window.posthog?.capture("dictation_started", { lang: recognition.lang })
     recognition.onresult = (event) => this.#write(event)
     recognition.onend = () => this.#stop()
     recognition.onerror = () => this.#stop()
@@ -52,6 +58,7 @@ export default class extends Controller {
       this.recognition = null
       recognition.onend = recognition.onerror = recognition.onresult = null
       try { recognition.stop() } catch { /* already stopped */ }
+      window.posthog?.capture("dictation_completed", { success: this.heard })
     }
     this.#listening(false)
     if (this.hasInputTarget) this.inputTarget.focus({ preventScroll: true })
@@ -62,6 +69,7 @@ export default class extends Controller {
     const heard = Array.from(event.results).map((r) => r[0].transcript).join(" ").trim()
     if (!heard) return
 
+    this.heard = true
     this.inputTarget.value = this.prefix ? `${this.prefix} ${heard}` : heard
     this.inputTarget.dispatchEvent(new Event("input", { bubbles: true }))
   }

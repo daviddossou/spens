@@ -38,15 +38,21 @@ export default class extends Controller {
     this.deferredPrompt.prompt()
     const { outcome } = await this.deferredPrompt.userChoice
     this.deferredPrompt = null
+    window.posthog?.capture("pwa_install_prompted", { outcome })
     if (outcome === "accepted") {
       this.markDone()
       this.hide()
     } else {
-      this.dismiss()
+      this.snooze()
     }
   }
 
   dismiss() {
+    window.posthog?.capture("pwa_install_dismissed")
+    this.snooze()
+  }
+
+  snooze() {
     const state = this.state()
     state.dismissedAt = Date.now()
     state.nudges = (state.nudges || 0) + 1

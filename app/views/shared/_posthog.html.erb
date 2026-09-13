@@ -9,8 +9,15 @@
       defaults: "2025-05-24",
       person_profiles: "identified_only"
     });
+    posthog.register({
+      platform: <%= (respond_to?(:turbo_native_app?) && turbo_native_app? ? "native" : "web").to_json.html_safe %>,
+      locale: <%= I18n.locale.to_s.to_json.html_safe %>
+    });
     <% if user_signed_in? %>
       posthog.identify("user_<%= current_user.id %>", { email: <%= current_user.email.to_json.html_safe %> });
+      <% if respond_to?(:current_space) && current_space %>
+        posthog.group("space", <%= current_space.id.to_json.html_safe %>, { name: <%= current_space.name.to_json.html_safe %> });
+      <% end %>
     <% end %>
   </script>
 <% end %>
