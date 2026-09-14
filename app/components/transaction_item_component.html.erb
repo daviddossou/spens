@@ -1,19 +1,19 @@
 <%= link_to transaction_path(locale: I18n.locale, id: transaction.id),
             class: "transaction-item",
             data: { turbo_frame: "_top" },
-            aria_label: "#{row.title}: #{display_amount(row, transaction)}" do %>
+            "aria-label": "#{title}: #{display_amount(row, transaction)}" do %>
   <div class="transaction-item__content">
     <!-- Left side: family icon, composed title + one subtitle -->
     <div class="transaction-item__left">
       <div class="transaction-item__info">
         <div class="transaction-item__icon <%= icon_class %>" aria-hidden="true">
-          <%= icon_svg %>
+          <%= emoji_icon || icon_svg %>
         </div>
 
         <div class="transaction-item__details">
-          <p class="transaction-item__type"><%= row.title %></p>
-          <% if row.subtitle.present? %>
-            <p class="transaction-item__account"><%= row.subtitle %></p>
+          <p class="transaction-item__type"><%= title %></p>
+          <% if subtitle.present? %>
+            <p class="transaction-item__account <%= 'transaction-item__account--wrap' if in_category? %>"><%= subtitle %></p>
           <% end %>
         </div>
       </div>
@@ -33,7 +33,7 @@
   </div>
 
   <!-- A provider fee, nested under its parent -->
-  <% if fee_row %>
+  <% if show_fee? %>
     <div class="transaction-item__fee">
       <span class="transaction-item__fee-title">
         <span class="transaction-item__fee-arrow" aria-hidden="true">&#8627;</span>

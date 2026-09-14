@@ -9,12 +9,13 @@
   prev_month_name = l(@month << 1, format: "%B")
 
   rows = []
+  detail = ->(type) { category_budgets_path(id: type.id, month: month_slug) }
   @unplanned[:expense].each do |type, sums|
-    rows << { name: type.name, amount: sums[:amount], recurring: sums[:prev].to_f.positive?,
+    rows << { name: type.name, amount: sums[:amount], recurring: sums[:prev].to_f.positive?, detail_path: detail.call(type),
               path: new_budget_item_path(month: month_slug, kind: "expense", transaction_type_name: type.name, amount: plan_amount.call(sums[:amount])) }
   end
   @unplanned[:income].each do |type, sums|
-    rows << { name: type.name, amount: sums[:amount], sign: :in, recurring: sums[:prev].to_f.positive?,
+    rows << { name: type.name, amount: sums[:amount], sign: :in, recurring: sums[:prev].to_f.positive?, detail_path: detail.call(type),
               path: new_budget_item_path(month: month_slug, kind: "income", transaction_type_name: type.name, amount: plan_amount.call(sums[:amount])) }
   end
   @unplanned[:transfers].each do |transfer|
@@ -38,7 +39,11 @@
       <% rows.each do |row| %>
         <li class="hors-plan__row">
           <div class="hors-plan__row-text">
-            <span class="hors-plan__name"><%= row[:name] %></span>
+            <% if row[:detail_path] %>
+              <%= link_to row[:name], row[:detail_path], class: "hors-plan__name hors-plan__name--link" %>
+            <% else %>
+              <span class="hors-plan__name"><%= row[:name] %></span>
+            <% end %>
             <span class="hors-plan__meta">
               <% amount_str = money(row[:amount], sign: (row[:sign] == :in ? :always : :auto)) %>
               <% if row[:recurring] %>

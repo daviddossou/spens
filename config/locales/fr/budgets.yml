@@ -3,6 +3,9 @@ fr:
     formats:
       month_year: "%B %Y"
       month_only: "%B"
+      day_month: "%-d %B"
+      day_month_short: "%-d %b"
+      month_short_year: "%b %Y"
 
   budgets:
     errors:
@@ -198,6 +201,31 @@ fr:
       meta_recurring_html: "%{amount} · aussi en %{month}"
       meta_once_html: "%{amount} · vu une seule fois"
       plan_it_pill: "Planifier"
+    categories:
+      show:
+        subtitle_child: "Sous-catégorie de %{parent}"
+        subtitle_parent:
+          one: "Catégorie · 1 sous-catégorie"
+          other: "Catégorie · %{count} sous-catégories"
+        subtitle_unbudgeted: "Catégorie · hors budget"
+        subtitle_expense: "Catégorie de dépense"
+        subtitle_income: "Catégorie de revenu"
+        planned_html: "sur %{amount} prévus"
+        transactions:
+          zero: "Aucune transaction"
+          one: "1 transaction"
+          other: "%{count} transactions"
+        above_plan_html: "%{amount} de plus"
+        average_html: "Moyenne des 3 derniers mois : <strong>%{amount}</strong>"
+        counts_in_html: "Compte dans %{parent}"
+        create_envelope: "Créer une enveloppe"
+        adjust_envelope: "Ajuster l'enveloppe"
+        empty_title: "Rien ce mois-ci"
+        empty_text: "Aucune transaction n'est encore rattachée à cette catégorie en %{month}."
+        add_expense: "Ajouter une dépense"
+        add_income: "Ajouter un revenu"
+        month_menu_label: "Changer de mois"
+        no_subcategory: "Sans sous-catégorie"
     summary:
       title: "Bilan du budget — %{month}"
       subtitle: "Le bilan du mois"

@@ -68,7 +68,12 @@ Rails.application.routes.draw do
     resources :budgets, only: [ :index ] do
       # The finished-month view is now the Budget page in Bilan mode; the old
       # /summary URL redirects to the same month on index (see controller).
-      collection { get :summary }
+      collection do
+        get :summary
+        # What one category's month is made of: keyed on category + month, the
+        # budget line (when there is one) only overlays the header.
+        get "categories/:id", to: "budgets/categories#show", as: :category
+      end
     end
     resources :budget_items, only: [ :new, :create, :edit, :update, :destroy ]
     resources :budget_entries, only: [ :edit, :update ] do

@@ -1,4 +1,4 @@
-<header class="app-header app-header--detail">
+<header class="app-header app-header--detail <%= 'app-header--detail-left' if align == :left %>">
   <div class="app-header__inner">
     <div class="app-header__left">
       <%= link_to back_url, class: "app-header__back",

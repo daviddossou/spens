@@ -58,14 +58,14 @@ RSpec.describe MovementRow do
       expect(r.subtitle).to eq("Wallet")
     end
 
-    it "sublines the cleaned note instead of the parent when the user typed something specific" do
+    it "titles with the cleaned note and sublines the category when the user typed something specific" do
       account = create(:account, space: space, name: "Bank")
       parent = type("expense", name: "Food & Groceries")
       r = row(txn(kind: "expense", name: "Provisions", parent: parent, account: account,
                   note: "provisions 55.65 marché de Cocody bank"))
 
-      expect(r.title).to eq("Provisions")
-      expect(r.subtitle).to eq("Bank · Provisions marché de Cocody")
+      expect(r.title).to eq("Provisions marché de Cocody")
+      expect(r.subtitle).to eq("Bank · Provisions")
     end
 
     it "falls back to the parent when the note only repeats the title" do
@@ -73,6 +73,7 @@ RSpec.describe MovementRow do
       parent = type("expense", name: "Food & Groceries")
       r = row(txn(kind: "expense", name: "Provisions", parent: parent, account: account, note: "provisions 55.65 bank"))
 
+      expect(r.title).to eq("Provisions")
       expect(r.subtitle).to eq("Bank · Food & Groceries")
     end
 
@@ -82,7 +83,7 @@ RSpec.describe MovementRow do
       r = row(txn(kind: "expense", name: "Sodas", parent: parent, account: account, label: "Coca"))
 
       expect(r.title).to eq("Coca")
-      expect(r.subtitle).to eq("Bank · Alimentation")
+      expect(r.subtitle).to eq("Bank · Sodas")
     end
   end
 

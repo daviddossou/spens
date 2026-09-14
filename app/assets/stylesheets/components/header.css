@@ -61,6 +61,11 @@
   min-width: 0;
 }
 
+/* Left-aligned detail header: the title reads on from the back chevron */
+.app-header--detail-left .app-header__center {
+  text-align: left;
+}
+
 .app-header__title {
   font-size: 1.0625rem;
   font-weight: 700;

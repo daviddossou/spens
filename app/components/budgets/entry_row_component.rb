@@ -64,69 +64,19 @@ module Budgets
       safe_join([ essential_label, debt_direction_label, cadence ].compact, " · ")
     end
 
-    def planned
-      entry.planned_amount.to_f
+    def progress
+      @progress ||= Budgets::LineProgress.new(entry: entry, actual: actual)
     end
 
-    def percentage
-      return 0 if planned.zero?
+    delegate :planned, :percentage, :bar_percentage, :fulfilled?, :over?, :celebrate?,
+             :overage, :status_label, :left_label_key, :bar_class, to: :progress
 
-      ((actual / planned) * 100).round
-    end
+    # Income and expense lines open the category detail page (what the month's
+    # amount is made of); the plan reading and the other kinds keep the edit sheet.
+    def detail_path
+      return nil if plan_mode? || entry.transaction_type_id.blank?
 
-    def bar_percentage
-      [ percentage, 100 ].min
-    end
-
-    def fulfilled?
-      actual >= planned
-    end
-
-    def over?
-      spending_kind? && actual > planned
-    end
-
-    # An overspent line must not celebrate: the green check is reserved for
-    # fulfilled-and-on-plan.
-    def celebrate?
-      fulfilled? && !over?
-    end
-
-    def overage
-      actual - planned
-    end
-
-    # Only spending directions can be "over budget"; incoming money and
-    # transfers above plan are fine or neutral.
-    def spending_kind?
-      %w[expense debt_out].include?(entry.kind)
-    end
-
-    def status_label
-      if fulfilled?
-        t("budgets.row.done_#{entry.kind}")
-      elsif actual.positive?
-        t("budgets.row.in_progress")
-      else
-        t("budgets.row.expected")
-      end
-    end
-
-    # "Left" reads as money still to spend; incoming money is still to receive;
-    # a debt I owe is money still to send.
-    def left_label_key
-      case entry.kind
-      when "income", "debt_in" then "to_receive_html"
-      when "debt_out" then "to_send_html"
-      else "left_html"
-      end
-    end
-
-    def bar_class
-      [ "budget-row__bar-fill",
-        ("budget-row__bar-fill--over" if over?),
-        ("budget-row__bar-fill--income" if %w[income debt_in].include?(entry.kind)),
-        ("budget-row__bar-fill--transfer" if entry.kind == "transfer") ].compact.join(" ")
+      helpers.category_budgets_path(id: entry.transaction_type_id, month: entry.month.strftime("%Y-%m"))
     end
 
     # Categories carry their own emoji in the name; transfer and debt lines get
