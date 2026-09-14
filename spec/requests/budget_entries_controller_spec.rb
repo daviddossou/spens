@@ -35,6 +35,12 @@ RSpec.describe BudgetEntriesController, type: :request do
       expect(response).to have_http_status(:unprocessable_entity)
     end
 
+    it "re-renders the form when the amount is blank" do
+      entry = create(:budget_entry, space: space)
+      patch budget_entry_path(id: entry.id), params: { amount: "" }
+      expect(response).to have_http_status(:unprocessable_entity)
+    end
+
     it "edits the rule from this month when scope is rule" do
       entry = create(:budget_entry, space: space, planned_amount: 25_000)
       patch budget_entry_path(id: entry.id), params: { scope: "rule", amount: 40_000 }

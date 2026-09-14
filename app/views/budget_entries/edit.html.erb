@@ -13,7 +13,9 @@
   rule_amount = @budget_entry.rule_amount
   is_expense = @budget_entry.kind == "expense"
   kind_key = %w[debt_in debt_out].include?(@budget_entry.kind) ? "debt" : @budget_entry.kind
-  amount_val = @budget_entry.planned_amount % 1 == 0 ? @budget_entry.planned_amount.to_i : @budget_entry.planned_amount.to_f
+  # A failed submit re-renders with the rejected (possibly blank) amount.
+  planned = @budget_entry.planned_amount
+  amount_val = planned.nil? ? nil : (planned % 1 == 0 ? planned.to_i : planned.to_f)
   ends_on = item&.ends_on
   bounded = ends_on.present? && ends_on >= month
   freqs = %w[monthly quarterly yearly]
@@ -69,7 +71,7 @@
         <div class="budget-amount">
           <div class="budget-amount__field">
             <%= number_field_tag :amount, amount_val, class: "budget-amount__input",
-                  step: "0.01", min: "0.01", inputmode: "decimal", autofocus: true,
+                  step: "0.01", min: "0.01", required: true, inputmode: "decimal", autofocus: true,
                   aria: { label: t(".amount_aria") },
                   data: { budget_scope_target: "amount", action: "input->budget-scope#onAmount" } %>
             <span class="budget-amount__currency"><%= currency %></span>

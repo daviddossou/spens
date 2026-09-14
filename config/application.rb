@@ -6,6 +6,8 @@ require "rails/all"
 # you've limited to :test, :development, or :production.
 Bundler.require(*Rails.groups)
 
+require_relative "../lib/middleware/reject_malformed_form"
+
 module Spens
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
@@ -14,7 +16,7 @@ module Spens
     # Please, add to the `ignore` list any other `lib` subdirectories that do
     # not contain `.rb` files, or that should not be reloaded or eager loaded.
     # Common ones are `templates`, `generators`, or `middleware`, for example.
-    config.autoload_lib(ignore: %w[assets tasks])
+    config.autoload_lib(ignore: %w[assets middleware tasks])
 
     # Configuration for the application, engines, and railties goes here.
     #
@@ -26,6 +28,10 @@ module Spens
 
     # Don't generate system test files.
     config.generators.system_tests = nil
+
+    # Malformed form bodies (e.g. a multipart part tagged charset=utf-16le) blow up
+    # inside Rack before Rails' own handling; answer 400 instead of raising.
+    config.middleware.insert_before Rack::MethodOverride, Middleware::RejectMalformedForm
 
     # Configure Sidekiq as the default job queue
     config.active_job.queue_adapter = :sidekiq
