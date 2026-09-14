@@ -66,7 +66,7 @@ group :development do
   gem "letter_opener_web", "~> 3.0"
 end
 
-gem "devise", "~> 4.9"
+gem "devise", "~> 5.0"
 gem "sidekiq", "~> 7.0"
 gem "redis", "~> 5.0"
 gem "view_component", "~> 3.0"
