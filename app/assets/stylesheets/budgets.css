@@ -1845,6 +1845,13 @@
 .budget-category__create {
   align-self: flex-start;
   margin-top: var(--space-xs);
+  border-radius: var(--radius-lg);
+}
+
+/* Empty-month call to action: a rounded, roomy primary */
+.budget-category__cta {
+  border-radius: var(--radius-lg);
+  font-weight: var(--font-weight-semibold);
 }
 
 /* Day subtotals stay quieter than the rows they sum */
@@ -1893,10 +1900,10 @@
 }
 
 .budget-category__adjust {
-  width: 100%;
   max-width: 32rem;
   margin: 0 auto;
   gap: 0.5rem;
+  border-radius: var(--radius-lg);
   background: var(--color-white);
 }
 

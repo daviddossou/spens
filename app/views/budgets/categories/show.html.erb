@@ -95,10 +95,11 @@
           <span class="budget-category__parent-chevron" aria-hidden="true">&rsaquo;</span>
         <% end %>
       <% elsif @entry.nil? && @editable %>
-        <%= link_to t(".create_envelope"),
-                    new_budget_item_path(month: month_slug, kind: @category.kind, transaction_type_name: @category.name,
-                                         amount: (@average.positive? ? @average : @total).round),
-                    class: "btn btn-outline-primary budget-category__create", data: { turbo_frame: "modal" } %>
+        <%= render Ui::ButtonComponent.new(
+              text: t(".create_envelope"), variant: :"outline-primary", size: :lg,
+              url: new_budget_item_path(month: month_slug, kind: @category.kind, transaction_type_name: @category.name,
+                                        amount: (@average.positive? ? @average : @total).round),
+              classes: "budget-category__create", data: { turbo_frame: "modal" }) %>
       <% end %>
     </section>
 
@@ -129,9 +130,10 @@
         <p class="budget-category__empty-title"><%= t(".empty_title") %></p>
         <p class="budget-category__empty-text"><%= t(".empty_text", month: l(@month, format: :month_only)) %></p>
         <% if @editable %>
-          <%= link_to t(".add_#{@category.kind}"),
-                      new_transaction_path(kind: @category.kind, transaction_type_name: @category.name),
-                      class: "btn btn-primary", data: { turbo_frame: "modal" } %>
+          <%= render Ui::ButtonComponent.new(
+                text: t(".add_#{@category.kind}"), variant: :primary, size: :xl,
+                url: new_transaction_path(kind: @category.kind, transaction_type_name: @category.name),
+                classes: "budget-category__cta", data: { turbo_frame: "modal" }) %>
         <% end %>
       </div>
     <% end %>
@@ -139,8 +141,10 @@
     <% if status_bar %>
       <%# The envelope is edited from the proof, not from the settings. %>
       <div class="budget-category__bar">
-        <%= link_to edit_budget_entry_path(id: @entry.id, return_to: request.fullpath),
-                    class: "btn btn-outline-primary btn-lg budget-category__adjust", data: { turbo_frame: "modal" } do %>
+        <%= render Ui::ButtonComponent.new(
+              variant: :"outline-primary", size: :xl, full_width: true,
+              url: edit_budget_entry_path(id: @entry.id, return_to: request.fullpath),
+              classes: "budget-category__adjust", data: { turbo_frame: "modal" }) do %>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h10M4 18h6"/></svg>
           <%= t(".adjust_envelope") %>
         <% end %>
