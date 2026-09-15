@@ -1,6 +1,7 @@
 fr:
   auth:
     rate_limited: "Trop de tentatives. Réessaie dans quelques minutes."
+    turnstile_failed: "La vérification anti-robot a échoué. Réessaie."
     sessions:
       sign_in: "Se connecter"
       or: "Ou"

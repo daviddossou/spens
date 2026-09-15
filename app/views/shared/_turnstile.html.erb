@@ -1,0 +1,3 @@
+<% if Turnstile.enabled? %>
+  <div data-controller="turnstile" data-turnstile-sitekey-value="<%= Turnstile.site_key %>"></div>
+<% end %>

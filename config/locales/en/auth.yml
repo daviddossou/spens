@@ -1,6 +1,7 @@
 en:
   auth:
     rate_limited: "Too many attempts. Try again in a few minutes."
+    turnstile_failed: "The anti-bot check failed. Please try again."
     sessions:
       sign_in: "Sign In"
       or: "Or"

@@ -25,6 +25,8 @@
     required: true
   ) %>
 
+  <%= render "shared/turnstile" %>
+
   <%= render Ui::ButtonComponent.new(
     form: f,
     text: t('auth.registrations.continue'),

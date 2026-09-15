@@ -28,6 +28,15 @@ module Analytics
     Rails.logger.warn("[Analytics] track failed: #{e.message}")
   end
 
+  # Server-side event with nobody signed in (a bot check failing at sign-up);
+  # no person profile so PostHog does not grow an "anonymous" person.
+  def track_anonymous(event, properties = {})
+    client&.capture(distinct_id: "anonymous", event: event,
+                    properties: Context.properties.merge(properties, "$process_person_profile" => false))
+  rescue StandardError => e
+    Rails.logger.warn("[Analytics] track_anonymous failed: #{e.message}")
+  end
+
   # Outcome of a quick-entry parse (kept / edited / deleted), the parser's accuracy signal.
   def track_quick_entry_resolved(attempt)
     Context.set(space_id: attempt.space_id, locale: Context.locale || attempt.locale) do

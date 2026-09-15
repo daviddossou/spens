@@ -2,10 +2,12 @@
 
 class Auth::RegistrationsController < ApplicationController
   include InvitationAcceptance
+  include TurnstileProtection
 
   layout "auth"
   before_action :redirect_if_signed_in, only: [ :new, :create ]
   rate_limit to: 5, within: 10.minutes, only: :create, with: -> { rate_limited }
+  protect_with_turnstile only: :create
 
   def new
     @user = User.new(email: params[:email])
@@ -76,6 +78,9 @@ class Auth::RegistrationsController < ApplicationController
     render_form_again(:too_many_requests)
   end
 
+  def turnstile_failed
+    render_form_again(:unprocessable_entity)
+  end
 
   def render_form_again(status)
     @user = User.new(params.fetch(:user, {}).permit(:first_name, :email))
