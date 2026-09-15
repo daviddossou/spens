@@ -5,6 +5,7 @@
 #  id                     :uuid             not null, primary key
 #  acquisition            :jsonb            not null
 #  admin                  :boolean          default(FALSE), not null
+#  confirmed_at           :datetime
 #  current_sign_in_at     :datetime
 #  current_sign_in_ip     :string
 #  email                  :string           default(""), not null, indexed

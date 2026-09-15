@@ -5,6 +5,7 @@
 #  id                     :uuid             not null, primary key
 #  acquisition            :jsonb            not null
 #  admin                  :boolean          default(FALSE), not null
+#  confirmed_at           :datetime
 #  current_sign_in_at     :datetime
 #  current_sign_in_ip     :string
 #  email                  :string           default(""), not null, indexed
@@ -37,6 +38,7 @@ FactoryBot.define do
     first_name { "John" }
     last_name { "Doe" }
     phone_number { "+1234567890" }
+    confirmed_at { Time.current }
 
     # Transient attributes that map to the auto-created default space.
     # This provides backward compatibility with existing specs that passed
@@ -72,6 +74,10 @@ FactoryBot.define do
 
     trait :without_space do
       create_default_space { false }
+    end
+
+    trait :unconfirmed do
+      confirmed_at { nil }
     end
 
     trait :admin do

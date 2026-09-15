@@ -51,15 +51,13 @@ RSpec.describe Auth::VerificationsController, type: :request do
       end
     end
 
-    context "with a sign_up context" do
-      it "redirects to onboarding after verification" do
-        # Create a new user and simulate sign_up flow
-        new_user = create(:user, :onboarding_incomplete)
-        post user_session_path, params: { email: new_user.email }
+    context "for an unconfirmed user signing in" do
+      let(:user) { create(:user, :unconfirmed) }
 
-        # Manually set context to sign_up (we can't easily do this in request spec,
-        # but the sign_in flow sets "sign_in" context, so we test the sign_in path)
-        # The sign_up context is tested more naturally in integration
+      it "confirms the email" do
+        set_otp_session
+        post auth_verification_path, params: { otp_code: user.reload.otp_code }
+        expect(user.reload).to be_confirmed
       end
     end
 
