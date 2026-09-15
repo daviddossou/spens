@@ -1,5 +1,6 @@
 en:
   auth:
+    rate_limited: "Too many attempts. Try again in a few minutes."
     sessions:
       sign_in: "Sign In"
       or: "Or"

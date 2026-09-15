@@ -1,5 +1,6 @@
 fr:
   auth:
+    rate_limited: "Trop de tentatives. Réessaie dans quelques minutes."
     sessions:
       sign_in: "Se connecter"
       or: "Ou"

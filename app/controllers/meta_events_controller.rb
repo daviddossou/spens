@@ -14,6 +14,8 @@ class MetaEventsController < ApplicationController
   }.freeze
   SIGNUP_PLACEMENTS = %w[nav hero diagnostic accounts pricing final].freeze
 
+  rate_limit to: 30, within: 1.minute, only: :create
+
   def create
     event_name = EVENTS[params[:event]]
     event_id = meta_consume_event_id(params[:event])

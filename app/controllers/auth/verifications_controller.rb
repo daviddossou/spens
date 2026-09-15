@@ -6,6 +6,10 @@ class Auth::VerificationsController < ApplicationController
   layout "auth"
   before_action :ensure_otp_session
   before_action :skip_if_already_confirmed, if: :confirming_email?
+  # 6-digit codes: cap guesses per IP; resends per IP and per pending user.
+  rate_limit to: 10, within: 10.minutes, only: :create, with: -> { rate_limited }
+  rate_limit to: 3, within: 10.minutes, only: :resend, with: -> { rate_limited }
+  rate_limit to: 3, within: 10.minutes, only: :resend, name: "user", by: -> { session[:otp_user_id] }, with: -> { rate_limited }
 
   def show
     @email = otp_user&.email
@@ -97,6 +101,13 @@ class Auth::VerificationsController < ApplicationController
     clear_otp_session
     redirect_to session.delete(:after_confirmation_path) || after_sign_in_path_for(otp_user),
                 notice: t("auth.verifications.already_confirmed")
+  end
+
+  def rate_limited
+    @email = otp_user&.email
+    @confirming_email = confirming_email?
+    flash.now[:alert] = t("auth.rate_limited")
+    render :show, status: :too_many_requests
   end
 
   def log_otp(user)
