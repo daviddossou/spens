@@ -14,8 +14,18 @@ RSpec.describe "Cloudflare client IP" do
     Middleware::CloudflareClientIp.new(remote_ip).call(env).last.first
   end
 
-  it "resolves the visitor when kamal-proxy's peer is a Cloudflare edge" do
+  it "resolves the visitor when the edge is the last hop" do
     expect(remote_ip_for(remote_addr: "172.18.0.2", forwarded_for: "141.101.97.83", cf_connecting_ip: "41.79.10.5"))
+      .to eq("41.79.10.5")
+  end
+
+  it "resolves the visitor when an inner proxy appended itself after the edge" do
+    expect(remote_ip_for(remote_addr: "127.0.0.1", forwarded_for: "141.101.97.83, 172.18.0.5", cf_connecting_ip: "41.79.10.5"))
+      .to eq("41.79.10.5")
+  end
+
+  it "resolves the visitor when the edge is the remote address" do
+    expect(remote_ip_for(remote_addr: "141.101.97.83", forwarded_for: nil, cf_connecting_ip: "41.79.10.5"))
       .to eq("41.79.10.5")
   end
 

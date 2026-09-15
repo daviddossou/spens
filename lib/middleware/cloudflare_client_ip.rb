@@ -1,11 +1,13 @@
 # frozen_string_literal: true
 
 module Middleware
-  # kamal-proxy replaces X-Forwarded-For with the address of its own peer, which
-  # is a Cloudflare edge now that the proxy is on, so Rails would key rate limits
-  # on edge IPs. The visitor travels in CF-Connecting-IP: put it back at the head
-  # of the chain, but only when the peer really is Cloudflare, so a request that
-  # hits the origin directly cannot spoof its address.
+  # Behind Cloudflare the proxies in front of Puma (kamal-proxy, Thruster) rebuild
+  # X-Forwarded-For from their own peers, so the chain Rails sees carries a
+  # Cloudflare edge but not the visitor. The visitor travels in CF-Connecting-IP:
+  # when a Cloudflare address shows up anywhere in the chain, hand that visitor
+  # to ActionDispatch::RemoteIp on its own. A request hitting the origin directly
+  # never carries a Cloudflare hop (kamal-proxy drops the inbound header), so
+  # the header cannot be spoofed.
   class CloudflareClientIp
     def initialize(app)
       @app = app
@@ -13,12 +15,19 @@ module Middleware
 
     def call(env)
       visitor = env["HTTP_CF_CONNECTING_IP"]
-      peer = env["HTTP_X_FORWARDED_FOR"].to_s.split(",").last&.strip
-      env["HTTP_X_FORWARDED_FOR"] = "#{visitor}, #{peer}" if visitor.present? && cloudflare?(peer)
+      if visitor.present? && via_cloudflare?(env)
+        env["HTTP_X_FORWARDED_FOR"] = visitor
+        env["HTTP_CLIENT_IP"] = nil
+      end
       @app.call(env)
     end
 
     private
+
+    def via_cloudflare?(env)
+      hops = env["HTTP_X_FORWARDED_FOR"].to_s.split(",").map(&:strip) << env["REMOTE_ADDR"].to_s
+      hops.any? { |ip| cloudflare?(ip) }
+    end
 
     def cloudflare?(ip)
       return false if ip.blank?
