@@ -5,6 +5,7 @@
 #  id                     :uuid             not null, primary key
 #  acquisition            :jsonb            not null
 #  admin                  :boolean          default(FALSE), not null
+#  confirmed_at           :datetime
 #  current_sign_in_at     :datetime
 #  current_sign_in_ip     :string
 #  email                  :string           default(""), not null, indexed
@@ -60,6 +61,18 @@ class User < ApplicationRecord
 
   ##
   # Instance Methods
+
+  # Email ownership is proven the first time the user enters an OTP: at sign-in,
+  # or in the confirmation gate that opens their second session (see
+  # EmailConfirmation). Sign-up itself no longer asks for a code.
+  def confirmed?
+    confirmed_at.present?
+  end
+
+  def confirm!
+    update!(confirmed_at: Time.current) unless confirmed?
+  end
+
   def generate_otp!
     update!(
       otp_code: SecureRandom.random_number(10**6).to_s.rjust(6, "0"),

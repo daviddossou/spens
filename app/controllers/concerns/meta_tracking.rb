@@ -7,7 +7,7 @@
 # - Issues server-generated event_ids (the deduplication key shared by pixel and
 #   CAPI sends) and hands them to the browser via views.
 # - Queues pixel events in session for pages rendered after a server-side send
-#   (e.g. CompleteRegistration fires CAPI in the verify request and the pixel
+#   (e.g. CompleteRegistration fires CAPI in the sign-up request and the pixel
 #   call on the next page load).
 #
 # Everything is gated on the marketing-consent cookie: no consent, no send —

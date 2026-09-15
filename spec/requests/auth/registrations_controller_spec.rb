@@ -37,17 +37,17 @@ RSpec.describe Auth::RegistrationsController, type: :request do
         }.to change(User, :count).by(1)
       end
 
-      it "generates an OTP for the new user" do
+      it "signs the user in without asking for a code" do
         post user_registration_path, params: valid_params
 
         new_user = User.find_by(email: "jane@example.com")
-        expect(new_user.otp_code).to be_present
-        expect(new_user.otp_sent_at).to be_present
-      end
+        expect(new_user.otp_code).to be_nil
+        expect(new_user.confirmed_at).to be_nil
+        expect(response).to redirect_to(onboarding_path)
 
-      it "redirects to verification page" do
-        post user_registration_path, params: valid_params
-        expect(response).to redirect_to(auth_verification_path)
+        get onboarding_path
+        expect(response).not_to redirect_to(new_user_session_path)
+        expect(response).not_to redirect_to(auth_verification_path)
       end
 
       it "sets a random password (user cannot sign in with password)" do
@@ -61,13 +61,6 @@ RSpec.describe Auth::RegistrationsController, type: :request do
         new_user = User.find_by(email: "jane@example.com")
         new_space = new_user.spaces.first
         expect(new_space.onboarding_current_step).to eq("onboarding_financial_goal")
-      end
-
-      it "generates an OTP code" do
-        post user_registration_path, params: valid_params
-        new_user = User.find_by(email: "jane@example.com")
-        expect(new_user.otp_code).to be_present
-        expect(new_user.otp_sent_at).to be_present
       end
     end
 
@@ -90,9 +83,10 @@ RSpec.describe Auth::RegistrationsController, type: :request do
         expect(response).to have_http_status(:unprocessable_entity)
       end
 
-      it "does not generate an OTP" do
+      it "does not sign anyone in" do
         post user_registration_path, params: { user: { first_name: "", last_name: "", email: "" } }
-        expect(response).to have_http_status(:unprocessable_entity)
+        get dashboard_path
+        expect(response).to redirect_to(new_user_session_path)
       end
     end
 
