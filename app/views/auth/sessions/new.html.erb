@@ -10,6 +10,8 @@
     <%= f.email_field :email, class: "form-input", autofocus: true, autocomplete: "email", required: true, placeholder: t('auth.sessions.email_placeholder') %>
   </div>
 
+  <%= render "shared/turnstile" %>
+
   <%= render Ui::ButtonComponent.new(
     form: f,
     text: t('auth.sessions.continue'),

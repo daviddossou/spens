@@ -1,8 +1,13 @@
 # frozen_string_literal: true
 
 class Auth::SessionsController < ApplicationController
+  include TurnstileProtection
+
   layout "auth"
   before_action :redirect_if_signed_in, only: [ :new, :create ]
+  # Each submit sends an OTP email: keep bots from draining the mail quota.
+  rate_limit to: 5, within: 10.minutes, only: :create, with: -> { rate_limited }
+  protect_with_turnstile only: :create
 
   def new
     # Render email input form
@@ -35,6 +40,15 @@ class Auth::SessionsController < ApplicationController
 
   def redirect_if_signed_in
     redirect_to dashboard_path if user_signed_in?
+  end
+
+  def rate_limited
+    flash.now[:alert] = t("auth.rate_limited")
+    render :new, status: :too_many_requests
+  end
+
+  def turnstile_failed
+    render :new, status: :unprocessable_entity
   end
 
   def log_otp(user)
