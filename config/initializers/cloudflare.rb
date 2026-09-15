@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-# Cloudflare sits in front of kamal-proxy, so the X-Forwarded-For chain is
-# visitor → Cloudflare → kamal-proxy. Trusting Cloudflare's edge ranges lets
-# request.remote_ip resolve to the visitor (rate limits, Meta CAPI) instead of
-# the edge node. Ranges from https://www.cloudflare.com/ips/ (checked 2026-09-15).
+# Cloudflare sits in front of kamal-proxy. Middleware::CloudflareClientIp rebuilds
+# the X-Forwarded-For chain as visitor, edge; trusting the edge ranges then lets
+# request.remote_ip resolve to the visitor (rate limits, Meta CAPI).
+# Ranges from https://www.cloudflare.com/ips/ (checked 2026-09-15).
 CLOUDFLARE_IP_RANGES = %w[
   173.245.48.0/20 103.21.244.0/22 103.22.200.0/22 103.31.4.0/22 141.101.64.0/18
   108.162.192.0/18 190.93.240.0/20 188.114.96.0/20 197.234.240.0/22 198.41.128.0/17

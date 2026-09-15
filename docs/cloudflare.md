@@ -18,9 +18,12 @@ from there. Dynamic pages still go to the origin, so measure `page_render_ms` (P
    `/manifest.json` if their headers are shorter. Never cache HTML: it is per-user.
 6. Speed: enable Brotli, HTTP/3, Early Hints. Disable Rocket Loader and Auto Minify
    (they rewrite our importmap and CSS).
-7. Rails is ready: `config/initializers/cloudflare.rb` trusts Cloudflare's edge ranges, so
-   `request.remote_ip` is the visitor (Meta CAPI, rate limits). Refresh the list from
-   https://www.cloudflare.com/ips/ if a rate limit ever starts hitting everyone at once.
+7. Rails is ready: kamal-proxy overwrites `X-Forwarded-For` with its peer (a Cloudflare edge),
+   so `Middleware::CloudflareClientIp` puts the visitor back from `CF-Connecting-IP` when that
+   peer is in the Cloudflare ranges of `config/initializers/cloudflare.rb`, and `remote_ip` is
+   the visitor (Meta CAPI, rate limits). Refresh the ranges from https://www.cloudflare.com/ips/
+   if rate limits ever start keying on edge IPs again (check the `rate-limit:` keys in Solid
+   Cache).
 8. Leave "Always Use HTTPS" off (Rails `force_ssl` already redirects). kamal-proxy renews its
    Let's Encrypt certificate over the HTTP-01 challenge, which an edge redirect would break.
    Check the certificate expiry after the switch and again ~60 days later.
