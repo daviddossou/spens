@@ -18,9 +18,14 @@ from there. Dynamic pages still go to the origin, so measure `page_render_ms` (P
    `/manifest.json` if their headers are shorter. Never cache HTML: it is per-user.
 6. Speed: enable Brotli, HTTP/3, Early Hints. Disable Rocket Loader and Auto Minify
    (they rewrite our importmap and CSS).
-7. Rails: the real client IP now arrives in `CF-Connecting-IP`. `request.remote_ip` is only used
-   for the Meta Conversions API (`app/services/meta.rb`); switch it to that header when
-   Cloudflare is on, or add Cloudflare's IP ranges to `config.action_dispatch.trusted_proxies`.
+7. Rails is ready: `config/initializers/cloudflare.rb` trusts Cloudflare's edge ranges, so
+   `request.remote_ip` is the visitor (Meta CAPI, rate limits). Refresh the list from
+   https://www.cloudflare.com/ips/ if a rate limit ever starts hitting everyone at once.
+8. Leave "Always Use HTTPS" off (Rails `force_ssl` already redirects). kamal-proxy renews its
+   Let's Encrypt certificate over the HTTP-01 challenge, which an edge redirect would break.
+   Check the certificate expiry after the switch and again ~60 days later.
+9. Leave Bot Fight Mode off. If it is ever enabled, add a WAF skip rule for user agents
+   containing "Turbo Native" (the Android app).
 
 ## Check after switching
 
@@ -28,4 +33,34 @@ from there. Dynamic pages still go to the origin, so measure `page_render_ms` (P
   second request.
 - Sign-in by OTP still works (cookies are untouched by the proxy).
 - The Android app loads: its user agent is unusual, make sure no Cloudflare bot rule blocks
-  "Turbo Native Android".
+  "Turbo Native Android". `/path-configuration` must answer without a challenge.
+- An invitation accept link and a Meta CAPI event (Events Manager test tab shows the real
+  visitor IP, not a Cloudflare one).
+
+## Rate limits (always on)
+
+Built-in `rate_limit`, keyed by `request.remote_ip`, answering 429 with the form and a flash:
+sign-up and sign-in 5 / 10 min, OTP verify 10 / 10 min, OTP resend 3 / 10 min (per IP and per
+pending user), Meta beacons 30 / min. Counters live in Solid Cache. The free plan also allows one
+edge rate-limiting rule: put it on `POST /sign_up` as a second layer.
+
+## Turnstile
+
+Off until both keys exist. To enable:
+
+1. Cloudflare dashboard → Turnstile → Add widget: hostnames `spens.me` and `www.spens.me`,
+   mode Managed.
+2. `bin/rails credentials:edit --environment production`, add:
+   ```yaml
+   turnstile:
+     site_key: 0x...
+     secret_key: 0x...
+   ```
+   then deploy. Locally, the always-pass test keys are in `.env.example`.
+3. The widget (`shared/turnstile`, `turnstile_controller.js`) renders in "interaction-only"
+   mode on sign-up and sign-in: nothing is shown unless Cloudflare is unsure. The server checks
+   the token with siteverify (`app/services/turnstile.rb`); a bad or missing token re-renders the
+   form with `auth.turnstile_failed`, an unreachable siteverify lets the request through.
+4. Test on web, in the Android app and in a private window. Watch the `turnstile_failed`
+   PostHog event for a week; if real users hit it, switch the widget to non-interactive mode.
+   If a CSP is ever enforced, allow `challenges.cloudflare.com` in `script-src` and `frame-src`.
