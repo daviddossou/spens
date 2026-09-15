@@ -93,6 +93,25 @@ RSpec.describe Budgets::CategoriesController, type: :request do
       expect(response.body).to include(I18n.t("budgets.categories.show.add_expense"))
     end
 
+    it "names the usual day when a regular charge lands at the same date each month" do
+      create(:budget_item, space: space, transaction_type: groceries, amount: 500, starts_on: month << 3)
+      record(groceries, -31, date: (month << 1) + 24)
+      record(groceries, -31, date: (month << 2) + 25)
+      record(groceries, -31, date: (month << 3) + 24)
+      show
+      expect(assigns(:usual_day)).to eq(25)
+      expect(response.body).to include(I18n.t("budgets.categories.show.usual_day_expense", day: 25))
+    end
+
+    it "stays silent on the day when the history is irregular" do
+      create(:budget_item, space: space, transaction_type: groceries, amount: 500, starts_on: month << 3)
+      record(groceries, -31, date: (month << 1) + 3)
+      record(groceries, -31, date: (month << 2) + 25)
+      record(groceries, -31, date: (month << 3) + 14)
+      show
+      expect(assigns(:usual_day)).to be_nil
+    end
+
     it "averages the three previous months" do
       record(groceries, -300, date: month << 1)
       record(groceries, -600, date: month << 2)

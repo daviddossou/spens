@@ -70,7 +70,11 @@
               <span class="budget-row__left-label">· <%= t("budgets.row.#{@progress.left_label_key}", amount: money(@progress.remaining)) %></span>
             <% end %>
           </span>
-          <span class="budget-category__count"><%= t(".transactions", count: @transactions.size) %></span>
+          <% if @usual_day %>
+            <span class="budget-category__count"><%= t(".usual_day_#{@category.kind}", day: (I18n.locale == :en ? @usual_day.ordinalize : @usual_day)) %></span>
+          <% else %>
+            <span class="budget-category__count"><%= t(".transactions", count: @transactions.size) %></span>
+          <% end %>
         </div>
       <% end %>
 

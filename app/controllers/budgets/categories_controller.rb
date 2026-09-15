@@ -29,6 +29,7 @@ module Budgets
       @parent_progress = @parent_entry && Budgets::LineProgress.new(entry: @parent_entry, actual: parent_actual)
 
       @average = three_month_average
+      @usual_day = usual_day if @entry && @transactions.empty?
       # No envelope anywhere: nothing to pace against, the list reads flat with dates.
       @flat_list = @entry.nil? && !@parent_entry
     end
@@ -53,6 +54,21 @@ module Budgets
     def three_month_average
       sums = (1..3).map { |i| month_movements(@month << i).sum(:amount).abs }
       (sums.sum / 3).round
+    end
+
+    # A regular charge (insurance, rent) lands about the same day each month: when
+    # each of the three previous months moved within a few days of one another, the
+    # empty month can say which day to expect. Irregular spend yields nothing.
+    def usual_day
+      days = (1..3).map do |i|
+        dates = month_movements(@month << i).pluck(:transaction_date).map(&:day).sort
+        return nil if dates.empty?
+
+        dates[dates.size / 2]
+      end
+      return nil if days.max - days.min > 3
+
+      (days.sum / 3.0).round
     end
   end
 end

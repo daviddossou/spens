@@ -226,6 +226,8 @@ en:
         add_income: "Add an income"
         month_menu_label: "Change month"
         no_subcategory: "No sub-category"
+        usual_day_expense: "Usually debited around the %{day}"
+        usual_day_income: "Usually lands around the %{day}"
     summary:
       title: "Budget summary — %{month}"
       subtitle: "How the month went"

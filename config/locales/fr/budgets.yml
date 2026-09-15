@@ -226,6 +226,8 @@ fr:
         add_income: "Ajouter un revenu"
         month_menu_label: "Changer de mois"
         no_subcategory: "Sans sous-catégorie"
+        usual_day_expense: "Prélèvement vers le %{day}"
+        usual_day_income: "Attendu vers le %{day}"
     summary:
       title: "Bilan du budget — %{month}"
       subtitle: "Le bilan du mois"
