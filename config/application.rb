@@ -7,6 +7,7 @@ require "rails/all"
 Bundler.require(*Rails.groups)
 
 require_relative "../lib/middleware/reject_malformed_form"
+require_relative "../lib/middleware/cloudflare_client_ip"
 
 module Spens
   class Application < Rails::Application
@@ -32,6 +33,7 @@ module Spens
     # Malformed form bodies (e.g. a multipart part tagged charset=utf-16le) blow up
     # inside Rack before Rails' own handling; answer 400 instead of raising.
     config.middleware.insert_before Rack::MethodOverride, Middleware::RejectMalformedForm
+    config.middleware.insert_before ActionDispatch::RemoteIp, Middleware::CloudflareClientIp
 
     # Configure Sidekiq as the default job queue
     config.active_job.queue_adapter = :sidekiq
