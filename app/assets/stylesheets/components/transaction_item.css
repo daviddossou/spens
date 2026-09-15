@@ -185,3 +185,20 @@
   font-weight: 500;
   color: var(--text-muted);
 }
+
+/* Inside a category page the subtitle carries sub-category + account: let it wrap */
+.transaction-item__account--wrap {
+  white-space: normal;
+}
+
+.transaction-item__part {
+  display: inline-block;
+  white-space: nowrap;
+}
+
+/* Inside a category page the type's own emoji replaces the family icon */
+.transaction-item__icon--emoji {
+  background-color: var(--color-off-white);
+  font-size: 1.25rem;
+  line-height: 1;
+}

@@ -1654,3 +1654,296 @@
   box-shadow: var(--shadow-focus);
 }
 
+
+/* Category detail: what one category's month is made of (Tour 38) */
+.budget-category--with-bar {
+  padding-bottom: 6rem;
+}
+
+/* Month pill in the top bar: the surrounding months in a menu */
+.month-menu__pill {
+  list-style: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.375rem 0.625rem 0.375rem 0.875rem;
+  border: 1px solid var(--color-separator);
+  border-radius: var(--radius-full);
+  background: var(--color-white);
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-dark);
+  white-space: nowrap;
+}
+
+.month-menu__pill::-webkit-details-marker {
+  display: none;
+}
+
+.month-menu__pill svg {
+  width: 1rem;
+  height: 1rem;
+  color: var(--color-muted-strong);
+}
+
+.month-menu[open] .month-menu__pill svg {
+  transform: rotate(180deg);
+}
+
+.month-menu__panel {
+  min-width: 11rem;
+}
+
+.month-menu__item {
+  font-weight: var(--font-weight-medium);
+  text-decoration: none;
+}
+
+.month-menu__item--active {
+  color: var(--color-primary);
+  font-weight: var(--font-weight-semibold);
+  background: var(--color-primary-20);
+}
+
+/* One grid for the page: text sits 24px from the screen edge — under the back
+   chevron's glyph — and cards are inset 12px so their 12px inner padding lands
+   their content on the same line. */
+.budget-category {
+  --category-text-x: 1.5rem;
+  --category-card-x: 0.75rem;
+}
+
+/* Header band: bleeds to the edges under the top bar, one white surface with it */
+.budget-category__hero {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  margin: -1.5rem -0.5rem 0;
+  padding: var(--space-lg) var(--category-text-x) var(--space-md);
+  background: var(--color-white);
+  border-bottom: 1px solid var(--color-separator);
+}
+
+/* Lists and the empty state: the main container already gives 8px */
+.budget-category > .transactions-timeline,
+.budget-category > .transaction-group__items,
+.budget-category > .budget-category__empty {
+  margin-inline: calc(var(--category-card-x) - 0.5rem);
+}
+
+.budget-category .transaction-group__header {
+  padding: 0 calc(var(--category-text-x) - var(--category-card-x));
+}
+
+
+/* Amount first, the plan beside it — or beneath it when FCFA figures run long */
+.budget-category__amounts {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  column-gap: var(--space-md);
+}
+
+.budget-category__amount {
+  font-size: var(--font-size-hero);
+  font-weight: var(--font-weight-bold);
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  color: var(--color-dark);
+  font-variant-numeric: tabular-nums;
+}
+
+.budget-category__amount--over {
+  color: var(--color-danger-dark);
+}
+
+.budget-category__amount--income {
+  color: var(--color-success-dark);
+}
+
+.budget-category__amount--empty {
+  color: var(--color-muted-strong);
+}
+
+.budget-category__planned,
+.budget-category__count {
+  flex-shrink: 0;
+  font-size: var(--font-size-body);
+  color: var(--color-muted-strong);
+  font-variant-numeric: tabular-nums;
+}
+
+.budget-category__hero .budget-row__bar {
+  margin: var(--space-xs) 0 0;
+}
+
+.budget-category__status-line {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  font-size: 0.8125rem;
+}
+
+.budget-category__status-line .budget-category__count {
+  white-space: nowrap;
+}
+
+.budget-category__status-line .budget-row__status {
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-dark);
+}
+
+/* Income above plan is good news, not an overrun */
+.budget-category__above-label {
+  color: var(--color-success-dark);
+  font-weight: var(--font-weight-medium);
+}
+
+.budget-category__average {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  margin-top: var(--space-xs);
+  padding-top: var(--space-sm);
+  border-top: 1px solid var(--color-separator);
+  font-size: var(--font-size-label);
+  color: var(--color-muted-strong);
+}
+
+.budget-category__average svg {
+  width: 1rem;
+  height: 1rem;
+  flex-shrink: 0;
+}
+
+/* A child counted on its parent's line: no bar, a link up */
+.budget-category__parent-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  margin-top: var(--space-xs);
+  padding: var(--space-sm) var(--space-md);
+  border: 1px solid var(--color-separator);
+  border-radius: var(--radius-lg);
+  font-size: var(--font-size-body);
+  color: var(--color-dark);
+  text-decoration: none;
+  transition: background-color 0.2s ease;
+}
+
+.budget-category__parent-link:hover {
+  background: var(--color-surface-sunken);
+}
+
+.budget-category__parent-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  min-width: 0;
+}
+
+.budget-category__parent-amounts {
+  font-size: var(--font-size-label);
+  color: var(--color-muted-strong);
+  font-variant-numeric: tabular-nums;
+}
+
+.budget-category__parent-over {
+  color: var(--color-danger-dark);
+  font-weight: var(--font-weight-semibold);
+}
+
+.budget-category__parent-chevron {
+  color: var(--color-primary);
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
+.budget-category__create {
+  align-self: flex-start;
+  margin-top: var(--space-xs);
+  border-radius: var(--radius-lg);
+}
+
+/* Empty-month call to action: a rounded, roomy primary */
+.budget-category__cta {
+  border-radius: var(--radius-lg);
+  font-weight: var(--font-weight-semibold);
+}
+
+/* Day subtotals stay quieter than the rows they sum */
+.budget-category .transaction-group__total {
+  color: var(--color-muted-strong);
+  font-weight: var(--font-weight-medium);
+}
+
+.budget-category .transaction-item__chevron {
+  width: 1rem;
+  height: 1rem;
+  color: var(--color-slate-gray);
+}
+
+/* Empty month: plain text on the canvas, no surface to stand in for the list */
+.budget-category__empty {
+  padding: var(--space-xl) var(--space-lg);
+  text-align: center;
+}
+
+.budget-category__empty-title {
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-dark);
+}
+
+.budget-category__empty-text {
+  margin: var(--space-xs) auto var(--space-md);
+  max-width: 28rem;
+  font-size: var(--font-size-body);
+  color: var(--color-muted-strong);
+}
+
+/* Fixed bottom bar above the tab bar: the envelope is adjusted from the proof */
+.budget-category__bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: calc(64px + env(safe-area-inset-bottom, 0px));
+  z-index: 100;
+  padding: var(--space-sm) var(--category-card-x);
+  background: var(--color-white);
+  border-top: 1px solid var(--color-separator);
+}
+
+.budget-category__adjust {
+  max-width: 32rem;
+  margin: 0 auto;
+  gap: 0.5rem;
+  border-radius: var(--radius-lg);
+  background: var(--color-white);
+}
+
+.budget-category__adjust svg {
+  width: 1.125rem;
+  height: 1.125rem;
+}
+
+/* Budget row: the chevron says the line opens its detail */
+.budget-row__chevron {
+  width: 1rem;
+  height: 1rem;
+  flex-shrink: 0;
+  align-self: center;
+  color: var(--color-muted-strong);
+}
+
+.hors-plan__name--link {
+  text-decoration: none;
+}
+
+.hors-plan__name--link:hover {
+  color: var(--color-primary);
+}

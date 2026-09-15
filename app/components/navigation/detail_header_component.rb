@@ -8,13 +8,15 @@ module Navigation
   class DetailHeaderComponent < ViewComponent::Base
     renders_one :action
 
-    attr_reader :back_url, :title, :back_label, :subtitle
+    attr_reader :back_url, :title, :back_label, :subtitle, :align
 
-    def initialize(back_url:, title:, back_label: nil, subtitle: nil)
+    # align: :center (default) or :left — a left title sits beside the back chevron.
+    def initialize(back_url:, title:, back_label: nil, subtitle: nil, align: :center)
       @back_url = back_url
       @title = title
       @back_label = back_label
       @subtitle = subtitle
+      @align = align
     end
   end
 end
