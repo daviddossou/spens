@@ -56,7 +56,9 @@ Off until both keys exist. To enable:
      site_key: 0x...
      secret_key: 0x...
    ```
-   then deploy. Locally, the always-pass test keys are in `.env.example`.
+   then deploy. Locally, set `TURNSTILE_SITE_KEY=1x00000000000000000000AA` and
+   `TURNSTILE_SECRET_KEY=1x0000000000000000000000000000000AA` (Cloudflare's always-pass test
+   keys) in `.env` to see the widget.
 3. The widget (`shared/turnstile`, `turnstile_controller.js`) renders in "interaction-only"
    mode on sign-up and sign-in: nothing is shown unless Cloudflare is unsure. The server checks
    the token with siteverify (`app/services/turnstile.rb`); a bad or missing token re-renders the
