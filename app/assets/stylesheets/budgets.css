@@ -1706,16 +1706,36 @@
   background: var(--color-primary-20);
 }
 
+/* One grid for the page: text sits 24px from the screen edge — under the back
+   chevron's glyph — and cards are inset 12px so their 12px inner padding lands
+   their content on the same line. */
+.budget-category {
+  --category-text-x: 1.5rem;
+  --category-card-x: 0.75rem;
+}
+
 /* Header band: bleeds to the edges under the top bar, one white surface with it */
 .budget-category__hero {
   display: flex;
   flex-direction: column;
   gap: var(--space-sm);
   margin: -1.5rem -0.5rem 0;
-  padding: var(--space-lg) var(--space-lg) var(--space-md);
+  padding: var(--space-lg) var(--category-text-x) var(--space-md);
   background: var(--color-white);
   border-bottom: 1px solid var(--color-separator);
 }
+
+/* Lists and the empty state: the main container already gives 8px */
+.budget-category > .transactions-timeline,
+.budget-category > .transaction-group__items,
+.budget-category > .budget-category__empty {
+  margin-inline: calc(var(--category-card-x) - 0.5rem);
+}
+
+.budget-category .transaction-group__header {
+  padding: 0 calc(var(--category-text-x) - var(--category-card-x));
+}
+
 
 /* Amount first, the plan beside it — or beneath it when FCFA figures run long */
 .budget-category__amounts {
@@ -1772,7 +1792,8 @@
 }
 
 .budget-category__status-line .budget-row__status {
-  font-weight: var(--font-weight-medium);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-dark);
 }
 
 /* Income above plan is good news, not an overrun */
@@ -1866,12 +1887,10 @@
   color: var(--color-slate-gray);
 }
 
+/* Empty month: plain text on the canvas, no surface to stand in for the list */
 .budget-category__empty {
   padding: var(--space-xl) var(--space-lg);
   text-align: center;
-  background: var(--color-white);
-  border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-resting);
 }
 
 .budget-category__empty-title {
@@ -1894,7 +1913,7 @@
   right: 0;
   bottom: calc(64px + env(safe-area-inset-bottom, 0px));
   z-index: 100;
-  padding: var(--space-sm) var(--space-lg);
+  padding: var(--space-sm) var(--category-card-x);
   background: var(--color-white);
   border-top: 1px solid var(--color-separator);
 }
