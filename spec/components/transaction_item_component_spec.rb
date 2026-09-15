@@ -13,6 +13,7 @@ RSpec.describe TransactionItemComponent, type: :component do
       account: account,
       amount: 1000,
       description: "Monthly salary",
+      note: nil,
       transaction_date: Date.today
     )
   end

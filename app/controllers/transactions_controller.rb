@@ -117,7 +117,7 @@ class TransactionsController < ApplicationController
   # so the nested :transaction isn't logged as unpermitted on create/update.
   CARRIED_PARAM_KEYS = %i[
     kind account_id debt_id direction contact_name person_locked
-    amount account_name from_account_name to_account_name note description
+    amount account_name from_account_name to_account_name note description transaction_type_name
   ].freeze
 
   def carried_params

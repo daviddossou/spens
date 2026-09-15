@@ -21,6 +21,11 @@
         <span class="budget-row__actual <%= 'budget-row__actual--over' if over? %> <%= 'budget-row__amount--income' if incoming_debt? %>"><%= formatted_actual %></span>
         <span class="budget-row__planned">/ <%= formatted_planned %></span>
       <% end %>
+      <% if detail_path %>
+        <svg class="budget-row__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+        </svg>
+      <% end %>
     </div>
   </div>
 
@@ -47,7 +52,11 @@
   <% end %>
 <% end %>
 
-<% if read_only %>
+<% if detail_path %>
+  <%= link_to detail_path, class: "budget-row budget-row--link" do %>
+    <%= row_body %>
+  <% end %>
+<% elsif read_only %>
   <div class="budget-row"><%= row_body %></div>
 <% else %>
   <%= link_to edit_budget_entry_path(id: entry.id), class: "budget-row budget-row--link", data: { turbo_frame: "modal" } do %>

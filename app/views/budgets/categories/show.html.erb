@@ -1,0 +1,154 @@
+<%
+  month_slug = @month.strftime("%Y-%m")
+  income = @category.kind == "income"
+  subtitle = if @category.parent
+    t(".subtitle_child", parent: @category.parent.name)
+  elsif @flat_list
+    t(".subtitle_unbudgeted")
+  elsif @has_children
+    t(".subtitle_parent", count: @category.children.size)
+  else
+    t(".subtitle_#{@category.kind}")
+  end
+  status_bar = @entry && @editable
+  # Month pill: the surrounding months, this one marked, so a category reads across time.
+  month_options = (-5..1).map { |offset| @month >> offset }
+%>
+<% content_for :title, @category.name %>
+<% content_for :header do %>
+  <%= render Navigation::DetailHeaderComponent.new(back_url: budgets_path(month: month_slug), align: :left,
+                                                    title: @category.name, subtitle: subtitle) do |header| %>
+    <% header.with_action do %>
+      <details class="header-menu month-menu">
+        <summary class="month-menu__pill" aria-label="<%= t('.month_menu_label') %>">
+          <%= l(@month, format: :month_short_year).capitalize %>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M6 9l6 6 6-6"/></svg>
+        </summary>
+        <div class="header-menu__panel month-menu__panel">
+          <% month_options.each do |m| %>
+            <%= link_to l(m, format: :month_year).capitalize,
+                        category_budgets_path(id: @category.id, month: m.strftime("%Y-%m")),
+                        class: "header-menu__item month-menu__item #{'month-menu__item--active' if m == @month}",
+                        "aria-current": (m == @month ? "true" : nil) %>
+          <% end %>
+        </div>
+      </details>
+    <% end %>
+  <% end %>
+<% end %>
+
+<div class="page-container page-container--narrow">
+  <div class="page-content budget-category <%= 'budget-category--with-bar' if status_bar %>">
+    <%# Header band: the month's amount, flush with the top bar. With a budget line it
+        carries the line's bar and status word for word; without one, the amount and its habit. %>
+    <section class="budget-category__hero">
+      <div class="budget-category__amounts">
+        <span class="budget-category__amount <%= 'budget-category__amount--over' if @progress&.over? %> <%= 'budget-category__amount--income' if income && @total.positive? %> <%= 'budget-category__amount--empty' if @total.zero? %>">
+          <%= money(@total, sign: (income ? :always : :none)) %>
+        </span>
+        <% if @progress %>
+          <span class="budget-category__planned"><%= t(".planned_html", amount: money(@progress.planned)) %></span>
+        <% else %>
+          <span class="budget-category__count"><%= t(".transactions", count: @transactions.size) %></span>
+        <% end %>
+      </div>
+
+      <% if @progress %>
+        <div class="budget-row__bar" role="progressbar" aria-valuenow="<%= @progress.percentage %>" aria-valuemin="0" aria-valuemax="100"
+             aria-label="<%= @category.name %>: <%= @progress.percentage %>%">
+          <div class="<%= @progress.bar_class %>" style="width: <%= @progress.bar_percentage %>%;"></div>
+        </div>
+        <div class="budget-category__status-line">
+          <span class="budget-row__status <%= 'budget-row__status--paid' if @progress.celebrate? %>">
+            <% if @progress.celebrate? %><span aria-hidden="true">✓</span><% end %>
+            <%= @progress.status_label %>
+            <% if @progress.over? %>
+              <span class="budget-row__over-label">· ↑ <%= t("budgets.row.over_by_html", amount: money(@progress.overage)) %></span>
+            <% elsif @progress.fulfilled? && @progress.overage.positive? %>
+              <span class="budget-category__above-label">· <%= t(".above_plan_html", amount: money(@progress.overage)) %></span>
+            <% elsif !@progress.fulfilled? %>
+              <span class="budget-row__left-label">· <%= t("budgets.row.#{@progress.left_label_key}", amount: money(@progress.remaining)) %></span>
+            <% end %>
+          </span>
+          <% if @usual_day %>
+            <span class="budget-category__count"><%= t(".usual_day_#{@category.kind}", day: (I18n.locale == :en ? @usual_day.ordinalize : @usual_day)) %></span>
+          <% else %>
+            <span class="budget-category__count"><%= t(".transactions", count: @transactions.size) %></span>
+          <% end %>
+        </div>
+      <% end %>
+
+      <% if @average.positive? %>
+        <p class="budget-category__average">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M3 17l6-6 4 4 8-8"/></svg>
+          <%= t(".average_html", amount: money(@average)) %>
+        </p>
+      <% end %>
+
+      <% if @parent_progress %>
+        <%# Counted on the parent's line: no bar here, a link up instead. %>
+        <%= link_to category_budgets_path(id: @category.parent.id, month: month_slug), class: "budget-category__parent-link" do %>
+          <span class="budget-category__parent-text">
+            <span class="budget-category__parent-label"><%= t(".counts_in_html", parent: content_tag(:strong, @category.parent.name)) %></span>
+            <span class="budget-category__parent-amounts <%= 'budget-category__parent-over' if @parent_progress.over? %>"><%= money(@parent_progress.actual) %> / <%= money(@parent_progress.planned) %></span>
+          </span>
+          <span class="budget-category__parent-chevron" aria-hidden="true">&rsaquo;</span>
+        <% end %>
+      <% elsif @entry.nil? && @editable %>
+        <%= render Ui::ButtonComponent.new(
+              text: t(".create_envelope"), variant: :"outline-primary", size: :lg,
+              url: new_budget_item_path(month: month_slug, kind: @category.kind, transaction_type_name: @category.name,
+                                        amount: (@average.positive? ? @average : @total).round),
+              classes: "budget-category__create", data: { turbo_frame: "modal" }) %>
+      <% end %>
+    </section>
+
+    <% if @transactions.any? && @flat_list %>
+      <div class="transaction-group__items">
+        <% @transactions.each do |transaction| %>
+          <%= render TransactionItemComponent.new(transaction: transaction, context: :category, category: @category, subcategory_hint: @has_children, show_date: true) %>
+        <% end %>
+      </div>
+    <% elsif @transactions.any? %>
+      <div class="transactions-timeline">
+        <% @grouped.each do |date, transactions| %>
+          <div class="transaction-group">
+            <div class="transaction-group__header">
+              <h3 class="transaction-group__date"><%= l(date, format: :day_month) %></h3>
+              <span class="transaction-group__total"><%= money(transactions.sum(&:amount), sign: :always) %></span>
+            </div>
+            <div class="transaction-group__items">
+              <% transactions.each do |transaction| %>
+                <%= render TransactionItemComponent.new(transaction: transaction, context: :category, category: @category, subcategory_hint: @has_children) %>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    <% else %>
+      <div class="budget-category__empty">
+        <p class="budget-category__empty-title"><%= t(".empty_title") %></p>
+        <p class="budget-category__empty-text"><%= t(".empty_text", month: l(@month, format: :month_only)) %></p>
+        <% if @editable %>
+          <%= render Ui::ButtonComponent.new(
+                text: t(".add_#{@category.kind}"), variant: :primary, size: :xl,
+                url: new_transaction_path(kind: @category.kind, transaction_type_name: @category.name),
+                classes: "budget-category__cta", data: { turbo_frame: "modal" }) %>
+        <% end %>
+      </div>
+    <% end %>
+
+    <% if status_bar %>
+      <%# The envelope is edited from the proof, not from the settings. %>
+      <div class="budget-category__bar">
+        <%= render Ui::ButtonComponent.new(
+              variant: :"outline-primary", size: :xl, full_width: true,
+              url: edit_budget_entry_path(id: @entry.id, return_to: request.fullpath),
+              classes: "budget-category__adjust", data: { turbo_frame: "modal" }) do %>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h10M4 18h6"/></svg>
+          <%= t(".adjust_envelope") %>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+</div>

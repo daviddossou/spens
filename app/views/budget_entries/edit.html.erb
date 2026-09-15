@@ -66,6 +66,7 @@
               budget_scope_cta_rule_value: t(".cta_rule")
             } do %>
         <%= hidden_field_tag :scope, "month", data: { budget_scope_target: "scopeInput" } %>
+        <%= hidden_field_tag :return_to, params[:return_to] if params[:return_to].present? %>
 
         <%# Amount hero. %>
         <div class="budget-amount">
@@ -91,7 +92,7 @@
               <p class="debt-reactivate__title"><%= t(".revert_title", amount: money(rule_amount)) %></p>
               <p class="debt-reactivate__sub"><%= t(".revert_sub") %></p>
             </div>
-            <%= link_to t(".revert_button"), revert_budget_entry_path(id: @budget_entry.id),
+            <%= link_to t(".revert_button"), revert_budget_entry_path(id: @budget_entry.id, return_to: params[:return_to].presence),
                   class: "btn btn-outline-primary debt-reactivate__btn", data: { turbo_method: :post } %>
           </div>
         <% end %>

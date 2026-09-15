@@ -3,6 +3,9 @@ en:
     formats:
       month_year: "%B %Y"
       month_only: "%B"
+      day_month: "%-d %B"
+      day_month_short: "%-d %b"
+      month_short_year: "%b %Y"
 
   budgets:
     errors:
@@ -198,6 +201,33 @@ en:
       meta_recurring_html: "%{amount} · also in %{month}"
       meta_once_html: "%{amount} · seen once"
       plan_it_pill: "Plan it"
+    categories:
+      show:
+        subtitle_child: "Sub-category of %{parent}"
+        subtitle_parent:
+          one: "Category · 1 sub-category"
+          other: "Category · %{count} sub-categories"
+        subtitle_unbudgeted: "Category · off budget"
+        subtitle_expense: "Expense category"
+        subtitle_income: "Income category"
+        planned_html: "of %{amount} planned"
+        transactions:
+          zero: "No transactions"
+          one: "1 transaction"
+          other: "%{count} transactions"
+        above_plan_html: "%{amount} above plan"
+        average_html: "Last 3 months average: <strong>%{amount}</strong>"
+        counts_in_html: "Counts in %{parent}"
+        create_envelope: "Create an envelope"
+        adjust_envelope: "Adjust the envelope"
+        empty_title: "Nothing this month"
+        empty_text: "No transaction is filed under this category in %{month} yet."
+        add_expense: "Add an expense"
+        add_income: "Add an income"
+        month_menu_label: "Change month"
+        no_subcategory: "No sub-category"
+        usual_day_expense: "Usually debited around the %{day}"
+        usual_day_income: "Usually lands around the %{day}"
     summary:
       title: "Budget summary — %{month}"
       subtitle: "How the month went"

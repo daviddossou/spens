@@ -78,6 +78,19 @@ class MovementRow
     kind == "adjustment"
   end
 
+  # The sub-category the movement sits on (nil when it sits on the page's own
+  # category) then the account.
+  def in_category_subtitle_parts(page_category_id)
+    type = @txn.transaction_type
+    sub = type.id == page_category_id ? nil : clean(type.name)
+    [ sub, account_name ]
+  end
+
+  # The type's own leading emoji, when it has one.
+  def type_emoji
+    @txn.transaction_type.name.to_s[/\A[^[:alnum:][:space:]]+/]&.strip.presence
+  end
+
   # A fee is nested under its parent, never a top-level row of its own.
   def fee?
     @txn.fee_parent_id.present?
@@ -150,36 +163,31 @@ class MovementRow
     t("movement.adjustment.#{key}", amount: money(amount.abs))
   end
 
-  # Tour 19: an extracted short label takes the title, so the category drops to the
-  # subtitle. Without a label the category IS the title, so the subtitle keeps only
-  # the parent (the roll-up) — never repeating the title.
+  # The user's own words lead: the extracted label, else the cleaned note ("L'indien",
+  # "Carrefour Market"), and the category drops to the subtitle. Without either the
+  # category IS the title, so the subtitle keeps only the parent — never repeating it.
   def labelled_title
-    label.presence ? clean(label) : clean(@txn.transaction_type.name)
+    clean(label.presence || note_label.presence || @txn.transaction_type.name)
   end
 
   def label
     @txn.label
   end
 
-  # The user's own words win over the generic roll-up, unless they only repeat the title.
   def category_subtitle
-    detail = note_label || (label.present? ? display_category : parent_category)
+    own_words = label.present? || note_label.present?
+    detail = own_words ? clean(@txn.transaction_type.name) : parent_category
     [ account_name, detail ].reject { |part| part.to_s.strip.empty? }.join(" · ")
   end
 
+  # The cleaned note, unless it only repeats the category name.
   def note_label
     return @note_label if defined?(@note_label)
 
     cleaned = QuickEntry::NoteLabel.call(@txn.note, account_name: account_name)
-    repeats_title = cleaned.present? && CategoryText.normalize(cleaned) == CategoryText.normalize(title)
-    @note_label = repeats_title ? nil : cleaned.presence
-  end
-
-  # The category shown when a label owns the title: the parent (roll-up) if there is
-  # one, else the type's own name.
-  def display_category
-    parent = @txn.transaction_type.parent&.name
-    clean(parent.presence || @txn.transaction_type.name)
+    category = clean(@txn.transaction_type.name)
+    repeats = cleaned.present? && CategoryText.normalize(cleaned) == CategoryText.normalize(category)
+    @note_label = repeats ? nil : cleaned.presence
   end
 
   def parent_category

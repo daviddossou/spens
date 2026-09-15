@@ -3,13 +3,51 @@
 class TransactionItemComponent < ViewComponent::Base
   with_collection_parameter :transaction
 
-  def initialize(transaction:)
+  # context: :category renders the row inside its category's page — the label
+  # becomes the title, the sub-category leads the subtitle (its absence stated
+  # when the category has children), the type's emoji replaces the family icon,
+  # and the nested fee is dropped so the list adds up to the page header.
+  def initialize(transaction:, context: :list, category: nil, subcategory_hint: false, show_date: false)
     @transaction = transaction
+    @context = context
+    @category = category
+    @subcategory_hint = subcategory_hint
+    @show_date = show_date
   end
 
   private
 
-  attr_reader :transaction
+  attr_reader :transaction, :context
+
+  def in_category?
+    context == :category
+  end
+
+  def title
+    row.title
+  end
+
+  # In a category the subtitle may wrap, but never inside a part: each part
+  # carries its own leading separator, so a break lands before « · account ».
+  # A flat (ungrouped) list puts the date first.
+  def subtitle
+    return row.subtitle unless in_category?
+
+    sub, account = row.in_category_subtitle_parts(@category&.id)
+    sub ||= @subcategory_hint ? I18n.t("budgets.categories.show.no_subcategory") : nil
+    date = @show_date ? I18n.l(transaction.transaction_date, format: :day_month_short) : nil
+    parts = [ date, sub, account ].compact_blank
+    spans = parts.each_with_index.map { |part, i| content_tag(:span, i.zero? ? part : "· #{part}", class: "transaction-item__part") }
+    safe_join(spans, " ")
+  end
+
+  def emoji_icon
+    in_category? ? row.type_emoji : nil
+  end
+
+  def show_fee?
+    !in_category? && fee_row
+  end
 
   # The row's meaning is composed by MovementRow: family, title, subtitle, and
   # how the amount reads. Subtitle amounts ("reste 45 000") are formatted without
@@ -35,7 +73,7 @@ class TransactionItemComponent < ViewComponent::Base
   end
 
   def icon_class
-    "transaction-item__icon--#{row.family}"
+    emoji_icon ? "transaction-item__icon--emoji" : "transaction-item__icon--#{row.family}"
   end
 
   def icon_svg

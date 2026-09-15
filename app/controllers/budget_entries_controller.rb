@@ -16,14 +16,14 @@ class BudgetEntriesController < ApplicationController
   # Rétablir — drop the exception and let the rule plan this month again.
   def revert
     @budget_entry.revert_to_rule!
-    redirect_to budgets_path(month: month_param), notice: t(".reverted"), status: :see_other
+    redirect_to return_path, notice: t(".reverted"), status: :see_other
   end
 
   private
 
   def update_month
     if @budget_entry.override_to(params[:amount])
-      redirect_to budgets_path(month: month_param), notice: t(".success"), status: :see_other
+      redirect_to return_path, notice: t(".success"), status: :see_other
     else
       render :edit, status: :unprocessable_entity
     end
@@ -35,7 +35,7 @@ class BudgetEntriesController < ApplicationController
     @form = BudgetItemForm.new(current_space, rule_payload)
 
     if @form.submit
-      redirect_to budgets_path(month: month_param), notice: t(".rule_success"), status: :see_other
+      redirect_to return_path, notice: t(".rule_success"), status: :see_other
     else
       render :edit, status: :unprocessable_entity
     end
@@ -60,5 +60,11 @@ class BudgetEntriesController < ApplicationController
 
   def month_param
     @budget_entry.month.strftime("%Y-%m")
+  end
+
+  # The sheet opens from the Budget page or a category detail page; land back
+  # on the one that opened it.
+  def return_path
+    url_from(params[:return_to]) || budgets_path(month: month_param)
   end
 end

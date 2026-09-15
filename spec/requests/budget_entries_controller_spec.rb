@@ -23,6 +23,19 @@ RSpec.describe BudgetEntriesController, type: :request do
       expect(response).to have_http_status(:see_other)
     end
 
+    it "returns to the page that opened the sheet" do
+      entry = create(:budget_entry, space: space, planned_amount: 25_000)
+      back = "/budgets/categories/abc?month=2026-09"
+      patch budget_entry_path(id: entry.id), params: { amount: 30_000, return_to: back }
+      expect(response).to redirect_to(back)
+    end
+
+    it "ignores an off-site return_to" do
+      entry = create(:budget_entry, space: space, planned_amount: 25_000)
+      patch budget_entry_path(id: entry.id), params: { amount: 30_000, return_to: "https://evil.test/x" }
+      expect(response).to redirect_to(budgets_path(month: entry.month.strftime("%Y-%m")))
+    end
+
     it "does not flag an override that matches the rule" do
       entry = create(:budget_entry, space: space, planned_amount: 25_000)
       patch budget_entry_path(id: entry.id), params: { amount: 25_000 }
