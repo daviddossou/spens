@@ -9,6 +9,7 @@ class ApplicationController < ActionController::Base
   include DeviseLayoutConcern
   include SpaceScoping
   include TimeZoneScoping
+  include EmailConfirmation
   include OnboardingRedirection
   include Impersonation
   include AnalyticsTracking

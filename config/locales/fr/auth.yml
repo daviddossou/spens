@@ -29,6 +29,11 @@ fr:
       invalid_code: "Code incorrect. Réessaie."
       code_expired: "Code expiré. Demandes-en un nouveau."
       code_resent: "Nouveau code envoyé."
+      confirm_title: "Confirme ton email"
+      confirm_email_prompt: "Content de te revoir ! Confirme ton email pour continuer."
+      email_confirmed: "Email confirmé. Merci !"
+      already_confirmed: "Ton email est déjà confirmé."
+      sign_out: "Ce n'est pas toi ? Se déconnecter"
       session_expired: "Session expirée. Reconnecte-toi."
 
     profile:

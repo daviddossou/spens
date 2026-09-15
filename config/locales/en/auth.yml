@@ -29,6 +29,11 @@ en:
       invalid_code: "Wrong code. Try again."
       code_expired: "Code expired. Request a new one."
       code_resent: "New code sent to your email."
+      confirm_title: "Confirm your email"
+      confirm_email_prompt: "Welcome back! Confirm your email to keep going."
+      email_confirmed: "Email confirmed. Thanks!"
+      already_confirmed: "Your email is already confirmed."
+      sign_out: "Not you? Sign out"
       session_expired: "Session expired. Please sign in again."
 
     profile:

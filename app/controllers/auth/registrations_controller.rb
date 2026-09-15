@@ -33,21 +33,28 @@ class Auth::RegistrationsController < ApplicationController
       # Accept pending invitation if present
       accepted_space = accept_pending_invitation(@user)
 
-      @user.generate_otp!
-      OtpMailer.send_otp(@user).deliver_later
-      log_otp(@user) if Rails.env.development?
+      # No OTP at sign-up: the address is confirmed at the start of the second
+      # session instead (EmailConfirmation). Stamp this session so the gate
+      # knows where the first one started.
+      sign_in(@user)
+      touch_session_activity
 
-      Analytics.track(@user, "sign_up_submitted", invited: accepted_space.present?)
+      Analytics.identify(@user)
+      Analytics.track(@user, "user_signed_up", Analytics.acquisition_properties(@user).merge(invited: accepted_space.present?))
+      track_meta_registration(@user)
       Brevo.upsert_contact_later(
         email: @user.email,
         attributes: { FIRSTNAME: @user.first_name, LASTNAME: @user.last_name }.compact_blank
       )
 
-      session[:otp_user_id] = @user.id
-      session[:otp_context] = "sign_up"
       # If joining via invitation, set the invited space as current (skip onboarding)
-      session[:current_space_id] = accepted_space&.id || space.id
-      redirect_to auth_verification_path
+      if accepted_space
+        set_current_space(accepted_space)
+        redirect_to dashboard_path, notice: t("invitations.show.success")
+      else
+        session[:current_space_id] = space.id
+        redirect_to onboarding_path, notice: t("auth.registrations.signed_up")
+      end
     else
       render :new, status: :unprocessable_entity
     end
@@ -63,9 +70,11 @@ class Auth::RegistrationsController < ApplicationController
     redirect_to dashboard_path if user_signed_in?
   end
 
-  def log_otp(user)
-    Rails.logger.info "=" * 50
-    Rails.logger.info "[OTP] Code for #{user.email}: #{user.otp_code}"
-    Rails.logger.info "=" * 50
+  # CompleteRegistration on both channels — CAPI now, pixel queued for the next
+  # page load, both with the same server-generated event_id.
+  def track_meta_registration(user)
+    event_id = SecureRandom.uuid
+    meta_send_server_event("CompleteRegistration", event_id: event_id, user: user)
+    meta_queue_pixel_event("CompleteRegistration", event_id) if meta_consented?
   end
 end
