@@ -1,8 +1,11 @@
-<%= content_tag :div, **final_html_options do %>
+<%= content_tag tag, **final_html_options do %>
   <% options.each do |option| %>
-    <%= link_to option_text(option),
-                option_url(option),
-                class: option_classes(option),
-                data: option_data(option) %>
+    <% disabled = option.is_a?(Hash) && option[:disabled] %>
+    <% aria = option_role == "tab" ? { selected: is_current?(option).to_s, disabled: (true if disabled) } : {} %>
+    <% if disabled %>
+      <%= content_tag :span, option_text(option), class: option_classes(option), role: option_role, aria: aria %>
+    <% else %>
+      <%= link_to option_text(option), option_url(option), class: option_classes(option), data: option_data(option), role: option_role, aria: aria %>
+    <% end %>
   <% end %>
 <% end %>

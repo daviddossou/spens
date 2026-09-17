@@ -1,0 +1,7 @@
+<%= tag.div class: classes do %>
+  <% options.each do |option| %>
+    <%= tag.button option.fetch(:label), type: "button",
+          class: [button_class, (active_class if option[:selected])].compact.join(" "),
+          data: data.merge(option.fetch(:data, {})) %>
+  <% end %>
+<% end %>

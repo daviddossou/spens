@@ -1,0 +1,12 @@
+<div class="guide-step">
+  <% if number %>
+    <div class="guide-step__head">
+      <div class="guide-step__num"><%= number %></div>
+      <div class="guide-step__phase"><%= phase %></div>
+    </div>
+  <% else %>
+    <div class="guide-step__phase"><%= phase %></div>
+  <% end %>
+  <div class="guide-step__title"><%= title %></div>
+  <div class="guide-step__desc"><%= description %></div>
+</div>

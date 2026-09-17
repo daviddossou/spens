@@ -1,0 +1,7 @@
+<nav class="landing-nav<%= ' guide-nav' if guide %>">
+  <%= link_to root_path, class: "landing-nav__brand" do %>
+    <%= image_tag "spens-logo-white.png", alt: "Spens", class: "landing-nav__logo" %>
+  <% end %>
+  <div class="landing-nav__spacer"></div>
+  <%= content %>
+</nav>

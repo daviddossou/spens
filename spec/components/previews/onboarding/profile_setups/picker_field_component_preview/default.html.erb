@@ -1,0 +1,2 @@
+<% builder = ActionView::Helpers::FormBuilder.new("onboarding_profile_setup_form", Onboarding::ProfileSetupForm.new(space), self, {}) %>
+<%= render Onboarding::ProfileSetups::PickerFieldComponent.new(form: builder, field: field) %>

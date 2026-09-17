@@ -1,0 +1,16 @@
+<nav class="budget-month-nav" aria-label="<%= t('budgets.index.month_nav_label') %>">
+  <%= link_to budgets_path(month: (@month << 1).strftime("%Y-%m")), class: "budget-month-nav__arrow",
+              "aria-label": t('budgets.index.previous_month') do %>&lsaquo;<% end %>
+  <div class="budget-month-nav__heading">
+    <h2 class="budget-month-nav__title"><%= l(@month, format: :month_year).capitalize %></h2>
+    <p class="budget-month-nav__subtitle">
+      <% case @month_position
+         when :future %><%= t('budgets.index.subtitle_plan', count: @days_until) %>
+      <% when :current %><%= t('budgets.index.subtitle_live', day: @day_of_month, total: @days_in_month, remaining: @days_remaining) %>
+      <% else %><%= t('budgets.index.subtitle_wrap_up', total: @days_in_month) %>
+      <% end %>
+    </p>
+  </div>
+  <%= link_to budgets_path(month: (@month >> 1).strftime("%Y-%m")), class: "budget-month-nav__arrow",
+              "aria-label": t('budgets.index.next_month') do %>&rsaquo;<% end %>
+</nav>

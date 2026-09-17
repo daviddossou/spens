@@ -1,0 +1,10 @@
+<div class="account-hero">
+  <p class="account-hero__amount<%= " account-hero__amount--negative" if money_negative?(@account.balance) %>"><%= account_money(@account.balance) %></p>
+  <p class="account-hero__sub">
+    <% if @account.goal.present? %>
+      <%= t('accounts.show.hero_reserved') %>
+    <% else %>
+      <%= t('accounts.show.hero_available') %><% if @last_transaction_date %> · <%= account_last_movement(@last_transaction_date) %><% end %>
+    <% end %>
+  </p>
+</div>

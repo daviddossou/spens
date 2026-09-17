@@ -1,0 +1,21 @@
+<div class="space-card<%= ' space-card--active' if active %>">
+  <%= link_to edit_space_path(id: space.id), class: "space-card__link", data: { turbo_frame: "modal" } do %>
+    <div class="space-card__info">
+      <h3 class="space-card__name"><%= space.name %></h3>
+      <p class="space-card__detail"><%= space.currency || "—" %><% if space.country.present? %> · <%= space.country %><% end %></p>
+    </div>
+  <% end %>
+  <div class="space-card__actions">
+    <% if active %>
+      <span class="space-card__active-badge"><%= t('spaces.index.active') %></span>
+    <% else %>
+      <%= render Ui::ButtonComponent.new(text: t('spaces.index.switch'), url: space_selection_path(space_id: space.id), variant: :"outline-primary", size: :xs, data: { turbo_method: :post }) %>
+    <% end %>
+    <%= link_to space_members_path(space_id: space.id), class: "space-card__members-link" do %>
+      <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+      </svg>
+    <% end %>
+    <%= render Ui::IconComponent.new(:chevron_right, width: (active ? 20 : 16), height: (active ? 20 : 16)) %>
+  </div>
+</div>

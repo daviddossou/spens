@@ -31,29 +31,4 @@ RSpec.describe LocaleHelper, type: :helper do
       end
     end
   end
-
-  describe "#language_links" do
-    before do
-      I18n.available_locales = [ :en, :fr ]
-      I18n.locale = :en
-      allow(helper).to receive(:params).and_return(ActionController::Parameters.new(controller: "home", action: "index"))
-    end
-
-    it "generates links for all available locales" do
-      result = helper.language_links
-      expect(result).to include("EN")
-      expect(result).to include("FR")
-    end
-
-    it "wraps links in a div" do
-      result = helper.language_links
-      expect(result).to include("<div")
-      expect(result).to include("flex space-x-2")
-    end
-
-    it "applies active class to current locale" do
-      result = helper.language_links
-      expect(result).to include("bg-primary text-white")
-    end
-  end
 end

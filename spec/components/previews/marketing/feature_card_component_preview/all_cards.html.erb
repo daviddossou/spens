@@ -1,0 +1,5 @@
+<div class="landing-showcase__cards" data-controller="landing--features">
+  <% cards.each_with_index do |card, i| %>
+    <%= render Marketing::FeatureCardComponent.new(card: card, i: i, feature_shots: shots) %>
+  <% end %>
+</div>

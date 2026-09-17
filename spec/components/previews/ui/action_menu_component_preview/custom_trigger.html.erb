@@ -1,0 +1,8 @@
+<%= render Ui::ActionMenuComponent.new(label: "Options", classes: "budget-scope__menu") do |menu| %>
+  <% menu.with_trigger { "Options" } %>
+  <a class="header-menu__item" href="#">
+    <span class="header-menu__item-label">Edit the rule</span>
+    <span class="header-menu__item-hint">Changes every month</span>
+  </a>
+  <a class="header-menu__item header-menu__item--danger" href="#">Delete</a>
+<% end %>

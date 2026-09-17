@@ -1,0 +1,23 @@
+<div class="landing-picker" data-controller="landing--locale-picker"
+     data-landing--locale-picker-countries-value="<%= countries.to_json %>">
+  <button type="button" class="landing-picker__button"
+          data-action="landing--locale-picker#toggle"
+          data-landing--locale-picker-target="button"
+          aria-haspopup="listbox">
+    <span data-landing--locale-picker-target="flag" aria-hidden="true"><%= countries.first[:flag] %></span>
+    <span data-landing--locale-picker-target="code"><%= countries.first[:cur] %></span>
+    <span class="landing-picker__caret" aria-hidden="true">▾</span>
+  </button>
+  <div class="landing-picker__menu" data-landing--locale-picker-target="menu" hidden>
+    <div class="landing-picker__title"><%= t("landing.nav.picker_title") %></div>
+    <% countries.each do |co| %>
+      <button type="button" class="landing-picker__item"
+              data-action="landing--locale-picker#pick"
+              data-code="<%= co[:code] %>">
+        <span class="landing-picker__flag" aria-hidden="true"><%= co[:flag] %></span>
+        <span class="landing-picker__name"><%= co[:name] %></span>
+        <span class="landing-picker__meta"><%= co[:lang] %> · <%= co[:cur] %></span>
+      </button>
+    <% end %>
+  </div>
+</div>

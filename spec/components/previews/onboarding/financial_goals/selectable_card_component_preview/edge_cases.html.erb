@@ -8,7 +8,7 @@
               end
 %>
 
-<%= form_with model: user, url: "#", data: { controller: "onboarding--financial-goals" } do |f| %>
+<%= form_with model: space, url: "#", data: { controller: "onboarding--financial-goals" } do |f| %>
   <div class="preview-info mb-4">
     <p>🧪 Edge Cases Demo: Testing various content scenarios including empty descriptions, long names, special characters, unicode emojis, and extremely long descriptions.</p>
     <p>Pre-selected: Special & Characters, 💰 Wealth Building 🏠</p>
@@ -19,7 +19,7 @@
       <%= render Onboarding::FinancialGoals::SelectableCardComponent.new(
         item: ActiveSupport::HashWithIndifferentAccess.new(goal),
         form: f,
-        model: user
+        model: space
       ) %>
     <% end %>
   </div>

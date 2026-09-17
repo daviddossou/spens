@@ -26,9 +26,7 @@
           <%= display_amount(row, transaction) %>
         </p>
       </div>
-      <svg class="transaction-item__chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-      </svg>
+      <%= render Ui::IconComponent.new(:chevron_right, classes: "transaction-item__chevron") %>
     </div>
   </div>
 

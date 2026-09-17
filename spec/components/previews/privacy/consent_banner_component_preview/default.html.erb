@@ -1,0 +1,8 @@
+<% meta = Rails.application.config.x.meta %>
+<% was_enabled = meta[:pixel_enabled] %>
+<% begin %>
+  <% meta[:pixel_enabled] = true %>
+  <%= render component %>
+<% ensure %>
+  <% meta[:pixel_enabled] = was_enabled %>
+<% end %>

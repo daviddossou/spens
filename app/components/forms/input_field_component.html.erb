@@ -1,6 +1,9 @@
+<% if bare %>
+  <%= render_input %>
+<% else %>
 <div <%= tag.attributes(wrapper_html_options) %>>
   <div class="form-label-wrapper">
-    <%= form.label field, field_label, class: final_label_classes %>
+    <%= form.label field, field_label, class: final_label_classes, for: custom_id || form.field_id(field) %>
     <% if required %>
       <span class="form-label-required">*</span>
     <% end %>
@@ -16,13 +19,13 @@
         <% if prepend %>
           <span class="form-input-addon form-input-addon--prepend"><%= prepend %></span>
         <% end %>
-        <%= form.public_send(type, field, final_field_options) %>
+        <%= render_input %>
         <% if append %>
           <span class="form-input-addon form-input-addon--append"><%= append %></span>
         <% end %>
       </div>
     <% else %>
-      <%= form.public_send(type, field, final_field_options) %>
+      <%= render_input %>
     <% end %>
   </div>
 
@@ -34,3 +37,4 @@
     </div>
   <% end %>
 </div>
+<% end %>

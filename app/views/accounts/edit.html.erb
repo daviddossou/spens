@@ -2,10 +2,10 @@
 
 <%= turbo_frame_tag "modal" do %>
   <div class="page-container page-container--narrow">
-    <header class="page-header account-form__header">
+    <%= render Ui::PageHeaderComponent.new(classes: "account-form__header") do %>
       <h2 class="account-form__title"><%= @account.name %></h2>
       <p class="account-form__subtitle"><%= t('.balance_now', amount: account_money(@account.balance)) %></p>
-    </header>
+    <% end %>
 
     <div class="page-content">
       <%= form_with model: @form, url: account_path(id: @account.id), method: :patch, class: "account-form",
@@ -28,9 +28,7 @@
         <%= render 'form', form: f %>
 
         <div class="account-form__actions">
-          <button type="submit" class="btn btn-primary btn-lg" data-account-form-target="cta">
-            <%= t('.cta_ready') %>
-          </button>
+          <%= render Ui::ButtonComponent.new(text: t('.cta_ready'), type: :submit, size: :lg, disabled: false, data: { account_form_target: "cta" }) %>
         </div>
       <% end %>
     </div>

@@ -5,17 +5,12 @@
 <% content_for :header do %>
   <%= render Navigation::DetailHeaderComponent.new(back_url: goals_path, title: (@account.goal&.name || @account.name)) do |header| %>
     <% header.with_action do %>
-      <details class="header-menu">
-        <summary class="header-menu__trigger" aria-label="<%= t('.more_actions') %>">
-          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-            <circle cx="5" cy="12" r="2"></circle><circle cx="12" cy="12" r="2"></circle><circle cx="19" cy="12" r="2"></circle>
-          </svg>
-        </summary>
-        <div class="header-menu__panel">
+      <%= render Ui::ActionMenuComponent.new(label: t('.more_actions'), classes: nil) do %>
+
           <%= link_to t('.edit_goal'), edit_goal_path(id: @account.id),
                 class: "header-menu__item", data: { turbo_frame: "modal" } %>
-        </div>
-      </details>
+
+<% end %>
     <% end %>
   <% end %>
 <% end %>
@@ -27,59 +22,26 @@
        data-infinite-scroll-page-value="<%= @has_more ? @page + 1 : 0 %>">
     <%# Hero: how much is saved against the target, the progress bar, and the
         one-line verdict (remaining · months left · on track). %>
-    <div class="goal-hero">
-      <p class="goal-hero__amount"><%= money(@progress&.current || @account.balance) %></p>
-      <% if @progress&.target_set? %>
-        <p class="goal-hero__target"><%= t('.hero_of', target: money(@progress.target)) %></p>
-        <div class="goal-hero__bar" role="progressbar" aria-valuenow="<%= @progress.percentage %>" aria-valuemin="0" aria-valuemax="100">
-          <div class="goal-hero__bar-fill<%= " goal-hero__bar-fill--settled" if @progress.settled? %>" style="width: <%= @progress.percentage %>%;"></div>
-        </div>
-        <p class="goal-hero__meta"><%= goal_hero_meta(@progress) %></p>
-      <% else %>
-        <p class="goal-hero__label"><%= t('goals.index.saved_label') %></p>
-      <% end %>
-    </div>
+    <%= render Goals::HeroComponent.new(account: @account, progress: @progress) %>
 
     <% if @progress&.monthly %>
       <%# The rhythm the deadline implies — the same monthly figure the budget
           reserves for this goal. %>
-      <div class="goal-rhythm">
-        <span class="goal-rhythm__icon" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h5M20 20v-5h-5"></path>
-            <path stroke-linecap="round" stroke-linejoin="round" d="M20 9a8 8 0 00-14.9-2M4 15a8 8 0 0014.9 2"></path>
-          </svg>
-        </span>
-        <div class="goal-rhythm__text">
-          <p class="goal-rhythm__monthly"><%= t('.rhythm_title', amount: money(@progress.monthly.round)) %></p>
-          <p class="goal-rhythm__sub"><%= t('.rhythm_sub', target: money(@progress.target), month: l(@progress.deadline, format: :month_year)) %></p>
-        </div>
-      </div>
+      <%= render Goals::RhythmComponent.new(progress: @progress) %>
     <% end %>
 
     <div class="commitment-transactions">
       <h2 class="commitment-section-title"><%= t('.deposits_title') %></h2>
       <% if @transactions.any? %>
         <div id="transactions-container" class="transactions-timeline">
-          <%= render partial: "shared/transactions_list", locals: { grouped_transactions: @grouped_transactions } %>
+          <%= render Transactions::TimelineComponent.new(grouped_transactions: @grouped_transactions) %>
         </div>
 
-        <div id="loading-spinner"
-             data-infinite-scroll-target="spinner"
-             class="dashboard__spinner hidden">
-          <div class="dashboard__spinner-icon"></div>
-          <p class="dashboard__spinner-text"><%= t('home.show.loading') %></p>
-        </div>
-
-        <% if @has_more %>
-          <div id="infinite-scroll-trigger"
-               data-infinite-scroll-target="trigger"
-               class="dashboard__load-trigger"></div>
-        <% end %>
+        <%= render Transactions::PaginationComponent.new(has_more: @has_more) %>
       <% else %>
-        <div class="empty-state">
+        <%= render Ui::EmptyStateComponent.new(classes: "empty-state") do %>
           <p><%= t('.no_transactions') %></p>
-        </div>
+        <% end %>
       <% end %>
     </div>
   </div>

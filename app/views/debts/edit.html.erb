@@ -11,9 +11,9 @@
       recap = { lent: t("debts.new.recap.lent"), borrowed: t("debts.new.recap.borrowed") }
       recap_account = { lent: t("debts.new.recap_account.lent"), borrowed: t("debts.new.recap_account.borrowed") }
     %>
-    <header class="page-header debt-form__header">
+    <%= render Ui::PageHeaderComponent.new(classes: "debt-form__header") do %>
       <h2 class="debt-form__title"><%= t(".title.#{@form.direction}") %></h2>
-    </header>
+    <% end %>
 
     <div class="page-content">
       <%= form_with model: @form, url: debt_path(id: @debt.id), method: :patch, class: "debt-form",
@@ -34,9 +34,7 @@
         <%= render "form", form: f %>
 
         <div class="debt-form__actions">
-          <button type="submit" class="btn btn-primary btn-lg" data-debt-form-target="cta">
-            <%= t(".update_debt.#{@form.direction}") %>
-          </button>
+          <%= render Ui::ButtonComponent.new(text: t(".update_debt.#{@form.direction}"), type: :submit, size: :lg, disabled: false, data: { debt_form_target: "cta" }) %>
         </div>
       <% end %>
     </div>

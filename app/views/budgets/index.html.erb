@@ -2,83 +2,25 @@
 
 <div class="page-container page-container--narrow budget-page--<%= @mode %>">
   <div class="page-content <%= 'budget-page--with-fab' if @editable %>">
-    <nav class="budget-month-nav" aria-label="<%= t('.month_nav_label') %>">
-      <%= link_to budgets_path(month: (@month << 1).strftime("%Y-%m")), class: "budget-month-nav__arrow",
-                  "aria-label": t('.previous_month') do %>&lsaquo;<% end %>
-      <div class="budget-month-nav__heading">
-        <h2 class="budget-month-nav__title"><%= l(@month, format: :month_year).capitalize %></h2>
-        <p class="budget-month-nav__subtitle">
-          <% case @month_position
-             when :future %><%= t('.subtitle_plan', count: @days_until) %>
-          <% when :current %><%= t('.subtitle_live', day: @day_of_month, total: @days_in_month, remaining: @days_remaining) %>
-          <% else %><%= t('.subtitle_wrap_up', total: @days_in_month) %>
-          <% end %>
-        </p>
-      </div>
-      <%= link_to budgets_path(month: (@month >> 1).strftime("%Y-%m")), class: "budget-month-nav__arrow",
-                  "aria-label": t('.next_month') do %>&rsaquo;<% end %>
-    </nav>
+    <%= render Budgets::MonthNavigationComponent.new(day_of_month: @day_of_month, days_in_month: @days_in_month, days_remaining: @days_remaining, days_until: @days_until, month: @month, month_position: @month_position) %>
 
     <%# Viewpoint selector on the SAME month: it never navigates, only changes the
         reading. Modes that have nothing to show for this month are disabled. %>
-    <nav class="budget-mode-nav" role="tablist" aria-label="<%= t('.mode_nav_label') %>">
-      <% [ :plan, :live, :wrap_up ].each do |mode| %>
-        <% if @allowed_modes.include?(mode) %>
-          <%= link_to budgets_path(month: @month.strftime("%Y-%m"), view: mode),
-                      role: "tab", "aria-selected": (@mode == mode).to_s,
-                      class: "budget-mode-nav__seg#{' budget-mode-nav__seg--active' if @mode == mode}" do %>
-            <%= t(".mode_#{mode}") %>
-          <% end %>
-        <% else %>
-          <span class="budget-mode-nav__seg budget-mode-nav__seg--disabled" role="tab" aria-disabled="true"><%= t(".mode_#{mode}") %></span>
-        <% end %>
-      <% end %>
-    </nav>
+    <%= render Ui::SwitcherComponent.new(tag: :nav, css_class: "budget-mode-nav", option_class: "budget-mode-nav__seg", active_class: "budget-mode-nav__seg--active", disabled_class: "budget-mode-nav__seg--disabled",
+ current: @mode, role: "tablist", option_role: "tab", aria: { label: t('.mode_nav_label') },
+ options: %i[plan live wrap_up].map { |mode| { value: mode, text: t(".mode_#{mode}"), disabled: !@allowed_modes.include?(mode), url: budgets_path(month: @month.strftime("%Y-%m"), view: mode) } }) %>
 
     <% if @sections.values.flatten.any? %>
-      <div class="budget-hero">
-        <span class="budget-hero__label">
-          <%= t('.hero_label') %> · <span class="budget-hero__suffix"><%= t(".hero_suffix_#{@mode}") %></span>
-        </span>
-        <span class="budget-hero__value <%= 'budget-hero__value--negative' if @hero_value.negative? %>">
-          <%= money(@hero_value, sign: :always) %>
-        </span>
-        <% if @mode == :plan %>
-          <span class="budget-hero__sublabel"><%= t('.hero_flow_html',
-                income: money(@planned_income),
-                expense: money(@planned_expense)) %></span>
-        <% elsif @mode == :live %>
-          <span class="budget-hero__sublabel"><%= t('.hero_sub_live_html',
-                planned: money(@projected_net),
-                offplan: content_tag(:span, money(@offplan_net, sign: :always),
-                                     class: ("budget-hero__offplan-amount" if @offplan_net.negative?))) %></span>
-        <% elsif @offplan_net.zero? %>
-          <span class="budget-hero__sublabel"><%= t('.actual_so_far_html', amount: money(@actual_net, sign: :always)) %></span>
-        <% else %>
-          <span class="budget-hero__sublabel"><%= t('.hero_sub_wrap_up_html',
-                planned: money(@actual_net, sign: :always),
-                offplan: content_tag(:span, money(@offplan_net, sign: :always),
-                                     class: ("budget-hero__offplan-amount" if @offplan_net.negative?))) %></span>
-        <% end %>
-
-        <%# Money promised to a savings account is kept, so it stays inside the
-            hero — but it is no longer free, and that is the number you cannot
-            read anywhere else. %>
-        <% if @committed_to_goals.positive? %>
-          <p class="budget-hero__committed">
-            <%= t('.committed_html', committed: money(@committed_to_goals), free: money(@free_value)) %>
-          </p>
-        <% end %>
-      </div>
+      <%= render Budgets::SummaryComponent.new(actual_net: @actual_net, committed_to_goals: @committed_to_goals, free_value: @free_value, hero_value: @hero_value, mode: @mode, offplan_net: @offplan_net, planned_expense: @planned_expense, planned_income: @planned_income, projected_net: @projected_net) %>
 
       <% if @planned_expense_total.positive? && @mode != :wrap_up %>
-        <%= render "vital_confort", mode: @mode %>
+        <%= render Budgets::VitalConfortComponent.new(actual_confort: @actual_confort, actual_vital: @actual_vital, days_remaining: @days_remaining, planned_confort: @planned_confort, planned_expense_total: @planned_expense_total, planned_vital: @planned_vital, reste_a_depenser: @reste_a_depenser, mode: @mode) %>
       <% end %>
 
       <%# Off-plan spending sits above the line sections — it's what explains
           the gap between plan and reality. A closed month only states it. %>
       <% if @mode != :plan %>
-        <%= render "unplanned_section", read_only: @mode == :wrap_up %>
+        <%= render Budgets::UnplannedSectionComponent.new(month: @month, unplanned: @unplanned, read_only: @mode == :wrap_up) %>
       <% end %>
 
       <%# All four sections always show, each with its total; an empty one states
@@ -88,39 +30,13 @@
         <% entries = @sections[section] %>
         <% planned = entries.sum(&:planned_amount) %>
         <% actual = entries.sum { |e| @actuals_by_entry[e] } %>
-        <section class="budget-section">
-          <div class="budget-section__header">
-            <h3 class="budget-section__title"><%= t(".section_#{section}") %></h3>
-            <span class="budget-section__total">
-              <% if @mode == :plan %>
-                <%= money(planned) %>
-              <% else %>
-                <%= money(actual) %> / <%= money(planned) %>
-              <% end %>
-            </span>
-          </div>
-          <% if entries.any? %>
-            <div class="budget-section__list">
-              <% entries.each do |entry| %>
-                <%= render Budgets::EntryRowComponent.new(
-                  entry: entry,
-                  actual: @actuals_by_entry[entry] || 0,
-                  currency: current_space.currency,
-                  read_only: !@editable,
-                  mode: @mode
-                ) %>
-              <% end %>
-            </div>
-          <% else %>
-            <p class="budget-section__empty"><%= t(".section_empty_#{section}", month: short_month) %></p>
-          <% end %>
-        </section>
+        <%= render Budgets::SectionComponent.new(actuals_by_entry: @actuals_by_entry, editable: @editable, mode: @mode, section: section, entries: entries, planned: planned, actual: actual, short_month: short_month) %>
       <% end %>
     <% else %>
       <% month_name = l(@month, format: "%B").capitalize %>
       <% if @has_items %>
         <%# Lines exist elsewhere, none fall this month. %>
-        <div class="budget-void">
+        <%= render Ui::EmptyStateComponent.new(classes: "budget-void") do %>
           <span class="budget-void__mark" aria-hidden="true"><span class="budget-void__square"></span></span>
           <h3 class="budget-void__title"><%= t('.no_entries_title', month: month_name) %></h3>
           <p class="budget-void__body"><%= t('.no_entries_message', month: month_name) %></p>
@@ -129,10 +45,10 @@
                         new_budget_item_path(month: @month.strftime("%Y-%m")),
                         class: "link-button", data: { turbo_frame: "modal" } %>
           <% end %>
-        </div>
+        <% end %>
       <% else %>
         <%# No plan at all yet — offer ways to start. %>
-        <div class="budget-start">
+        <%= render Ui::EmptyStateComponent.new(classes: "budget-start") do %>
           <h3 class="budget-start__title"><%= t('.empty_title', month: month_name) %></h3>
           <p class="budget-start__body"><%= t('.empty_message') %></p>
 
@@ -148,7 +64,7 @@
               data: { turbo_frame: "modal" }
             ) %>
           </div>
-        </div>
+        <% end %>
       <% end %>
     <% end %>
   </div>

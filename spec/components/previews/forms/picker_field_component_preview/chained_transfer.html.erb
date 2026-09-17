@@ -1,0 +1,8 @@
+<% builder = ActionView::Helpers::FormBuilder.new("transaction", record, self, {}) %>
+<%= render Forms::PickerFieldComponent.new(
+      form: builder, field: :from_account_name, rows: rows, label: "From", title: "From which account?",
+      placeholder: "Source account", id: "transfer-from", allow_create: true,
+      chain_to: "#transfer-to", chain_reason: "Same account", chain_label: "From", empty_label: "Any account") %>
+<%= render Forms::PickerFieldComponent.new(
+      form: builder, field: :to_account_name, rows: rows, label: "To", title: "To which account?",
+      placeholder: "Destination account", id: "transfer-to", allow_create: true) %>

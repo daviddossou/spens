@@ -6,10 +6,7 @@
       <%= t("debts.hero.progress_html", repaid: money(@debt.total_reimbursed), total: money(@debt.total_lent)) %>
     </p>
     <div class="debt-hero__bar-row">
-      <div class="debt-hero__bar" role="progressbar"
-           aria-valuenow="<%= percentage %>" aria-valuemin="0" aria-valuemax="100">
-        <div class="debt-hero__bar-fill" style="width: <%= percentage %>%;"></div>
-      </div>
+      <%= render Ui::ProgressBarComponent.new(percentage: percentage, classes: "debt-hero__bar", fill_class: "debt-hero__bar-fill") %>
       <span class="debt-hero__pct"><%= percentage %> %</span>
     </div>
   <% end %>

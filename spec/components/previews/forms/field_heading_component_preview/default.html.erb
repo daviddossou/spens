@@ -1,0 +1,4 @@
+<%= render Forms::FieldHeadingComponent.new do |heading| %>
+  <% heading.with_label { tag.span("Note", class: "form-label") } %>
+  <% heading.with_hint { tag.span("Optional", class: "tx-detail__hint") } %>
+<% end %>

@@ -1,0 +1,10 @@
+<%= tag.details class: ["header-menu", classes].compact.join(" ") do %>
+  <%= tag.summary class: trigger_class, aria: { label: label } do %>
+    <% if trigger? %>
+      <%= trigger %>
+    <% else %>
+      <%= render Ui::IconComponent.new(:dots) %>
+    <% end %>
+  <% end %>
+  <%= tag.div content, class: panel_class %>
+<% end %>

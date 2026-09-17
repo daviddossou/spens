@@ -1,0 +1,8 @@
+<%= tag.button type: "button", class: ["debt-card", ("debt-card--selected" if selected)].compact.join(" "),
+      data: data, role: "radio", aria: { checked: selected.to_s } do %>
+  <span class="debt-card__icon debt-card__icon--<%= icon %>" aria-hidden="true"><%= transaction_icon_svg(icon) %></span>
+  <span class="debt-card__text">
+    <%= tag.span class: "debt-card__title", data: { "#{controller}-target" => "cardTitle" } %>
+    <%= tag.span class: "debt-card__effect", data: { "#{controller}-target" => "cardEffect" } %>
+  </span>
+<% end %>

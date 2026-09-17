@@ -2,11 +2,6 @@
 
 /* Commitment Detail Page */
 
-.commitment-card-wrapper {
-  max-width: 100%;
-  margin-bottom: 2rem;
-}
-
 /* Sections without backgrounds - cleaner design */
 .commitment-actions,
 .commitment-transactions,
@@ -54,12 +49,7 @@
 
 /* Responsive - Mobile */
 @media (max-width: 640px) {
-  .commitment-card-wrapper {
-    max-width: 100%;
-    margin-bottom: 1.5rem;
-  }
-
-  .commitment-actions,
+    .commitment-actions,
   .commitment-transactions,
   .commitment-note {
     margin-bottom: 1.5rem;

@@ -5,13 +5,8 @@
 <% content_for :header do %>
   <%= render Navigation::DetailHeaderComponent.new(back_url: debts_path, title: @debt.name) do |header| %>
     <% header.with_action do %>
-      <details class="header-menu">
-        <summary class="header-menu__trigger" aria-label="<%= t('.more_actions') %>">
-          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-            <circle cx="5" cy="12" r="2"></circle><circle cx="12" cy="12" r="2"></circle><circle cx="19" cy="12" r="2"></circle>
-          </svg>
-        </summary>
-        <div class="header-menu__panel">
+      <%= render Ui::ActionMenuComponent.new(label: t('.more_actions'), classes: nil) do %>
+
           <%= link_to t("debts.edit.title.#{@debt.direction}"), edit_debt_path(id: @debt.id),
                 class: "header-menu__item", data: { turbo_frame: "modal" } %>
           <% if @debt.ongoing? %>
@@ -22,8 +17,8 @@
               <span class="header-menu__item-hint"><%= t(".write_off_hint.#{@debt.direction}", name: @debt.name) %></span>
             <% end %>
           <% end %>
-        </div>
-      </details>
+
+<% end %>
     <% end %>
   <% end %>
 <% end %>
@@ -36,31 +31,14 @@
     <% if @debt.ongoing? && @relation.two_way? %>
       <%# One relation, two sides: the hero gives the net and its direction, with
           both gross totals below and a one-tap way to offset them. %>
-      <div class="debt-hero debt-hero--<%= @relation.net_direction %>">
-        <p class="debt-hero__label"><%= t("debts.hero.#{@relation.net_direction}", name: @debt.name) %></p>
-        <p class="debt-hero__amount"><%= money(@relation.net_amount) %></p>
-        <p class="debt-hero__progress"><%= t(".net_hero_sub") %></p>
-        <div class="debt-subtotals">
-          <div class="debt-subtotals__cell">
-            <span class="debt-subtotals__label"><%= t(".subtotal_owed") %></span>
-            <span class="debt-subtotals__value debt-subtotals__value--lent"><%= money(@relation.owed_to_me) %></span>
-          </div>
-          <div class="debt-subtotals__divider"></div>
-          <div class="debt-subtotals__cell">
-            <span class="debt-subtotals__label"><%= t(".subtotal_i_owe") %></span>
-            <span class="debt-subtotals__value debt-subtotals__value--borrowed"><%= money(@relation.i_owe) %></span>
-          </div>
-        </div>
-      </div>
+      <%= render Debts::RelationHeroComponent.new(debt: @debt, relation: @relation) %>
 
       <div class="debt-compensate">
         <div class="debt-compensate__text">
           <p class="debt-compensate__title"><%= t(".compensate_title", amount: money(@relation.offsettable)) %></p>
           <p class="debt-compensate__sub"><%= t(".compensate_sub.#{@relation.net_direction}", net: money(@relation.net_amount)) %></p>
         </div>
-        <%= link_to t(".compensate_button"), debt_compensation_path(debt_id: @debt.id),
-              class: "btn btn-primary debt-compensate__btn",
-              data: { turbo_method: :post, turbo_confirm: t(".compensate_confirm") } %>
+        <%= render Ui::ButtonComponent.new(text: t(".compensate_button"), url: debt_compensation_path(debt_id: @debt.id), variant: :"primary", size: nil, classes: "debt-compensate__btn", data: { turbo_method: :post, turbo_confirm: t(".compensate_confirm") }) %>
       </div>
     <% elsif @debt.ongoing? %>
       <%= render Debts::HeroComponent.new(debt: @debt, currency: current_space.currency) %>
@@ -68,69 +46,21 @@
       <%# A write-off is a dated decision, not a deletion: the amount is struck
           through, you see when you stopped counting on it, and you can bring it
           back if the person pays after all. %>
-      <div class="debt-abandoned debt-abandoned--<%= @debt.direction %>">
-        <span class="debt-abandoned__badge"><%= debt_status_label(@debt) %></span>
-        <span class="debt-abandoned__amount"><%= money(@debt.remaining_balance) %></span>
-        <p class="debt-abandoned__note">
-          <%= t(".abandoned_on.#{@debt.direction}", date: l(@debt.updated_at.to_date, format: :long)) %>
-        </p>
-        <% if closed_debt_detail(@debt) %>
-          <p class="debt-abandoned__detail"><%= closed_debt_detail(@debt) %></p>
-        <% end %>
-      </div>
+      <%= render Debts::WrittenOffComponent.new(debt: @debt) %>
 
-      <div class="debt-reactivate">
-        <div class="debt-reactivate__text">
-          <p class="debt-reactivate__title"><%= t(".reactivate_title.#{@debt.direction}", name: @debt.name) %></p>
-          <p class="debt-reactivate__sub"><%= t(".reactivate_sub.#{@debt.direction}") %></p>
-        </div>
-        <%= link_to t(".reactivate_button"), debt_write_off_path(debt_id: @debt.id),
-              class: "btn btn-outline-primary debt-reactivate__btn",
-              data: { turbo_method: :delete } %>
-      </div>
+      <%= render Ui::RevertPromptComponent.new(
+            title: t(".reactivate_title.#{@debt.direction}", name: @debt.name),
+            subtitle: t(".reactivate_sub.#{@debt.direction}"),
+            button_text: t(".reactivate_button"),
+            url: debt_write_off_path(debt_id: @debt.id), method: :delete) %>
     <% else %>
-      <div class="debt-closed-card debt-closed-card--<%= @debt.status %>">
-        <span class="debt-closed-card__badge"><%= debt_status_label(@debt) %></span>
-        <div class="debt-closed-card__hero">
-          <span class="debt-closed-card__amount"><%= money(closed_debt_amount(@debt)) %></span>
-          <span class="debt-closed-card__label"><%= closed_debt_amount_label(@debt) %></span>
-        </div>
-        <% if closed_debt_detail(@debt) %>
-          <p class="debt-closed-card__detail"><%= closed_debt_detail(@debt) %></p>
-        <% end %>
-      </div>
+      <%= render Debts::ClosedStateComponent.new(debt: @debt) %>
     <% end %>
 
     <% if @relation.single? && (schedule = debt_schedule(@debt)) %>
       <!-- The échéancier the app can compute from balance + deadline, replacing a
            hand-typed "60k/month" note and tying the debt to its budget line. -->
-      <div class="debt-schedule">
-        <div class="debt-schedule__head">
-          <div class="debt-schedule__plan">
-            <p class="debt-schedule__monthly">
-              <%= t(".schedule.monthly", amount: money(schedule[:monthly])) %>
-            </p>
-            <p class="debt-schedule__timeline">
-              <%= t(".schedule.settled_in", month: l(schedule[:ends_on], format: :month_year)) %>
-              · <%= t(".schedule.installments_left", count: schedule[:installments]) %>
-            </p>
-          </div>
-          <%= link_to t(".schedule.edit"), edit_debt_path(id: @debt.id),
-                class: "debt-schedule__edit", data: { turbo_frame: "modal" } %>
-        </div>
-        <div class="debt-schedule__budget">
-          <span class="debt-schedule__budget-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h5M20 20v-5h-5"></path>
-              <path stroke-linecap="round" stroke-linejoin="round" d="M20 9a8 8 0 00-14.9-2M4 15a8 8 0 0014.9 2"></path>
-            </svg>
-          </span>
-          <p class="debt-schedule__budget-text">
-            <%= t(".schedule.budget.#{schedule[:incoming] ? 'lent_html' : 'borrowed_html'}",
-                  amount: money(schedule[:monthly])) %>
-          </p>
-        </div>
-      </div>
+      <%= render Debts::ScheduleComponent.new(debt: @debt, schedule: schedule) %>
     <% end %>
 
     <% if @debt.note.present? %>
@@ -144,25 +74,14 @@
       <h2 class="commitment-section-title"><%= t('.recent_transactions') %></h2>
       <% if @transactions.any? %>
         <div id="transactions-container" class="transactions-timeline">
-          <%= render partial: "shared/transactions_list", locals: { grouped_transactions: @grouped_transactions } %>
+          <%= render Transactions::TimelineComponent.new(grouped_transactions: @grouped_transactions) %>
         </div>
 
-        <div id="loading-spinner"
-             data-infinite-scroll-target="spinner"
-             class="dashboard__spinner hidden">
-          <div class="dashboard__spinner-icon"></div>
-          <p class="dashboard__spinner-text"><%= t('home.show.loading') %></p>
-        </div>
-
-        <% if @has_more %>
-          <div id="infinite-scroll-trigger"
-               data-infinite-scroll-target="trigger"
-               class="dashboard__load-trigger"></div>
-        <% end %>
+        <%= render Transactions::PaginationComponent.new(has_more: @has_more) %>
       <% else %>
-        <div class="empty-state">
+        <%= render Ui::EmptyStateComponent.new(classes: "empty-state") do %>
           <p><%= t('.no_transactions') %></p>
-        </div>
+        <% end %>
       <% end %>
     </div>
   </div>

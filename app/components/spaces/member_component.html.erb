@@ -1,0 +1,12 @@
+<div class="member-card">
+  <span class="member-card__avatar" aria-hidden="true"><%= (full_name.presence || member.email).first.upcase %></span>
+  <div class="member-card__info">
+    <p class="member-card__name"><%= full_name.presence || member.email %></p>
+    <% if full_name.present? %>
+      <p class="member-card__email"><%= member.email %></p>
+    <% end %>
+  </div>
+  <% if member.id == @space.user_id %>
+    <%= render Ui::BadgeComponent.new(t('spaces.members.index.owner'), classes: "member-card__badge member-card__badge--owner") %>
+  <% end %>
+</div>

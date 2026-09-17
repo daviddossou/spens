@@ -31,7 +31,7 @@ module GoalsHelper
     label, modifier = goal_status_parts(progress)
     return unless label
 
-    tag.span(label, class: "goal-chip goal-chip--#{modifier}")
+    render(Ui::BadgeComponent.new(label, classes: "goal-chip goal-chip--#{modifier}"))
   end
 
   # The detail hero's summary line: "Il reste 355 000 · 12 mois · Dans les temps".

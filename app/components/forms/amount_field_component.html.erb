@@ -1,0 +1,8 @@
+<div class="<%= root_classes %>">
+  <div class="budget-amount__field">
+    <%= render_input %>
+    <span class="budget-amount__currency"><%= currency %></span>
+  </div>
+  <%= period if period? %>
+  <%= content %>
+</div>

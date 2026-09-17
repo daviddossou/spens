@@ -1,0 +1,12 @@
+<% if url %>
+  <%= link_to url, class: "movement-facts__row", data: { turbo_frame: frame } do %>
+    <span class="movement-facts__label"><%= label %></span>
+    <span class="movement-facts__value"><%= value %></span>
+    <span class="movement-facts__chevron" aria-hidden="true">&rsaquo;</span>
+  <% end %>
+<% else %>
+  <div class="movement-facts__row movement-facts__row--static">
+    <span class="movement-facts__label"><%= label %></span>
+    <span class="movement-facts__value"><%= value %></span>
+  </div>
+<% end %>

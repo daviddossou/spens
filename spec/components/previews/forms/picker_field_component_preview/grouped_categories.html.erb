@@ -1,0 +1,4 @@
+<% builder = ActionView::Helpers::FormBuilder.new("transaction", record, self, {}) %>
+<%= render Forms::PickerFieldComponent.new(
+      form: builder, field: :transaction_type_name, rows: rows, label: "Category", title: "Which category?",
+      placeholder: "Choose a category", allow_create: true, grouped: true) %>

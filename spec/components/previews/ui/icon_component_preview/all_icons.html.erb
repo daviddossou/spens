@@ -1,0 +1,8 @@
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:16px">
+  <% names.each do |name| %>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:6px;font-size:12px">
+      <%= render Ui::IconComponent.new(name, width: 28, height: 28) %>
+      <code><%= name %></code>
+    </div>
+  <% end %>
+</div>

@@ -1,0 +1,5 @@
+<div class="goals-starters">
+  <% icons.each do |icon| %>
+    <%= render Ui::StarterCardComponent.new(url: "#", label: icon.to_s.humanize, hint: "Starter icon :#{icon}", icon: icon) %>
+  <% end %>
+</div>

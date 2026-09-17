@@ -5,8 +5,18 @@ class Ui::SwitcherComponent < ViewComponent::Base
     options: [],
     current: nil,
     css_class: "switcher",
+    tag: :div,
+    option_class: "switcher-option",
+    active_class: "active",
+    disabled_class: "disabled",
+    option_role: nil,
     **html_options
   )
+    @tag = tag
+    @option_class = option_class
+    @active_class = active_class
+    @disabled_class = disabled_class
+    @option_role = option_role
     @options = options
     @current = current
     @css_class = css_class
@@ -15,7 +25,7 @@ class Ui::SwitcherComponent < ViewComponent::Base
 
   private
 
-  attr_reader :options, :current, :css_class, :html_options
+  attr_reader :tag, :option_class, :active_class, :disabled_class, :option_role, :options, :current, :css_class, :html_options
 
   def final_html_options
     opts = html_options.dup
@@ -24,11 +34,7 @@ class Ui::SwitcherComponent < ViewComponent::Base
   end
 
   def option_classes(option)
-    if is_current?(option)
-      "switcher-option active"
-    else
-      "switcher-option"
-    end
+    [ option_class, (active_class if is_current?(option)), (disabled_class if option.is_a?(Hash) && option[:disabled]) ].compact.join(" ")
   end
 
   def is_current?(option)

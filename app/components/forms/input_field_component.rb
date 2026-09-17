@@ -2,10 +2,11 @@
 
 class Forms::InputFieldComponent < ViewComponent::Base
   def initialize(
-    form:,
+    form: nil,
     field:,
     type: :text_field,
     label: nil,
+    bare: false,
     required: false,
     help_text: nil,
     wrapper_classes: nil,
@@ -27,6 +28,7 @@ class Forms::InputFieldComponent < ViewComponent::Base
     @form = form
     @field = field
     @type = type
+    @bare = bare
     @label = label
     @required = required
     @help_text = help_text
@@ -49,7 +51,7 @@ class Forms::InputFieldComponent < ViewComponent::Base
 
   private
 
-  attr_reader :form, :field, :type, :label, :required, :help_text,
+  attr_reader :bare, :form, :field, :type, :label, :required, :help_text,
               :wrapper_classes, :wrapper_data, :label_classes, :field_classes, :field_data, :field_options,
               :autocomplete, :autocomplete_options, :default_autocomplete_options, :allow_create,
               :prepend, :append,
@@ -124,6 +126,9 @@ class Forms::InputFieldComponent < ViewComponent::Base
   def final_field_options
     options = field_options.dup
     options[:class] = final_field_classes
+    options[:name] = custom_name unless custom_name.nil?
+    options[:id] = custom_id unless custom_id.nil?
+    options[:autocomplete] = autocomplete if autocomplete.is_a?(String)
     options[:value] = custom_value unless custom_value.nil?
 
     if use_autocomplete?
@@ -149,12 +154,20 @@ class Forms::InputFieldComponent < ViewComponent::Base
     opts
   end
 
+  def render_input
+    if form
+      form.public_send(type, field, final_field_options)
+    else
+      public_send("#{type}_tag", custom_name || field, custom_value, final_field_options)
+    end
+  end
+
   def has_errors?
-    form.object&.errors&.key?(field)
+    form&.object&.errors&.key?(field)
   end
 
   def field_errors
-    form.object&.errors&.full_messages_for(field) || []
+    form&.object&.errors&.full_messages_for(field) || []
   end
 
   def autocomplete_options_for_select

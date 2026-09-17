@@ -3,6 +3,8 @@
 class Ui::SelectableCardComponent < ViewComponent::Base
   def initialize(
     item:,
+    native_radio: false,
+    input_options: {},
     form: nil,
     field: nil,
     selected: false,
@@ -15,6 +17,8 @@ class Ui::SelectableCardComponent < ViewComponent::Base
     link_mode: false,
     **html_options
   )
+    @native_radio = native_radio
+    @input_options = input_options
     @item = item
     @form = form
     @field = field
@@ -31,7 +35,7 @@ class Ui::SelectableCardComponent < ViewComponent::Base
 
   private
 
-  attr_reader :item, :form, :field, :selected, :css_class, :additional_classes, :description_classes, :show_visual_checkbox, :multiple, :compact, :link_mode, :html_options
+  attr_reader :native_radio, :input_options, :item, :form, :field, :selected, :css_class, :additional_classes, :description_classes, :show_visual_checkbox, :multiple, :compact, :link_mode, :html_options
 
   def selected?
     selected

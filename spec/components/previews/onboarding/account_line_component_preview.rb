@@ -1,155 +1,76 @@
 # frozen_string_literal: true
 
+# http://localhost:3002/rails/view_components/onboarding/account_line_component
+#
+# The component renders one Onboarding::TransactionForm through the
+# `fields_for :transactions` builder of the account setup form, exactly as
+# app/views/onboarding/account_setups/_form.html.erb does.
 class Onboarding::AccountLineComponentPreview < ViewComponent::Preview
+  include PreviewSpace
+
   # @label Default
   def default
-    render_with_form_context do |form|
-      render(Onboarding::AccountLineComponent.new(
-        form: form,
-        index: 0,
-        transaction: sample_transaction,
-        currency: 'XOF',
-        can_remove: false
-      ))
-    end
+    render_lines(line)
   end
 
   # @label With Remove Button
   def with_remove_button
-    render_with_form_context do |form|
-      render(Onboarding::AccountLineComponent.new(
-        form: form,
-        index: 1,
-        transaction: sample_transaction,
-        currency: 'USD',
-        can_remove: true
-      ))
-    end
+    render_lines(line(currency: "USD", can_remove: true))
   end
 
   # @label With Existing Values
   def with_existing_values
-    transaction = sample_transaction
-    transaction.amount = 1500.50
-    transaction.account.name = 'Absa Bank Ghana'
-
-    render_with_form_context(transaction) do |form|
-      render(Onboarding::AccountLineComponent.new(
-        form: form,
-        index: 0,
-        transaction: transaction,
-        currency: 'EUR',
-        can_remove: false
-      ))
-    end
+    render_lines(line(account_name: "Absa Bank Ghana", amount: 1500.50, currency: "EUR"))
   end
 
   # @label Different Currencies
   def different_currencies
-    render_with_form_context do |form|
-      render(Onboarding::AccountLineComponent.new(
-        form: form,
-        index: 0,
-        transaction: sample_transaction,
-        currency: 'USD',
-        can_remove: false
-      ))
-    end
+    render_lines(
+      line(account_name: "Wave", amount: 145_000, currency: "XOF"),
+      line(account_name: "Checking", amount: 2_500, currency: "USD"),
+      line(account_name: "Livret A", amount: 800, currency: "EUR")
+    )
   end
 
   # @label Multiple Account Lines
   def multiple_account_lines
-    transaction = sample_transaction
-    transaction.amount = 2500.00
-    transaction.account.name = 'Checking Account'
-
-    render_with_form_context(transaction) do |form|
-      render(Onboarding::AccountLineComponent.new(
-        form: form,
-        index: 0,
-        transaction: transaction,
-        currency: 'XOF',
-        can_remove: false
-      ))
-    end
+    render_lines(
+      line(account_name: "Checking Account", amount: 2500, can_remove: true),
+      line(account_name: "Orange Money", amount: 42_000, can_remove: true),
+      line(can_remove: true)
+    )
   end
 
   # @label With Validation Errors
   def with_validation_errors
-    transaction = sample_transaction
-    transaction.errors.add(:amount, "can't be blank")
-    transaction.account.errors.add(:name, "can't be blank")
+    invalid = line(account_name: "", amount: nil)
+    invalid[:transaction].validate
 
-    render_with_form_context(transaction) do |form|
-      render(Onboarding::AccountLineComponent.new(
-        form: form,
-        index: 0,
-        transaction: transaction,
-        currency: 'XOF',
-        can_remove: false
-      ))
-    end
+    render_lines(invalid)
   end
 
   # @label Edge Cases - Zero Amount
   def edge_case_zero_amount
-    transaction = sample_transaction
-    transaction.amount = 0
-
-    render_with_form_context(transaction) do |form|
-      render(Onboarding::AccountLineComponent.new(
-        form: form,
-        index: 0,
-        transaction: transaction,
-        currency: 'XOF',
-        can_remove: false
-      ))
-    end
+    render_lines(line(account_name: "Empty wallet", amount: 0))
   end
 
   # @label Edge Cases - Large Amount
   def edge_case_large_amount
-    transaction = sample_transaction
-    transaction.amount = 999_999_999.99
-
-    render_with_form_context(transaction) do |form|
-      render(Onboarding::AccountLineComponent.new(
-        form: form,
-        index: 0,
-        transaction: transaction,
-        currency: 'XOF',
-        can_remove: false
-      ))
-    end
+    render_lines(line(account_name: "Big savings", amount: 999_999_999.99))
   end
 
   private
 
-  def render_with_form_context(transaction = nil, &block)
-    # Create a form builder directly for the transaction
-    transaction ||= sample_transaction
-    action_view = ActionView::Base.new(ActionView::LookupContext.new([]), {}, nil)
-    form_builder = ActionView::Helpers::FormBuilder.new(:transaction, transaction, action_view, {})
+  def line(account_name: "", amount: nil, currency: "XOF", can_remove: false)
+    transaction = Onboarding::TransactionForm.new(space: preview_space, account_name: account_name, amount: amount)
 
-    yield form_builder
+    { transaction: transaction, currency: currency, can_remove: can_remove }
   end
 
-  def sample_transaction
-    user = User.new(id: SecureRandom.uuid, email: 'user@example.com')
-    account = Account.new(name: '', user: user)
-    transaction_type = TransactionType.new(
-      name: Onboarding::AccountSetupForm::TRANSACTION_TYPE_NAME,
-      kind: TransactionType::KIND_TRANSFER_IN,
-      user: user
-    )
-
-    Transaction.new(
-      amount: nil,
-      description: 'Initial balance',
-      transaction_date: Date.current,
-      user: user,
-      account: account,
-      transaction_type: transaction_type
+  def render_lines(*lines)
+    render_with_template(
+      template: "onboarding/account_line_component_preview/lines",
+      locals: { setup_form: Onboarding::AccountSetupForm.new(preview_space), lines: lines }
     )
   end
 end

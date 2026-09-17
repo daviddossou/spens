@@ -7,7 +7,7 @@
                 onboarding__account_setup_currency_value: current_space.currency,
                 onboarding__account_setup_account_suggestions_value: I18n.t('account_templates').values.to_json
               } do |f| %>
-  <%= render 'shared/form_errors', object: @form %>
+  <%= render Forms::ErrorsComponent.new(object: @form) %>
 
   <div class="account-setup__container">
     <div data-onboarding--account-setup-target="accountsContainer" class="account-setup__accounts-container">
@@ -31,9 +31,7 @@
         onboarding__account_setup_target: "addButton"
       }
     ) do %>
-      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-      </svg>
+      <%= render Ui::IconComponent.new(:plus) %>
       <%= t('.add_account') %>
     <% end %>
 

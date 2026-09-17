@@ -1,0 +1,4 @@
+<% builder = ActionView::Helpers::FormBuilder.new("transaction", record, self, {}) %>
+<%= render Forms::PickerFieldComponent.new(
+      form: builder, field: :account_name, rows: rows, label: "Account", placeholder: "Which account?",
+      help_text: "Where the money sits", allow_create: true) %>

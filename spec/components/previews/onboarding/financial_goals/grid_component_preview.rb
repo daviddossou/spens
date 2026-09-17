@@ -1,33 +1,27 @@
 # frozen_string_literal: true
 
+# http://localhost:3002/rails/view_components/onboarding/financial_goals/grid_component
 class Onboarding::FinancialGoals::GridComponentPreview < ViewComponent::Preview
   include ActionView::Helpers::FormHelper
   include ActionView::Context
 
   def default
-    user = User.new(financial_goals: [ 'save_for_emergency' ])
-    form_object = Onboarding::FinancialGoalForm.new(user)
-
-    render_with_template locals: {
-      form_object: form_object
-    }
+    render_with_template locals: { form_object: build_form([ "save_regularly" ]) }
   end
 
   def none_selected
-    user = User.new(financial_goals: [])
-    form_object = Onboarding::FinancialGoalForm.new(user)
-
-    render_with_template locals: {
-      form_object: form_object
-    }
+    render_with_template locals: { form_object: build_form([]) }
   end
 
   def all_selected
-    user = User.new(financial_goals: User::FINANCIAL_GOALS)
-    form_object = Onboarding::FinancialGoalForm.new(user)
+    render_with_template locals: { form_object: build_form(Space::FINANCIAL_GOALS) }
+  end
 
-    render_with_template locals: {
-      form_object: form_object
-    }
+  private
+
+  # Goals now live on the space; previews run with no database rows.
+  def build_form(financial_goals)
+    space = Space.new(name: "Preview", currency: "XOF", financial_goals: financial_goals)
+    Onboarding::FinancialGoalForm.new(space)
   end
 end

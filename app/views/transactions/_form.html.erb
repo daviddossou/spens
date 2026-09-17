@@ -49,7 +49,7 @@
           after_settled: t('transactions.form.debt_after_settled')
         }.to_json
       } do |f| %>
-    <%= render "shared/form_errors", object: @form %>
+    <%= render Forms::ErrorsComponent.new(object: @form) %>
 
     <!-- Hidden field to store the selected kind -->
     <%= f.hidden_field :kind, data: { debt_fields_target: "kindInput" } %>
@@ -59,49 +59,31 @@
     <!-- Kind Selector (hidden when opened from a specific debt — the kind is fixed) -->
     <% unless @form.debt_id.present? %>
       <div class="transaction-form__kind">
-        <div class="kind-selector kind-selector--quad kind-selector--mono" role="radiogroup" aria-label="<%= t('transactions.form.kind_label', default: 'Type') %>">
-          <% transaction_top_level_options(@form).each do |opt| %>
-            <%= link_to transaction_kind_switch_path(@form, opt[:kind]),
-                        data: { turbo_frame: "transaction_form", action: "kind-switch#switch" },
-                        role: "radio",
-                        "aria-checked": opt[:selected].to_s,
-                        class: "kind-option kind-option--#{opt[:value]}#{' kind-option--selected' if opt[:selected]}#{' kind-option--filled' if opt[:selected] && filled.include?('kind')}" do %>
-              <span class="kind-option__icon kind-option__icon--<%= opt[:value] %>" aria-hidden="true">
-                <%= transaction_icon_svg(opt[:value]) %>
-              </span>
-              <span class="kind-option__label"><%= opt[:label] %></span>
-            <% end %>
-          <% end %>
-        </div>
+        <%= render Transactions::KindSelectorComponent.new(label: t('transactions.form.kind_label', default: 'Type'),
+  options: transaction_top_level_options(@form).map { |opt| opt.merge(url: transaction_kind_switch_path(@form, opt[:kind]), filled: opt[:selected] && filled.include?('kind')) },
+  data: { turbo_frame: "transaction_form", action: "kind-switch#switch" }) %>
       </div>
     <% end %>
 
     <!-- Amount hero: entered on the phone's numeric keyboard, focused by default -->
-    <div class="budget-amount transaction-form__amount<%= ' is-filled' if filled.include?('amount') %>">
-      <div class="budget-amount__field">
-        <%= f.number_field :amount, class: "budget-amount__input",
-              value: (@form.amount && (@form.amount % 1 == 0 ? @form.amount.to_i : @form.amount.to_f)),
-              step: "0.01", min: "0.01", inputmode: "decimal", autofocus: @text.blank?,
-              placeholder: t('transactions.form.amount_placeholder'),
-              aria: { label: t('transactions.form.amount_label') },
-              data: { transaction_form_target: "amount", action: "input->transaction-form#syncCta" } %>
-        <span class="budget-amount__currency"><%= get_currency_symbol(current_space.currency) %></span>
-      </div>
+    <%= render Forms::AmountFieldComponent.new(
+          form: f, field: :amount, value: @form.amount,
+          currency: get_currency_symbol(current_space.currency),
+          classes: "transaction-form__amount#{' is-filled' if filled.include?('amount')}",
+          placeholder: t('transactions.form.amount_placeholder'), autofocus: @text.blank?,
+          aria_label: t('transactions.form.amount_label'),
+          data: { transaction_form_target: "amount", action: "input->transaction-form#syncCta" }) do %>
       <% if filled.include?('amount') %>
         <p class="transaction-form__read-hint"><%= t('transactions.new.phrase_read') %></p>
       <% elsif Array(@amount_candidates).size > 1 %>
         <div class="amount-candidates" role="group" aria-label="<%= t('transactions.new.amount_ambiguous') %>">
           <p class="amount-candidates__hint"><%= t('transactions.new.amount_ambiguous') %></p>
-          <div class="pill-choice amount-candidates__pills">
-            <% @amount_candidates.each do |candidate| %>
-              <button type="button" class="pill<%= ' pill--active' if @form.amount.to_f == candidate.to_f %>"
-                      data-amount="<%= candidate % 1 == 0 ? candidate.to_i : candidate %>"
-                      data-action="transaction-form#pickAmount"><%= money(candidate, current_space.currency) %></button>
-            <% end %>
-          </div>
+          <%= render Forms::SegmentedChoiceComponent.new(classes: "pill-choice amount-candidates__pills",
+  options: @amount_candidates.map { |candidate| { label: money(candidate, current_space.currency), selected: @form.amount.to_f == candidate.to_f,
+    data: { amount: candidate % 1 == 0 ? candidate.to_i : candidate } } }, data: { action: "transaction-form#pickAmount" }) %>
         </div>
       <% end %>
-    </div>
+    <% end %>
 
     <!-- Transfer Mode: From and To Accounts -->
     <% if @form.kind == 'transfer' %>
@@ -172,16 +154,7 @@
             <%# Both kind and direction must match — until a direction is chosen no
                 card is selected (two share a kind, so a blank direction picked both). %>
             <% selected = @form.kind == kind && @form.direction == direction %>
-            <button type="button" class="debt-card<%= ' debt-card--selected' if selected %>"
-                    data-debt-fields-target="card" data-kind="<%= kind %>" data-direction="<%= direction %>"
-                    data-variant="<%= variant %>" data-action="click->debt-fields#selectCard"
-                    role="radio" aria-checked="<%= selected.to_s %>">
-              <span class="debt-card__icon debt-card__icon--<%= icon %>" aria-hidden="true"><%= transaction_icon_svg(icon) %></span>
-              <span class="debt-card__text">
-                <span class="debt-card__title" data-debt-fields-target="cardTitle"></span>
-                <span class="debt-card__effect" data-debt-fields-target="cardEffect"></span>
-              </span>
-            </button>
+            <%= render Debts::IntentCardComponent.new(icon: icon, selected: selected, controller: "debt-fields", data: { debt_fields_target: "card", kind: kind, direction: direction, variant: variant, action: "click->debt-fields#selectCard" }) %>
           <% end %>
         </div>
         <div class="debt-after" data-debt-fields-target="after" hidden>
@@ -239,39 +212,35 @@
          data-expanded="<%= @form.fee_amount.present? %>">
 
       <div class="tx-detail transaction-form__note">
-        <div class="tx-detail__head">
-          <span class="form-label"><%= t('transactions.form.note_label') %></span>
-          <span class="tx-detail__hint"><%= t('transactions.form.optional_hint') %></span>
-        </div>
+        <%= render Forms::FieldHeadingComponent.new do |heading| %>
+<% heading.with_label do %><span class="form-label"><%= t('transactions.form.note_label') %></span><% end %>
+<% heading.with_hint do %><span class="tx-detail__hint"><%= t('transactions.form.optional_hint') %></span><% end %>
+<% end %>
         <%= render Forms::InputFieldComponent.new(
           form: f, field: :note, label: "",
           placeholder: t('transactions.form.note_placeholder'), required: false) %>
       </div>
 
       <div class="tx-detail transaction-form__date">
-        <div class="tx-detail__head">
-          <span class="form-label"><%= t('transactions.form.date_label') %></span>
-          <span class="tx-detail__hint" data-transaction-form-target="dateHint"></span>
-        </div>
-        <div class="pill-choice pill-choice--three">
-          <% [ [ "today", t('transactions.form.date_today') ], [ "yesterday", t('transactions.form.date_yesterday') ], [ "other", t('transactions.form.date_other') ] ].each do |mode, label| %>
-            <button type="button" class="pill<%= ' pill--active' if mode == date_mode %>"
-                    data-transaction-form-target="datePill" data-date-mode="<%= mode %>"
-                    data-action="transaction-form#setDate"><%= label %></button>
-          <% end %>
-        </div>
+        <%= render Forms::FieldHeadingComponent.new do |heading| %>
+<% heading.with_label do %><span class="form-label"><%= t('transactions.form.date_label') %></span><% end %>
+<% heading.with_hint do %><span class="tx-detail__hint" data-transaction-form-target="dateHint"></span><% end %>
+<% end %>
+        <%= render Forms::SegmentedChoiceComponent.new(classes: "pill-choice pill-choice--three",
+  options: %w[today yesterday other].map { |mode| { label: t("transactions.form.date_#{mode}"), selected: mode == date_mode, data: { date_mode: mode } } },
+  data: { transaction_form_target: "datePill", action: "transaction-form#setDate" }) %>
         <div class="tx-detail__date-field<%= ' hidden' unless date_mode == 'other' %>" data-transaction-form-target="dateField">
-          <%= f.date_field :transaction_date, value: tx_date, class: "form-input",
-                data: { transaction_form_target: "dateInput", action: "transaction-form#onDateInput" } %>
+          <%= render Forms::InputFieldComponent.new(form: f, field: :transaction_date, type: :date_field, bare: true, aria: { label: t("transactions.form.date_label") }, value: tx_date,
+                data: { transaction_form_target: "dateInput", action: "transaction-form#onDateInput" }) %>
         </div>
       </div>
 
       <% if @form.fee_applicable? || @form.debt_transaction? %>
         <div class="tx-detail transaction-form__fee<%= ' hidden' unless @form.fee_applicable? %>" data-debt-fields-target="feeField">
-          <div class="tx-detail__head">
-            <span class="form-label"><%= t('transactions.form.fee_amount_label') %></span>
-            <span class="tx-detail__hint"><%= t('transactions.form.fee_hint') %></span>
-          </div>
+          <%= render Forms::FieldHeadingComponent.new do |heading| %>
+<% heading.with_label do %><span class="form-label"><%= t('transactions.form.fee_amount_label') %></span><% end %>
+<% heading.with_hint do %><span class="tx-detail__hint"><%= t('transactions.form.fee_hint') %></span><% end %>
+<% end %>
           <%= render Forms::InputFieldComponent.new(
             form: f, field: :fee_amount, type: :number_field, label: "", required: false,
             prepend: get_currency_symbol(current_space.currency), step: "0.01", min: "0",

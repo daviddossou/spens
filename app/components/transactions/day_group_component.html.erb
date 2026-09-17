@@ -1,0 +1,19 @@
+<div class="transaction-group">
+  <div class="transaction-group__header">
+    <h3 class="transaction-group__date"><%= l(date, format: category ? :day_month : :long) %></h3>
+    <% if category %>
+      <span class="transaction-group__total"><%= money(transactions.sum(&:amount), sign: :always) %></span>
+    <% else %>
+      <%= movement_day_total(transactions, scope: day_total_scope) %>
+    <% end %>
+  </div>
+  <div class="transaction-group__items">
+    <% if category %>
+      <% transactions.each do |transaction| %>
+        <%= render TransactionItemComponent.new(transaction: transaction, context: :category, category: category, subcategory_hint: subcategory_hint) %>
+      <% end %>
+    <% else %>
+      <%= render TransactionItemComponent.with_collection(transactions, transaction: :itself) %>
+    <% end %>
+  </div>
+</div>

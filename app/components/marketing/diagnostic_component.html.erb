@@ -1,0 +1,36 @@
+<section class="landing-sect landing-sect--gray" data-landing--meta-events-target="milestone" data-controller="landing--diagnostic"
+         data-landing--diagnostic-tiers-value="<%= {
+           none: { title: t("landing.diagnostic.tiers.none.title"), line: t("landing.diagnostic.tiers.none.line") },
+           low: { title: t("landing.diagnostic.tiers.low.title"), line: t("landing.diagnostic.tiers.low.line") },
+           mid: { title: t("landing.diagnostic.tiers.mid.title"), line: t("landing.diagnostic.tiers.mid.line") },
+           high: { title: t("landing.diagnostic.tiers.high.title"), line: t("landing.diagnostic.tiers.high.line") }
+         }.to_json %>">
+  <div class="landing-container">
+    <%= render Marketing::SectionHeaderComponent.new do %>
+      <div class="landing-eyebrow"><%= t("landing.diagnostic.eyebrow") %></div>
+      <h2 class="landing-h2"><%= t("landing.diagnostic.title") %></h2>
+      <p class="landing-sect__sub"><%= t("landing.diagnostic.subtitle") %></p>
+    <% end %>
+    <div class="landing-grid-3">
+      <% t("landing.diagnostic.items").each_with_index do |item, i| %>
+        <button type="button" class="landing-diag" style="--accent: var(<%= diagnostic_accents[i] %>);"
+                data-action="landing--diagnostic#toggle"
+                data-landing--diagnostic-target="card"
+                data-goals="<%= diagnostic_goals[i] %>"
+                aria-pressed="false">
+          <span class="landing-diag__box" aria-hidden="true"><span class="landing-diag__check">✓</span></span>
+          <span class="landing-diag__text"><%= item %></span>
+        </button>
+      <% end %>
+    </div>
+    <div class="landing-recap">
+      <div class="landing-recap__count" data-landing--diagnostic-target="count" aria-hidden="true">0</div>
+      <div class="landing-recap__body">
+        <div class="landing-recap__title" data-landing--diagnostic-target="title" aria-live="polite"><%= t("landing.diagnostic.tiers.none.title") %></div>
+        <div class="landing-recap__line" data-landing--diagnostic-target="line"><%= t("landing.diagnostic.tiers.none.line") %></div>
+      </div>
+      <%= render Ui::ButtonComponent.new(text: t("landing.diagnostic.cta"), url: new_user_registration_path, styled: false, classes: "landing-btn-light",
+                  data: { action: "landing--meta-events#signup", "landing--meta-events-placement-param": "diagnostic" }) %>
+    </div>
+  </div>
+</section>

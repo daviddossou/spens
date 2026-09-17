@@ -1,0 +1,14 @@
+<%= form_with model: setup_form, url: "#", class: "onboarding-form", data: { controller: "onboarding--account-setup" } do |f| %>
+  <div data-onboarding--account-setup-target="accountsContainer" class="account-setup__accounts-container">
+    <%= f.fields_for :transactions, lines.map { |line| line[:transaction] } do |transaction_form| %>
+      <% line = lines[transaction_form.index] %>
+      <%= render Onboarding::AccountLineComponent.new(
+        form: transaction_form,
+        index: transaction_form.index,
+        transaction: transaction_form.object,
+        currency: line[:currency],
+        can_remove: line[:can_remove]
+      ) %>
+    <% end %>
+  </div>
+<% end %>

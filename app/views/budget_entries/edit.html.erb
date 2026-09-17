@@ -15,7 +15,6 @@
   kind_key = %w[debt_in debt_out].include?(@budget_entry.kind) ? "debt" : @budget_entry.kind
   # A failed submit re-renders with the rejected (possibly blank) amount.
   planned = @budget_entry.planned_amount
-  amount_val = planned.nil? ? nil : (planned % 1 == 0 ? planned.to_i : planned.to_f)
   ends_on = item&.ends_on
   bounded = ends_on.present? && ends_on >= month
   freqs = %w[monthly quarterly yearly]
@@ -29,18 +28,13 @@
 
 <%= turbo_frame_tag "modal" do %>
   <div class="page-container page-container--narrow">
-    <header class="page-header budget-item-form__header budget-scope__header">
+    <%= render Ui::PageHeaderComponent.new(classes: "budget-item-form__header budget-scope__header") do %>
       <div class="budget-scope__titles">
         <h2 class="budget-item-form__title"><%= @budget_entry.display_name %></h2>
         <p class="budget-item-form__subtitle"><%= t(".kind.#{kind_key}") %> · <%= l(month, format: :month_year) %></p>
       </div>
-      <details class="header-menu budget-scope__menu">
-        <summary class="header-menu__trigger" aria-label="<%= t('.more_actions') %>">
-          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-            <circle cx="5" cy="12" r="2"></circle><circle cx="12" cy="12" r="2"></circle><circle cx="19" cy="12" r="2"></circle>
-          </svg>
-        </summary>
-        <div class="header-menu__panel">
+      <%= render Ui::ActionMenuComponent.new(label: t('.more_actions'), classes: "budget-scope__menu") do %>
+
           <%= link_to edit_budget_item_path(id: item.id, month: month.strftime("%Y-%m")),
                 class: "header-menu__item", data: { turbo_frame: "modal" } do %>
             <span class="header-menu__item-label"><%= t(".edit_rule") %></span>
@@ -52,9 +46,9 @@
             <span class="header-menu__item-label"><%= t(".remove") %></span>
             <span class="header-menu__item-hint"><%= t(".remove_hint", from: next_month_name, from_prep: next_month_prep, month: month_name) %></span>
           <% end %>
-        </div>
-      </details>
-    </header>
+
+<% end %>
+    <% end %>
 
     <div class="page-content">
       <%= form_with url: budget_entry_path(id: @budget_entry.id), method: :patch, class: "budget-item-form",
@@ -69,16 +63,14 @@
         <%= hidden_field_tag :return_to, params[:return_to] if params[:return_to].present? %>
 
         <%# Amount hero. %>
-        <div class="budget-amount">
-          <div class="budget-amount__field">
-            <%= number_field_tag :amount, amount_val, class: "budget-amount__input",
-                  step: "0.01", min: "0.01", required: true, inputmode: "decimal", autofocus: true,
-                  aria: { label: t(".amount_aria") },
-                  data: { budget_scope_target: "amount", action: "input->budget-scope#onAmount" } %>
-            <span class="budget-amount__currency"><%= currency %></span>
-          </div>
-          <span class="budget-amount__period"><%= t(".per_month") %></span>
-        </div>
+        <%= render Forms::AmountFieldComponent.new(
+              name: :amount, value: planned, currency: currency, required: true, autofocus: true,
+              aria_label: t(".amount_aria"),
+              data: { budget_scope_target: "amount", action: "input->budget-scope#onAmount" }) do |amount| %>
+          <% amount.with_period do %>
+            <span class="budget-amount__period"><%= t(".per_month") %></span>
+          <% end %>
+        <% end %>
 
         <%# An existing exception: when it was posted + a one-tap way back to the rule. %>
         <% if @budget_entry.overridden? %>
@@ -87,30 +79,16 @@
               <%= t(".exception_posted", date: l(@budget_entry.overridden_at.to_date, format: :day_month)) %>
             </span>
           </p>
-          <div class="debt-reactivate">
-            <div class="debt-reactivate__text">
-              <p class="debt-reactivate__title"><%= t(".revert_title", amount: money(rule_amount)) %></p>
-              <p class="debt-reactivate__sub"><%= t(".revert_sub") %></p>
-            </div>
-            <%= link_to t(".revert_button"), revert_budget_entry_path(id: @budget_entry.id, return_to: params[:return_to].presence),
-                  class: "btn btn-outline-primary debt-reactivate__btn", data: { turbo_method: :post } %>
-          </div>
+          <%= render Ui::RevertPromptComponent.new(
+                title: t(".revert_title", amount: money(rule_amount)),
+                subtitle: t(".revert_sub"),
+                button_text: t(".revert_button"),
+                url: revert_budget_entry_path(id: @budget_entry.id, return_to: params[:return_to].presence)) %>
         <% end %>
 
         <%# Scope — the change is a setting, not a door. %>
         <p class="budget-scope__q"><%= t(".scope_q") %></p>
-        <div class="scope-choice">
-          <button type="button" class="scope-card scope-card--selected" data-scope="month"
-                  data-budget-scope-target="scopeCard" data-action="budget-scope#setScope">
-            <span class="scope-card__title"><%= month_name.capitalize %></span>
-            <span class="scope-card__sub"><%= t(".scope_month_sub") %></span>
-          </button>
-          <button type="button" class="scope-card" data-scope="rule"
-                  data-budget-scope-target="scopeCard" data-action="budget-scope#setScope">
-            <span class="scope-card__title"><%= t(".scope_rule_title") %></span>
-            <span class="scope-card__sub"><%= t(".scope_rule_sub", month: month_name, month_prep: month_prep) %></span>
-          </button>
-        </div>
+        <%= render Budgets::ScopeChoiceComponent.new(month_name: month_name, month_prep: month_prep) %>
 
         <%# The rule is always stated — one tap opens its settings (frequency,
             end date, rollover) instead of hiding them two levels deep. %>
@@ -140,11 +118,10 @@
               <span class="vc-choice__question"><%= t("budgets.form.vital_confort_question") %></span>
               <div class="vc-choice__cards">
                 <% [ [ true, "vital" ], [ false, "confort" ] ].each do |val, key| %>
-                  <label class="vc-card">
-                    <%= radio_button_tag "budget_item[essential]", val, item&.essential == val, class: "vc-card__input" %>
-                    <span class="vc-card__title"><%= t("budgets.form.#{key}_card_title") %></span>
-                    <span class="vc-card__sub"><%= t("budgets.form.#{key}_card_sub") %></span>
-                  </label>
+                  <%= render Ui::SelectableCardComponent.new(
+  item: { value: val, name: t("budgets.form.#{key}_card_title"), description: t("budgets.form.#{key}_card_sub") },
+  native_radio: true, form: nil, field: "budget_item[essential]", selected: item&.essential == val,
+  css_class: "vc-card", input_options: { class: "vc-card__input" }) %>
                 <% end %>
               </div>
             </div>
@@ -152,55 +129,7 @@
 
           <%# Open by default: reaching the rule already took one tap — the
               frequency/end/rollover settings must be visible, not folded again. %>
-          <details class="budget-modify" open>
-            <summary class="budget-modify__summary">
-              <span class="budget-modify__text">
-                <span class="budget-modify__main" data-budget-line-target="summaryMain"></span>
-              </span>
-              <span class="budget-modify__toggle"><%= t("budgets.form.modify") %></span>
-            </summary>
-            <div class="budget-modify__body">
-              <%= hidden_field_tag "budget_item[frequency]", current_freq, data: { budget_line_target: "frequency" } %>
-              <div class="budget-setting">
-                <span class="budget-setting__q"><%= t("budgets.form.freq_question") %></span>
-                <div class="seg-group">
-                  <% freqs.each do |fr| %>
-                    <button type="button" class="seg<%= ' seg--active' if fr == current_freq %>"
-                            data-budget-line-target="freqSeg" data-frequency="<%= fr %>"
-                            data-action="budget-line#setFrequency"><%= t("budgets.form.freq_#{fr}") %></button>
-                  <% end %>
-                </div>
-              </div>
-              <div class="budget-setting">
-                <span class="budget-setting__q"><%= t("budgets.form.end_question") %></span>
-                <div class="pill-choice">
-                  <button type="button" class="pill<%= ' pill--active' if ends_on.blank? %>"
-                          data-budget-line-target="endSeg" data-end="never"
-                          data-action="budget-line#setEnd"><%= t("budgets.form.end_never") %></button>
-                  <button type="button" class="pill<%= ' pill--active' if ends_on.present? %>"
-                          data-budget-line-target="endSeg" data-end="date"
-                          data-action="budget-line#setEnd"><%= t("budgets.form.end_dated") %></button>
-                </div>
-                <div class="budget-setting__date<%= ' hidden' if ends_on.blank? %>" data-budget-line-target="endField">
-                  <%= date_field_tag "budget_item[ends_on]", ends_on, class: "form-input",
-                        data: { budget_line_target: "endInput", action: "budget-line#syncSummary" } %>
-                </div>
-              </div>
-              <% if is_expense %>
-                <label class="budget-toggle">
-                  <span class="budget-toggle__text">
-                    <span class="budget-toggle__label"><%= t("budgets.form.rollover_toggle_label") %></span>
-                  </span>
-                  <span class="budget-toggle__switch">
-                    <%= hidden_field_tag "budget_item[rollover]", "0" %>
-                    <%= check_box_tag "budget_item[rollover]", "1", item&.rollover,
-                          class: "budget-toggle__input", data: { budget_line_target: "rollover", action: "budget-line#syncSummary" } %>
-                    <span class="budget-toggle__track" aria-hidden="true"></span>
-                  </span>
-                </label>
-              <% end %>
-            </div>
-          </details>
+          <%= render Budgets::RecurrenceFieldsComponent.new(frequency: current_freq, ends_on: ends_on, rollover: item&.rollover, expense: is_expense, open: true, show_example: false) %>
         </div>
 
         <%# Reassurance: which months move, and that the rule/history is safe. %>
@@ -217,7 +146,7 @@
         </div>
 
         <div class="budget-item-form__actions">
-          <button type="submit" class="btn btn-primary btn-lg" data-budget-scope-target="cta"><%= t(".cta_month") %></button>
+          <%= render Ui::ButtonComponent.new(text: t(".cta_month"), type: :submit, size: :lg, data: { budget_scope_target: "cta" }) %>
         </div>
       <% end %>
     </div>

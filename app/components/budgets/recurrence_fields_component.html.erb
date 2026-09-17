@@ -1,0 +1,38 @@
+<%= tag.details class: "budget-modify", open: open do %>
+  <summary class="budget-modify__summary">
+    <span class="budget-modify__text">
+      <span class="budget-modify__main" data-budget-line-target="summaryMain"></span>
+      <% if show_example && expense %>
+        <span class="budget-modify__aside" data-budget-line-target="summaryRollover"></span>
+      <% elsif debt %>
+        <span class="budget-modify__aside"><%= t('budgets.form.debt_vital_note') %></span>
+      <% end %>
+    </span>
+    <span class="budget-modify__toggle"><%= t('budgets.form.modify') %></span>
+  </summary>
+  <div class="budget-modify__body">
+    <%= hidden_field_tag "#{name_prefix}[frequency]", frequency, data: { budget_line_target: "frequency" } %>
+    <div class="budget-setting">
+      <span class="budget-setting__q"><%= t('budgets.form.freq_question') %></span>
+      <%= render Forms::SegmentedChoiceComponent.new(classes: "seg-group", button_class: "seg", active_class: "seg--active",
+        options: %w[monthly quarterly yearly].map { |fr| { label: t("budgets.form.freq_#{fr}"), selected: fr == frequency, data: { frequency: fr } } },
+        data: { budget_line_target: "freqSeg", action: "budget-line#setFrequency" }) %>
+    </div>
+    <div class="budget-setting">
+      <span class="budget-setting__q"><%= t('budgets.form.end_question') %></span>
+      <%= render Forms::SegmentedChoiceComponent.new(options: [
+        { label: t('budgets.form.end_never'), selected: ends_on.blank?, data: { end: "never" } },
+        { label: t('budgets.form.end_dated'), selected: ends_on.present?, data: { end: "date" } }
+      ], data: { budget_line_target: "endSeg", action: "budget-line#setEnd" }) %>
+      <div class="budget-setting__date<%= ' hidden' if ends_on.blank? %>" data-budget-line-target="endField">
+        <%= render Forms::InputFieldComponent.new(field: "#{name_prefix}[ends_on]", value: ends_on, type: :date_field, bare: true,
+          aria: { label: t('budgets.form.end_question') }, data: { budget_line_target: "endInput", action: "budget-line#syncSummary" }) %>
+      </div>
+    </div>
+    <% if expense %>
+      <%= render Forms::ToggleFieldComponent.new(name: "#{name_prefix}[rollover]", checked: rollover,
+        label: t('budgets.form.rollover_toggle_label'), hint_data: (show_example ? { budget_line_target: "rolloverExample" } : nil),
+        data: { budget_line_target: "rollover", action: "budget-line#syncSummary" }) %>
+    <% end %>
+  </div>
+<% end %>

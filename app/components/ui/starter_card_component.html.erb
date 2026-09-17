@@ -1,0 +1,12 @@
+<%= link_to url, class: "goal-starter", data: { turbo_frame: "modal" } do %>
+  <span class="<%= ["goal-starter__icon", icon_classes].compact.join(" ") %>" aria-hidden="true">
+    <%= render Ui::IconComponent.new(icon_name) %>
+  </span>
+  <span class="goal-starter__text">
+    <span class="goal-starter__label"><%= label %></span>
+    <span class="goal-starter__hint"><%= hint %></span>
+  </span>
+  <span class="goal-starter__chevron" aria-hidden="true">
+    <%= render Ui::IconComponent.new(:chevron_right) %>
+  </span>
+<% end %>

@@ -1,0 +1,6 @@
+<% builder = ActionView::Helpers::FormBuilder.new("debt", nil, self, {}) %>
+<%= render Forms::AmountFieldComponent.new(form: builder, field: :total_lent, value: 25_000.5, currency: "FCFA", aria_label: "Amount lent") do |amount| %>
+  <% amount.with_period do %>
+    <span class="budget-amount__period">lent to Georges</span>
+  <% end %>
+<% end %>

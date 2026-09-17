@@ -4,7 +4,7 @@
 <div class="page-container page-container--narrow">
   <div class="page-content">
     <%= form_with model: @user, url: profile_path, method: :patch, class: "space-y-6" do |f| %>
-      <%= render "devise/shared/error_messages", resource: @user %>
+      <%= render Forms::ErrorsComponent.new(object: @user, detailed: true) %>
 
       <%= render Forms::InputFieldComponent.new(
         form: f,

@@ -1,0 +1,24 @@
+<div class="debt-schedule">
+  <div class="debt-schedule__head">
+    <div class="debt-schedule__plan">
+      <p class="debt-schedule__monthly">
+        <%= t("debts.show.schedule.monthly", amount: money(schedule[:monthly])) %>
+      </p>
+      <p class="debt-schedule__timeline">
+        <%= t("debts.show.schedule.settled_in", month: l(schedule[:ends_on], format: :month_year)) %>
+        · <%= t("debts.show.schedule.installments_left", count: schedule[:installments]) %>
+      </p>
+    </div>
+    <%= link_to t("debts.show.schedule.edit"), edit_debt_path(id: @debt.id),
+          class: "debt-schedule__edit", data: { turbo_frame: "modal" } %>
+  </div>
+  <div class="debt-schedule__budget">
+    <span class="debt-schedule__budget-icon" aria-hidden="true">
+      <%= render Ui::IconComponent.new(:refresh) %>
+    </span>
+    <p class="debt-schedule__budget-text">
+      <%= t("debts.show.schedule.budget.#{schedule[:incoming] ? 'lent_html' : 'borrowed_html'}",
+            amount: money(schedule[:monthly])) %>
+    </p>
+  </div>
+</div>

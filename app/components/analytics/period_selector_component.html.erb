@@ -1,0 +1,13 @@
+<div class="analyses-rangebar">
+  <%= render Ui::SwitcherComponent.new(tag: :nav, css_class: "analyses-ranges", option_class: "analyses-ranges__seg", active_class: "analyses-ranges__seg--active",
+current: @period.kind, aria: { label: t('analytics.index.page_title') },
+options: Analyses::Period::KINDS.map { |kind| { value: kind, text: t("analytics.index.ranges.#{kind}"), url: analytics_path(range: kind) } }) %>
+  <% if @period.kind == "custom" || params[:range] == "custom" %>
+    <%= form_with url: analytics_path, method: :get, class: "analyses-custom" do %>
+      <%= hidden_field_tag :range, "custom" %>
+      <%= render Forms::InputFieldComponent.new(field: :start_date, value: params[:start_date] || range.begin, type: :date_field, bare: true, aria: { label: t('analytics.index.ranges.from') }) %>
+      <%= render Forms::InputFieldComponent.new(field: :end_date, value: params[:end_date] || range.end, type: :date_field, bare: true, aria: { label: t('analytics.index.ranges.to') }) %>
+      <%= render Ui::ButtonComponent.new(text: t('analytics.index.ranges.apply'), type: :submit, size: nil) %>
+    <% end %>
+  <% end %>
+</div>

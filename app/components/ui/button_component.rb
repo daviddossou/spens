@@ -3,6 +3,7 @@
 class Ui::ButtonComponent < ViewComponent::Base
   def initialize(
     text: nil,
+    styled: true,
     type: :button,
     variant: :primary,
     size: :md,
@@ -16,6 +17,7 @@ class Ui::ButtonComponent < ViewComponent::Base
     data: {},
     **options
   )
+    @styled = styled
     @text = text
     @type = type
     @variant = variant
@@ -37,10 +39,12 @@ class Ui::ButtonComponent < ViewComponent::Base
               :form, :url, :method, :classes, :data, :options
 
   def button_classes
+    return classes unless @styled
+
     [
       "btn",
       "btn-#{variant}",
-      "btn-#{size}",
+      ("btn-#{size}" if size),
       full_width_class,
       state_classes,
       classes

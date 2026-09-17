@@ -1,3 +1,14 @@
+<% if native_radio %>
+  <%= tag.label class: css_class do %>
+    <% if form %>
+      <%= form.radio_button field, item_value, input_options %>
+    <% else %>
+      <%= radio_button_tag field, item_value, selected?, input_options %>
+    <% end %>
+    <%= tag.span item_name, class: "#{css_class}__title" %>
+    <%= tag.span item_description, class: "#{css_class}__sub" if item_description %>
+  <% end %>
+<% else %>
 <%= content_tag :div, **final_html_options do %>
   <% unless link_mode? %>
     <% if multiple? %>
@@ -21,4 +32,5 @@
       </div>
     <% end %>
   </div>
+<% end %>
 <% end %>

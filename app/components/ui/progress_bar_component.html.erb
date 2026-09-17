@@ -1,0 +1,3 @@
+<%= tag.div class: classes, role: "progressbar", aria: { valuenow: bounded_percentage, valuemin: 0, valuemax: 100, label: label, valuetext: value_text } do %>
+  <%= tag.div class: fill_class, style: "width: #{bounded_width}%;" %>
+<% end %>

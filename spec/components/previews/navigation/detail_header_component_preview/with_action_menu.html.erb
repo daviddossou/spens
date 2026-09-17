@@ -1,0 +1,8 @@
+<%= render Navigation::DetailHeaderComponent.new(back_url: "#", title: "Georges") do |header| %>
+  <% header.with_action do %>
+    <%= render Ui::ActionMenuComponent.new(label: "More actions") do %>
+      <a class="header-menu__item" href="#">Edit</a>
+      <a class="header-menu__item header-menu__item--danger" href="#">Delete</a>
+    <% end %>
+  <% end %>
+<% end %>

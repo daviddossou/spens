@@ -1,0 +1,5 @@
+<div id="loading-spinner" data-infinite-scroll-target="spinner" class="dashboard__spinner hidden">
+  <div class="dashboard__spinner-icon"></div>
+  <p class="dashboard__spinner-text"><%= t('home.show.loading') %></p>
+</div>
+<%= render Transactions::LoadTriggerComponent.new if has_more %>

@@ -7,9 +7,7 @@
         <%# Every goal met — celebrate instead of totalling. %>
         <div class="goals-reached">
           <span class="goals-reached__icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path>
-            </svg>
+            <%= render Ui::IconComponent.new(:check, stroke_width: 2.5) %>
           </span>
           <h2 class="goals-reached__title"><%= t('.reached_title') %></h2>
           <p class="goals-reached__message"><%= t('.reached_message') %></p>
@@ -31,20 +29,20 @@
 
       <div class="goals-list">
         <% @progresses.each do |progress| %>
-          <%= render "goal_card", progress: progress %>
+          <%= render Goals::CardComponent.new(progress: progress) %>
         <% end %>
       </div>
     <% else %>
       <%# First day: a few starters instead of a blank slate. %>
-      <div class="goals-empty">
+      <%= render Ui::EmptyStateComponent.new(classes: "goals-empty") do %>
         <h2 class="goals-empty__title"><%= t('.empty_title') %></h2>
         <p class="goals-empty__lead"><%= t('.empty_lead') %></p>
         <div class="goals-starters">
           <% goal_starters.each do |starter| %>
-            <%= render "starter", starter: starter %>
+            <%= render Ui::StarterCardComponent.new(url: new_goal_path(goal_name: starter[:name]), label: starter[:label], hint: starter[:hint], icon: starter[:key]) %>
           <% end %>
         </div>
-      </div>
+      <% end %>
     <% end %>
   </div>
 </div>

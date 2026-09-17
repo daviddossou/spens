@@ -1,0 +1,5 @@
+<div style="display:flex;gap:12px;flex-wrap:wrap">
+  <% Ui::BadgeComponent::TONES.each do |tone| %>
+    <%= render Ui::BadgeComponent.new(tone.to_s.capitalize, tone: tone) %>
+  <% end %>
+</div>

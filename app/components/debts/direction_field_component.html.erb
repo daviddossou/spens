@@ -1,0 +1,11 @@
+<div class="debt-direction" role="radiogroup" aria-label="<%= t('debts.form.direction_label') %>">
+  <% %w[lent borrowed].each do |d| %>
+    <input type="radio" class="debt-direction__input" id="debt_direction_<%= d %>"
+           name="debt[direction]" value="<%= d %>" <%= "checked" if direction == d %>
+           data-action="change->debt-form#onDirection">
+    <label for="debt_direction_<%= d %>" class="debt-direction__card debt-direction__card--<%= d %>">
+      <span class="debt-direction__title"><%= t("debts.form.direction_#{d}_title") %></span>
+      <span class="debt-direction__sub"><%= t("debts.form.direction_#{d}_sub") %></span>
+    </label>
+  <% end %>
+</div>
