@@ -35,7 +35,7 @@ class Auth::VerificationsController < ApplicationController
       end
 
       Analytics.track(user, "user_signed_in")
-      Meta::Activation.record(user, :spens_month_2) if user.created_at <= 30.days.ago
+      Activation.record(user, :month_2) if user.created_at <= 30.days.ago
 
       accepted_space = accept_pending_invitation(user)
 

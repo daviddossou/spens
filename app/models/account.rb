@@ -42,7 +42,7 @@ class Account < ApplicationRecord
   ##
   # Callbacks
   # Meta activation milestone: end of guide chapter 1 (CAPI-only, once per user).
-  after_create_commit -> { Meta::Activation.record(user || space&.user, :spens_first_account) }
+  after_create_commit -> { Activation.record(user || space&.user, :first_account) }
 
   ##
   # Scopes

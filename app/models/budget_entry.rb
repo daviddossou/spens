@@ -49,7 +49,7 @@ class BudgetEntry < ApplicationRecord
   # Callbacks
   # Meta activation milestone: the month's budget counts as filled once it plans
   # both income and expenses (CAPI-only, once per user) — the guide's end goal.
-  after_create_commit :record_meta_budget_complete
+  after_create_commit :record_activation_budget_complete
 
   ##
   # Scopes
@@ -85,10 +85,10 @@ class BudgetEntry < ApplicationRecord
 
   private
 
-  def record_meta_budget_complete
+  def record_activation_budget_complete
     scope = space.budget_entries.for_month(month)
     return unless scope.income.exists? && scope.expense.exists?
 
-    Meta::Activation.record(space.user, :spens_budget_complete)
+    Activation.record(space.user, :budget_complete)
   end
 end
