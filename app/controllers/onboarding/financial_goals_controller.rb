@@ -9,6 +9,7 @@ class Onboarding::FinancialGoalsController < OnboardingController
     build_form(financial_goals_params)
 
     if @form.submit
+      Analytics.track(current_user, "onboarding_step_completed", step: "financial_goal")
       redirect_to next_step_path, status: :see_other
     else
       render :show, status: :unprocessable_entity

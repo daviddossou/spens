@@ -11,6 +11,7 @@ class Onboarding::ProfileSetupsController < OnboardingController
     @form = build_form(profile_setup_params)
 
     if @form.submit
+      Analytics.track(current_user, "onboarding_step_completed", step: "profile_setup")
       redirect_to next_step_path, status: :see_other
     else
       render :show, status: :unprocessable_entity

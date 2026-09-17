@@ -12,6 +12,7 @@ class Onboarding::AccountSetupsController < OnboardingController
     build_form(account_setup_params)
 
     if @form.submit
+      track_onboarding_completed
       redirect_to next_step_path, status: :see_other
     else
       render :show, status: :unprocessable_entity
@@ -38,6 +39,13 @@ class Onboarding::AccountSetupsController < OnboardingController
         :transaction_type_kind
       ]
     )
+  end
+
+  def track_onboarding_completed
+    created = @form.transactions.reject(&:should_skip?)
+    created.each { Analytics.track(current_user, "transaction_created", source: "onboarding") }
+    Analytics.track(current_user, "onboarding_step_completed", step: "account_setup")
+    Analytics.track(current_user, "onboarding_completed", accounts: created.size)
   end
 
   def next_step_path
