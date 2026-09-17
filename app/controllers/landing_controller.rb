@@ -1,5 +1,6 @@
 class LandingController < ApplicationController
   layout "marketing"
+  seo_indexable :show, :guide
 
   before_action :meta_issue_page_view_id, only: [ :show, :guide, :guide_thanks ]
   after_action :meta_track_page_view, only: [ :show, :guide, :guide_thanks ]
