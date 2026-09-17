@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
 class Budgets::CategoryHeroComponent < ViewComponent::Base
-  def initialize(average:, category:, editable:, entry:, parent_progress:, progress:, total:, transactions:, usual_day:, income:, month_slug:)
+  def initialize(average:, category:, editable:, entry:, parent_progress:, progress:, total:, transactions:, usual_day:, income:, month_slug:, child_progresses: [])
+    @child_progresses = child_progresses
     @average = average
     @category = category
     @editable = editable
@@ -17,7 +18,7 @@ class Budgets::CategoryHeroComponent < ViewComponent::Base
 
   private
 
-  attr_reader :month_slug, :average, :category, :editable, :entry, :parent_progress, :progress, :total, :transactions, :usual_day, :income
+  attr_reader :child_progresses, :month_slug, :average, :category, :editable, :entry, :parent_progress, :progress, :total, :transactions, :usual_day, :income
 
   delegate :money, to: :helpers
 end

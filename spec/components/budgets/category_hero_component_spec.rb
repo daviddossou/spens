@@ -123,6 +123,22 @@ RSpec.describe Budgets::CategoryHeroComponent, type: :component do
     end
   end
 
+  context "as a parent whose child has its own line" do
+    let(:child) { create(:transaction_type, space: space, kind: "expense", name: "Frozen", parent: category) }
+    let(:child_item) { create(:budget_item, space: space, transaction_type: child, amount: 10_000) }
+    let(:child_entry) { create(:budget_entry, space: space, budget_item: child_item, planned_amount: 10_000) }
+    let(:child_progress) { Budgets::LineProgress.new(entry: child_entry, actual: 4_000) }
+
+    it "links down to the child with its amounts" do
+      rendered = render_hero(entry: nil, progress: nil, child_progresses: [ child_progress ])
+      link = rendered.at_css("a.budget-category__child-link")
+      expect(link["href"]).to eq(category_budgets_path(id: child.id, month: "2026-09"))
+      expect(link.at_css("strong").text).to eq("Frozen")
+      expect(link.text).to include("has its own line")
+      expect(link.at_css(".budget-category__parent-amounts").text).to include("4,000")
+    end
+  end
+
   context "as a child counted on its parent's line" do
     let(:parent) { create(:transaction_type, space: space, kind: "expense", name: "Food") }
     let(:category) { create(:transaction_type, space: space, kind: "expense", name: "Groceries", parent: parent) }

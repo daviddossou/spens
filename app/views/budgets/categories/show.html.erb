@@ -3,6 +3,8 @@
   income = @category.kind == "income"
   subtitle = if @category.parent
     t(".subtitle_child", parent: @category.parent.name)
+  elsif @child_progresses.any?
+    t(".subtitle_children_budgeted", count: @child_progresses.size)
   elsif @flat_list
     t(".subtitle_unbudgeted")
   elsif @has_children
@@ -41,7 +43,7 @@
   <div class="page-content budget-category <%= 'budget-category--with-bar' if status_bar %>">
     <%# Header band: the month's amount, flush with the top bar. With a budget line it
         carries the line's bar and status word for word; without one, the amount and its habit. %>
-    <%= render Budgets::CategoryHeroComponent.new(average: @average, category: @category, editable: @editable, entry: @entry, parent_progress: @parent_progress, progress: @progress, total: @total, transactions: @transactions, usual_day: @usual_day, income: income, month_slug: month_slug) %>
+    <%= render Budgets::CategoryHeroComponent.new(average: @average, category: @category, editable: @editable, entry: @entry, parent_progress: @parent_progress, progress: @progress, total: @total, transactions: @transactions, usual_day: @usual_day, income: income, month_slug: month_slug, child_progresses: @child_progresses) %>
 
     <% if @transactions.any? && @flat_list %>
       <div class="transaction-group__items">

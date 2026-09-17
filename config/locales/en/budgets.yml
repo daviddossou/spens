@@ -208,6 +208,9 @@ en:
           one: "Category · 1 sub-category"
           other: "Category · %{count} sub-categories"
         subtitle_unbudgeted: "Category · off budget"
+        subtitle_children_budgeted:
+          one: "Category · 1 sub-category budgeted"
+          other: "Category · %{count} sub-categories budgeted"
         subtitle_expense: "Expense category"
         subtitle_income: "Income category"
         planned_html: "of %{amount} planned"
@@ -218,6 +221,7 @@ en:
         above_plan_html: "%{amount} above plan"
         average_html: "Last 3 months average: <strong>%{amount}</strong>"
         counts_in_html: "Counts in %{parent}"
+        child_own_line_html: "%{child} has its own line"
         create_envelope: "Create an envelope"
         adjust_envelope: "Adjust the envelope"
         empty_title: "Nothing this month"

@@ -208,6 +208,9 @@ fr:
           one: "Catégorie · 1 sous-catégorie"
           other: "Catégorie · %{count} sous-catégories"
         subtitle_unbudgeted: "Catégorie · hors budget"
+        subtitle_children_budgeted:
+          one: "Catégorie · 1 sous-catégorie au budget"
+          other: "Catégorie · %{count} sous-catégories au budget"
         subtitle_expense: "Catégorie de dépense"
         subtitle_income: "Catégorie de revenu"
         planned_html: "sur %{amount} prévus"
@@ -218,6 +221,7 @@ fr:
         above_plan_html: "%{amount} de plus"
         average_html: "Moyenne des 3 derniers mois : <strong>%{amount}</strong>"
         counts_in_html: "Compte dans %{parent}"
+        child_own_line_html: "%{child} suit sa propre ligne"
         create_envelope: "Créer une enveloppe"
         adjust_envelope: "Ajuster l'enveloppe"
         empty_title: "Rien ce mois-ci"

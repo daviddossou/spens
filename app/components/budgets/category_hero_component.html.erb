@@ -39,6 +39,18 @@
     </p>
   <% end %>
 
+  <%# Children with their own line: counted there, not here — a link down to each. %>
+  <% child_progresses.each do |child_progress| %>
+    <% child = child_progress.entry.transaction_type %>
+    <%= link_to category_budgets_path(id: child.id, month: month_slug), class: "budget-category__parent-link budget-category__child-link" do %>
+      <span class="budget-category__parent-text">
+        <span class="budget-category__parent-label"><%= t("budgets.categories.show.child_own_line_html", child: content_tag(:strong, child.name)) %></span>
+        <span class="budget-category__parent-amounts <%= 'budget-category__parent-over' if child_progress.over? %>"><%= money(child_progress.actual) %> / <%= money(child_progress.planned) %></span>
+      </span>
+      <span class="budget-category__parent-chevron" aria-hidden="true">&rsaquo;</span>
+    <% end %>
+  <% end %>
+
   <% if @parent_progress %>
     <%# Counted on the parent's line: no bar here, a link up instead. %>
     <%= link_to category_budgets_path(id: @category.parent.id, month: month_slug), class: "budget-category__parent-link" do %>

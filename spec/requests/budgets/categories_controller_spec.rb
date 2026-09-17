@@ -120,6 +120,32 @@ RSpec.describe Budgets::CategoriesController, type: :request do
     end
   end
 
+  describe "a parent whose child has its own line" do
+    before do
+      create(:budget_item, space: space, transaction_type: frozen, amount: 100, starts_on: month)
+      record(groceries, -3.1, label: "Baguette")
+      record(frozen, -75.5, label: "Picard")
+    end
+
+    it "counts only what the Budget page counts for it and hands the child over" do
+      show
+      expect(assigns(:total)).to eq(3.1)
+      expect(assigns(:transactions).size).to eq(1)
+      expect(response.body).not_to include("Picard")
+      expect(response.body).to include(I18n.t("budgets.categories.show.child_own_line_html", child: "<strong>🧊 Surgelés</strong>"))
+      expect(response.body).to include(category_budgets_path(id: frozen.id, month: month.strftime("%Y-%m")))
+      expect(response.body).to include(I18n.t("budgets.categories.show.subtitle_children_budgeted", count: 1))
+      expect(response.body).not_to include(I18n.t("budgets.categories.show.subtitle_unbudgeted"))
+    end
+
+    it "keeps the whole subtree once the parent has a line of its own" do
+      create(:budget_item, space: space, transaction_type: groceries, amount: 500, starts_on: month)
+      show
+      expect(assigns(:total)).to eq(78.6)
+      expect(assigns(:child_progresses)).to be_empty
+    end
+  end
+
   describe "a child under a budgeted parent" do
     it "links up to the parent's line instead of carrying a bar" do
       create(:budget_item, space: space, transaction_type: groceries, amount: 500, starts_on: month)
