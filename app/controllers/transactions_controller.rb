@@ -50,6 +50,7 @@ class TransactionsController < ApplicationController
 
     if @form.submit
       QuickEntry::LearnTransactionJob.perform_later(@transaction.id, correction: true)
+      Analytics.track(current_user, "transaction_updated", kind: @transaction.transaction_type&.kind)
       redirect_to transaction_path(id: @transaction.id), notice: t(".success"), status: :see_other
     else
       render :edit, status: :unprocessable_entity
@@ -58,6 +59,7 @@ class TransactionsController < ApplicationController
 
   def destroy
     DestroyTransactionService.new(@transaction).call
+    Analytics.track(current_user, "transaction_deleted", kind: @transaction.transaction_type&.kind)
     redirect_to dashboard_path, notice: t(".success"), status: :see_other
   end
 

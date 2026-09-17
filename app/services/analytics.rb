@@ -10,10 +10,10 @@ module Analytics
   ACQUISITION_KEYS = %w[utm_source utm_medium utm_campaign utm_content guide_link landed_at].freeze
 
   # Per-request (or per-job) context merged into every event: platform (native app vs web),
-  # locale and the space, which also becomes the PostHog "space" group. Reset automatically
-  # between requests and jobs.
+  # locale and the space, which also becomes the PostHog "space" group. `muted` silences
+  # everything (admin impersonation). Reset automatically between requests and jobs.
   class Context < ActiveSupport::CurrentAttributes
-    attribute :platform, :locale, :space_id
+    attribute :platform, :locale, :space_id, :muted
 
     def properties
       { platform: platform, locale: locale, space_id: space_id }.compact
@@ -21,8 +21,16 @@ module Analytics
   end
 
   def track(user, event, properties = {})
+    track_at(nil, user, event, properties)
+  end
+
+  # Same event, dated `time` instead of now (historical backfills).
+  def track_at(time, user, event, properties = {})
+    return if Context.muted
+
     attrs = { distinct_id: distinct_id(user), event: event, properties: Context.properties.merge(properties) }
     attrs[:groups] = { space: Context.space_id } if Context.space_id
+    attrs[:timestamp] = time if time
     client&.capture(attrs)
   rescue StandardError => e
     Rails.logger.warn("[Analytics] track failed: #{e.message}")
@@ -47,6 +55,8 @@ module Analytics
   end
 
   def identify(user)
+    return if Context.muted
+
     client&.identify(
       distinct_id: distinct_id(user),
       properties: {
@@ -59,6 +69,8 @@ module Analytics
   end
 
   def group_identify(space)
+    return if Context.muted
+
     client&.group_identify(
       group_type: "space", group_key: space.id,
       properties: { name: space.name, currency: space.currency, locale: space.locale,

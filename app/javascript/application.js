@@ -2,6 +2,7 @@
 import "@hotwired/turbo-rails"
 import "controllers"
 import "lib/page_timing"
+import "lib/analytics_identity"
 
 // A tap must show something fast on a slow network: the progress bar after 100ms, not 500.
 Turbo.setProgressBarDelay(100)

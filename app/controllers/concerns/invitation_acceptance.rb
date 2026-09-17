@@ -13,6 +13,7 @@ module InvitationAcceptance
     return unless invitation
 
     invitation.accept!(user)
+    Analytics.track(user, "invitation_accepted", space_id: invitation.space_id)
     invitation.space
   end
 end

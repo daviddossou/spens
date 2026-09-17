@@ -46,6 +46,7 @@ class User < ApplicationRecord
   has_many :debts, through: :spaces
   has_many :invitations, foreign_key: :invited_by_id, dependent: :destroy
   has_many :meta_conversions, dependent: :destroy
+  has_many :activation_milestones, dependent: :destroy
 
   ##
   # Constants

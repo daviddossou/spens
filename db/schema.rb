@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_09_15_211537) do
+ActiveRecord::Schema[8.0].define(version: 2026_09_17_205134) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -28,6 +28,14 @@ ActiveRecord::Schema[8.0].define(version: 2026_09_15_211537) do
     t.index ["archived_at"], name: "index_accounts_on_archived_at"
     t.index ["space_id"], name: "index_accounts_on_space_id"
     t.index ["user_id"], name: "index_accounts_on_user_id"
+  end
+
+  create_table "activation_milestones", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "user_id", null: false
+    t.string "name", null: false
+    t.datetime "created_at", null: false
+    t.index ["user_id", "name"], name: "index_activation_milestones_on_user_id_and_name", unique: true
+    t.index ["user_id"], name: "index_activation_milestones_on_user_id"
   end
 
   create_table "admin_audit_logs", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -318,6 +326,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_09_15_211537) do
 
   add_foreign_key "accounts", "spaces"
   add_foreign_key "accounts", "users"
+  add_foreign_key "activation_milestones", "users"
   add_foreign_key "admin_audit_logs", "users", column: "admin_user_id"
   add_foreign_key "budget_entries", "budget_items"
   add_foreign_key "budget_entries", "spaces"

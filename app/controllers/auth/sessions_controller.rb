@@ -33,6 +33,7 @@ class Auth::SessionsController < ApplicationController
 
   def destroy
     sign_out if user_signed_in?
+    reset_analytics_identity
     redirect_to root_path, notice: t("devise.sessions.signed_out")
   end
 

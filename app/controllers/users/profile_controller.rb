@@ -18,8 +18,10 @@ class Users::ProfileController < ApplicationController
   end
 
   def destroy
+    Analytics.track(current_user, "account_deleted")
     current_user.destroy
     sign_out
+    reset_analytics_identity
     redirect_to root_path, notice: t("auth.profile.destroyed")
   end
 
