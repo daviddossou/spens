@@ -1,0 +1,10 @@
+<div class="debt-abandoned debt-abandoned--<%= @debt.direction %>">
+  <%= render Ui::BadgeComponent.new(debt_status_label(@debt), classes: "debt-abandoned__badge") %>
+  <span class="debt-abandoned__amount"><%= money(@debt.remaining_balance) %></span>
+  <p class="debt-abandoned__note">
+    <%= t("debts.show.abandoned_on.#{@debt.direction}", date: l(@debt.updated_at.to_date, format: :long)) %>
+  </p>
+  <% if closed_debt_detail(@debt) %>
+    <p class="debt-abandoned__detail"><%= closed_debt_detail(@debt) %></p>
+  <% end %>
+</div>

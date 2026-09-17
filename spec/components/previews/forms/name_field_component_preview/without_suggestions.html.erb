@@ -1,0 +1,5 @@
+<% builder = ActionView::Helpers::FormBuilder.new("transaction", nil, self, {}) %>
+<%= render Forms::NameFieldComponent.new(
+      form: builder, field: :contact_name, label: "With whom?", placeholder: "A first name",
+      suggestions: suggestions, see_all_title: see_all_title,
+      field_data: { action: "input->debt-fields#onPersonChange" }) %>

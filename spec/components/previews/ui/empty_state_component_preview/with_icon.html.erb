@@ -1,0 +1,7 @@
+<%= render Ui::EmptyStateComponent.new(classes: "debts-settled") do %>
+  <span class="debts-settled__icon" aria-hidden="true">
+    <%= render Ui::IconComponent.new(:check, stroke_width: 2.5) %>
+  </span>
+  <h2 class="debts-settled__title">All settled</h2>
+  <p class="debts-settled__message">Nobody owes anybody.</p>
+<% end %>

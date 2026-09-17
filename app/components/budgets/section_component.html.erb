@@ -1,0 +1,27 @@
+<section class="budget-section">
+  <div class="budget-section__header">
+    <h3 class="budget-section__title"><%= t("budgets.index.section_#{section}") %></h3>
+    <span class="budget-section__total">
+      <% if @mode == :plan %>
+        <%= money(planned) %>
+      <% else %>
+        <%= money(actual) %> / <%= money(planned) %>
+      <% end %>
+    </span>
+  </div>
+  <% if entries.any? %>
+    <div class="budget-section__list">
+      <% entries.each do |entry| %>
+        <%= render Budgets::EntryRowComponent.new(
+          entry: entry,
+          actual: @actuals_by_entry[entry] || 0,
+          currency: current_space.currency,
+          read_only: !@editable,
+          mode: @mode
+        ) %>
+      <% end %>
+    </div>
+  <% else %>
+    <p class="budget-section__empty"><%= t("budgets.index.section_empty_#{section}", month: short_month) %></p>
+  <% end %>
+</section>

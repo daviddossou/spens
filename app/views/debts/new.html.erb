@@ -11,10 +11,10 @@
       recap = { lent: t(".recap.lent"), borrowed: t(".recap.borrowed") }
       recap_account = { lent: t(".recap_account.lent"), borrowed: t(".recap_account.borrowed") }
     %>
-    <header class="page-header debt-form__header">
+    <%= render Ui::PageHeaderComponent.new(classes: "debt-form__header") do %>
       <h2 class="debt-form__title"><%= t(".title") %></h2>
       <p class="debt-form__subtitle"><%= l(Date.current, format: :day_month) %></p>
-    </header>
+    <% end %>
 
     <div class="page-content">
       <%= form_with model: @form, url: debts_path, method: :post, class: "debt-form",
@@ -35,9 +35,7 @@
         <%= render "form", form: f %>
 
         <div class="debt-form__actions">
-          <button type="submit" class="btn btn-primary btn-lg" data-debt-form-target="cta" disabled>
-            <%= t(".cta_empty") %>
-          </button>
+          <%= render Ui::ButtonComponent.new(text: t(".cta_empty"), type: :submit, size: :lg, disabled: true, data: { debt_form_target: "cta" }) %>
         </div>
       <% end %>
     </div>

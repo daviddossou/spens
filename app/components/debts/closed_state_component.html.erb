@@ -1,0 +1,10 @@
+<div class="debt-closed-card debt-closed-card--<%= @debt.status %>">
+  <%= render Ui::BadgeComponent.new(debt_status_label(@debt), classes: "debt-closed-card__badge") %>
+  <div class="debt-closed-card__hero">
+    <span class="debt-closed-card__amount"><%= money(closed_debt_amount(@debt)) %></span>
+    <span class="debt-closed-card__label"><%= closed_debt_amount_label(@debt) %></span>
+  </div>
+  <% if closed_debt_detail(@debt) %>
+    <p class="debt-closed-card__detail"><%= closed_debt_detail(@debt) %></p>
+  <% end %>
+</div>

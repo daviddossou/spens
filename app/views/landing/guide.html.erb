@@ -10,14 +10,10 @@
      data-landing--meta-events-page-value="guide"
      data-landing--meta-events-events-value="<%= (@meta_guide_event_ids || {}).to_json %>">
 <div class="landing-dark">
-  <nav class="landing-nav guide-nav">
-    <%= link_to root_path, class: "landing-nav__brand" do %>
-      <%= image_tag "spens-logo-white.png", alt: "Spens", class: "landing-nav__logo" %>
-    <% end %>
-    <div class="landing-nav__spacer"></div>
+  <%= render Marketing::NavigationComponent.new(guide: true) do %>
     <%= link_to t("guide.nav.site"), root_path, class: "landing-nav__link guide-nav__link" %>
     <a href="#telecharger" class="landing-nav__cta"><%= t("guide.nav.cta") %></a>
-  </nav>
+  <% end %>
 
   <header class="guide-hero">
     <div class="guide-hero__copy">
@@ -25,11 +21,7 @@
       <h1 class="guide-hero__title"><%= t("guide.hero.title") %></h1>
       <p class="guide-hero__subtitle"><%= t("guide.hero.subtitle") %></p>
       <div class="guide-hero__cta-row">
-        <a href="<%= pdf[:href] %>" download="<%= pdf[:download] %>" class="landing-btn-light guide-btn-download"
-           data-controller="landing--guide-download"
-           data-action="landing--guide-download#redirect landing--meta-events#lead"
-           data-landing--meta-events-placement-param="hero"
-           data-landing--guide-download-url-value="<%= guide_thanks_path %>"><%= t("guide.hero.cta") %><span class="guide-btn-download__arrow" aria-hidden="true">↓</span></a>
+        <%= render Marketing::GuideDownloadComponent.new(url: pdf[:href], filename: pdf[:download], label: t("guide.hero.cta"), placement: "hero", classes: "landing-btn-light guide-btn-download") %>
         <span class="guide-hero__cta-note"><%= t("guide.hero.cta_note") %></span>
       </div>
     </div>
@@ -67,21 +59,14 @@
 
 <section class="landing-sect guide-sect--steps">
   <div class="landing-container">
-    <div class="landing-sect__intro">
+    <%= render Marketing::SectionHeaderComponent.new do %>
       <div class="landing-eyebrow"><%= t("guide.steps.eyebrow") %></div>
       <h2 class="landing-h2"><%= t("guide.steps.title") %></h2>
       <p class="landing-sect__sub"><%= t("guide.steps.subtitle") %></p>
-    </div>
+    <% end %>
     <div class="landing-grid-3">
       <% t("guide.steps.items").each_with_index do |s, i| %>
-        <div class="guide-step">
-          <div class="guide-step__head">
-            <span class="guide-step__num"><%= format("%02d", i + 1) %></span>
-            <span class="guide-step__phase"><%= s[:step] %></span>
-          </div>
-          <div class="guide-step__title"><%= s[:title] %></div>
-          <div class="guide-step__desc"><%= s[:desc] %></div>
-        </div>
+        <%= render Marketing::GuideStepComponent.new(title: s[:title], description: s[:desc], phase: s[:step], number: format("%02d", i + 1)) %>
       <% end %>
     </div>
   </div>
@@ -136,24 +121,17 @@
   <div class="guide-final__inner">
     <h2 class="guide-final__title"><%= t("guide.final.title") %></h2>
     <p class="guide-final__body"><%= t("guide.final.body") %></p>
-    <a href="<%= pdf[:href] %>" download="<%= pdf[:download] %>" class="landing-btn-light landing-btn-light--lg guide-btn-download"
-       data-controller="landing--guide-download"
-       data-action="landing--guide-download#redirect landing--meta-events#lead"
-       data-landing--meta-events-placement-param="final"
-       data-landing--guide-download-url-value="<%= guide_thanks_path %>"><%= t("guide.final.cta") %><span class="guide-btn-download__arrow" aria-hidden="true">↓</span></a>
+    <%= render Marketing::GuideDownloadComponent.new(url: pdf[:href], filename: pdf[:download], label: t("guide.final.cta"), placement: "final", classes: "landing-btn-light landing-btn-light--lg guide-btn-download") %>
     <div class="guide-final__facts">
       <% t("guide.final.facts").each do |fact| %>
         <span><%= fact %></span>
       <% end %>
     </div>
   </div>
-  <div class="landing-container guide-final__footer">
-    <span><%= t("landing.footer.copyright", year: Date.current.year) %></span>
-    <div class="guide-final__footer-links">
+  <%= render Marketing::FooterComponent.new(classes: "landing-container guide-final__footer", links_class: "guide-final__footer-links") do %>
       <%= link_to t("guide.nav.site"), root_path %>
       <%= link_to t("landing.footer.privacy"), privacy_path %>
       <a href="mailto:contact@spens.me"><%= t("landing.footer.contact") %></a>
-    </div>
-  </div>
+    <% end %>
 </footer>
 </div>

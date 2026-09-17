@@ -2,9 +2,9 @@
 
 <%= turbo_frame_tag "modal" do %>
   <div class="page-container page-container--narrow">
-    <header class="page-header">
+    <%= render Ui::PageHeaderComponent.new(classes: nil) do %>
       <p class="page-header__subtitle"><%= t('.subtitle') %></p>
-    </header>
+    <% end %>
 
     <div class="page-content">
       <%= form_with model: @space,

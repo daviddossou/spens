@@ -1,0 +1,8 @@
+<%= tag.div class: classes do %>
+  <span><%= t("landing.footer.copyright", year: Date.current.year) %></span>
+  <% if links_class %>
+    <%= tag.div content, class: links_class %>
+  <% else %>
+    <%= content %>
+  <% end %>
+<% end %>

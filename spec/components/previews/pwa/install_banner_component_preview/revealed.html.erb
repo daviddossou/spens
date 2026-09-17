@@ -1,0 +1,8 @@
+<style>
+  #pwa-install-banner[hidden] { display: flex; }
+  <% if ios %>
+    #pwa-install-banner [data-pwa-install-target="iosSteps"][hidden] { display: block; }
+    #pwa-install-banner [data-pwa-install-target="installButton"] { display: none; }
+  <% end %>
+</style>
+<%= render Pwa::InstallBannerComponent.new %>

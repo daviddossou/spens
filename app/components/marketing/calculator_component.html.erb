@@ -1,0 +1,48 @@
+<section class="landing-sect landing-sect--mist" data-controller="landing--calculator">
+  <div class="landing-container">
+    <%= render Marketing::SectionHeaderComponent.new do %>
+      <div class="landing-eyebrow landing-eyebrow--deep"><%= t("landing.calculator.eyebrow") %></div>
+      <h2 class="landing-h2"><%= t("landing.calculator.title") %></h2>
+      <p class="landing-sect__sub landing-sect__sub--on-mist"><%= t("landing.calculator.subtitle") %></p>
+    <% end %>
+    <div class="landing-calc">
+      <div class="landing-calc__form">
+        <label class="landing-label" for="landing-calc-income"><%= t("landing.calculator.income_label") %></label>
+        <div class="landing-input-group">
+          <span class="landing-input-group__addon" data-currency-label>XOF</span>
+          <input id="landing-calc-income" class="landing-input-group__input" inputmode="numeric" placeholder="150 000"
+                 value="150000" data-landing--calculator-target="income" data-action="input->landing--calculator#compute">
+        </div>
+        <div class="landing-calc__pct-row">
+          <label class="landing-label" for="landing-calc-pct"><%= t("landing.calculator.pct_label") %></label>
+          <span class="landing-calc__pct" data-landing--calculator-target="pct">10 %</span>
+        </div>
+        <input id="landing-calc-pct" type="range" min="1" max="40" value="10" class="landing-calc__slider"
+               data-landing--calculator-target="slider" data-action="input->landing--calculator#compute">
+        <div class="landing-calc__bounds"><span>1 %</span><span>40 %</span></div>
+        <div class="landing-calc__monthly">
+          <div class="landing-calc__monthly-label"><%= t("landing.calculator.monthly_label") %></div>
+          <div class="landing-calc__monthly-amount"><span data-landing--calculator-target="monthly">15 000</span> <span data-currency-label>XOF</span></div>
+        </div>
+      </div>
+      <div class="landing-calc__projections">
+        <div class="landing-proj">
+          <div class="landing-proj__label"><%= t("landing.calculator.y1_label") %></div>
+          <div class="landing-proj__amount" data-landing--calculator-target="y1">180 000</div>
+          <div class="landing-proj__cur" data-currency-label>XOF</div>
+        </div>
+        <div class="landing-proj landing-proj--dark">
+          <div class="landing-proj__label"><%= t("landing.calculator.y3_label") %></div>
+          <div class="landing-proj__amount" data-landing--calculator-target="y3">540 000</div>
+          <div class="landing-proj__cur" data-currency-label>XOF</div>
+        </div>
+        <div class="landing-proj landing-proj--indigo">
+          <div class="landing-proj__label"><%= t("landing.calculator.y10_label") %></div>
+          <div class="landing-proj__amount" data-landing--calculator-target="y10">1 800 000</div>
+          <div class="landing-proj__cur" data-currency-label>XOF</div>
+        </div>
+      </div>
+    </div>
+    <p class="landing-calc__note"><%= t("landing.calculator.note") %></p>
+  </div>
+</section>

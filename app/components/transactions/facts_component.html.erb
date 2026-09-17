@@ -1,0 +1,14 @@
+<div class="movement-facts">
+  <%= render Transactions::FactRowComponent.new(label: t('transactions.show.category'), value: @transaction.transaction_type.name,
+        url: (fact_transaction_path(id: @transaction.id, fact: "category") if editable)) %>
+  <% if @transaction.account.present? || editable %>
+    <%= render Transactions::FactRowComponent.new(label: t('transactions.show.account'), value: @transaction.account&.name || t('transactions.show.no_account'),
+          url: (editable ? fact_transaction_path(id: @transaction.id, fact: "account") : account_path(id: @transaction.account.id)), frame: editable ? "modal" : "_top") %>
+  <% end %>
+  <%= render Transactions::FactRowComponent.new(label: t('transactions.show.date'), value: l(@transaction.transaction_date, format: :long),
+        url: fact_transaction_path(id: @transaction.id, fact: "date")) %>
+  <% if @transaction.debt.present? %>
+    <%= render Transactions::FactRowComponent.new(label: t('transactions.show.related_debt'), value: @transaction.debt.name,
+          url: debt_path(id: @transaction.debt.id), frame: "_top") %>
+  <% end %>
+</div>

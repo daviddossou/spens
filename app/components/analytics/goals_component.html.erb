@@ -1,0 +1,22 @@
+<% if @goals.any? %>
+  <div class="analyses-card">
+    <p class="analyses-card__title"><%= t('analytics.index.goals_title') %></p>
+    <% @goals.each do |progress| %>
+      <%= link_to goal_path(id: progress.goal.account_id), class: "analyses-goal", data: { turbo_frame: "_top" } do %>
+        <span class="analyses-person__head">
+          <span class="analyses-person__name"><%= progress.name || progress.account.name %></span>
+          <span class="analyses-goal__figures">
+            <% cur, tgt = money_pair(progress.current, progress.target_set? ? progress.target : nil) %><%= cur %><% if progress.target_set? %> / <%= tgt %><% end %>
+          </span>
+        </span>
+        <span class="analyses-person__bar"><span style="width: <%= progress.percentage %>%; background: var(--color-primary);"></span></span>
+        <% state, eta = progress.rhythm_state %>
+        <% if state == :eta %>
+          <span class="analyses-goal__eta"><%= t('analytics.index.goal_eta', date: l(eta, format: :month_year)) %></span>
+        <% elsif state == :no_rhythm %>
+          <span class="analyses-goal__eta"><%= t('analytics.index.no_rhythm') %></span>
+        <% end %>
+      <% end %>
+    <% end %>
+  </div>
+<% end %>

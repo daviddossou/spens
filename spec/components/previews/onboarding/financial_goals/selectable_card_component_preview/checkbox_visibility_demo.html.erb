@@ -1,4 +1,4 @@
-<%= form_with model: user, url: "#", data: { controller: "onboarding--financial-goals" } do |f| %>
+<%= form_with model: space, url: "#", data: { controller: "onboarding--financial-goals" } do |f| %>
   <div class="checkbox-demo">
     <div class="preview-info mb-4">
       <p>👁️ Visual Checkbox Demo: The left card has no selection (hidden checkbox), the right card is pre-selected (visible checkbox).</p>
@@ -9,7 +9,7 @@
         <%= render Onboarding::FinancialGoals::SelectableCardComponent.new(
           item: ActiveSupport::HashWithIndifferentAccess.new(goal),
           form: f,
-          model: user
+          model: space
         ) %>
       <% end %>
     </div>

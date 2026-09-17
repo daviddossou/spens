@@ -1,0 +1,3 @@
+<% grouped_transactions.each do |date, transactions| %>
+  <%= render Transactions::DayGroupComponent.new(date: date, transactions: transactions, day_total_scope: day_total_scope) %>
+<% end %>

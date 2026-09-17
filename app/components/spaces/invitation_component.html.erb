@@ -1,0 +1,8 @@
+<div class="member-card member-card--pending">
+  <span class="member-card__avatar member-card__avatar--pending" aria-hidden="true"><%= invitation.email.first.upcase %></span>
+  <div class="member-card__info">
+    <p class="member-card__name"><%= invitation.email %></p>
+    <p class="member-card__email"><%= t('spaces.members.index.invited_on', date: l(invitation.created_at.to_date, format: :short)) %></p>
+  </div>
+  <%= render Ui::BadgeComponent.new(t('spaces.members.index.pending'), classes: "member-card__badge member-card__badge--pending") %>
+</div>

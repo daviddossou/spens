@@ -1,0 +1,12 @@
+<div class="scope-choice">
+  <button type="button" class="scope-card scope-card--selected" data-scope="month"
+          data-budget-scope-target="scopeCard" data-action="budget-scope#setScope">
+    <span class="scope-card__title"><%= month_name.capitalize %></span>
+    <span class="scope-card__sub"><%= t("budget_entries.edit.scope_month_sub") %></span>
+  </button>
+  <button type="button" class="scope-card" data-scope="rule"
+          data-budget-scope-target="scopeCard" data-action="budget-scope#setScope">
+    <span class="scope-card__title"><%= t("budget_entries.edit.scope_rule_title") %></span>
+    <span class="scope-card__sub"><%= t("budget_entries.edit.scope_rule_sub", month: month_name, month_prep: month_prep) %></span>
+  </button>
+</div>

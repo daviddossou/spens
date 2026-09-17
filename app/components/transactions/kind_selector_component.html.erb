@@ -1,0 +1,9 @@
+<div class="kind-selector kind-selector--quad kind-selector--mono" role="radiogroup" aria-label="<%= label %>">
+  <% options.each do |option| %>
+    <%= link_to option.fetch(:url), role: "radio", aria: { checked: option.fetch(:selected).to_s },
+          class: "kind-option kind-option--#{option.fetch(:value)}#{' kind-option--selected' if option[:selected]}#{' kind-option--filled' if option[:filled]}", data: data do %>
+      <span class="kind-option__icon kind-option__icon--<%= option[:value] %>" aria-hidden="true"><%= transaction_icon_svg(option[:value]) %></span>
+      <span class="kind-option__label"><%= option.fetch(:label) %></span>
+    <% end %>
+  <% end %>
+</div>

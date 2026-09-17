@@ -1,0 +1,5 @@
+<%= render Ui::ButtonComponent.new(url: url, styled: false, classes: classes, download: filename,
+      data: { controller: "landing--guide-download", action: "landing--guide-download#redirect landing--meta-events#lead",
+              "landing--meta-events-placement-param": placement, "landing--guide-download-url-value": guide_thanks_path }) do %>
+  <%= label %><span class="guide-btn-download__arrow" aria-hidden="true">↓</span>
+<% end %>

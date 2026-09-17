@@ -1,0 +1,31 @@
+<% if keyword %>
+<div class="member-card mapping-card">
+              <div class="member-card__info">
+                <p class="member-card__name">« <%= mapping.display_or_phrase %> »</p>
+                <p class="member-card__email"><%= t("admin.kinds.#{mapping.kind}", default: mapping.kind) %></p>
+              </div>
+              <div class="mapping-card__actions">
+                <%= button_to t('spaces.mappings.index.delete'), space_mapping_path(space_id: @space.id, id: mapping.id, type: "keyword"),
+                      method: :delete, class: "link-button link-button--danger",
+                      form: { data: { turbo_confirm: t('spaces.mappings.index.confirm_delete', phrase: mapping.display_or_phrase) } } %>
+              </div>
+            </div>
+<% else %>
+<div class="member-card mapping-card">
+              <div class="member-card__info">
+                <p class="member-card__name">« <%= mapping.display_or_phrase %> »</p>
+              </div>
+              <%# The select shows (and edits) the mapped category — no duplicate label. %>
+              <div class="mapping-card__actions">
+                <%= form_with url: space_mapping_path(space_id: @space.id, id: mapping.id), method: :patch, class: "mapping-card__retarget" do |f| %>
+                  <%= render Forms::SelectFieldComponent.new(form: f, field: :taxonomy_key,
+  options: taxonomy_grouped_options, grouped: true, selected: mapping.taxonomy_key,
+  bare: true, searchable: true, field_classes: "mapping-card__select",
+  aria: { label: mapping.display_or_phrase }, onchange: "this.form.requestSubmit()") %>
+                <% end %>
+                <%= button_to t('spaces.mappings.index.delete'), space_mapping_path(space_id: @space.id, id: mapping.id),
+                      method: :delete, class: "link-button link-button--danger",
+                      form: { data: { turbo_confirm: t('spaces.mappings.index.confirm_delete', phrase: mapping.display_or_phrase) } } %>
+              </div>
+            </div>
+<% end %>

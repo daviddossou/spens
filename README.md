@@ -102,7 +102,7 @@ cp .env.example .env
 ./bin/docker-manage up
 ```
 
-The app is available at http://localhost:3000.
+The app is available at http://localhost:3002 (the container's port 3000 is mapped to 3002 on the host).
 
 ### Essential Commands
 
@@ -145,6 +145,15 @@ The app is available at http://localhost:3000.
 npm run test:javascript
 npm run test:javascript:watch
 ```
+
+### Component Previews
+
+Every ViewComponent has a preview, served by the development server with no extra tooling:
+
+- Index of all previews: http://localhost:3002/rails/view_components
+- One variant: `http://localhost:3002/rails/view_components/<component path>/<variant>`, e.g. http://localhost:3002/rails/view_components/debts/hero_component/default
+
+Previews live in `spec/components/previews/`, one class per component and one method per variant, and render without database rows. Components that read the current space (amounts, currency) go through `PreviewSpace` (`spec/components/previews/preview_space.rb`) or the shared `shared/space_context` template.
 
 ### Code Quality
 

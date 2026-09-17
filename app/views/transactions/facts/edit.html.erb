@@ -3,9 +3,9 @@
     use the same picker rows as the transaction form. %>
 <%= turbo_frame_tag "modal" do %>
   <div class="page-container page-container--narrow">
-    <header class="page-header fact-sheet__header">
+    <%= render Ui::PageHeaderComponent.new(classes: "fact-sheet__header") do %>
       <h2 class="page-header__title"><%= t(".title_#{@fact}") %></h2>
-    </header>
+    <% end %>
 
     <div class="page-content">
       <%= form_with model: @form, url: transaction_path(id: @transaction.id), method: :patch,

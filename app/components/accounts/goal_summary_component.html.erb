@@ -1,0 +1,17 @@
+<div class="account-goal-card">
+  <div class="account-goal-card__head">
+    <span class="account-goal-card__name"><%= @account.goal.name %></span>
+    <%= link_to t('accounts.show.see_goal'), goal_path(id: @account.id), class: "account-goal-card__link" %>
+  </div>
+  <p class="account-goal-card__amount">
+    <%= account_money(@progress.current) %><span class="account-goal-card__target"> <%= t('accounts.show.goal_of', target: account_money(@progress.target)) %></span>
+  </p>
+  <%= render Ui::ProgressBarComponent.new(percentage: @progress.percentage, classes: "account-goal-card__bar", fill_class: "account-goal-card__bar-fill#{" account-goal-card__bar-fill--settled" if @progress.settled?}", width: @progress.percentage) %>
+  <p class="account-goal-card__meta">
+    <% if @progress.monthly %>
+      <%= t('accounts.show.goal_pace', month: l(@progress.deadline, format: :month_year), amount: account_money(@progress.monthly.round)) %>
+    <% else %>
+      <%= t('goals.rhythm.no_deadline') %>
+    <% end %>
+  </p>
+</div>

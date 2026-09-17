@@ -1,0 +1,27 @@
+<%# Block 2 — the rhythm: one bar per unit, the future grey, never a fake 0. %>
+<% units = @rhythm.units %>
+<% if units.any? { |u| u.amount.positive? } %>
+  <% max = units.map(&:amount).max %>
+  <div class="analyses-card">
+    <p class="analyses-card__title"><%= t("analytics.index.rhythm_title.#{@period.granularity}") %></p>
+    <div class="analyses-rhythm" aria-hidden="true">
+      <% units.each do |unit| %>
+        <% height = unit.future || max.zero? ? 0 : (unit.amount / max * 100).round(1) %>
+        <span class="analyses-rhythm__bar<%= ' analyses-rhythm__bar--future' if unit.future %><%= ' analyses-rhythm__bar--peak' if !unit.future && unit == @rhythm.biggest %>"
+              style="height: <%= [ height, unit.future ? 0 : 4 ].max %>%;"></span>
+      <% end %>
+    </div>
+    <div class="analyses-rhythm__axis">
+      <span><%= l(units.first.starts_on, format: :day_month) %></span>
+      <span><%= l(units.last.starts_on, format: :day_month) %></span>
+    </div>
+    <% if @rhythm.biggest %>
+      <p class="analyses-row__caption">
+        <%= t("analytics.index.rhythm_biggest.#{@period.granularity}_html",
+              date: l(@rhythm.biggest.starts_on, format: @period.granularity == :month ? :month_only : :day_month),
+              amount: money(@rhythm.biggest.amount),
+              category: @rhythm.biggest_category ? t('analytics.index.rhythm_biggest_category', name: @rhythm.biggest_category) : "") %>
+      </p>
+    <% end %>
+  </div>
+<% end %>

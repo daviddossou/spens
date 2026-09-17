@@ -1,0 +1,8 @@
+<div class="<%= ["debt-reactivate", classes].compact.join(" ") %>">
+  <div class="debt-reactivate__text">
+    <p class="debt-reactivate__title"><%= title %></p>
+    <p class="debt-reactivate__sub"><%= subtitle %></p>
+  </div>
+  <%= render Ui::ButtonComponent.new(text: button_text, url: url, variant: :"outline-primary", size: nil,
+                                     classes: "debt-reactivate__btn", data: { turbo_method: method }) %>
+</div>

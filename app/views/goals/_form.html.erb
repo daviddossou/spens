@@ -1,20 +1,17 @@
-<%= render "shared/form_errors", object: form.object %>
+<%= render Forms::ErrorsComponent.new(object: form.object) %>
 
 <% currency_symbol = get_currency_symbol(current_space.currency) %>
 
 <div class="goal-form__container">
   <%# The target is the hero: big, typed first. "0" keeps its size while empty. %>
-  <div class="budget-amount">
-    <div class="budget-amount__field">
-      <%= form.number_field :target_amount, class: "budget-amount__input",
-            value: (form.object.target_amount && (form.object.target_amount % 1 == 0 ? form.object.target_amount.to_i : form.object.target_amount.to_f)),
-            step: "0.01", min: "0.01", inputmode: "decimal", placeholder: "0",
-            autofocus: !form.object.persisted?, aria: { label: t(".target_aria") },
-            data: { goal_form_target: "amount", action: "input->goal-form#onAmount" } %>
-      <span class="budget-amount__currency"><%= currency_symbol %></span>
-    </div>
-    <span class="budget-amount__period"><%= t(".target_label") %></span>
-  </div>
+  <%= render Forms::AmountFieldComponent.new(
+        form: form, field: :target_amount, value: form.object.target_amount,
+        currency: currency_symbol, autofocus: !form.object.persisted?, aria_label: t(".target_aria"),
+        data: { goal_form_target: "amount", action: "input->goal-form#onAmount" }) do |amount| %>
+    <% amount.with_period do %>
+      <span class="budget-amount__period"><%= t(".target_label") %></span>
+    <% end %>
+  <% end %>
 
   <%# What it's for — a motivating name. No asterisk; the button names what's missing. %>
   <div class="goal-form__field">
@@ -50,19 +47,11 @@
   <%# For when — pills that set a deadline without opening a calendar. %>
   <div class="goal-form__field">
     <span class="form-label"><%= t(".deadline_label") %></span>
-    <div class="pill-choice">
-      <button type="button" class="pill" data-deadline-mode="m6"
-              data-goal-form-target="deadlinePill" data-action="goal-form#setDeadline"><%= t(".deadline_6m") %></button>
-      <button type="button" class="pill" data-deadline-mode="y1"
-              data-goal-form-target="deadlinePill" data-action="goal-form#setDeadline"><%= t(".deadline_1y") %></button>
-      <button type="button" class="pill" data-deadline-mode="other"
-              data-goal-form-target="deadlinePill" data-action="goal-form#setDeadline"><%= t(".deadline_date") %></button>
-      <button type="button" class="pill" data-deadline-mode="none"
-              data-goal-form-target="deadlinePill" data-action="goal-form#setDeadline"><%= t(".deadline_none") %></button>
-    </div>
+    <%= render Forms::SegmentedChoiceComponent.new(classes: "pill-choice", options: [ { label: t(".deadline_6m"), data: { deadline_mode: "m6" } }, { label: t(".deadline_1y"), data: { deadline_mode: "y1" } }, { label: t(".deadline_date"), data: { deadline_mode: "other" } }, { label: t(".deadline_none"), data: { deadline_mode: "none" } } ],
+ data: { goal_form_target: "deadlinePill", action: "goal-form#setDeadline" }) %>
     <div class="goal-form__date hidden" data-goal-form-target="deadlineField">
-      <%= form.date_field :deadline, class: "form-input",
-            data: { goal_form_target: "deadlineInput", action: "input->goal-form#onDeadlineInput" } %>
+      <%= render Forms::InputFieldComponent.new(form: form, field: :deadline, type: :date_field, bare: true, aria: { label: t("goals.form.deadline_label") },
+            data: { goal_form_target: "deadlineInput", action: "input->goal-form#onDeadlineInput" }) %>
     </div>
     <%# The monthly rhythm the deadline implies, live. %>
     <p class="goal-form__rhythm" data-goal-form-target="rhythm" hidden></p>

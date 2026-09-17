@@ -25,6 +25,12 @@ module ComponentTestHelpers
   def mock_form_with_errors
     form_builder_for(with_errors: true)
   end
+
+  # The test controller has no signed-in user: components reaching
+  # `current_space` (money helpers) get the given space instead.
+  def stub_current_space(space)
+    allow(vc_test_controller).to receive(:current_space).and_return(space)
+  end
 end
 
 RSpec.configure do |config|

@@ -5,7 +5,7 @@
               data: { controller: "onboarding--financial-goals",
                       onboarding__financial_goals_empty_label_value: t('.continue_empty'),
                       onboarding__financial_goals_ready_label_value: t('.continue') } do |f| %>
-  <%= render 'shared/form_errors', object: @form %>
+  <%= render Forms::ErrorsComponent.new(object: @form) %>
 
   <%= render Onboarding::FinancialGoals::GridComponent.new(form_builder: f, model: @form) %>
 

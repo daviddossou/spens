@@ -1,0 +1,11 @@
+<label class="budget-toggle">
+  <span class="budget-toggle__text">
+    <span class="budget-toggle__label"><%= label %></span>
+    <%= tag.span class: "budget-toggle__sub", data: hint_data if hint_data %>
+  </span>
+  <span class="budget-toggle__switch">
+    <%= hidden_field_tag name, "0", id: nil %>
+    <%= check_box_tag name, "1", checked, class: "budget-toggle__input", data: data %>
+    <span class="budget-toggle__track" aria-hidden="true"></span>
+  </span>
+</label>

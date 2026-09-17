@@ -1,0 +1,9 @@
+<div class="page-container page-container--narrow">
+  <% [0, 45, 100, 140].each do |percentage| %>
+    <p><%= percentage %> %</p>
+    <%= render Ui::ProgressBarComponent.new(percentage: percentage, label: "Progression #{percentage}%") %>
+  <% end %>
+  <%= render Ui::ActionMenuComponent.new(label: "Actions") do %>
+    <%= link_to "Modifier", "#", class: "header-menu__item" %>
+  <% end %>
+</div>

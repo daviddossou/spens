@@ -1,74 +1,22 @@
 <% content_for :title, t('.title') %>
-
 <div class="page-container page-container--narrow">
-  <header class="page-header">
+  <%= render Ui::PageHeaderComponent.new do %>
     <p class="page-header__subtitle"><%= t('.subtitle') %></p>
-  </header>
-
+  <% end %>
   <div class="page-content">
     <% if @spaces.any? %>
       <div class="spaces-list">
         <% @spaces.each do |space| %>
-          <% is_active = current_space&.id == space.id %>
-          <% if is_active %>
-            <div class="space-card space-card--active">
-              <%= link_to edit_space_path(id: space.id), class: "space-card__link", data: { turbo_frame: "modal" } do %>
-                <div class="space-card__info">
-                  <h3 class="space-card__name"><%= space.name %></h3>
-                  <p class="space-card__detail"><%= space.currency || "—" %><% if space.country.present? %> · <%= space.country %><% end %></p>
-                </div>
-              <% end %>
-              <div class="space-card__actions">
-                <span class="space-card__active-badge"><%= t('.active') %></span>
-                <%= link_to space_members_path(space_id: space.id), class: "space-card__members-link" do %>
-                  <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
-                  </svg>
-                <% end %>
-                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                </svg>
-              </div>
-            </div>
-          <% else %>
-            <div class="space-card">
-              <%= link_to edit_space_path(id: space.id), class: "space-card__link", data: { turbo_frame: "modal" } do %>
-                <div class="space-card__info">
-                  <h3 class="space-card__name"><%= space.name %></h3>
-                  <p class="space-card__detail"><%= space.currency || "—" %><% if space.country.present? %> · <%= space.country %><% end %></p>
-                </div>
-              <% end %>
-              <div class="space-card__actions">
-                <%= render Ui::ButtonComponent.new(
-                  text: t('.switch'),
-                  url: space_selection_path(space_id: space.id),
-                  variant: :"outline-primary",
-                  size: :xs,
-                  data: { turbo_method: :post }
-                ) %>
-                <%= link_to space_members_path(space_id: space.id), class: "space-card__members-link" do %>
-                  <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
-                  </svg>
-                <% end %>
-                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                </svg>
-              </div>
-            </div>
-          <% end %>
+          <%= render Spaces::CardComponent.new(space: space, active: current_space&.id == space.id) %>
         <% end %>
       </div>
     <% else %>
-      <div class="empty-state">
-        <svg class="empty-state__icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
-        </svg>
+      <%= render Ui::EmptyStateComponent.new(classes: "empty-state") do %>
+        <%= render Ui::IconComponent.new(:archive, classes: "empty-state__icon") %>
         <h3><%= t('.no_spaces_title') %></h3>
         <p><%= t('.no_spaces_message') %></p>
-      </div>
+      <% end %>
     <% end %>
   </div>
 </div>
-
 <%= render Ui::FabComponent.new(url: new_space_path, label: t('.add_new_space')) %>

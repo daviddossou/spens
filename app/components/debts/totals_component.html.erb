@@ -1,0 +1,21 @@
+<div class="debts-totals">
+  <div class="debts-totals__cell">
+    <span class="debts-totals__label"><%= t("debts.index.owed_to_me_label") %></span>
+    <span class="debts-totals__value debts-totals__value--lent">
+      <%= money(@total_owed_to_me, compact: true) %>
+    </span>
+    <span class="debts-totals__meta">
+      <%= @owed_to_me.any? ? t("debts.index.people_count", count: @owed_to_me.size) : t("debts.index.nothing_ongoing") %>
+    </span>
+  </div>
+  <div class="debts-totals__divider"></div>
+  <div class="debts-totals__cell">
+    <span class="debts-totals__label"><%= t("debts.index.i_owe_label") %></span>
+    <span class="debts-totals__value debts-totals__value--borrowed">
+      <%= money(@total_i_owe, compact: true) %>
+    </span>
+    <span class="debts-totals__meta">
+      <%= @i_owe.any? ? t("debts.index.people_count", count: @i_owe.size) : t("debts.index.nothing_ongoing") %>
+    </span>
+  </div>
+</div>

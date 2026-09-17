@@ -21,7 +21,7 @@
           </header>
           <div class="accounts-list">
             <% @everyday.each do |account| %>
-              <%= render "account_row", account: account %>
+              <%= render Accounts::RowComponent.new(account: account) %>
             <% end %>
           </div>
         </section>
@@ -35,19 +35,17 @@
           </header>
           <div class="accounts-list">
             <% @set_aside.each do |account| %>
-              <%= render "account_row", account: account %>
+              <%= render Accounts::RowComponent.new(account: account) %>
             <% end %>
           </div>
         </section>
       <% end %>
     <% else %>
-      <div class="empty-state">
-        <svg class="empty-state__icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
-        </svg>
+      <%= render Ui::EmptyStateComponent.new(classes: "empty-state") do %>
+        <%= render Ui::IconComponent.new(:wallet, classes: "empty-state__icon") %>
         <h3><%= t('.no_accounts_title') %></h3>
         <p><%= t('.no_accounts_message') %></p>
-      </div>
+      <% end %>
     <% end %>
 
     <% if @archived.any? %>
@@ -55,20 +53,11 @@
       <details class="accounts-archived">
         <summary class="accounts-archived__summary">
           <span class="accounts-archived__label"><%= t('.archived_count', count: @archived.size) %></span>
-          <svg class="accounts-archived__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M6 9l6 6 6-6"></path>
-          </svg>
+          <%= render Ui::IconComponent.new(:chevron_down, classes: "accounts-archived__chevron") %>
         </summary>
         <div class="accounts-archived__list">
           <% @archived.each do |account| %>
-            <div class="account-archived-row">
-              <span class="account-archived-row__main">
-                <span class="account-archived-row__name"><%= account.name %></span>
-                <span class="account-archived-row__sub"><%= t('.archived_on', date: l(account.archived_at.to_date, format: :long), balance: account_money(account.balance)) %></span>
-              </span>
-              <%= link_to t('.reactivate'), account_archive_path(account_id: account.id),
-                    class: "account-archived-row__action", data: { turbo_method: :delete } %>
-            </div>
+            <%= render Accounts::ArchivedRowComponent.new(account: account) %>
           <% end %>
         </div>
       </details>

@@ -5,10 +5,9 @@
 <% end %>
 
 <%= form_with url: user_session_path, method: :post, class: "space-y-6" do |f| %>
-  <div class="form-group">
-    <%= f.label :email, t('auth.sessions.email'), class: "form-label" %>
-    <%= f.email_field :email, class: "form-input", autofocus: true, autocomplete: "email", required: true, placeholder: t('auth.sessions.email_placeholder') %>
-  </div>
+  <%= render Forms::InputFieldComponent.new(form: f, field: :email, type: :email_field,
+        label: t('auth.sessions.email'), autofocus: true, autocomplete: "email",
+        required: true, placeholder: t('auth.sessions.email_placeholder')) %>
 
   <%= render "shared/turnstile" %>
 

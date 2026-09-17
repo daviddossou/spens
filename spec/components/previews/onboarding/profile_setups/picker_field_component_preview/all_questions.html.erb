@@ -1,0 +1,6 @@
+<% builder = ActionView::Helpers::FormBuilder.new("onboarding_profile_setup_form", Onboarding::ProfileSetupForm.new(space), self, {}) %>
+<div class="form-grid">
+  <% %i[country currency income_frequency main_income_source].each do |field| %>
+    <%= render Onboarding::ProfileSetups::PickerFieldComponent.new(form: builder, field: field) %>
+  <% end %>
+</div>

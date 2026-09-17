@@ -1,6 +1,0 @@
-<div class="text-center space-y-2">
-  <%- if controller_name != 'sessions' && controller_name != 'registrations' %>
-    <%= link_to t('auth.sessions.sign_in'), new_user_session_path,
-        class: "block text-sm font-medium text-primary hover:text-secondary" %>
-  <% end %>
-</div>

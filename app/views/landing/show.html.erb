@@ -25,48 +25,22 @@
      data-landing--meta-events-page-value="landing"
      data-landing--meta-events-events-value="<%= (@meta_landing_event_ids || {}).to_json %>">
 <div class="landing-dark">
-  <nav class="landing-nav">
-    <%= link_to root_path, class: "landing-nav__brand" do %>
-      <%= image_tag "spens-logo-white.png", alt: "Spens", class: "landing-nav__logo" %>
-    <% end %>
-    <div class="landing-nav__spacer"></div>
+  <%= render Marketing::NavigationComponent.new(guide: false) do %>
     <a href="#feat" class="landing-nav__link"><%= t("landing.nav.features") %></a>
     <a href="#tarifs" class="landing-nav__link"><%= t("landing.nav.pricing") %></a>
     <%= link_to t("landing.nav.sign_in"), new_user_session_path, class: "landing-nav__link landing-nav__link--signin" %>
-    <div class="landing-picker" data-controller="landing--locale-picker"
-         data-landing--locale-picker-countries-value="<%= countries.to_json %>">
-      <button type="button" class="landing-picker__button"
-              data-action="landing--locale-picker#toggle"
-              data-landing--locale-picker-target="button"
-              aria-haspopup="listbox">
-        <span data-landing--locale-picker-target="flag" aria-hidden="true"><%= countries.first[:flag] %></span>
-        <span data-landing--locale-picker-target="code"><%= countries.first[:cur] %></span>
-        <span class="landing-picker__caret" aria-hidden="true">▾</span>
-      </button>
-      <div class="landing-picker__menu" data-landing--locale-picker-target="menu" hidden>
-        <div class="landing-picker__title"><%= t("landing.nav.picker_title") %></div>
-        <% countries.each do |co| %>
-          <button type="button" class="landing-picker__item"
-                  data-action="landing--locale-picker#pick"
-                  data-code="<%= co[:code] %>">
-            <span class="landing-picker__flag" aria-hidden="true"><%= co[:flag] %></span>
-            <span class="landing-picker__name"><%= co[:name] %></span>
-            <span class="landing-picker__meta"><%= co[:lang] %> · <%= co[:cur] %></span>
-          </button>
-        <% end %>
-      </div>
-    </div>
-    <%= link_to t("landing.nav.cta"), sign_up, class: "landing-nav__cta",
-                data: { action: "landing--meta-events#signup", "landing--meta-events-placement-param": "nav" } %>
-  </nav>
+    <%= render Marketing::LocalePickerComponent.new(countries: countries) %>
+    <%= render Ui::ButtonComponent.new(text: t("landing.nav.cta"), url: sign_up, styled: false, classes: "landing-nav__cta",
+                data: { action: "landing--meta-events#signup", "landing--meta-events-placement-param": "nav" }) %>
+  <% end %>
 
   <header class="landing-hero">
     <div class="landing-hero__badge"><%= t("landing.hero.badge") %></div>
     <h1 class="landing-hero__title"><%= t("landing.hero.title") %></h1>
     <p class="landing-hero__subtitle"><%= t("landing.hero.subtitle") %></p>
     <div class="landing-hero__cta-row">
-      <%= link_to t("landing.hero.cta"), sign_up, class: "landing-btn-light landing-btn-light--lg",
-                  data: { action: "landing--meta-events#signup", "landing--meta-events-placement-param": "hero" } %>
+      <%= render Ui::ButtonComponent.new(text: t("landing.hero.cta"), url: sign_up, styled: false, classes: "landing-btn-light landing-btn-light--lg",
+                  data: { action: "landing--meta-events#signup", "landing--meta-events-placement-param": "hero" }) %>
     </div>
     <div class="landing-hero__row">
       <div class="landing-hero__side">
@@ -111,50 +85,15 @@
   </header>
 </div>
 
-<section class="landing-sect landing-sect--gray" data-landing--meta-events-target="milestone" data-controller="landing--diagnostic"
-         data-landing--diagnostic-tiers-value="<%= {
-           none: { title: t("landing.diagnostic.tiers.none.title"), line: t("landing.diagnostic.tiers.none.line") },
-           low: { title: t("landing.diagnostic.tiers.low.title"), line: t("landing.diagnostic.tiers.low.line") },
-           mid: { title: t("landing.diagnostic.tiers.mid.title"), line: t("landing.diagnostic.tiers.mid.line") },
-           high: { title: t("landing.diagnostic.tiers.high.title"), line: t("landing.diagnostic.tiers.high.line") }
-         }.to_json %>">
-  <div class="landing-container">
-    <div class="landing-sect__intro">
-      <div class="landing-eyebrow"><%= t("landing.diagnostic.eyebrow") %></div>
-      <h2 class="landing-h2"><%= t("landing.diagnostic.title") %></h2>
-      <p class="landing-sect__sub"><%= t("landing.diagnostic.subtitle") %></p>
-    </div>
-    <div class="landing-grid-3">
-      <% t("landing.diagnostic.items").each_with_index do |item, i| %>
-        <button type="button" class="landing-diag" style="--accent: var(<%= diagnostic_accents[i] %>);"
-                data-action="landing--diagnostic#toggle"
-                data-landing--diagnostic-target="card"
-                data-goals="<%= diagnostic_goals[i] %>"
-                aria-pressed="false">
-          <span class="landing-diag__box" aria-hidden="true"><span class="landing-diag__check">✓</span></span>
-          <span class="landing-diag__text"><%= item %></span>
-        </button>
-      <% end %>
-    </div>
-    <div class="landing-recap">
-      <div class="landing-recap__count" data-landing--diagnostic-target="count" aria-hidden="true">0</div>
-      <div class="landing-recap__body">
-        <div class="landing-recap__title" data-landing--diagnostic-target="title" aria-live="polite"><%= t("landing.diagnostic.tiers.none.title") %></div>
-        <div class="landing-recap__line" data-landing--diagnostic-target="line"><%= t("landing.diagnostic.tiers.none.line") %></div>
-      </div>
-      <%= link_to t("landing.diagnostic.cta"), sign_up, class: "landing-btn-light",
-                  data: { action: "landing--meta-events#signup", "landing--meta-events-placement-param": "diagnostic" } %>
-    </div>
-  </div>
-</section>
+<%= render Marketing::DiagnosticComponent.new(diagnostic_accents: diagnostic_accents, diagnostic_goals: diagnostic_goals) %>
 
 <section class="landing-sect">
   <div class="landing-container">
-    <div class="landing-sect__intro">
+    <%= render Marketing::SectionHeaderComponent.new do %>
       <div class="landing-eyebrow"><%= t("landing.pedagogy.eyebrow") %></div>
       <h2 class="landing-h2"><%= t("landing.pedagogy.title") %></h2>
       <p class="landing-sect__sub"><%= t("landing.pedagogy.subtitle") %></p>
-    </div>
+    <% end %>
     <div class="landing-grid-3">
       <% peda_tints = %w[indigo green orange] %>
       <% t("landing.pedagogy.cards").each_with_index do |card, i| %>
@@ -174,54 +113,7 @@
   </div>
 </section>
 
-<section class="landing-sect landing-sect--mist" data-controller="landing--calculator">
-  <div class="landing-container">
-    <div class="landing-sect__intro">
-      <div class="landing-eyebrow landing-eyebrow--deep"><%= t("landing.calculator.eyebrow") %></div>
-      <h2 class="landing-h2"><%= t("landing.calculator.title") %></h2>
-      <p class="landing-sect__sub landing-sect__sub--on-mist"><%= t("landing.calculator.subtitle") %></p>
-    </div>
-    <div class="landing-calc">
-      <div class="landing-calc__form">
-        <label class="landing-label" for="landing-calc-income"><%= t("landing.calculator.income_label") %></label>
-        <div class="landing-input-group">
-          <span class="landing-input-group__addon" data-currency-label>XOF</span>
-          <input id="landing-calc-income" class="landing-input-group__input" inputmode="numeric" placeholder="150 000"
-                 value="150000" data-landing--calculator-target="income" data-action="input->landing--calculator#compute">
-        </div>
-        <div class="landing-calc__pct-row">
-          <label class="landing-label" for="landing-calc-pct"><%= t("landing.calculator.pct_label") %></label>
-          <span class="landing-calc__pct" data-landing--calculator-target="pct">10 %</span>
-        </div>
-        <input id="landing-calc-pct" type="range" min="1" max="40" value="10" class="landing-calc__slider"
-               data-landing--calculator-target="slider" data-action="input->landing--calculator#compute">
-        <div class="landing-calc__bounds"><span>1 %</span><span>40 %</span></div>
-        <div class="landing-calc__monthly">
-          <div class="landing-calc__monthly-label"><%= t("landing.calculator.monthly_label") %></div>
-          <div class="landing-calc__monthly-amount"><span data-landing--calculator-target="monthly">15 000</span> <span data-currency-label>XOF</span></div>
-        </div>
-      </div>
-      <div class="landing-calc__projections">
-        <div class="landing-proj">
-          <div class="landing-proj__label"><%= t("landing.calculator.y1_label") %></div>
-          <div class="landing-proj__amount" data-landing--calculator-target="y1">180 000</div>
-          <div class="landing-proj__cur" data-currency-label>XOF</div>
-        </div>
-        <div class="landing-proj landing-proj--dark">
-          <div class="landing-proj__label"><%= t("landing.calculator.y3_label") %></div>
-          <div class="landing-proj__amount" data-landing--calculator-target="y3">540 000</div>
-          <div class="landing-proj__cur" data-currency-label>XOF</div>
-        </div>
-        <div class="landing-proj landing-proj--indigo">
-          <div class="landing-proj__label"><%= t("landing.calculator.y10_label") %></div>
-          <div class="landing-proj__amount" data-landing--calculator-target="y10">1 800 000</div>
-          <div class="landing-proj__cur" data-currency-label>XOF</div>
-        </div>
-      </div>
-    </div>
-    <p class="landing-calc__note"><%= t("landing.calculator.note") %></p>
-  </div>
-</section>
+<%= render Marketing::CalculatorComponent.new() %>
 
 <% feature_shots = %w[feat-accounts feat-debts feat-budget feat-quick-add feat-spaces feat-goals feat-analytics feat-memory] %>
 <section id="feat" class="landing-sect landing-sect--slate" data-controller="landing--features">
@@ -231,22 +123,7 @@
     <div class="landing-showcase">
       <div class="landing-showcase__cards">
         <% t("landing.features.cards").each_with_index do |card, i| %>
-          <button type="button" class="landing-feat" id="landing-feat-<%= i %>"
-                  data-landing--features-target="card"
-                  data-action="landing--features#select"
-                  data-poster="<%= image_path("landing/#{feature_shots[i]}.png") %>"
-                  data-webm="<%= asset_path("landing/#{feature_shots[i]}.webm") %>"
-                  data-mp4="<%= asset_path("landing/#{feature_shots[i]}.mp4") %>"
-                  aria-expanded="false" aria-controls="landing-feat-media-<%= i %>">
-            <div class="landing-feat__num" aria-hidden="true"><%= format("%02d", i + 1) %></div>
-            <div class="landing-feat__title"><%= card[:title] %></div>
-            <div class="landing-feat__body"><%= card[:body] %></div>
-            <div class="landing-feat__media" id="landing-feat-media-<%= i %>">
-              <div class="landing-feat__media-inner">
-                <span class="landing-shot"><video data-landing--features-target="cardVideo" muted loop playsinline preload="none" aria-label="<%= card[:title] %>"></video></span>
-              </div>
-            </div>
-          </button>
+          <%= render Marketing::FeatureCardComponent.new(card: card, i: i, feature_shots: feature_shots) %>
         <% end %>
       </div>
       <div class="landing-showcase__preview" aria-hidden="true">
@@ -291,8 +168,8 @@
         <div class="landing-recap__label"><%= t("landing.accounts.total_label") %></div>
         <div class="landing-recap__total"><span data-landing--accounts-target="total">0</span> <span data-currency-label>XOF</span></div>
       </div>
-      <%= link_to t("landing.accounts.cta"), sign_up, class: "landing-btn-light",
-                  data: { action: "landing--accounts#save landing--meta-events#signup", "landing--meta-events-placement-param": "accounts" } %>
+      <%= render Ui::ButtonComponent.new(text: t("landing.accounts.cta"), url: sign_up, styled: false, classes: "landing-btn-light",
+                  data: { action: "landing--accounts#save landing--meta-events#signup", "landing--meta-events-placement-param": "accounts" }) %>
     </div>
     <p class="landing-acc__note" data-landing--accounts-target="note" hidden><%= t("landing.accounts.note") %></p>
   </div>
@@ -322,15 +199,14 @@
   <div class="landing-container">
     <h2 class="landing-h2 landing-h2--on-dark landing-final__title"><%= t("landing.final.title") %></h2>
     <p class="landing-final__body"><%= t("landing.final.body") %></p>
-    <%= link_to t("landing.final.cta"), sign_up, class: "landing-btn-light landing-btn-light--lg",
-                data: { action: "landing--meta-events#signup", "landing--meta-events-placement-param": "final" } %>
-    <div class="landing-final__footer">
-      <span><%= t("landing.footer.copyright", year: Date.current.year) %></span>
+    <%= render Ui::ButtonComponent.new(text: t("landing.final.cta"), url: sign_up, styled: false, classes: "landing-btn-light landing-btn-light--lg",
+                data: { action: "landing--meta-events#signup", "landing--meta-events-placement-param": "final" }) %>
+    <%= render Marketing::FooterComponent.new(classes: "landing-final__footer") do %>
       <%= link_to t("landing.footer.privacy"), privacy_path %>
       <%= link_to t("landing.footer.terms"), terms_path %>
       <a href="mailto:contact@spens.me"><%= t("landing.footer.contact") %></a>
       <span><span data-lang-label><%= I18n.locale.to_s.upcase %></span> · <span data-currency-label>XOF</span></span>
-    </div>
+    <% end %>
   </div>
 </footer>
 </div>

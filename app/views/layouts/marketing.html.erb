@@ -34,6 +34,6 @@
 
   <body class="landing-body">
     <%= yield %>
-    <%= render "shared/meta_consent" %>
+    <%= render Privacy::ConsentBannerComponent.new %>
   </body>
 </html>

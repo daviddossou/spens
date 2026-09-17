@@ -1,0 +1,96 @@
+<div class="analyses-card">
+  <p class="analyses-card__label">
+    <%= @period.month? ? t('analytics.index.spent_title_month', month: l(range.begin, format: :month_only)) \
+                       : t('analytics.index.spent_title_range', from: l(range.begin, format: :day_month), to: l(range.end, format: :day_month)) %>
+  </p>
+  <p class="analyses-hero"><%= money(@spending.spent_total) %></p>
+
+  <% if comparison && !comparison[:no_data] %>
+    <% if comparison[:monthly_average] %>
+      <p class="analyses-compare analyses-compare--quiet"><%= t('analytics.index.monthly_average', amount: money(comparison[:monthly_average])) %></p>
+    <% else %>
+      <% up = (comparison[:percent] || comparison[:amount]).positive? %>
+      <% delta = comparison[:percent] ? "#{'↑ ' if up}#{'↓ ' unless up}#{comparison[:percent].abs} %" \
+                                      : money(comparison[:amount], sign: :always) %>
+      <p class="analyses-compare">
+        <span class="analyses-compare__chip <%= up ? 'analyses-compare__chip--up' : 'analyses-compare__chip--down' %>"><%= delta %></span>
+        <span class="analyses-compare__ref">
+          <%= @period.month? ? t('analytics.index.vs_past_month', month: l(comparison[:range].begin, format: :month_only), amount: money(comparison[:previous])) \
+                             : t('analytics.index.vs_past_range', amount: money(comparison[:previous])) %>
+        </span>
+      </p>
+    <% end %>
+  <% end %>
+
+  <% if plan && plan[:planned] %>
+    <%
+      over = plan[:spent_on_plan] > plan[:planned]
+      fill = plan[:planned].positive? ? [ plan[:spent_on_plan] / plan[:planned] * 100, 100 ].min : 0
+      prorated = @spending.prorated_plan_total
+      ongoing = prorated < plan[:planned]
+      pace_gap = (plan[:spent_on_plan] - prorated).round
+      final_gap = (plan[:planned] - plan[:spent_on_plan]).round
+    %>
+    <div class="analyses-row">
+      <div class="analyses-row__head">
+        <span class="analyses-row__label"><%= t('analytics.index.plan_label') %></span>
+        <span class="analyses-row__value<%= ' analyses-row__value--over' if over %>">
+          <%= money(plan[:spent_on_plan]) %> / <%= money(plan[:planned]) %>
+        </span>
+      </div>
+      <div class="analyses-bar<%= ' analyses-bar--over' if over %>">
+        <span class="analyses-bar__fill" style="width: <%= fill.round(1) %>%;"></span>
+        <%# The tick exists only mid-period; at 100% it's not a landmark. %>
+        <% if ongoing && plan[:planned].positive? %>
+          <span class="analyses-bar__tick" style="left: <%= [ prorated / plan[:planned] * 100, 100 ].min.round(1) %>%;" aria-hidden="true"></span>
+        <% end %>
+      </div>
+      <%# The verdict in money — the phrase IS the tick's legend, never its definition. %>
+      <p class="analyses-row__caption analyses-row__caption--verdict">
+        <% if ongoing %>
+          <%= pace_gap.positive? ? t('analytics.index.plan_verdict_over', amount: money(pace_gap)) \
+                                 : (pace_gap.negative? ? t('analytics.index.plan_verdict_under', amount: money(pace_gap.abs)) : t('analytics.index.plan_verdict_on')) %>
+        <% else %>
+          <%= final_gap.positive? ? t('analytics.index.plan_done_kept', amount: money(final_gap)) \
+                                  : (final_gap.negative? ? t('analytics.index.plan_done_over', amount: money(final_gap.abs)) : t('analytics.index.plan_done_exact')) %>
+        <% end %>
+      </p>
+    </div>
+  <% elsif plan && plan[:months_total] %>
+    <div class="analyses-row">
+      <p class="analyses-row__caption"><%= t('analytics.index.plan_months_html', ok: plan[:months_ok], total: plan[:months_total]) %></p>
+    </div>
+  <% end %>
+
+  <% if split %>
+    <%# Invariant 2: total = essentiel + plaisir + non classé (grey). %>
+    <% total = @spending.spent_total %>
+    <div class="analyses-row">
+      <div class="analyses-row__head">
+        <span class="analyses-row__label"><%= t('analytics.index.essential_label') %></span>
+        <span class="analyses-row__value"><%= t('analytics.index.essential_pct', pct: split[:pct_essential]) %></span>
+      </div>
+      <%= render Analytics::SpendingSplitBarComponent.new(split: split, total: total) %>
+      <p class="analyses-row__caption">
+        <strong><%= money(split[:essential]) %></strong> <%= t('analytics.index.essential_amount') %>
+        &nbsp; <strong><%= money(split[:plaisir]) %></strong> <%= t('analytics.index.plaisir_amount') %>
+        <% if split[:unclassified].positive? %>
+          &nbsp; <strong><%= money(split[:unclassified]) %></strong> <%= t('analytics.index.unclassified_amount') %>
+        <% end %>
+      </p>
+    </div>
+  <% end %>
+
+  <%# A month with no overrun says so here — not as a floating empty card. %>
+  <% if @period.single_month? && @spending.plan && @spending.overruns.empty? %>
+    <p class="analyses-allgood"><%= t('analytics.index.all_in_plan') %></p>
+  <% end %>
+
+  <%# Money that left the accounts as loans — an addition, never a subtraction. %>
+  <% if @spending.lent_total.positive? %>
+    <a href="#analyses-between" class="analyses-moved">
+      <span><%= t('analytics.index.lent_line', amount: money(@spending.lent_total)) %></span>
+      <span class="analyses-moved__amount">›</span>
+    </a>
+  <% end %>
+</div>

@@ -9,20 +9,15 @@
 <% content_for :header do %>
   <%= render Navigation::DetailHeaderComponent.new(back_url: dashboard_path, title: row.title) do |header| %>
     <% header.with_action do %>
-      <details class="header-menu">
-        <summary class="header-menu__trigger" aria-label="<%= t('.more_actions') %>">
-          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-            <circle cx="5" cy="12" r="2"></circle><circle cx="12" cy="12" r="2"></circle><circle cx="19" cy="12" r="2"></circle>
-          </svg>
-        </summary>
-        <div class="header-menu__panel">
+      <%= render Ui::ActionMenuComponent.new(label: t('.more_actions'), classes: nil) do %>
+
           <%= link_to t('.edit'), edit_transaction_path(id: @transaction.id),
                 class: "header-menu__item", data: { turbo_frame: "modal" } %>
           <%= link_to t('.delete'), transaction_path(id: @transaction.id),
                 class: "header-menu__item header-menu__item--danger",
                 data: { turbo_method: :delete, turbo_confirm: t('.delete_confirmation') } %>
-        </div>
-      </details>
+
+<% end %>
     <% end %>
   <% end %>
 <% end %>
@@ -30,72 +25,10 @@
 <div class="page-container page-container--narrow">
   <div class="page-content">
     <!-- Hero: family icon, the signed amount, the composed line -->
-    <div class="movement-hero">
-      <div class="movement-hero__icon transaction-item__icon <%= "transaction-item__icon--#{row.family}" %>" aria-hidden="true">
-        <%= TransactionIconService.icon_svg_by_name(row.icon_name) %>
-      </div>
-      <%# The amount is the fastest way into the full edit form. %>
-      <%= link_to edit_transaction_path(id: @transaction.id),
-            class: "movement-hero__amount#{' movement-hero__amount--muted' if row.muted?}",
-            aria: { label: t('.edit') }, data: { turbo_frame: "modal" } do %>
-        <%= money(@transaction.amount, sign: row.show_sign? ? :always : :none) %>
-      <% end %>
-      <% if row.subtitle.present? %>
-        <p class="movement-hero__subtitle"><%= row.subtitle %></p>
-      <% end %>
-      <% if @transaction.note.present? %>
-        <p class="movement-hero__note">&laquo;&nbsp;<%= @transaction.note %>&nbsp;&raquo;</p>
-      <% end %>
-    </div>
+    <%= render Transactions::MovementHeroComponent.new(transaction: @transaction, row: row) %>
 
     <!-- The facts. Each editable one opens its own selector — one gesture to fix. -->
-    <div class="movement-facts">
-      <% if editable %>
-        <%= link_to fact_transaction_path(id: @transaction.id, fact: "category"),
-              class: "movement-facts__row", data: { turbo_frame: "modal" } do %>
-          <span class="movement-facts__label"><%= t('.category') %></span>
-          <span class="movement-facts__value"><%= @transaction.transaction_type.name %></span>
-          <span class="movement-facts__chevron" aria-hidden="true">&rsaquo;</span>
-        <% end %>
-      <% else %>
-        <div class="movement-facts__row movement-facts__row--static">
-          <span class="movement-facts__label"><%= t('.category') %></span>
-          <span class="movement-facts__value"><%= @transaction.transaction_type.name %></span>
-        </div>
-      <% end %>
-
-      <% if @transaction.account.present? || editable %>
-        <% if editable %>
-          <%= link_to fact_transaction_path(id: @transaction.id, fact: "account"),
-                class: "movement-facts__row", data: { turbo_frame: "modal" } do %>
-            <span class="movement-facts__label"><%= t('.account') %></span>
-            <span class="movement-facts__value"><%= @transaction.account&.name || t('.no_account') %></span>
-            <span class="movement-facts__chevron" aria-hidden="true">&rsaquo;</span>
-          <% end %>
-        <% else %>
-          <%= link_to account_path(id: @transaction.account.id), class: "movement-facts__row", data: { turbo_frame: "_top" } do %>
-            <span class="movement-facts__label"><%= t('.account') %></span>
-            <span class="movement-facts__value"><%= @transaction.account.name %></span>
-            <span class="movement-facts__chevron" aria-hidden="true">&rsaquo;</span>
-          <% end %>
-        <% end %>
-      <% end %>
-
-      <%= link_to fact_transaction_path(id: @transaction.id, fact: "date"),
-            class: "movement-facts__row", data: { turbo_frame: "modal" } do %>
-        <span class="movement-facts__label"><%= t('.date') %></span>
-        <span class="movement-facts__value"><%= l(@transaction.transaction_date, format: :long) %></span>
-        <span class="movement-facts__chevron" aria-hidden="true">&rsaquo;</span>
-      <% end %>
-
-      <% if @transaction.debt.present? %>
-        <%= link_to debt_path(id: @transaction.debt.id), class: "movement-facts__row", data: { turbo_frame: "_top" } do %>
-          <span class="movement-facts__label"><%= t('.related_debt') %></span>
-          <span class="movement-facts__value"><%= @transaction.debt.name %></span>
-          <span class="movement-facts__chevron" aria-hidden="true">&rsaquo;</span>
-        <% end %>
-      <% end %>
-    </div>
+    <%= render Transactions::FactsComponent.new(transaction: @transaction, editable: editable) %>
 
     <!-- Quiet metadata -->
     <p class="movement-meta">

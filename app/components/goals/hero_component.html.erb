@@ -1,0 +1,10 @@
+<div class="goal-hero">
+  <p class="goal-hero__amount"><%= money(@progress&.current || @account.balance) %></p>
+  <% if @progress&.target_set? %>
+    <p class="goal-hero__target"><%= t('goals.show.hero_of', target: money(@progress.target)) %></p>
+    <%= render Ui::ProgressBarComponent.new(percentage: @progress.percentage, classes: "goal-hero__bar", fill_class: "goal-hero__bar-fill#{" goal-hero__bar-fill--settled" if @progress.settled?}", width: @progress.percentage) %>
+    <p class="goal-hero__meta"><%= goal_hero_meta(@progress) %></p>
+  <% else %>
+    <p class="goal-hero__label"><%= t('goals.index.saved_label') %></p>
+  <% end %>
+</div>

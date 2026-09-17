@@ -1,17 +1,13 @@
 <%# Appends the next page of date-grouped transactions and refreshes the load trigger. %>
 <%# Locals: grouped_transactions, has_more, day_total_scope (optional) %>
 <%= turbo_stream.append "transactions-container" do %>
-  <%= render partial: "shared/transactions_list",
-             locals: { grouped_transactions: grouped_transactions,
-                       day_total_scope: local_assigns.fetch(:day_total_scope, :space) } %>
+  <%= render Transactions::TimelineComponent.new(grouped_transactions: grouped_transactions,
+                       day_total_scope: local_assigns.fetch(:day_total_scope, :space)) %>
 <% end %>
 
 <% if has_more %>
   <%= turbo_stream.replace "infinite-scroll-trigger" do %>
-    <div id="infinite-scroll-trigger"
-         data-infinite-scroll-target="trigger"
-         class="dashboard__load-trigger">
-    </div>
+    <%= render Transactions::LoadTriggerComponent.new %>
   <% end %>
 <% else %>
   <%= turbo_stream.remove "infinite-scroll-trigger" %>

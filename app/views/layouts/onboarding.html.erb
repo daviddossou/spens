@@ -35,5 +35,8 @@
       <%= render "shared/impersonation_banner" %>
       <%= yield %>
     </main>
+
+    <%# The choice layer the profile pickers hand over to (Tour 31). %>
+    <%= render Forms::PickerLayerComponent.new %>
   </body>
 </html>

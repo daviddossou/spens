@@ -1,0 +1,13 @@
+<div class="page-container page-container--narrow">
+  <%= form_with scope: :budget_item, url: "#" do |form| %>
+    <%= render Forms::AmountFieldComponent.new(form: form, field: :amount, value: 15_000, currency: "FCFA", aria_label: "Montant") %>
+    <div class="vc-choice__cards">
+      <% [true, false].each do |value| %>
+        <%= render Ui::SelectableCardComponent.new(item: { value: value, name: value ? "Vital" : "Confort", description: "Choix natif" },
+              field: "budget_item[essential]", native_radio: true, selected: !value,
+              css_class: "vc-card", input_options: { class: "vc-card__input" }) %>
+      <% end %>
+    </div>
+    <%= render Budgets::RecurrenceFieldsComponent.new(frequency: "quarterly", ends_on: nil, rollover: false, expense: true, open: true) %>
+  <% end %>
+</div>

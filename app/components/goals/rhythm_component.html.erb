@@ -1,0 +1,9 @@
+<div class="goal-rhythm">
+  <span class="goal-rhythm__icon" aria-hidden="true">
+    <%= render Ui::IconComponent.new(:refresh) %>
+  </span>
+  <div class="goal-rhythm__text">
+    <p class="goal-rhythm__monthly"><%= t('goals.show.rhythm_title', amount: money(@progress.monthly.round)) %></p>
+    <p class="goal-rhythm__sub"><%= t('goals.show.rhythm_sub', target: money(@progress.target), month: l(@progress.deadline, format: :month_year)) %></p>
+  </div>
+</div>

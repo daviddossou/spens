@@ -1,0 +1,20 @@
+<% if @set_aside.any_account? %>
+  <% months = @set_aside.last_three %>
+  <% saved_max = months.map { |_, v| v.abs }.max %>
+  <div class="analyses-card">
+    <p class="analyses-card__label"><%= t('analytics.index.saved_title', month: l(Date.current, format: :month_only)) %></p>
+    <p class="analyses-hero"><%= money(months.last.last) %></p>
+    <% if @set_aside.streak >= 2 %>
+      <span class="analyses-streak"><%= t('analytics.index.saved_streak', count: @set_aside.streak) %></span>
+    <% end %>
+    <div class="analyses-minimonths" aria-hidden="true">
+      <% months.each do |month, net| %>
+        <div class="analyses-minimonths__col">
+          <span class="analyses-minimonths__bar<%= ' analyses-minimonths__bar--current' if month == Date.current.beginning_of_month %>"
+                style="height: <%= saved_max.to_f.positive? ? [ (net.abs / saved_max * 100).round, 8 ].max : 8 %>%;"></span>
+          <span class="analyses-minimonths__label"><%= l(month, format: :month_only).first(4) %></span>
+        </div>
+      <% end %>
+    </div>
+  </div>
+<% end %>

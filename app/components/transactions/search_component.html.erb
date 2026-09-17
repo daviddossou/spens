@@ -1,0 +1,27 @@
+<%= form_with url: dashboard_path, method: :get, html: { role: "search" },
+              class: "transactions-search",
+              data: { controller: "search-form sticky",
+                      sticky_stuck_class: "is-stuck",
+                      turbo_frame: "transactions_timeline",
+                      turbo_action: "advance" } do %>
+  <div class="transactions-search__field">
+    <svg class="transactions-search__icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
+            d="M21 21l-4.35-4.35M17 10.5a6.5 6.5 0 11-13 0 6.5 6.5 0 0113 0z"/>
+    </svg>
+    <%= search_field_tag :q, query,
+          class: "form-input transactions-search__input",
+          placeholder: t('home.show.search.placeholder'),
+          "aria-label": t('home.show.search.aria_label'),
+          autocomplete: "off",
+          data: { search_form_target: "input",
+                  action: "input->search-form#search keydown.esc->search-form#clear" } %>
+    <button type="button"
+            class="transactions-search__clear hidden"
+            data-search-form-target="clear"
+            data-action="search-form#clear"
+            aria-label="<%= t('home.show.search.clear') %>">
+      <%= render Ui::IconComponent.new(:close) %>
+    </button>
+  </div>
+<% end %>

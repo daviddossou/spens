@@ -41,7 +41,8 @@ fr:
       form:
         back: "Retour"
         continue: "Continuer"
-      select_field_component:
+      picker_field_component:
+        placeholder: "Choisir"
         country_label: "Où habites-tu ?"
         country_help: "Pour adapter l'appli à ta région"
         currency_label: "Quelle devise ?"

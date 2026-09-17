@@ -6,6 +6,8 @@ class Forms::SelectFieldComponent < ViewComponent::Base
     field:,
     options:,
     label: nil,
+    grouped: false,
+    bare: false,
     required: false,
     help_text: nil,
     include_blank: nil,
@@ -19,6 +21,8 @@ class Forms::SelectFieldComponent < ViewComponent::Base
     @form = form
     @field = field
     @options = options
+    @grouped = grouped
+    @bare = bare
     @label = label
     @required = required
     @help_text = help_text
@@ -28,12 +32,13 @@ class Forms::SelectFieldComponent < ViewComponent::Base
     @wrapper_classes = wrapper_classes
     @label_classes = label_classes
     @field_classes = field_classes
+    @selected_value = field_options.delete(:selected)
     @field_options = field_options
   end
 
   private
 
-  attr_reader :form, :field, :options, :label, :required, :help_text, :include_blank,
+  attr_reader :grouped, :bare, :form, :field, :options, :label, :required, :help_text, :include_blank,
               :priority_options, :searchable, :wrapper_classes, :label_classes, :field_classes, :field_options
 
   def field_label
@@ -92,11 +97,11 @@ class Forms::SelectFieldComponent < ViewComponent::Base
   end
 
   def has_errors?
-    form.object.errors.key?(field)
+    form.object&.errors&.key?(field)
   end
 
   def error_messages
-    form.object.errors.full_messages_for(field)
+    form.object&.errors&.full_messages_for(field) || []
   end
 
   def has_priority_options?
@@ -104,7 +109,7 @@ class Forms::SelectFieldComponent < ViewComponent::Base
   end
 
   def options_for_select
-    convert_options_format(@options)
+    grouped ? helpers.grouped_options_for_select(@options, @selected_value) : convert_options_format(@options)
   end
 
   def priority_options_for_select

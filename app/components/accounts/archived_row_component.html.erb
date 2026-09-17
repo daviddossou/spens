@@ -1,0 +1,8 @@
+<div class="account-archived-row">
+  <span class="account-archived-row__main">
+    <span class="account-archived-row__name"><%= account.name %></span>
+    <span class="account-archived-row__sub"><%= t('accounts.index.archived_on', date: l(account.archived_at.to_date, format: :long), balance: account_money(account.balance)) %></span>
+  </span>
+  <%= link_to t('accounts.index.reactivate'), account_archive_path(account_id: account.id),
+        class: "account-archived-row__action", data: { turbo_method: :delete } %>
+</div>

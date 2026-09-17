@@ -1,0 +1,5 @@
+<%# Previews run with no signed-in user: give the view context a space so
+    money and the debts helpers can read a currency. %>
+<% preview_space = Space.new(name: "Preview", currency: local_assigns.fetch(:currency, "XOF")) %>
+<% define_singleton_method(:current_space) { preview_space } %>
+<%= render component %>

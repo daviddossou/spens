@@ -1,0 +1,5 @@
+<div class="landing-grid-3">
+  <% steps.each_with_index do |step, i| %>
+    <%= render Marketing::GuideStepComponent.new(title: step[:title], description: step[:desc], phase: step[:step], number: format("%02d", i + 1)) %>
+  <% end %>
+</div>

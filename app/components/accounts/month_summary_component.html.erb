@@ -1,0 +1,17 @@
+<div class="account-month">
+  <div class="account-month__head">
+    <span class="account-month__title"><%= t('accounts.show.this_month') %></span>
+    <span class="account-month__net"><%= money(@month_in - @month_out, sign: :always) %></span>
+  </div>
+  <div class="account-month__cells">
+    <div class="account-month__cell">
+      <span class="account-month__label"><%= t('accounts.show.money_in') %></span>
+      <span class="account-month__value account-month__value--in"><%= account_money(@month_in) %></span>
+    </div>
+    <div class="account-month__divider"></div>
+    <div class="account-month__cell">
+      <span class="account-month__label"><%= t('accounts.show.money_out') %></span>
+      <span class="account-month__value account-month__value--out"><%= account_money(@month_out) %></span>
+    </div>
+  </div>
+</div>

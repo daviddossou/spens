@@ -1,4 +1,4 @@
-<%= render "shared/form_errors", object: form.object %>
+<%= render Forms::ErrorsComponent.new(object: form.object) %>
 
 <% currency_symbol = get_currency_symbol(current_space.currency) %>
 <% dir = form.object.direction.presence || "lent" %>
@@ -10,34 +10,21 @@
   <% if form.object.persisted? %>
     <%= form.hidden_field :direction %>
   <% else %>
-    <div class="debt-direction" role="radiogroup" aria-label="<%= t('.direction_label') %>">
-      <% %w[lent borrowed].each do |d| %>
-        <input type="radio" class="debt-direction__input" id="debt_direction_<%= d %>"
-               name="debt[direction]" value="<%= d %>" <%= "checked" if dir == d %>
-               data-action="change->debt-form#onDirection">
-        <label for="debt_direction_<%= d %>" class="debt-direction__card debt-direction__card--<%= d %>">
-          <span class="debt-direction__title"><%= t(".direction_#{d}_title") %></span>
-          <span class="debt-direction__sub"><%= t(".direction_#{d}_sub") %></span>
-        </label>
-      <% end %>
-    </div>
+    <%= render Debts::DirectionFieldComponent.new(direction: dir) %>
   <% end %>
 
   <%# Amount is the hero: big, typed first. "0" keeps its size while empty. %>
-  <div class="budget-amount">
-    <div class="budget-amount__field">
-      <%= form.number_field :total_lent, class: "budget-amount__input",
-            value: (form.object.total_lent && (form.object.total_lent % 1 == 0 ? form.object.total_lent.to_i : form.object.total_lent.to_f)),
-            step: "0.01", min: "0.01", inputmode: "decimal",
-            placeholder: t(".amount_placeholder"), autofocus: !form.object.persisted?,
-            aria: { label: t(".amount_aria") },
-            data: { debt_form_target: "amount", action: "input->debt-form#onAmount" } %>
-      <span class="budget-amount__currency"><%= currency_symbol %></span>
-    </div>
-    <span class="budget-amount__period" data-debt-form-target="amountLabel">
+  <%= render Forms::AmountFieldComponent.new(
+        form: form, field: :total_lent, value: form.object.total_lent,
+        currency: currency_symbol, placeholder: t(".amount_placeholder"),
+        autofocus: !form.object.persisted?, aria_label: t(".amount_aria"),
+        data: { debt_form_target: "amount", action: "input->debt-form#onAmount" }) do |amount| %>
+    <% amount.with_period do %>
+      <span class="budget-amount__period" data-debt-form-target="amountLabel">
       <%= t(".amount_label.#{dir}") %>
     </span>
-  </div>
+    <% end %>
+  <% end %>
 
   <%# Who — a free name for now (recent-people pills come later). %>
   <div class="debt-form__field">
@@ -49,10 +36,10 @@
 
   <%# Optional account: leave empty if the money already moved. %>
   <div class="debt-form__field tx-detail">
-    <div class="tx-detail__head">
-      <span class="form-label" data-debt-form-target="accountLabel"><%= t(".account_label.#{dir}") %></span>
-      <span class="tx-detail__hint"><%= t(".account_optional") %></span>
-    </div>
+    <%= render Forms::FieldHeadingComponent.new do |heading| %>
+<% heading.with_label do %><span class="form-label" data-debt-form-target="accountLabel"><%= t(".account_label.#{dir}") %></span><% end %>
+<% heading.with_hint do %><span class="tx-detail__hint"><%= t(".account_optional") %></span><% end %>
+<% end %>
     <%= render Forms::PickerFieldComponent.new(
       form: form, field: :account_name, label: "", title: t('picker.account'),
       placeholder: t(".account_placeholder.#{dir}"),
@@ -70,36 +57,24 @@
     <div class="debt-more__body">
       <%# Expected repayment date as pills. %>
       <div class="debt-form__field">
-        <div class="tx-detail__head">
-          <span class="form-label"><%= t(".deadline_label") %></span>
-          <span class="tx-detail__hint" data-debt-form-target="deadlineHint"></span>
-        </div>
-        <div class="pill-choice pill-choice--three">
-          <button type="button" class="pill" data-deadline-mode="eom"
-                  data-debt-form-target="deadlinePill" data-action="debt-form#setDeadline">
-            <%= t(".deadline_eom") %>
-          </button>
-          <button type="button" class="pill" data-deadline-mode="in3"
-                  data-debt-form-target="deadlinePill" data-action="debt-form#setDeadline">
-            <%= t(".deadline_in3") %>
-          </button>
-          <button type="button" class="pill" data-deadline-mode="other"
-                  data-debt-form-target="deadlinePill" data-action="debt-form#setDeadline">
-            <%= t(".deadline_other") %>
-          </button>
-        </div>
+        <%= render Forms::FieldHeadingComponent.new do |heading| %>
+<% heading.with_label do %><span class="form-label"><%= t(".deadline_label") %></span><% end %>
+<% heading.with_hint do %><span class="tx-detail__hint" data-debt-form-target="deadlineHint"></span><% end %>
+<% end %>
+        <%= render Forms::SegmentedChoiceComponent.new(classes: "pill-choice pill-choice--three", options: [ { label: t(".deadline_eom"), data: { deadline_mode: "eom" } }, { label: t(".deadline_in3"), data: { deadline_mode: "in3" } }, { label: t(".deadline_other"), data: { deadline_mode: "other" } } ],
+ data: { debt_form_target: "deadlinePill", action: "debt-form#setDeadline" }) %>
         <div class="debt-more__date hidden" data-debt-form-target="deadlineField">
-          <%= form.date_field :deadline, class: "form-input",
-                data: { debt_form_target: "deadlineInput", action: "input->debt-form#onDeadlineInput" } %>
+          <%= render Forms::InputFieldComponent.new(form: form, field: :deadline, type: :date_field, bare: true, aria: { label: t("debts.form.deadline_label") },
+                data: { debt_form_target: "deadlineInput", action: "input->debt-form#onDeadlineInput" }) %>
         </div>
       </div>
 
       <%# Already repaid — for a loan that started before you logged it. %>
       <div class="debt-form__field tx-detail">
-        <div class="tx-detail__head">
-          <span class="form-label"><%= t(".reimbursed_label") %></span>
-          <span class="tx-detail__hint"><%= t(".reimbursed_hint") %></span>
-        </div>
+        <%= render Forms::FieldHeadingComponent.new do |heading| %>
+<% heading.with_label do %><span class="form-label"><%= t(".reimbursed_label") %></span><% end %>
+<% heading.with_hint do %><span class="tx-detail__hint"><%= t(".reimbursed_hint") %></span><% end %>
+<% end %>
         <%= render Forms::InputFieldComponent.new(
           form: form, field: :total_reimbursed, type: :number_field, label: "", required: false,
           value: (form.object.total_reimbursed.to_f.positive? ? form.object.total_reimbursed : nil),

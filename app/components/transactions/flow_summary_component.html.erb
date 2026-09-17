@@ -1,0 +1,20 @@
+<div class="flow-cells">
+  <div class="flow-cell flow-cell--in">
+    <span class="flow-cell__head">
+      <span class="flow-cell__icon" aria-hidden="true">
+        <%= render Ui::IconComponent.new(:arrow_up) %>
+      </span>
+      <%= t('home.show.stats.money_in', month: l(Date.current, format: :month_only)) %>
+    </span>
+    <span class="flow-cell__value"><%= money(@money_in, @currency) %></span>
+  </div>
+  <div class="flow-cell flow-cell--out">
+    <span class="flow-cell__head">
+      <span class="flow-cell__icon" aria-hidden="true">
+        <%= render Ui::IconComponent.new(:arrow_down) %>
+      </span>
+      <%= t('home.show.stats.money_out', month: l(Date.current, format: :month_only)) %>
+    </span>
+    <span class="flow-cell__value"><%= money(@money_out, @currency) %></span>
+  </div>
+</div>

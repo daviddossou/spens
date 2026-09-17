@@ -41,6 +41,10 @@ rescue ActiveRecord::PendingMigrationError => e
 end
 
 RSpec.configure do |config|
+  # A request spec that served a French page must not leak its locale into the next
+  # example. An `around` at config level wraps the groups' own `with_locale` blocks.
+  config.around(:each) { |example| I18n.with_locale(I18n.default_locale) { example.run } }
+
   # Remove this line if you're not using ActiveRecord or ActiveRecord fixtures
   config.fixture_paths = [
     Rails.root.join('spec/fixtures')

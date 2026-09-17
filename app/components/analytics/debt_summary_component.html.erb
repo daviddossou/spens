@@ -1,0 +1,52 @@
+<%# Section 2 — netted PER PERSON before any aggregation: someone on both
+    sides appears once, at their net. No section without a debt. %>
+<% if @relations.any? %>
+  <%
+    owed = @relations.select { |r| r.net_direction == "lent" }.sort_by { |r| -r.net_amount }
+    owing = @relations.select { |r| r.net_direction == "borrowed" && r.net_amount.positive? }.sort_by { |r| -r.net_amount }
+    total_owed = owed.sum(&:net_amount)
+    total_owing = owing.sum(&:net_amount)
+    net = total_owed - total_owing
+    max_owed = owed.map(&:net_amount).max
+    max_owing = owing.map(&:net_amount).max
+  %>
+  <h2 class="analyses-section__title" id="analyses-between"><%= t('analytics.index.section_between') %></h2>
+  <div class="analyses-card">
+    <p class="analyses-card__label"><%= t('analytics.index.settle_today') %></p>
+    <p class="analyses-hero <%= net.negative? ? 'analyses-hero--negative' : 'analyses-hero--positive' %>">
+      <%= money(net, sign: :always) %>
+    </p>
+    <div class="analyses-debt-chips">
+      <div class="analyses-debt-chip analyses-debt-chip--in">
+        <span class="analyses-debt-chip__label"><%= t('analytics.index.owed_to_you') %></span>
+        <span class="analyses-debt-chip__value"><%= money(total_owed) %></span>
+      </div>
+      <div class="analyses-debt-chip analyses-debt-chip--out">
+        <span class="analyses-debt-chip__label"><%= t('analytics.index.you_owe') %></span>
+        <span class="analyses-debt-chip__value"><%= money(total_owing) %></span>
+      </div>
+    </div>
+
+    <% [ [ owed, :net_amount, max_owed, 'who_owes_you', 'in' ], [ owing, :net_amount, max_owing, 'whom_you_owe', 'out' ] ].each do |rows, reader, max, title_key, side| %>
+      <% next if rows.empty? %>
+      <div class="analyses-row">
+        <p class="analyses-debt-list__title"><%= t("analytics.index.#{title_key}") %></p>
+        <% rows.each do |relation| %>
+          <%= link_to debt_path(id: relation.primary_debt.id), class: "analyses-person", data: { turbo_frame: "_top" } do %>
+            <span class="analyses-person__avatar analyses-person__avatar--<%= side %>"><%= relation.initials %></span>
+            <span class="analyses-person__body">
+              <span class="analyses-person__head">
+                <span class="analyses-person__name"><%= relation.name %></span>
+                <span class="analyses-person__amount"><%= money(relation.public_send(reader)) %></span>
+              </span>
+              <span class="analyses-person__bar analyses-person__bar--<%= side %>">
+                <span style="width: <%= (relation.public_send(reader) / max * 100).round(1) %>%;"></span>
+              </span>
+            </span>
+          <% end %>
+        <% end %>
+      </div>
+    <% end %>
+
+  </div>
+<% end %>
