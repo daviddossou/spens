@@ -14,6 +14,12 @@ module Budgets
       @editable = @month >= Date.current.beginning_of_month
       @has_children = @category.children.exists?
 
+      Budgets::EnsureEntriesService.new(space: current_space, month: @month).call
+      @entry = entry_for(@category)
+      # A child with its own line owns its movements: the Budget page counts them
+      # there, so this page hands them over instead of re-counting them.
+      @child_progresses = @entry.nil? ? budgeted_child_progresses : []
+
       @transactions = month_movements(@month)
                       .includes(:transaction_type, :account)
                       .order(transaction_date: :desc, created_at: :desc)
@@ -21,8 +27,6 @@ module Budgets
       @grouped = @transactions.group_by(&:transaction_date)
       @total = @transactions.sum(&:amount).abs.round(2)
 
-      Budgets::EnsureEntriesService.new(space: current_space, month: @month).call
-      @entry = entry_for(@category)
       @progress = @entry && Budgets::LineProgress.new(entry: @entry, actual: @total)
       # A child under a budgeted parent: it counts there, so say so.
       @parent_entry = @entry.nil? && @category.parent && entry_for(@category.parent)
@@ -38,7 +42,11 @@ module Budgets
 
     def month_movements(month)
       current_space.transactions.where(transaction_date: month.all_month, fee_parent_id: nil,
-                                       transaction_type_id: @category.subtree_ids)
+                                       transaction_type_id: counted_type_ids)
+    end
+
+    def counted_type_ids
+      @counted_type_ids ||= @category.subtree_ids - @child_progresses.map { |p| p.entry.transaction_type_id }
     end
 
     def entry_for(type)
@@ -46,8 +54,19 @@ module Budgets
                    .includes(:budget_item).find_by(budget_items: { transaction_type_id: type.id })
     end
 
+    def budgeted_child_progresses
+      current_space.budget_entries.for_month(@month).joins(:budget_item)
+                   .includes(:budget_item, :transaction_type)
+                   .where(budget_items: { transaction_type_id: @category.children.ids })
+                   .map { |entry| Budgets::LineProgress.new(entry: entry, actual: actuals.for_entry(entry)) }
+    end
+
     def parent_actual
-      Budgets::ActualsQuery.new(space: current_space, month: @month).for_entry(@parent_entry)
+      actuals.for_entry(@parent_entry)
+    end
+
+    def actuals
+      @actuals ||= Budgets::ActualsQuery.new(space: current_space, month: @month)
     end
 
     # Mean of the three previous months, so the month reads against its own habit.
