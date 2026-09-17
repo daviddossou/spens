@@ -1,1 +1,6 @@
-# See https://www.robotstxt.org/robotstxt.html for documentation on how to use the robots.txt file
+# Nothing is blocked on purpose: private pages answer "noindex" themselves, and a
+# crawler has to reach a page to read that (a blocked URL can still get indexed from links).
+User-agent: *
+Allow: /
+
+Sitemap: https://spens.me/sitemap.xml
