@@ -3,11 +3,9 @@
   <head>
     <title><%= content_for(:title) || t("landing.meta.title") %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-    <meta name="description" content="<%= content_for(:description) || t("landing.meta.description") %>">
-    <meta property="og:title" content="<%= content_for(:title) || t("landing.meta.title") %>">
-    <meta property="og:description" content="<%= content_for(:description) || t("landing.meta.description") %>">
-    <meta property="og:image" content="/icon-512.png">
-    <meta property="og:type" content="website">
+    <%= render "shared/seo", title: content_for(:title) || t("landing.meta.title"),
+                             description: content_for(:description) || t("landing.meta.description") %>
+    <%= yield :head %>
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
