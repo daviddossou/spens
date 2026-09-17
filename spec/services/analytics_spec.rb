@@ -46,6 +46,22 @@ RSpec.describe Analytics do
     )
   end
 
+  it "sends nothing while muted" do
+    Analytics::Context.muted = true
+
+    described_class.track(user, "transaction_created")
+
+    expect(client).not_to have_received(:capture)
+  end
+
+  it "backdates an event given a timestamp" do
+    at = 2.days.ago
+
+    described_class.track_at(at, user, "activation_first_goal")
+
+    expect(client).to have_received(:capture).with(hash_including(timestamp: at))
+  end
+
   it "never raises when the client fails" do
     allow(client).to receive(:capture).and_raise(StandardError, "down")
 
