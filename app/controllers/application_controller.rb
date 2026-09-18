@@ -14,6 +14,7 @@ class ApplicationController < ActionController::Base
   include Impersonation
   include AnalyticsTracking
   include MetaTracking
+  include SeoIndexing
 
   protected
 

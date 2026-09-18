@@ -2,6 +2,8 @@ Rails.application.routes.draw do
   # Register Devise user mapping for Warden session management (no routes generated)
   devise_for :users, skip: :all
 
+  get "sitemap.xml", to: "sitemaps#show", defaults: { format: :xml }
+
   # Locale support - wrap routes in scope for i18n
   scope "(:locale)", locale: /en|fr/ do
     # Passwordless auth routes (within devise_scope for Warden integration)

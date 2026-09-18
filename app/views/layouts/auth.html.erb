@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="<%= I18n.locale %>">
   <head>
     <title><%= content_for?(:title) ? "#{yield(:title)} | " : "" %>Spens</title>
     <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -7,15 +7,7 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="Spens">
-    <meta name="description" content="Track your money simply">
-    <meta property="og:title" content="Spens">
-    <meta property="og:description" content="Track your money simply">
-    <meta property="og:image" content="/icon-512.png">
-    <meta property="og:type" content="website">
-    <meta name="twitter:card" content="summary">
-    <meta name="twitter:title" content="Spens">
-    <meta name="twitter:description" content="Track your money simply">
-    <meta name="twitter:image" content="/icon-512.png">
+    <%= render "shared/seo", title: [ content_for(:title), "Spens" ].compact.join(" | ") %>
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 

@@ -62,6 +62,9 @@ Rails.application.configure do
   # Ignore bad email addresses and do not raise email delivery errors.
   config.action_mailer.raise_delivery_errors = true
 
+  # Origin of canonical, hreflang, Open Graph and sitemap URLs (SeoHelper).
+  config.x.canonical_origin = "https://spens.me"
+
   # Set host to be used by links generated in mailer templates.
   config.action_mailer.default_url_options = { host: "spens.me", protocol: "https" }
 
