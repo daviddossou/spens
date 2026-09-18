@@ -68,7 +68,7 @@ end
 
 gem "devise", "~> 4.9"
 gem "sidekiq", "~> 7.0"
-gem "redis", "~> 5.0"
+gem "redis", "~> 6.0"
 gem "view_component", "~> 3.0"
 gem "rspec-rails", "~> 8.0"
 gem "factory_bot_rails", "~> 6.5"
