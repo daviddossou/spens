@@ -24,6 +24,29 @@
   flex: 1;
 }
 
+/* The amount sits beside a picker: same height (its 1.5rem line + padding + border)
+   and text size as .picker__control. */
+.account-line__amount-field .form-input-group {
+  min-height: 3.125rem;
+}
+
+.account-line__amount-field .form-input,
+.account-line__amount-field .form-input-addon {
+  font-size: 1rem;
+}
+
+.account-line__amount-field .form-input-group {
+  border-radius: var(--radius-md);
+}
+
+.account-line__amount-field .form-input-addon--prepend {
+  border-radius: var(--radius-md) 0 0 var(--radius-md);
+}
+
+.account-line__amount-field .form-input-group .form-input {
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+}
+
 .account-line__remove-button {
   display: flex;
   align-items: end;
