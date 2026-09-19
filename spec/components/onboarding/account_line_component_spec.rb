@@ -95,7 +95,7 @@ RSpec.describe Onboarding::AccountLineComponent, type: :component do
       expect(rendered.css('div[data-onboarding--account-setup-target="accountLine"]')).to be_present
     end
 
-    it 'renders account name field' do
+    it 'renders the account name as a picker that can create a new name' do
       rendered = render_inline(described_class.new(
         form: form,
         index: 0,
@@ -103,8 +103,12 @@ RSpec.describe Onboarding::AccountLineComponent, type: :component do
         currency: 'XOF'
       ))
 
-      # InputFieldComponent renders the actual field
-      expect(rendered.css('input[type="text"]')).to be_present
+      picker = rendered.at_css('[data-controller="picker"]')
+      expect(picker['data-picker-allow-create-value']).to eq('true')
+      bank = I18n.t('account_templates.bank')
+      expect(JSON.parse(picker['data-picker-rows-value'])).to include('value' => bank, 'label' => bank.sub(/\A\S+\s/, ''), 'icon' => bank[/\A\S+/])
+      expect(rendered.css('input[type="hidden"][name*="account_name"]')).to be_present
+      expect(rendered.css('input[type="text"]')).to be_empty
     end
 
     it 'renders amount field with currency prepend' do

@@ -3,15 +3,11 @@ import { Controller } from "@hotwired/stimulus"
 // Connects to data-controller="onboarding--account-setup"
 export default class extends Controller {
   static targets = ["accountsContainer", "accountLine", "addButton", "template"]
-  static values = {
-    currency: String,
-    accountSuggestions: Array
-  }
+  static values = { currency: String }
 
   connect() {
     this.updateRemoveButtons()
-    // Defer so the tom-select controllers on child inputs initialize first.
-    setTimeout(() => this.prefillFromLanding(), 0)
+    this.prefillFromLanding()
   }
 
   // Accounts entered on the landing page (before sign-up) are kept in
@@ -37,21 +33,13 @@ export default class extends Controller {
     try { localStorage.removeItem("spens:landing-accounts") } catch {}
   }
 
+  // The account name is a picker: its hidden input holds the value, the
+  // controller repaints the visible label from it.
   setFieldValue(field, value) {
     if (!field || !value) return
-    const applyViaTomSelect = () => {
-      field.tomselect.addOption({ value, text: value })
-      field.tomselect.setValue(value)
-    }
-    if (field.tomselect) {
-      applyViaTomSelect()
-    } else {
-      // Freshly added lines initialize their tom-select asynchronously.
-      field.value = value
-      setTimeout(() => {
-        if (field.tomselect && !field.tomselect.getValue()) applyViaTomSelect()
-      }, 100)
-    }
+    field.value = value
+    const picker = field.closest('[data-controller~="picker"]')
+    if (picker) this.application.getControllerForElementAndIdentifier(picker, "picker")?.render()
   }
 
   addLine(event) {
@@ -68,11 +56,7 @@ export default class extends Controller {
     this.updateFieldNamesAndIds(wrapper, newIndex)
 
     // Append to container (appendChild moves the node out of the wrapper)
-    const line = wrapper.firstElementChild
-    this.accountsContainerTarget.appendChild(line)
-
-    // Reinitialize tom-select for the new autocomplete field
-    this.initializeTomSelect(line)
+    this.accountsContainerTarget.appendChild(wrapper.firstElementChild)
 
     this.updateRemoveButtons()
   }
@@ -134,31 +118,11 @@ export default class extends Controller {
         )
       }
     })
-
-    // Update data attributes for tom-select
-    element.querySelectorAll('[data-controller*="tom-select"]').forEach(field => {
-      if (field.id) {
-        const labelId = `${field.id}-ts-label`
-        const dropdownId = `${field.id}-ts-dropdown`
-        const controlId = `${field.id}-ts-control`
-
-        field.setAttribute('aria-labelledby', labelId)
-      }
-    })
   }
 
   reindexLines() {
     this.accountLineTargets.forEach((line, index) => {
       this.updateFieldNamesAndIds(line, index)
     })
-  }
-
-  initializeTomSelect(element) {
-    const autocompleteField = element.querySelector('[data-controller*="tom-select"]')
-    if (autocompleteField && this.accountSuggestionsValue) {
-      // Trigger stimulus connection by dispatching a custom event
-      const event = new CustomEvent('stimulus:connect', { bubbles: true })
-      autocompleteField.dispatchEvent(event)
-    }
   }
 }

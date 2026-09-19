@@ -4,8 +4,7 @@
               class: "onboarding-form",
               data: {
                 controller: "onboarding--account-setup",
-                onboarding__account_setup_currency_value: current_space.currency,
-                onboarding__account_setup_account_suggestions_value: I18n.t('account_templates').values.to_json
+                onboarding__account_setup_currency_value: current_space.currency
               } do |f| %>
   <%= render Forms::ErrorsComponent.new(object: @form) %>
 

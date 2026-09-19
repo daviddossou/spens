@@ -12,7 +12,15 @@ class Onboarding::AccountLineComponent < ViewComponent::Base
   end
 
   def account_suggestions
-    # Get all account template suggestions from i18n
     I18n.t("account_templates").values
+  end
+
+  # Picker rows: the emoji leading a template name becomes the row icon; the full
+  # name stays the submitted value.
+  def account_rows
+    account_suggestions.map do |name|
+      icon, label = helpers.picker_icon_and_label(name)
+      { value: name, label: label, icon: icon }
+    end
   end
 end
