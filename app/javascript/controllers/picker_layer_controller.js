@@ -162,7 +162,9 @@ export default class extends Controller {
     if (create) return this.el("span", "picker-row__icon picker-row__icon--create", "+")
     if (none) return this.el("span", "picker-row__icon picker-row__icon--none", "—")
     if (row.icon) return this.el("span", "picker-row__icon", row.icon)
-    return this.el("span", "picker-row__icon picker-row__icon--initial", (row.label || "?").trim()[0].toUpperCase())
+    // Array.from keeps an emoji whole; [0] would cut it in half.
+    const initial = Array.from((row.label || "?").trim())[0] || "?"
+    return this.el("span", "picker-row__icon picker-row__icon--initial", initial.toUpperCase())
   }
 
   choose(row, none, create) {

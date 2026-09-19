@@ -69,7 +69,7 @@ en:
       account_setup: "Accounts"
     account_line_component:
       account_name: "Account name"
-      account_name_placeholder: "e.g. Checking account"
+      account_name_placeholder: "Choose an account"
       account_help: "Pick from suggestions or type your own"
       initial_amount: "Balance"
       amount_help: "How much is in this account?"
