@@ -6,6 +6,7 @@
                       onboarding__financial_goals_empty_label_value: t('.continue_empty'),
                       onboarding__financial_goals_ready_label_value: t('.continue') } do |f| %>
   <%= render Forms::ErrorsComponent.new(object: @form) %>
+  <%= hidden_field_tag :landing_goals, params[:landing_goals], data: { onboarding__financial_goals_target: "landingGoals" } %>
 
   <%= render Onboarding::FinancialGoals::GridComponent.new(form_builder: f, model: @form) %>
 
