@@ -2,6 +2,7 @@ import { Controller } from "@hotwired/stimulus"
 
 // Connects to data-controller="onboarding--financial-goals"
 export default class extends Controller {
+  static targets = ["landingGoals"]
   static values = { emptyLabel: String, readyLabel: String }
 
   connect() {
@@ -31,10 +32,15 @@ export default class extends Controller {
     const boxes = [...this.element.querySelectorAll('input[type="checkbox"]')]
     if (boxes.some((b) => b.checked)) return // user already made choices
 
+    const preselected = []
     goals.forEach((goal) => {
       const box = boxes.find((b) => b.value === goal)
-      if (box && !box.checked) box.closest("[data-controller*='selectable-card']")?.click()
+      if (!box) return
+      if (!box.checked) box.closest("[data-controller*='selectable-card']")?.click()
+      preselected.push(goal)
     })
+    // Sent with the form: analytics reads whether the diagnostic carried over.
+    if (this.hasLandingGoalsTarget) this.landingGoalsTarget.value = preselected.join(",")
     try { localStorage.removeItem("spens:landing-goals") } catch {}
   }
 

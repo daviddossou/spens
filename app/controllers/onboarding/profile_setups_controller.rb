@@ -5,15 +5,17 @@ class Onboarding::ProfileSetupsController < OnboardingController
 
   def show
     @form = build_form
+    track_onboarding_step_viewed("profile_setup")
   end
 
   def update
     @form = build_form(profile_setup_params)
 
     if @form.submit
-      Analytics.track(current_user, "onboarding_step_completed", step: "profile_setup")
+      track_onboarding_step_completed("profile_setup", Analytics.onboarding_answers(current_space.reload).except(:financial_goals))
       redirect_to next_step_path, status: :see_other
     else
+      track_onboarding_step_failed("profile_setup", @form)
       render :show, status: :unprocessable_entity
     end
   rescue StandardError => e
