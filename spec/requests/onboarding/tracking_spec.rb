@@ -79,8 +79,13 @@ RSpec.describe "Onboarding analytics", type: :request do
   end
 
   it "does not describe the person from a second space" do
-    second = create(:space, user: user, onboarding_current_step: "onboarding_financial_goal")
+    # Switching space is only allowed from an onboarded one; pin it in the session first
+    # (without a session choice the app falls back to an arbitrary space).
+    space.update!(onboarding_current_step: "onboarding_completed", country: "BJ")
+    post space_selection_path(space_id: space.id)
+    second = create(:space, user: user, onboarding_current_step: "onboarding_financial_goal", created_at: 1.hour.from_now)
     post space_selection_path(space_id: second.id)
+    expect(response).to redirect_to(dashboard_path)
     events.clear
 
     patch onboarding_financial_goals_path, params: { onboarding_financial_goal_form: { financial_goals: %w[track_spending] } }
