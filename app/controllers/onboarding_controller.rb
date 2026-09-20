@@ -1,4 +1,6 @@
 class OnboardingController < ApplicationController
+  include OnboardingTracking
+
   layout "onboarding"
 
   before_action :authenticate_user!

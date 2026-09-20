@@ -36,6 +36,22 @@ module Analytics
     Rails.logger.warn("[Analytics] track failed: #{e.message}")
   end
 
+  # Backfilled event that a re-run must not duplicate: the uuid is derived from `key`, and
+  # PostHog collapses events sharing uuid, timestamp, event and person.
+  def track_once(key, time, user, event, properties = {})
+    client&.capture(distinct_id: distinct_id(user), event: event, timestamp: time,
+                    uuid: Digest::UUID.uuid_v5(Digest::UUID::OID_NAMESPACE, "#{event}:#{key}"),
+                    properties: properties.merge(backfilled: true))
+  rescue StandardError => e
+    Rails.logger.warn("[Analytics] track_once failed: #{e.message}")
+  end
+
+  def set_person(user, properties)
+    client&.identify(distinct_id: distinct_id(user), properties: properties)
+  rescue StandardError => e
+    Rails.logger.warn("[Analytics] set_person failed: #{e.message}")
+  end
+
   # Server-side event with nobody signed in (a bot check failing at sign-up);
   # no person profile so PostHog does not grow an "anonymous" person.
   def track_anonymous(event, properties = {})
@@ -73,11 +89,29 @@ module Analytics
 
     client&.group_identify(
       group_type: "space", group_key: space.id,
-      properties: { name: space.name, currency: space.currency, locale: space.locale,
-                    created_at: space.created_at&.iso8601 }.compact
+      properties: { name: space.name, locale: space.locale, created_at: space.created_at&.iso8601,
+                    onboarding_step: space.onboarding_current_step, **onboarding_answers(space) }.compact
     )
   rescue StandardError => e
     Rails.logger.warn("[Analytics] group_identify failed: #{e.message}")
+  end
+
+  # What a space answered during onboarding. Nothing free-text, no amounts.
+  def onboarding_answers(space)
+    {
+      financial_goals: space.financial_goals.presence, country: space.country, currency: space.currency,
+      income_frequency: space.income_frequency, main_income_source: space.main_income_source
+    }.compact
+  end
+
+  # The same answers as PostHog person properties, with one boolean per problem
+  # ("goal_pay_off_debt") so a cohort or a breakdown needs no array matching.
+  def onboarding_person_properties(space)
+    chosen = Array(space.financial_goals)
+    flags = Space::FINANCIAL_GOALS.to_h { |goal| [ "goal_#{goal}", chosen.include?(goal) ] }
+    flags = {} if chosen.empty?
+
+    { onboarding_step: space.onboarding_current_step, **onboarding_answers(space), **flags }
   end
 
   def acquisition_properties(user)
