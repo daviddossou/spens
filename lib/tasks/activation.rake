@@ -24,4 +24,25 @@ namespace :activation do
       }.each { |milestone, at| Activation.record(user, milestone, at: at) if at }
     end
   end
+
+  # One-off, safe to re-run.
+  desc "Repair first_transaction milestones recorded on opening balances"
+  task repair_first_transaction: :environment do
+    real = Transaction.joins(:transaction_type).where.not(transaction_types: { kind: "initial_balance" })
+
+    ActivationMilestone.where(name: "first_transaction").includes(:user).find_each do |milestone|
+      user = milestone.user
+      owned = Space.where(user_id: user.id).select(:id)
+      first_at = real.where(user_id: user.id).or(real.where(user_id: nil, space_id: owned)).minimum("transactions.created_at")
+
+      if first_at
+        milestone.update_columns(created_at: first_at)
+        Analytics.track_once(user.id, first_at, user, "activation_first_transaction",
+                             Activation::EXTRA_PROPERTIES["first_transaction"])
+      else
+        MetaConversion.where(user_id: user.id, event_name: "spens_first_transaction").delete_all
+        milestone.destroy!
+      end
+    end
+  end
 end

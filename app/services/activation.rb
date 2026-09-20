@@ -8,6 +8,9 @@ module Activation
 
   MILESTONES = %w[first_account first_transaction first_goal first_saving budget_complete month_2].freeze
 
+  # Older first_transaction events counted opening balances; filter on this flag.
+  EXTRA_PROPERTIES = { "first_transaction" => { excludes_opening_balance: true } }.freeze
+
   # `at` backdates the milestone (historical backfill); Meta only hears about live ones.
   def record(user, milestone, at: nil)
     milestone = milestone.to_s
@@ -22,7 +25,8 @@ module Activation
     return if ActivationMilestone.exists?(user_id: user.id, name: milestone)
 
     ActivationMilestone.create!(user: user, name: milestone, created_at: at || Time.current)
-    Analytics.track_at(at, user, "activation_#{milestone}", at ? { backfilled: true } : {})
+    Analytics.track_at(at, user, "activation_#{milestone}",
+                       EXTRA_PROPERTIES.fetch(milestone, {}).merge(at ? { backfilled: true } : {}))
   rescue ActiveRecord::RecordNotUnique, ActiveRecord::RecordInvalid
     # Raced with another request for the same milestone: already tracked.
   rescue StandardError => e

@@ -119,7 +119,7 @@ class Transaction < ApplicationRecord
 
   def record_activation_milestones
     actor = user || space&.user
-    Activation.record(actor, :first_transaction)
+    Activation.record(actor, :first_transaction) unless transaction_type&.kind == "initial_balance"
     if transaction_type&.kind == "transfer_in" && account&.goal.present?
       Activation.record(actor, :first_saving)
     end
