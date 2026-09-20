@@ -35,8 +35,7 @@ class ShortLinksController < ApplicationController
 
   private
 
-  # Every click on a guide link, signed up or not: how far into the PDF people get before
-  # they come to the app. Link-preview fetchers (WhatsApp, Facebook...) are not readers.
+  # Link-preview fetchers, not readers.
   PREVIEW_BOTS = /bot|crawl|spider|preview|facebookexternalhit|whatsapp|telegram|slack|discord/i
 
   def track_click(label)

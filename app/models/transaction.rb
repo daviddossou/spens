@@ -117,8 +117,6 @@ class Transaction < ApplicationRecord
 
   private
 
-  # An opening balance is part of onboarding, not a use of the app: it never counts
-  # as the first transaction.
   def record_activation_milestones
     actor = user || space&.user
     Activation.record(actor, :first_transaction) unless transaction_type&.kind == "initial_balance"

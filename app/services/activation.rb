@@ -8,8 +8,7 @@ module Activation
 
   MILESTONES = %w[first_account first_transaction first_goal first_saving budget_complete month_2].freeze
 
-  # first_transaction once fired on the onboarding opening balance, i.e. for everyone. Those
-  # events cannot be deleted from PostHog; the corrected ones carry this flag to filter on.
+  # Older first_transaction events counted opening balances; filter on this flag.
   EXTRA_PROPERTIES = { "first_transaction" => { excludes_opening_balance: true } }.freeze
 
   # `at` backdates the milestone (historical backfill); Meta only hears about live ones.

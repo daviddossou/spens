@@ -25,9 +25,7 @@ namespace :activation do
     end
   end
 
-  # One-off: first_transaction used to fire on the onboarding opening balance. Users with a
-  # real transaction get a corrected event dated at it; the others lose the milestone (and
-  # its Meta conversion) so it fires when they record one. Safe to re-run.
+  # One-off, safe to re-run.
   desc "Repair first_transaction milestones recorded on opening balances"
   task repair_first_transaction: :environment do
     real = Transaction.joins(:transaction_type).where.not(transaction_types: { kind: "initial_balance" })
