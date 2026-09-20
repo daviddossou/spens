@@ -25,6 +25,17 @@ RSpec.describe ShortLinksController, type: :request do
       expect(response).to redirect_to(root_path)
     end
 
+    it "counts the click, anonymous or not, and ignores link-preview fetchers" do
+      allow(Analytics).to receive(:track_anonymous)
+
+      get "/g/ch3"
+      get "/g/ch3", headers: { "User-Agent" => "WhatsApp/2.23 A" }
+
+      expect(Analytics).to have_received(:track_anonymous).once.with(
+        "guide_link_opened", include(code: "ch3", guide_link: "action-ch3", signed_in: false)
+      )
+    end
+
     it "captures the guide_link as first touch when following the redirect" do
       get "/g/f"
       get URI(response.headers["Location"]).request_uri

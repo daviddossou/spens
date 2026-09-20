@@ -29,6 +29,24 @@ class ShortLinksController < ApplicationController
     helper, label = CODES[params[:code]]
     return redirect_to root_path unless helper
 
+    track_click(label)
     redirect_to send(helper, **UTM, utm_content: label, guide_link: label)
+  end
+
+  private
+
+  # Every click on a guide link, signed up or not: how far into the PDF people get before
+  # they come to the app. Link-preview fetchers (WhatsApp, Facebook...) are not readers.
+  PREVIEW_BOTS = /bot|crawl|spider|preview|facebookexternalhit|whatsapp|telegram|slack|discord/i
+
+  def track_click(label)
+    return if request.user_agent.to_s.match?(PREVIEW_BOTS)
+
+    properties = { code: params[:code], guide_link: label, visitor: Digest::SHA256.hexdigest(session.id.to_s)[0, 16] }
+    if current_user
+      Analytics.track(current_user, "guide_link_opened", properties.merge(signed_in: true))
+    else
+      Analytics.track_anonymous("guide_link_opened", properties.merge(signed_in: false))
+    end
   end
 end
