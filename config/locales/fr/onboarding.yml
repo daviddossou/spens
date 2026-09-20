@@ -69,7 +69,7 @@ fr:
       account_setup: "Comptes"
     account_line_component:
         account_name: "Nom du compte"
-        account_name_placeholder: "ex. Compte courant"
+        account_name_placeholder: "Choisir un compte"
         account_help: "Choisis une suggestion ou entre un nom"
         initial_amount: "Solde initial"
         amount_help: "Combien y a-t-il dans ce compte ?"

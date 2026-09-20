@@ -1,16 +1,14 @@
 <div class="account-line" data-onboarding--account-setup-target="accountLine">
   <div class="account-line__fields">
     <div class="account-line__field">
-      <%= render Forms::InputFieldComponent.new(
+      <%= render Forms::PickerFieldComponent.new(
         form: form,
         field: :account_name,
-        type: :text_field,
         label: t('.account_name'),
-        required: true,
-        help_text: t('.account_help'),
+        title: t('picker.account'),
         placeholder: t('.account_name_placeholder'),
-        autocomplete: true,
-        autocomplete_options: account_suggestions,
+        help_text: t('.account_help'),
+        rows: account_rows,
         allow_create: true
       ) %>
     </div>
