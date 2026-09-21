@@ -14,6 +14,7 @@
 #  last_name              :string
 #  last_sign_in_at        :datetime
 #  last_sign_in_ip        :string
+#  lifecycle_emails_unsubscribed_at :datetime
 #  otp_code               :string
 #  otp_sent_at            :datetime
 #  phone_number           :string
@@ -22,6 +23,7 @@
 #  reset_password_token   :string           indexed
 #  sign_in_count          :integer          default(0), not null
 #  time_zone              :string
+#  welcome_email_sent_at  :datetime
 #  created_at             :datetime         not null
 #  updated_at             :datetime         not null
 #
@@ -93,6 +95,16 @@ class User < ApplicationRecord
 
   def otp_expired?
     otp_sent_at.nil? || otp_sent_at < OTP_VALIDITY.ago
+  end
+
+  # Welcome and other accompaniment e-mails; OTP, invitations and reminders are not concerned.
+  def lifecycle_emails?
+    lifecycle_emails_unsubscribed_at.nil?
+  end
+
+  def lifecycle_emails=(value)
+    wanted = ActiveModel::Type::Boolean.new.cast(value)
+    self.lifecycle_emails_unsubscribed_at = wanted ? nil : (lifecycle_emails_unsubscribed_at || Time.current)
   end
 
   # Marketing consent captured at registration (acquisition["consent"]); gates

@@ -50,6 +50,12 @@ RSpec.describe Auth::RegistrationsController, type: :request do
         expect(response).not_to redirect_to(auth_verification_path)
       end
 
+      it "queues the welcome e-mail in the sign-up language" do
+        expect {
+          post user_registration_path(locale: :fr), params: valid_params
+        }.to have_enqueued_job(WelcomeEmailJob).with(an_instance_of(User), "fr")
+      end
+
       it "sets a random password (user cannot sign in with password)" do
         post user_registration_path, params: valid_params
         new_user = User.find_by(email: "jane@example.com")

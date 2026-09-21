@@ -1,0 +1,14 @@
+<% content_for :title, t('lifecycle_emails.unsubscribe.title') %>
+
+<div class="page-container page-container--narrow">
+  <h1><%= t('lifecycle_emails.unsubscribe.title') %></h1>
+  <% if @stopped && @user %>
+    <p><%= t('lifecycle_emails.unsubscribe.done') %></p>
+  <% elsif @user %>
+    <p><%= t('lifecycle_emails.unsubscribe.confirm') %></p>
+    <%= button_to t('lifecycle_emails.unsubscribe.button'), email_unsubscribe_path, params: { token: @token },
+                  class: "btn btn-primary btn-lg" %>
+  <% else %>
+    <p><%= t('lifecycle_emails.unsubscribe.invalid') %></p>
+  <% end %>
+</div>

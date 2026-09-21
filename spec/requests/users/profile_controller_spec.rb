@@ -41,6 +41,14 @@ RSpec.describe Users::ProfileController, type: :request do
       expect(user.reload.email).to eq("new@example.com")
     end
 
+    it "turns the guidance e-mails off and back on" do
+      patch profile_path, params: { user: { lifecycle_emails: "0" } }
+      expect(user.reload.lifecycle_emails?).to be(false)
+
+      patch profile_path, params: { user: { lifecycle_emails: "1" } }
+      expect(user.reload.lifecycle_emails?).to be(true)
+    end
+
     context "with invalid parameters" do
       it "renders the form with errors" do
         patch profile_path, params: { user: { first_name: "" } }

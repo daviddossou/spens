@@ -1,0 +1,25 @@
+fr:
+  lifecycle_emails:
+    welcome:
+      subject: "Bienvenue sur Spens : ton compte est prêt"
+      title: "Bienvenue sur Spens, %{name}"
+      intro: "Tu viens de créer ton compte Spens. Spens, c'est ton carnet de comptes de poche : tu notes ce que tu dépenses, et tu vois enfin où part ton argent."
+      benefits:
+        - "Note une dépense en quelques secondes, au moment où tu la fais."
+        - "Sache à tout moment combien il te reste pour finir le mois."
+        - "Suis tes objectifs d'épargne et tes dettes au même endroit."
+      cta: "Ouvrir Spens"
+      find_title: "Pour retrouver Spens plus tard"
+      find_html: "Va sur %{link} et connecte-toi avec cette adresse e-mail. Pas de mot de passe à retenir : on t'envoie un code. Tu peux aussi ajouter Spens à l'écran d'accueil de ton téléphone."
+      find_text: "Va sur %{url} et connecte-toi avec cette adresse e-mail. Pas de mot de passe à retenir : on t'envoie un code. Tu peux aussi ajouter Spens à l'écran d'accueil de ton téléphone."
+      reply: "Une question ? Réponds simplement à cet e-mail."
+      stop_html: "Tu ne veux plus recevoir nos e-mails d'accompagnement ? %{link}"
+      stop_link: "Désabonne-toi ici."
+      stop_text: "Pour ne plus recevoir nos e-mails d'accompagnement :"
+    unsubscribe:
+      title: "E-mails d'accompagnement"
+      confirm: "Ne plus recevoir les e-mails d'accompagnement de Spens ?"
+      button: "Me désabonner"
+      done: "C'est fait : tu ne recevras plus ces e-mails. Les codes de connexion continuent d'arriver. Tu peux changer d'avis dans ton profil."
+      invalid: "Ce lien n'est plus valable. Tu peux gérer ces e-mails dans ton profil."
+    profile_toggle: "Recevoir les e-mails d'accompagnement de Spens"

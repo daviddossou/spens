@@ -35,6 +35,12 @@ Rails.application.routes.draw do
     post "reminder/unsubscribe", to: "reminders#stop"
     resource :push_subscription, only: [ :create, :destroy ]
 
+    # Lifecycle e-mails (welcome...): open pixel, tracked link, stop link
+    get "e/:email/open", to: "email_events#open", as: :email_open
+    get "e/:email/click", to: "email_events#click", as: :email_click
+    get "emails/unsubscribe", to: "email_preferences#unsubscribe", as: :email_unsubscribe
+    post "emails/unsubscribe", to: "email_preferences#stop"
+
     # Main application routes
     root "home#index"
     get "welcome", to: "landing#show", as: :landing

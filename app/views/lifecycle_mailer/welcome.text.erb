@@ -1,0 +1,16 @@
+<%= t('lifecycle_emails.welcome.title', name: @user.first_name) %>
+
+<%= t('lifecycle_emails.welcome.intro') %>
+
+<% t('lifecycle_emails.welcome.benefits').each do |benefit| %>
+- <%= benefit %>
+<% end %>
+
+<%= t('lifecycle_emails.welcome.cta') %> : <%= @open_url %>
+
+<%= t('lifecycle_emails.welcome.find_title') %>
+<%= t('lifecycle_emails.welcome.find_text', url: @home_url) %>
+
+<%= t('lifecycle_emails.welcome.reply') %>
+
+<%= t('lifecycle_emails.welcome.stop_text') %> <%= @stop_url %>
