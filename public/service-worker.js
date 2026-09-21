@@ -7,7 +7,7 @@
 //   • pages always go to the network (balances must be current) and fall back to the
 //     offline page when it is unreachable.
 // Bump VERSION to drop every old cache on the next visit.
-const VERSION = "v1"
+const VERSION = "v2"
 const STATIC_CACHE = `spens-static-${VERSION}`
 const ASSET_CACHE = `spens-assets-${VERSION}`
 const OFFLINE_URL = "/offline.html"
@@ -61,3 +61,32 @@ async function networkWithOfflineFallback(request) {
     return (await cache.match(OFFLINE_URL)) || Response.error()
   }
 }
+
+// Web Push: the daily reminder. The payload is JSON { title, body, url }.
+self.addEventListener("push", (event) => {
+  let data = {}
+  try { data = event.data ? event.data.json() : {} } catch { data = { body: event.data && event.data.text() } }
+
+  event.waitUntil(
+    self.registration.showNotification(data.title || "Spens", {
+      body: data.body || "",
+      icon: "/icon-192.png",
+      badge: "/icon-192.png",
+      tag: "spens-daily-reminder",
+      data: { url: data.url || "/" }
+    })
+  )
+})
+
+// A tap brings an open Spens tab forward, or opens one.
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close()
+  const url = new URL(event.notification.data?.url || "/", self.location.origin).href
+
+  event.waitUntil(
+    self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((tabs) => {
+      const tab = tabs.find((client) => new URL(client.url).origin === self.location.origin)
+      return tab ? tab.focus().then((focused) => focused.navigate(url)) : self.clients.openWindow(url)
+    })
+  )
+})

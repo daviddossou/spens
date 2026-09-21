@@ -25,6 +25,8 @@
         <span aria-hidden="true">+</span> <%= t('.add_another') %>
       <% end %>
 
+      <%= render "reminders/card", membership: @membership, source: "onboarding", suggested_hour: nil if @membership %>
+
       <div class="onboarding-step__actions">
         <%= button_to t('.done_for_today'), onboarding_first_days_path, method: :patch,
                       class: "btn btn-primary btn-lg btn-full-width onboarding-step__cta" %>
@@ -47,6 +49,8 @@
       <%= link_to new_transaction_path(kind: "expense"), class: "gather-add", data: add_link do %>
         <span aria-hidden="true">+</span> <%= t('.add_another') %>
       <% end %>
+
+      <%= render "reminders/card", membership: @membership, source: "onboarding", suggested_hour: nil if @membership %>
 
       <div class="onboarding-step__actions">
         <%= button_to t('.done_for_today'), onboarding_first_days_path, method: :patch,

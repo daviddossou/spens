@@ -1,0 +1,34 @@
+fr:
+  reminders:
+    hour_format: "%-H h"
+    daily:
+      title: "As-tu noté tes dépenses du jour ?"
+      body: "Rien de noté aujourd'hui. Trois secondes par dépense, tant que tu t'en souviens."
+      cta: "Noter mes dépenses"
+      stop_html: "Tu ne veux plus de ce rappel ? %{link}"
+      stop_link: "Arrête-le ici."
+      stop_text: "Pour arrêter ce rappel :"
+    card:
+      title: "Je peux aussi te le rappeler chaque soir"
+      habit_title: "Tu notes souvent vers %{hour}. Je te le rappelle à cette heure ?"
+      text: "Une seule fois, à %{hour}, et seulement si tu n'as rien noté. Tu peux couper à tout moment."
+      accept: "Oui, à %{hour}"
+      decline: "Pas maintenant"
+      enabled: "C'est noté : je te le rappelle à %{hour} les jours où tu n'as rien noté. Tu peux changer l'heure ou couper dans les réglages de l'espace."
+      declined: "Pas de souci. Tu pourras activer le rappel quand tu veux, dans les réglages de l'espace."
+    settings:
+      title: "Rappel du jour"
+      help: "Un rappel par jour, seulement si tu n'as rien noté. Il ne concerne que toi, pas les autres membres."
+      toggle: "Me rappeler de noter mes dépenses"
+      hour_label: "À quelle heure ?"
+      save: "Enregistrer le rappel"
+      push_on: "Cet appareil reçoit les notifications."
+      push_off: "Activer les notifications sur cet appareil"
+      push_blocked: "Les notifications sont bloquées pour Spens dans ce navigateur : le rappel arrive par e-mail."
+      push_email: "Cet appareil ne reçoit pas de notifications : le rappel arrive par e-mail."
+    unsubscribe:
+      title: "Rappel du jour"
+      confirm: "Arrêter le rappel quotidien pour l'espace « %{space} » ?"
+      button: "Arrêter le rappel"
+      done: "C'est fait : plus de rappel pour « %{space} ». Tu peux le réactiver dans les réglages de l'espace."
+      invalid: "Ce lien n'est plus valable. Tu peux gérer le rappel dans les réglages de l'espace."

@@ -1,0 +1,14 @@
+<% content_for :title, t('reminders.unsubscribe.title') %>
+
+<div class="page-container page-container--narrow">
+  <h1><%= t('reminders.unsubscribe.title') %></h1>
+  <% if @stopped && @membership %>
+    <p><%= t('reminders.unsubscribe.done', space: @membership.space.name) %></p>
+  <% elsif @membership %>
+    <p><%= t('reminders.unsubscribe.confirm', space: @membership.space.name) %></p>
+    <%= button_to t('reminders.unsubscribe.button'), reminder_unsubscribe_path, params: { token: @token },
+                  class: "btn btn-primary btn-lg" %>
+  <% else %>
+    <p><%= t('reminders.unsubscribe.invalid') %></p>
+  <% end %>
+</div>

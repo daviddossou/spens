@@ -29,6 +29,12 @@ Rails.application.routes.draw do
     # Device time zone capture (JS posts the IANA zone when it changes)
     patch "time_zone", to: "users/time_zones#update", as: :time_zone
 
+    # Daily reminder: the member's setting, the browser's push subscription, the e-mail's stop link
+    resource :reminder, only: :update
+    get "reminder/unsubscribe", to: "reminders#unsubscribe", as: :reminder_unsubscribe
+    post "reminder/unsubscribe", to: "reminders#stop"
+    resource :push_subscription, only: [ :create, :destroy ]
+
     # Main application routes
     root "home#index"
     get "welcome", to: "landing#show", as: :landing

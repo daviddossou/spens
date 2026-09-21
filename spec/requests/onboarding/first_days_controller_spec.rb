@@ -78,6 +78,17 @@ RSpec.describe 'Onboarding::FirstDaysController', type: :request do
       expect(response.body.index('Riz du marché')).to be < response.body.index('Eau en sachet')
     end
 
+    it 'offers the evening reminder once an expense is noted, and remembers the answer' do
+      note_expense('2000', 'Riz du marché')
+
+      get onboarding_first_days_path
+      expect(response.body).to include('id="reminder_card"', CGI.escapeHTML(I18n.t('reminders.card.decline')))
+
+      user.memberships.first.decline_reminder!
+      get onboarding_first_days_path
+      expect(response.body).to include(CGI.escapeHTML(I18n.t('reminders.card.declined')))
+    end
+
     it 'keeps the rest of the app behind onboarding' do
       get dashboard_path
 

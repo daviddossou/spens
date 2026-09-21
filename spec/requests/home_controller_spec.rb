@@ -30,6 +30,15 @@ RSpec.describe HomeController, type: :request do
       expect(response.body).to include("journey-card", I18n.t("home.show.journey.soon"))
     end
 
+    it "suggests a reminder at the hour the member usually notes at" do
+      allow(Reminders::HabitSuggestion).to receive(:new).and_return(instance_double(Reminders::HabitSuggestion, hour: 13))
+
+      get dashboard_path
+
+      expect(response.body).to include('id="reminder_card"')
+      expect(response.body).to include(CGI.escapeHTML(I18n.t("reminders.card.accept", hour: "1 PM")))
+    end
+
     context "when not authenticated" do
       before { sign_out user }
 

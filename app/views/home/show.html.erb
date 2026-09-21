@@ -6,6 +6,10 @@
     <%# Only for spaces that went through the journey's first step (the savings projection). %>
     <%= render "journey_card" if current_space.monthly_income.present? %>
 
+    <% if @reminder_hour %>
+      <%= render "reminders/card", membership: @membership, source: "habit", suggested_hour: @reminder_hour %>
+    <% end %>
+
     <!-- Hero: the one glanceable number -->
     <%= link_to accounts_path, class: "stat-card-link stat-card-link--quiet", "aria-label": t('.stats.view_accounts') do %>
       <%= render Ui::StatCardComponent.new(
