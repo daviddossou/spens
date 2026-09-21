@@ -29,8 +29,8 @@ RSpec.describe 'OnboardingController', type: :request do
       it 'redirects to the current onboarding step' do
         get onboarding_path
 
-        # User is at financial_goal step, should redirect there
-        expect(response).to redirect_to(onboarding_financial_goals_path)
+        # A space on the retired goals step restarts at the first step
+        expect(response).to redirect_to(onboarding_savings_projections_path)
       end
     end
   end

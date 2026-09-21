@@ -4,6 +4,8 @@
 <div id="picker-layer" class="picker-layer" data-controller="picker-layer"
      data-picker-layer-target="root"
      data-picker-layer-create-label-value="<%= t('picker.create') %>"
+     data-picker-layer-search-value="<%= t('picker.search') %>"
+     data-picker-layer-search-or-create-value="<%= t('picker.search_or_create') %>"
      data-picker-layer-empty-value="<%= t('picker.empty') %>"
      data-picker-layer-planned-value="<%= t('picker.group_planned') %>"
      data-picker-layer-rest-value="<%= t('picker.group_rest') %>"
@@ -19,7 +21,8 @@
     <span class="picker-layer__step" data-picker-layer-target="step"></span>
   </header>
 
-  <%# Always present, never focused on opening: the keyboard is asked for, never imposed. %>
+  <%# Always present, focused on opening only when a picker asks (focus_search): elsewhere the
+      keyboard is asked for, never imposed. %>
   <div class="picker-layer__search">
     <svg class="picker-layer__search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
       <circle cx="11" cy="11" r="7" /><path d="M20 20l-3.5-3.5" stroke-linecap="round" />

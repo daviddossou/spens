@@ -32,7 +32,7 @@ class TransactionsController < ApplicationController
         QuickEntry::LearnTransactionJob.perform_later(@form.transaction.id, correction: true)
         Analytics.track(current_user, "transaction_created", source: "manual")
       end
-      redirect_to transaction_path(id: @form.transaction.id), notice: t(".success"), status: :see_other
+      redirect_to after_create_path, status: :see_other
     else
       render :new, status: :unprocessable_entity
     end
@@ -64,6 +64,14 @@ class TransactionsController < ApplicationController
   end
 
   private
+
+  # Mid-onboarding the sheet was opened from the "first day" step: go back to its list.
+  def after_create_path
+    return onboarding_first_days_path unless current_space.onboarding_completed?
+
+    flash[:notice] = t(".success")
+    transaction_path(id: @form.transaction.id)
+  end
 
   def set_transaction
     @transaction = current_space.transactions.includes(:transaction_type, :account, :debt).find(params[:id])

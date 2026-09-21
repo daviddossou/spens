@@ -15,7 +15,8 @@ export default class extends Controller {
     chainTo: String,
     chainReason: String,
     chainLabel: String,
-    changeLabel: String
+    changeLabel: String,
+    focusSearch: Boolean
   }
 
   connect() {
@@ -37,6 +38,7 @@ export default class extends Controller {
       allowCreate: this.allowCreateValue,
       emptyLabel: this.hasEmptyLabelValue ? this.emptyLabelValue : null,
       grouped: this.groupedValue,
+      focusSearch: this.focusSearchValue,
       onSelect: (row, typed) => this.commit(row, typed),
       ...extra
     }

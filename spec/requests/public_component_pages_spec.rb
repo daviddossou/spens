@@ -13,7 +13,7 @@ RSpec.describe "Public component pages", type: :request do
         expect(html.at_css(".landing-nav__brand")).to be_present
         expect(html.css(".translation_missing")).to be_empty
         if page == "welcome"
-          expect(html.css('[data-controller="landing--calculator"] input')).not_to be_empty
+          expect(html.css('[data-controller="savings-calculator"] input')).not_to be_empty
           expect(html.css('[data-landing--features-target="card"]')).not_to be_empty
         elsif page == "guide"
           expect(html.css('a[download][data-landing--meta-events-placement-param]').length).to eq(2)

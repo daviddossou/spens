@@ -15,6 +15,7 @@ fr:
       new_type_transfer: "Nouveau transfert"
       new_type_debt: "Dette"
       new_subtitle_html: "%{type} · %{date}"
+      onboarding_subtitle: "Étape 3 sur 3 · ta première dépense"
       person_subtitle: "Avec %{name} · %{balance}"
       phrase_label: "Décris ta transaction"
       phrase_placeholder_none: "ex. 2000 zem porte-feuille, 5k provisions"

@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from "vitest"
 import NameChipsController from "../../../app/javascript/controllers/name_chips_controller"
-import { startStimulus } from "../helpers/stimulus"
+import PickerController from "../../../app/javascript/controllers/picker_controller"
+import { startStimulus, flushStimulus } from "../helpers/stimulus"
 
 describe("NameChipsController", () => {
   it("filters suggestions and fills the input from a chip", async () => {
@@ -37,5 +38,25 @@ describe("NameChipsController", () => {
 
     expect(document.querySelectorAll(".name-chip")).toHaveLength(3)
     expect(document.querySelector(".name-chip--all")).toHaveTextContent("See all")
+  })
+
+  it("fills a picker field from a chip and refreshes its visible label", async () => {
+    const rows = JSON.stringify([{ value: "📲 Mobile Money", label: "Mobile Money", icon: "📲" }])
+    const application = await startStimulus("picker", PickerController, `
+      <div data-controller="name-chips" data-name-chips-suggestions-value='["📲 Mobile Money"]'>
+        <div data-controller="picker" data-picker-rows-value='${rows}' data-picker-placeholder-value="Choose">
+          <input type="hidden" name="account[account_name]" data-picker-target="input" data-name-chips-target="input">
+          <span data-picker-target="label">Choose</span>
+        </div>
+        <div data-name-chips-target="chips"></div>
+      </div>
+    `)
+    application.register("name-chips", NameChipsController)
+    await flushStimulus()
+
+    document.querySelector(".name-chip").click()
+
+    expect(document.querySelector("input").value).toBe("📲 Mobile Money")
+    expect(document.querySelector("[data-picker-target='label']").textContent).toContain("Mobile Money")
   })
 })

@@ -71,9 +71,27 @@ class Account < ApplicationRecord
 
   ##
   # Class Methods
+  # Templates that name money put aside; every other account is everyday money.
+  SET_ASIDE_TEMPLATES = %i[savings_account under_bed envelope_1 envelope_2 envelope_3 investment_account
+                           retirement_account emergency_fund travel_fund education_fund health_fund].freeze
+
   class << self
     def templates(locale = I18n.locale)
       I18n.t("account_templates", locale: locale)
+    end
+
+    # Folded (no emoji, case or accents) so a typed "compte d'epargne" still matches.
+    def set_aside_names
+      I18n.available_locales.flat_map { |locale| templates(locale).values_at(*SET_ASIDE_TEMPLATES) }
+          .compact.map { |name| fold_name(name) }.uniq
+    end
+
+    def set_aside_name?(name)
+      set_aside_names.include?(fold_name(name))
+    end
+
+    def fold_name(name)
+      name.to_s.sub(/\A[^[:alnum:]]+/, "").strip.unicode_normalize(:nfd).gsub(/\p{Mn}/, "").downcase
     end
   end
 end

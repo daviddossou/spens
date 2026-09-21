@@ -11,8 +11,10 @@
 #  income_frequency        :string
 #  locale                  :string
 #  main_income_source      :string
+#  monthly_income          :decimal(15, 2)
 #  name                    :string           not null
 #  onboarding_current_step :string
+#  savings_rate            :integer
 #  time_zone               :string
 #  created_at              :datetime         not null
 #  updated_at              :datetime         not null
@@ -79,14 +81,17 @@ class Space < ApplicationRecord
                    uniqueness: { scope: :user_id, case_sensitive: false }
   validates :currency, inclusion: { in: CURRENCIES }, allow_nil: true
   validates :locale, inclusion: { in: LOCALES }, allow_nil: true
-  validates :country, presence: true, if: :requires_country?
   validates :income_frequency, inclusion: { in: INCOME_FREQUENCIES }, allow_blank: true
   validates :main_income_source, inclusion: { in: INCOME_SOURCES }, allow_blank: true
+  validates :monthly_income, numericality: { greater_than: 0 }, allow_nil: true
+  validates :savings_rate, numericality: { only_integer: true, in: 1..100 }, allow_nil: true
 
   enum :onboarding_current_step, {
+    onboarding_savings_projection: "onboarding_savings_projection",
     onboarding_financial_goal: "onboarding_financial_goal",
     onboarding_profile_setup: "onboarding_profile_setup",
     onboarding_account_setup: "onboarding_account_setup",
+    onboarding_first_day: "onboarding_first_day",
     onboarding_completed: "onboarding_completed"
   }
 
@@ -94,11 +99,5 @@ class Space < ApplicationRecord
   # Instance Methods
   def onboarding_completed?
     onboarding_current_step == "onboarding_completed"
-  end
-
-  private
-
-  def requires_country?
-    %w[onboarding_account_setup onboarding_completed].include?(onboarding_current_step)
   end
 end

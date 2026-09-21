@@ -66,14 +66,12 @@ RSpec.describe "Onboarding analytics", type: :request do
     space.update!(onboarding_current_step: "onboarding_account_setup", country: "BJ", currency: "XOF",
                   financial_goals: %w[track_spending])
 
-    patch onboarding_account_setups_path, params: { onboarding_account_setup_form: { transactions_attributes: {
-      "0" => { account_name: I18n.t("account_templates.mobile_money"), amount: "5000" },
-      "1" => { account_name: "Tontine de maman", amount: "1000" },
-      "2" => { account_name: "", amount: "" }
-    } } }
+    post accounts_path, params: { account: { account_name: I18n.t("account_templates.mobile_money"), current_balance: "5000" } }
+    post accounts_path, params: { account: { account_name: "Tontine de maman", current_balance: "1000" } }
+    patch onboarding_account_setups_path, params: { stop: 1 }
 
     completed = event("onboarding_completed")
-    expect(completed).to include(accounts: 2, lines_skipped: 1, account_templates: %w[mobile_money], custom_accounts: 1,
+    expect(completed).to include(accounts: 2, skipped: false, account_templates: %w[mobile_money], custom_accounts: 1,
                                  financial_goals: %w[track_spending], country: "BJ")
     expect(completed.to_s).not_to include("Tontine")
   end

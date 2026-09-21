@@ -15,6 +15,7 @@ en:
       new_type_transfer: "New transfer"
       new_type_debt: "Debt"
       new_subtitle_html: "%{type} · %{date}"
+      onboarding_subtitle: "Step 3 of 3 · your first expense"
       person_subtitle: "With %{name} · %{balance}"
       phrase_label: "Describe your transaction"
       phrase_placeholder_none: "e.g. 2000 zem wallet, or 5k groceries"

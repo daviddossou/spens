@@ -205,6 +205,23 @@ RSpec.describe AccountForm, type: :model do
       end
     end
 
+    context 'set_aside deduced from the name' do
+      it 'puts a savings template aside, whatever its emoji, case or accents' do
+        expect(described_class.new(space, account_name: "compte d'epargne").set_aside).to be(true)
+        expect(described_class.new(space, account_name: I18n.t('account_templates.under_bed')).set_aside).to be(true)
+      end
+
+      it 'counts any other name as everyday money' do
+        expect(described_class.new(space, account_name: I18n.t('account_templates.mobile_money')).set_aside).to be(false)
+      end
+
+      it 'lets an explicit choice win over the name' do
+        form = described_class.new(space, account_name: I18n.t('account_templates.savings_account'), set_aside: 'false')
+
+        expect(form.set_aside).to be(false)
+      end
+    end
+
     context 'creating a new account' do
       let(:account) { create(:account, user: user, name: 'My Savings', balance: 0) }
 

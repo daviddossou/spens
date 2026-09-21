@@ -21,6 +21,15 @@ RSpec.describe HomeController, type: :request do
       expect(response).to have_http_status(:success)
     end
 
+    it "shows the journey teaser only to a space that went through the new onboarding" do
+      get dashboard_path
+      expect(response.body).not_to include("journey-card")
+
+      space.update!(monthly_income: 150_000, savings_rate: 10)
+      get dashboard_path
+      expect(response.body).to include("journey-card", I18n.t("home.show.journey.soon"))
+    end
+
     context "when not authenticated" do
       before { sign_out user }
 

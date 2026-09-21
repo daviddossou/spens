@@ -7,20 +7,20 @@ RSpec.describe Marketing::CalculatorComponent, type: :component do
   let(:section) { rendered.at_css("section.landing-sect") }
 
   it "hands the section to the calculator controller" do
-    expect(section["data-controller"]).to eq("landing--calculator")
+    expect(section["data-controller"]).to eq("savings-calculator")
   end
 
   it "recomputes on every input, from a numeric income and a bounded slider" do
     income = section.at_css("#landing-calc-income")
-    expect(income["data-landing--calculator-target"]).to eq("income")
-    expect(income["data-action"]).to eq("input->landing--calculator#compute")
+    expect(income["data-savings-calculator-target"]).to eq("income")
+    expect(income["data-action"]).to eq("input->savings-calculator#compute")
     expect(income["inputmode"]).to eq("numeric")
     expect(income["value"]).to eq("150000")
 
     slider = section.at_css("#landing-calc-pct")
     expect(slider["type"]).to eq("range")
-    expect(slider["data-landing--calculator-target"]).to eq("slider")
-    expect(slider["data-action"]).to eq("input->landing--calculator#compute")
+    expect(slider["data-savings-calculator-target"]).to eq("slider")
+    expect(slider["data-action"]).to eq("input->savings-calculator#compute")
     expect(%w[min max value].map { |a| slider[a] }).to eq(%w[1 40 10])
   end
 
@@ -30,9 +30,9 @@ RSpec.describe Marketing::CalculatorComponent, type: :component do
   end
 
   it "exposes every output the controller writes to" do
-    targets = section.css("[data-landing--calculator-target]").map { |el| el["data-landing--calculator-target"] }
+    targets = section.css("[data-savings-calculator-target]").map { |el| el["data-savings-calculator-target"] }
     expect(targets).to contain_exactly("income", "pct", "slider", "monthly", "y1", "y3", "y10")
-    expect(section.at_css('[data-landing--calculator-target="y10"]').text).to eq("1 800 000")
+    expect(section.at_css('[data-savings-calculator-target="y10"]').text).to eq("1 800 000")
   end
 
   it "marks every currency label so the locale picker can swap it" do

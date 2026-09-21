@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_09_17_205134) do
+ActiveRecord::Schema[8.0].define(version: 2026_09_20_212901) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -239,6 +239,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_09_17_205134) do
     t.datetime "updated_at", null: false
     t.string "locale"
     t.string "time_zone"
+    t.decimal "monthly_income", precision: 15, scale: 2
+    t.integer "savings_rate"
     t.index "user_id, lower((name)::text)", name: "index_spaces_on_user_id_and_lower_name", unique: true
     t.index ["user_id"], name: "index_spaces_on_user_id"
   end

@@ -1,0 +1,70 @@
+<% content_for :title, t('.title') %>
+<% symbol = get_currency_symbol(@form.currency) %>
+
+<div class="onboarding-step">
+  <%= render Onboarding::StepHeaderComponent.new(step: 1, title: t('.title')) %>
+
+  <%= form_with model: @form,
+                url: onboarding_savings_projections_path,
+                method: :patch,
+                class: "onboarding-step__body savings-projection",
+                data: { controller: "savings-calculator onboarding--landing-country",
+                        savings_calculator_grouped_value: true,
+                        onboarding__landing_country_confirmed_value: current_space.country.present? } do |f| %>
+    <p class="onboarding-step__lead"><%= t('.lead') %></p>
+
+    <%= render Forms::ErrorsComponent.new(object: @form) %>
+
+    <%= hidden_field_tag :landing_country, nil, data: { onboarding__landing_country_target: "country" } %>
+    <%= hidden_field_tag :landing_currency, nil, data: { onboarding__landing_country_target: "currency" } %>
+    <%= hidden_field_tag :time_zone, nil, data: { onboarding__landing_country_target: "timeZone" } %>
+
+    <%= f.label :monthly_income, t('.income_label'), class: "savings-projection__label" %>
+    <div class="savings-projection__income">
+      <span class="savings-projection__addon" data-onboarding--landing-country-target="code"><%= @form.currency %></span>
+      <%= f.text_field :monthly_income,
+                       value: number_with_delimiter(@form.monthly_income.to_i, delimiter: "\u00a0"),
+                       inputmode: "numeric", autocomplete: "off", required: true,
+                       class: "savings-projection__input",
+                       data: { savings_calculator_target: "income", action: "input->savings-calculator#compute" } %>
+    </div>
+
+    <div class="savings-projection__rate-row">
+      <%= f.label :savings_rate, t('.rate_label'), class: "savings-projection__label" %>
+      <span class="savings-projection__rate" data-savings-calculator-target="pct"><%= @form.savings_rate %> %</span>
+    </div>
+    <%= f.range_field :savings_rate,
+                      min: Onboarding::SavingsProjectionForm::RATE_RANGE.min,
+                      max: Onboarding::SavingsProjectionForm::RATE_RANGE.max,
+                      class: "savings-projection__slider",
+                      data: { savings_calculator_target: "slider", action: "input->savings-calculator#compute" } %>
+    <div class="savings-projection__bounds" aria-hidden="true">
+      <span><%= Onboarding::SavingsProjectionForm::RATE_RANGE.min %> %</span>
+      <span><%= Onboarding::SavingsProjectionForm::RATE_RANGE.max %> %</span>
+    </div>
+
+    <div class="savings-projection__result" aria-live="polite">
+      <p class="savings-projection__result-label"><%= t('.one_year') %></p>
+      <p class="savings-projection__result-amount">
+        <span data-savings-calculator-target="y1"><%= number_with_delimiter(@form.monthly_saving * 12, delimiter: "\u00a0") %></span>
+        <span data-onboarding--landing-country-target="symbol"><%= symbol %></span>
+      </p>
+    </div>
+
+    <div class="savings-projection__later">
+      <span class="savings-projection__later-label"><%= t('.three_years') %></span>
+      <span class="savings-projection__later-amount">
+        <span data-savings-calculator-target="y3"><%= number_with_delimiter(@form.monthly_saving * 36, delimiter: "\u00a0") %></span>
+        <span data-onboarding--landing-country-target="symbol"><%= symbol %></span>
+      </span>
+    </div>
+
+    <p class="savings-projection__note"><%= t('.note') %></p>
+
+    <div class="onboarding-step__actions">
+      <%= render Ui::ButtonComponent.new(text: t('.continue'), type: :submit, variant: :primary,
+                                         size: :lg, full_width: true, form: f,
+                                         classes: "onboarding-step__cta") %>
+    </div>
+  <% end %>
+</div>

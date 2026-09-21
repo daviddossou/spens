@@ -27,6 +27,18 @@ en:
       invalid_goal: "%{goals} is not a valid goal"
     errors:
       generic: "Something went wrong. Please try again."
+    step_header_component:
+      step: "Step %{step} of %{total}"
+    savings_projections:
+      show:
+        title: "Your first calculation"
+        lead: "Two settings, and you see right away what they add up to."
+        income_label: "Your income per month"
+        rate_label: "Share to save"
+        one_year: "In one year, you will have put aside"
+        three_years: "In three years"
+        note: "Small amounts, repeated, end up counting."
+        continue: "See where I stand today"
     financial_goals:
       show:
         title: "What are your money goals?"
@@ -51,10 +63,48 @@ en:
         income_frequency_help: "Helps us plan your budget cycles"
         main_income_source_label: "What is your main income?"
         main_income_source_help: "Helps us give you better tips"
+    first_days:
+      show:
+        title: "Your first day noted"
+        intro_title: "Note what you have spent since this morning"
+        intro_text: "The ride, the water, the phone credit: even %{amount} counts. One expense is enough for today, you will add the others as the day goes."
+        empty_title: "Nothing noted today"
+        empty_text: "Start with the last thing you paid for: it is the one you remember best."
+        add_first: "Note my first expense"
+        skip: "I haven't spent anything today"
+        noted_today: "Noted today"
+        expenses:
+          one: "1 expense"
+          other: "%{count} expenses"
+        add_another: "Note another expense"
+        done_for_today: "That's all for today"
+        today: "Today"
+        mostly: "mostly on %{category}"
+        other_categories:
+          one: "1 other category"
+          other: "%{count} other categories"
+        congrats:
+          one: "Congratulations! You recorded your first transaction. See how quick that was? From now on, note it the moment you pay."
+          other: "Congratulations! You recorded your first transactions. See how quick that was? From now on, note them the moment you pay."
     account_setups:
       show:
-        title: "Add your accounts"
-        subtitle: "Enter your accounts and their balances. You can add more later."
+        title: "Gather your money"
+        title_total: "All your money"
+        intro_title: "Record the places where you keep your money"
+        intro_text: "Take the time to open your Mobile Money or banking app and count your cash, so the amounts are right. Start now, you can fill in the rest later."
+        empty_title: "No place yet"
+        empty_text: "Start with the one you know by heart: the money you have on you, right now."
+        add_first: "Add my first place"
+        skip: "I don't have my accounts on me"
+        total_label: "You have in total"
+        total_places:
+          one: "in 1 place"
+          other: "spread over %{count} places"
+        total_note: "Your starting point. Neither good nor bad: the first time you see it whole."
+        add_another: "Add another place"
+        continue: "Continue — note today's expenses"
+        continue_hint: "3 min"
+        stop: "I'll stop here for now"
       form:
         back: "Back"
         continue: "Finish Setup"

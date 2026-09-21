@@ -45,10 +45,7 @@ export default class extends Controller {
         rows: this.suggestionsValue.map((name) => ({ value: name, label: name })),
         selected: this.inputTarget.value,
         onSelect: (row) => {
-          this.inputTarget.value = row.value
-          this.inputTarget.dispatchEvent(new Event("input", { bubbles: true }))
-          this.inputTarget.dispatchEvent(new Event("change", { bubbles: true }))
-          this.render()
+          this.fill(row.value)
         }
       })
     })
@@ -60,12 +57,22 @@ export default class extends Controller {
     button.type = "button"
     button.className = "name-chip"
     button.textContent = name
-    button.addEventListener("click", () => {
-      this.inputTarget.value = name
-      this.inputTarget.dispatchEvent(new Event("input", { bubbles: true }))
-      this.inputTarget.dispatchEvent(new Event("change", { bubbles: true }))
-      this.render()
-    })
+    button.addEventListener("click", () => this.fill(name))
     return button
+  }
+
+  fill(name) {
+    this.inputTarget.value = name
+    this.inputTarget.dispatchEvent(new Event("input", { bubbles: true }))
+    this.inputTarget.dispatchEvent(new Event("change", { bubbles: true }))
+    this.syncPicker()
+    this.render()
+  }
+
+  // Under a picker field the input is hidden: its visible label has to follow.
+  syncPicker() {
+    const el = this.inputTarget.closest('[data-controller~="picker"]')
+    const picker = el && this.application.getControllerForElementAndIdentifier(el, "picker")
+    picker?.render()
   }
 }

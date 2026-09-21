@@ -27,6 +27,18 @@ fr:
       invalid_goal: "%{goals} n'est pas un objectif financier valide"
     errors:
       generic: "Une erreur est survenue. Réessaie."
+    step_header_component:
+      step: "Étape %{step} sur %{total}"
+    savings_projections:
+      show:
+        title: "Ton premier calcul"
+        lead: "Deux réglages, et tu vois tout de suite ce que ça donne."
+        income_label: "Ton revenu par mois"
+        rate_label: "Part à épargner"
+        one_year: "Dans un an, tu auras mis de côté"
+        three_years: "Dans trois ans"
+        note: "De petites sommes, répétées, finissent par compter."
+        continue: "Voir où j'en suis aujourd'hui"
     financial_goals:
       show:
         title: "Quels sont tes principaux objectifs financiers ?"
@@ -51,10 +63,48 @@ fr:
         income_frequency_help: "Pour planifier tes cycles budgétaires"
         main_income_source_label: "Principale source de revenus ?"
         main_income_source_help: "Pour mieux comprendre tes finances"
+    first_days:
+      show:
+        title: "Ta première journée notée"
+        intro_title: "Note ce que tu as dépensé depuis ce matin"
+        intro_text: "Le zem, l'eau, le crédit d'appel : même %{amount} compte. Une dépense suffit pour aujourd'hui, tu ajouteras les autres au fil de la journée."
+        empty_title: "Rien de noté aujourd'hui"
+        empty_text: "Commence par la dernière chose que tu as payée — c'est celle dont tu te souviens le mieux."
+        add_first: "Noter ma première dépense"
+        skip: "Je n'ai rien dépensé aujourd'hui"
+        noted_today: "Noté aujourd'hui"
+        expenses:
+          one: "1 dépense"
+          other: "%{count} dépenses"
+        add_another: "Noter une autre dépense"
+        done_for_today: "C'est tout pour aujourd'hui"
+        today: "Aujourd'hui"
+        mostly: "surtout en %{category}"
+        other_categories:
+          one: "1 autre catégorie"
+          other: "%{count} autres catégories"
+        congrats:
+          one: "Félicitations ! Tu as enregistré ta première transaction. Tu as vu que c'était rapide ? À partir de maintenant, note-la au moment où tu payes."
+          other: "Félicitations ! Tu as enregistré tes premières transactions. Tu as vu que c'était rapide ? À partir de maintenant, note-les au moment où tu payes."
     account_setups:
       show:
-        title: "Tes comptes"
-        subtitle: "Ajoute tes comptes et leurs soldes. Tu pourras en ajouter d'autres plus tard."
+        title: "Rassemble ton argent"
+        title_total: "Ton argent en entier"
+        intro_title: "Enregistre les endroits où tu gardes ton argent"
+        intro_text: "Fais l'effort d'ouvrir ton appli Mobile Money ou bancaire, de compter ton cash pour renseigner les bons montants. Commence maintenant, tu peux compléter le reste après."
+        empty_title: "Aucun endroit pour l'instant"
+        empty_text: "Commence par celui que tu connais par cœur : l'argent que tu as sur toi, là, maintenant."
+        add_first: "Ajouter mon premier endroit"
+        skip: "Je n'ai pas mes comptes sur moi"
+        total_label: "Tu as en tout"
+        total_places:
+          one: "dans 1 endroit"
+          other: "répartis sur %{count} endroits"
+        total_note: "Ton point de départ. Ni bien ni mal : la première fois que tu le vois en entier."
+        add_another: "Ajouter un autre endroit"
+        continue: "Continuer — noter mes dépenses du jour"
+        continue_hint: "3 min"
+        stop: "J'arrête là pour l'instant"
       form:
         back: "Retour"
         continue: "Terminer"

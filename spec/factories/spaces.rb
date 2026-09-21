@@ -9,8 +9,10 @@
 #  income_frequency        :string
 #  locale                  :string
 #  main_income_source      :string
+#  monthly_income          :decimal(15, 2)
 #  name                    :string           not null
 #  onboarding_current_step :string
+#  savings_rate            :integer
 #  time_zone               :string
 #  created_at              :datetime         not null
 #  updated_at              :datetime         not null
