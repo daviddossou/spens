@@ -11,6 +11,12 @@ fr:
       sign_in_cta: "Se connecter"
       sign_up_cta: "S'inscrire"
     show:
+      journey:
+        title: "Mon parcours"
+        question: "De combien as-tu besoin pour vivre ?"
+        step: "Étape 2 · Comprendre"
+        soon: "Bientôt"
+        progress: "Étape %{done} sur %{total} faite"
       dashboard_title: "Tableau de bord"
       your_account: "Ton compte"
       edit_profile: "Modifier le profil"

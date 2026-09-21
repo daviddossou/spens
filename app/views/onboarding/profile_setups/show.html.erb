@@ -1,14 +1,10 @@
 <% content_for :title, t('.title') %>
 
-<div class="onboarding-container">
-  <%= render Onboarding::ProgressComponent.new(current_step: 'profile_setup') %>
+<div class="onboarding-step">
+  <%= render Onboarding::StepHeaderComponent.new(step: 2, title: t('.title')) %>
 
-
-  <div class="onboarding-content">
-    <header class="onboarding-header">
-      <h1><%= t('.title') %></h1>
-      <p><%= t('.subtitle') %></p>
-    </header>
+  <div class="onboarding-step__body">
+    <p class="onboarding-step__lead"><%= t('.subtitle') %></p>
 
     <%= render 'form' %>
   </div>

@@ -1,26 +1,9 @@
 <% if @accounts.any? %>
-  <% total = @accounts.sum(&:balance) %>
   <div class="analyses-card">
     <p class="analyses-card__title">
       <%= t('analytics.index.accounts_title') %>
       <%= link_to t('analytics.index.accounts_link'), accounts_path, class: "analyses-card__link", data: { turbo_frame: "_top" } %>
     </p>
-    <div class="analyses-stack" aria-hidden="true">
-      <% @accounts.each_with_index do |account, i| %>
-        <span class="analyses-stack__seg" style="width: <%= (account.balance / total * 100).round(1) %>%; opacity: <%= [ 1 - i * 0.22, 0.2 ].max %>;"></span>
-      <% end %>
-    </div>
-    <% @accounts.first(3).each do |account| %>
-      <div class="analyses-slim">
-        <span class="analyses-slim__name"><%= account.name %></span>
-        <span class="analyses-slim__amount"><%= money(account.balance) %></span>
-      </div>
-    <% end %>
-    <% if @accounts.size > 3 %>
-      <div class="analyses-slim analyses-slim--muted">
-        <span class="analyses-slim__name"><%= t('analytics.index.accounts_more', count: @accounts.size - 3) %></span>
-        <span class="analyses-slim__amount"><%= money(@accounts.drop(3).sum(&:balance)) %></span>
-      </div>
-    <% end %>
+    <%= render Analytics::DistributionComponent.new(rows: @accounts.map { |account| [ account.name, account.balance ] }) %>
   </div>
 <% end %>

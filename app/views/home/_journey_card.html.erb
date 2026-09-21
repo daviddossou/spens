@@ -1,0 +1,23 @@
+<%# Where onboarding hands over, and where the six-verb journey will come back in.
+    The next step's question is the title; the step itself sits under it. %>
+<section class="journey-card" aria-labelledby="journey-card-title">
+  <div class="journey-card__top">
+    <div class="journey-card__dots" role="img" aria-label="<%= t('home.show.journey.progress', done: 1, total: 6) %>">
+      <span class="journey-card__dot is-done">
+        <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M2.5 6.5l2.2 2.2 4.8-5" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      </span>
+      <span class="journey-card__dot is-current"></span>
+      <% 4.times do %><span class="journey-card__dot"></span><% end %>
+    </div>
+    <span class="journey-card__eyebrow"><%= t('home.show.journey.title') %></span>
+  </div>
+
+  <h2 class="journey-card__question" id="journey-card-title"><%= t('home.show.journey.question') %></h2>
+
+  <div class="journey-card__bottom">
+    <span class="journey-card__step"><%= t('home.show.journey.step') %></span>
+    <span class="journey-card__badge"><%= t('home.show.journey.soon') %></span>
+  </div>
+</section>

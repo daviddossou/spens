@@ -85,7 +85,9 @@ module TransactionHelper
     title_key = form.debt_transaction? ? (form.debt_id.present? ? "from_debt" : "debt") : form.kind
     type_key = form.kind == "transfer" ? "transfer" : (form.debt_transaction? ? "debt" : (form.kind == "income" ? "income" : "expense"))
     subtitle =
-      if person_locked && relation
+      if !current_space.onboarding_completed? && form.kind == "expense"
+        t("transactions.new.onboarding_subtitle")
+      elsif person_locked && relation
         net = relation.net
         balance = net > 0 ? t("transactions.new.person_you_owe", amount: money(net)) \
                 : net < 0 ? t("transactions.new.person_they_owe", amount: money(-net)) \

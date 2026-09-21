@@ -40,7 +40,7 @@ class AccountsController < ApplicationController
     build_form(account_params)
 
     if @form.submit
-      redirect_to account_path(id: @form.account.id), notice: t(".success"), status: :see_other
+      redirect_to after_create_path, status: :see_other
     else
       render :new, status: :unprocessable_entity
     end
@@ -83,6 +83,15 @@ class AccountsController < ApplicationController
   end
 
   private
+
+  # Mid-onboarding the sheet was opened from the "gather your money" step: go back to it,
+  # where the new total speaks for itself.
+  def after_create_path
+    return onboarding_account_setups_path unless current_space.onboarding_completed?
+
+    flash[:notice] = t(".success")
+    account_path(id: @form.account.id)
+  end
 
   # This month's money in and out of the account, for the "Ce mois-ci" card.
   def load_month_flow

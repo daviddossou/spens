@@ -1,57 +1,47 @@
 # frozen_string_literal: true
 
+# Step 2, "gather your money": the accounts list inside the onboarding chrome. Accounts are
+# added one at a time through the real new-account sheet (AccountsController).
 class Onboarding::AccountSetupsController < OnboardingController
-  before_action :authenticate_user!
-  before_action :build_form, only: [ :show ]
+  NEXT_STEP = "onboarding_first_day"
+  STOPPED = "onboarding_completed"
 
   def show
-    build_form
+    load_accounts
     track_onboarding_step_viewed("account_setup")
   end
 
+  # Moves on, with or without accounts ("I don't have my accounts on me"), or stops here.
   def update
-    build_form(account_setup_params)
+    current_space.update!(onboarding_current_step: stopping? ? STOPPED : NEXT_STEP)
+    track_step_left
 
-    if @form.submit
-      track_accounts_opened
-      redirect_to next_step_path, status: :see_other
-    else
-      track_onboarding_step_failed("account_setup", @form)
-      render :show, status: :unprocessable_entity
-    end
+    redirect_to Onboarding::StepNavigator.new(current_space).current_step_path, status: :see_other
   rescue StandardError => e
     Rails.logger.error "Error in Onboarding::AccountSetupsController#update: #{e.message}"
-    Rails.logger.error e.backtrace.join("\n")
     redirect_to onboarding_account_setups_path, alert: t("onboarding.errors.generic"), status: :see_other
   end
 
   private
 
-  def build_form(payload = {})
-    @form ||= Onboarding::AccountSetupForm.new(current_space, payload)
+  def stopping?
+    params[:stop].present?
   end
 
-  def account_setup_params
-    params.require(:onboarding_account_setup_form).permit(
-      transactions_attributes: [
-        :account_name,
-        :amount,
-        :transaction_date,
-        :transaction_type_name,
-        :transaction_type_kind
-      ]
-    )
+  def load_accounts
+    accounts = current_space.accounts.active.includes(:goal).sort_by { |account| -account.balance }
+    @set_aside, @everyday = accounts.partition { |account| account.set_aside? || account.goal.present? }
+    @total = accounts.sum(&:balance)
   end
 
-  def track_accounts_opened
-    created = @form.transactions.reject(&:should_skip?)
-    created.each { Analytics.track(current_user, "transaction_created", source: "onboarding") }
+  def track_step_left
+    names = current_space.accounts.active.pluck(:name)
+    templates = names.filter_map { |name| account_template_key(name) }
+    properties = { accounts: names.size, skipped: names.empty?, stopped_here: stopping?,
+                   account_templates: templates.uniq, custom_accounts: names.size - templates.size }
 
-    templates = created.filter_map { |line| account_template_key(line.account_name) }
-    properties = { accounts: created.size, lines_skipped: @form.transactions.size - created.size,
-                   account_templates: templates.uniq, custom_accounts: created.size - templates.size }
     track_onboarding_step_completed("account_setup", properties)
-    track_onboarding_completed(properties)
+    track_onboarding_completed(properties) if stopping?
   end
 
   # "mobile_money" for a suggested name in any locale, nil for a name the user typed:
@@ -61,10 +51,5 @@ class Onboarding::AccountSetupsController < OnboardingController
       I18n.t("account_templates", locale: locale, default: {}).each { |key, label| keys[label.to_s.strip.downcase] = key.to_s }
     end
     @account_template_keys[name.to_s.strip.downcase]
-  end
-
-  def next_step_path
-    current_space.reload
-    Onboarding::StepNavigator.new(current_space).current_step_path
   end
 end

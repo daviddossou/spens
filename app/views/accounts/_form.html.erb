@@ -3,34 +3,53 @@
 <% currency_symbol = get_currency_symbol(current_space.currency) %>
 <% editing = form.object.persisted? %>
 
-<div class="account-form__container">
+<div class="account-form__container"
+     data-controller="account-kind"
+     data-action="input->account-kind#infer change->account-kind#infer"
+     data-account-kind-names-value="<%= Account.set_aside_names.to_json %>"
+     data-account-kind-manual-value="<%= editing %>"
+     data-account-kind-everyday-value="<%= t('.everyday_line_html') %>"
+     data-account-kind-set-aside-value="<%= t('.set_aside_line_html') %>">
   <%# The balance is the hero: how much is in it today, typed first. %>
   <%= render Forms::AmountFieldComponent.new(
         form: form, field: :current_balance, value: form.object.current_balance,
         currency: currency_symbol, min: "0", autofocus: !editing, aria_label: t('.amount_label'),
         data: { account_form_target: "amount", action: "input->account-form#onAmount" }) %>
 
-  <%# Name — the existing searchable field, kept as is. No asterisk. %>
+  <%# Naming a new account is a choice first (bank, Mobile Money, cash…), typed only when
+      nothing fits; renaming an existing one stays free text. %>
   <div class="account-form__field">
-    <%= render Forms::NameFieldComponent.new(
-      form: form, field: :account_name, label: t('.name_label'),
-      placeholder: t('.name_placeholder'),
-      suggestions: @form.name_suggestions,
-      field_data: { account_form_target: "name", action: "input->account-form#onField" }) %>
+    <% if editing %>
+      <%= render Forms::NameFieldComponent.new(
+        form: form, field: :account_name, label: t('.name_label'),
+        placeholder: t('.name_placeholder'),
+        suggestions: @form.name_suggestions,
+        field_data: { account_form_target: "name", action: "input->account-form#onField" }) %>
+    <% else %>
+      <%# The chips stay as the one-tap shortcut under the picker. %>
+      <div data-controller="name-chips" data-action="change->name-chips#render"
+           data-name-chips-suggestions-value="<%= @form.name_suggestions.to_json %>">
+        <%= render Forms::PickerFieldComponent.new(
+          form: form, field: :account_name, label: t('.name_label'),
+          title: t('picker.account'), placeholder: t('.name_picker_placeholder'),
+          rows: @form.name_suggestions.map { |name|
+            icon, label = picker_icon_and_label(name)
+            { value: name, label: label, icon: icon }
+          },
+          allow_create: true, focus_search: true,
+          field_data: { account_form_target: "name", name_chips_target: "input" }) %>
+        <div class="name-chips" data-name-chips-target="chips" hidden></div>
+      </div>
+    <% end %>
   </div>
 
-  <%# Spending or savings? — an explicit two-card choice (same pattern as the
-      budget's Vital/Confort). A savings account counts as "mis de côté". %>
-  <div class="vc-choice">
-    <span class="vc-choice__question"><%= t('.kind_question') %></span>
-    <div class="vc-choice__cards">
-      <% [ [ false, "everyday" ], [ true, "set_aside" ] ].each do |val, key| %>
-        <%= render Ui::SelectableCardComponent.new(
-  item: { value: val, name: t(".#{key}_card_title"), description: t(".#{key}_card_sub") },
-  native_radio: true, form: form, field: :set_aside, selected: nil,
-  css_class: "vc-card", input_options: { class: "vc-card__input" }) %>
-      <% end %>
-    </div>
+  <%# Spending or savings? is deduced from the name, one tap to flip it. %>
+  <div class="account-kind">
+    <%= form.hidden_field :set_aside, data: { account_kind_target: "input" } %>
+    <p class="account-kind__text" data-account-kind-target="text" aria-live="polite">
+      <%= form.object.set_aside ? t('.set_aside_line_html') : t('.everyday_line_html') %>
+    </p>
+    <button type="button" class="account-kind__change" data-action="account-kind#toggle"><%= t('.kind_change') %></button>
   </div>
 
   <% if editing %>

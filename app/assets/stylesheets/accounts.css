@@ -672,3 +672,37 @@
   color: var(--color-primary);
   text-decoration: none;
 }
+
+/* Spending or savings, deduced from the name: one line and a way to flip it. */
+.account-kind {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 1rem;
+  padding: 0.75rem 0.875rem;
+  background: var(--color-surface-sunken);
+  border-radius: var(--radius-lg);
+}
+
+.account-kind__text {
+  margin: 0;
+  font-size: var(--font-size-body);
+  color: var(--color-muted-strong);
+}
+
+.account-kind__text strong {
+  color: var(--color-charcoal-black);
+}
+
+.account-kind__change {
+  flex: none;
+  min-height: 2.75rem;
+  padding: 0 0.25rem;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-weight: 600;
+  color: var(--color-primary);
+  cursor: pointer;
+}

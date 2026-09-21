@@ -4,6 +4,12 @@ en:
       sign_in_cta: "Sign In"
       sign_up_cta: "Sign Up"
     show:
+      journey:
+        title: "My journey"
+        question: "How much do you need to live on?"
+        step: "Step 2 · Understand"
+        soon: "Soon"
+        progress: "Step %{done} of %{total} done"
       dashboard_title: "Dashboard"
       your_account: "Your Account"
       edit_profile: "Edit Profile"

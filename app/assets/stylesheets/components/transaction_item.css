@@ -202,3 +202,8 @@
   font-size: 1.25rem;
   line-height: 1;
 }
+
+/* The same row as plain content, where its page is out of reach (onboarding). */
+.transaction-item--static:hover {
+  background-color: transparent;
+}

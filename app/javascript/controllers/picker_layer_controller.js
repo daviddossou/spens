@@ -5,7 +5,7 @@ import { Controller } from "@hotwired/stimulus"
 // (Tour 32c). A tap on a row chooses and returns — there is no validation step.
 export default class extends Controller {
   static targets = ["root", "title", "step", "search", "context", "list"]
-  static values = { createLabel: String, empty: String, planned: String, rest: String }
+  static values = { createLabel: String, empty: String, planned: String, rest: String, search: String, searchOrCreate: String }
 
   connect() {
     this._onPop = this._onPop.bind(this)
@@ -17,11 +17,17 @@ export default class extends Controller {
     this.titleTarget.textContent = request.title || ""
     this.stepTarget.textContent = request.step || ""
     this.searchTarget.value = ""
+    // Where a new name can be typed, the field says so: it is not only a search.
+    const placeholder = request.allowCreate ? this.searchOrCreateValue : this.searchValue
+    if (placeholder) this.searchTarget.placeholder = placeholder
     this.renderContext(request)
     this.renderRows("")
 
     if (!this.isOpen) this.show()
     this.listTarget.scrollTop = 0
+    // The keyboard is imposed only where typing is the likely answer (naming an account).
+    // Same gesture as the tap, or iOS refuses to raise it.
+    if (request.focusSearch) this.searchTarget.focus({ preventScroll: true })
   }
 
   show() {

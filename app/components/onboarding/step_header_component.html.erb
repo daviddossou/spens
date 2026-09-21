@@ -1,0 +1,10 @@
+<header class="onboarding-step-header">
+  <p class="onboarding-step-header__eyebrow"><%= t(".step", step: step, total: STEPS) %></p>
+  <h1 class="onboarding-step-header__title"><%= title %></h1>
+  <div class="onboarding-step-header__bar" role="progressbar" aria-valuemin="1" aria-valuemax="<%= STEPS %>"
+       aria-valuenow="<%= step %>" aria-valuetext="<%= t(".step", step: step, total: STEPS) %>">
+    <% 1.upto(STEPS) do |index| %>
+      <span class="<%= segment_class(index) %>"></span>
+    <% end %>
+  </div>
+</header>

@@ -7,12 +7,22 @@ class TransactionItemComponent < ViewComponent::Base
   # becomes the title, the sub-category leads the subtitle (its absence stated
   # when the category has children), the type's emoji replaces the family icon,
   # and the nested fee is dropped so the list adds up to the page header.
-  def initialize(transaction:, context: :list, category: nil, subcategory_hint: false, show_date: false)
+  # link: false renders the same row as plain content (onboarding, where the
+  # transaction's page is not reachable yet).
+  def initialize(transaction:, context: :list, category: nil, subcategory_hint: false, show_date: false, link: true)
     @transaction = transaction
     @context = context
     @category = category
     @subcategory_hint = subcategory_hint
     @show_date = show_date
+    @link = link
+  end
+
+  def wrapper(&block)
+    return content_tag(:div, class: "transaction-item transaction-item--static", &block) unless @link
+
+    link_to(helpers.transaction_path(locale: I18n.locale, id: transaction.id), class: "transaction-item",
+            data: { turbo_frame: "_top" }, "aria-label": "#{title}: #{display_amount(row, transaction)}", &block)
   end
 
   private

@@ -1,0 +1,17 @@
+<div class="analyses-stack" aria-hidden="true">
+  <% rows.each_with_index do |(_, amount), index| %>
+    <span class="analyses-stack__seg" style="<%= segment_style(amount, index) %>"></span>
+  <% end %>
+</div>
+<% shown.each do |name, amount| %>
+  <div class="analyses-slim">
+    <span class="analyses-slim__name"><%= name %></span>
+    <span class="analyses-slim__amount"><%= money(amount) %></span>
+  </div>
+<% end %>
+<% if rest.any? %>
+  <div class="analyses-slim analyses-slim--muted">
+    <span class="analyses-slim__name"><%= more_label %></span>
+    <span class="analyses-slim__amount"><%= money(rest.sum { |_, amount| amount }) %></span>
+  </div>
+<% end %>

@@ -5,269 +5,100 @@ require 'rails_helper'
 RSpec.describe 'Onboarding::AccountSetupsController', type: :request do
   include Devise::Test::IntegrationHelpers
 
-  let(:user) { create(:user, onboarding_current_step: 'onboarding_account_setup', country: 'US', currency: 'USD') }
+  let(:user) { create(:user, onboarding_current_step: 'onboarding_account_setup', country: 'BJ', currency: 'XOF') }
   let(:space) { user.spaces.first }
-  let(:completed_user) { create(:user, onboarding_current_step: 'onboarding_completed', country: 'US', currency: 'USD') }
 
-  describe 'GET /onboarding/account_setups' do
-    context 'when user is authenticated' do
-      before { sign_in user, scope: :user }
-
-      it 'returns http success' do
-        get onboarding_account_setups_path
-        expect(response).to have_http_status(:success)
-      end
-
-      it 'renders the account setup form' do
-        get onboarding_account_setups_path
-        expect(response.body).to include('account')
-      end
-
-      it 'displays form for initial transactions' do
-        get onboarding_account_setups_path
-        expect(response).to have_http_status(:success)
-        expect(response).to render_template(:show)
-      end
-    end
-
-    context 'when user has completed onboarding' do
-      before do
-        sign_in completed_user, scope: :user
-      end
-
-      it 'handles completed onboarding appropriately' do
-        get onboarding_account_setups_path
-        # May redirect to dashboard or show the page depending on onboarding state
-        expect(response.status).to be_in([ 200, 302 ])
-      end
-    end
-
-    context 'when user is not authenticated' do
-      it 'requires authentication' do
-        get onboarding_account_setups_path
-        # Should require login - either redirect or error
-        expect([ 302, 401, 500 ]).to include(response.status)
-      end
-    end
+  def add_account(name, balance)
+    post accounts_path, params: { account: { account_name: name, current_balance: balance } }
   end
 
-  describe 'PATCH /onboarding/account_setups' do
+  it 'requires authentication' do
+    get onboarding_account_setups_path
+
+    expect(response).to have_http_status(:redirect)
+  end
+
+  context 'when signed in' do
     before { sign_in user, scope: :user }
 
-    let(:valid_params) do
-      {
-        onboarding_account_setup_form: {
-          transactions_attributes: {
-            '0' => {
-              account_name: 'Checking Account',
-              amount: 1000.00,
-              transaction_date: Date.current.to_s,
-              transaction_type_name: 'Initial Balance',
-              transaction_type_kind: 'income'
-            },
-            '1' => {
-              account_name: 'Savings Account',
-              amount: 5000.00,
-              transaction_date: Date.current.to_s,
-              transaction_type_name: 'Opening Balance',
-              transaction_type_kind: 'income'
-            }
-          }
-        }
-      }
-    end
+    describe 'GET /onboarding/account_setups' do
+      it 'opens on the invitation to add a first place, with a way to skip' do
+        get onboarding_account_setups_path
 
-    let(:invalid_params) do
-      {
-        onboarding_account_setup_form: {
-          transactions_attributes: {
-            '0' => {
-              account_name: '',
-              amount: nil,
-              transaction_date: Date.current.to_s,
-              transaction_type_name: '',
-              transaction_type_kind: ''
-            }
-          }
-        }
-      }
-    end
-
-    context 'with valid parameters' do
-      it 'creates accounts and transactions' do
-        expect {
-          patch onboarding_account_setups_path, params: valid_params
-        }.to change(Account, :count).by(2)
-         .and change(Transaction, :count).by(2)
+        expect(response).to have_http_status(:success)
+        expect(response.body).to include(I18n.t('onboarding.step_header_component.step', step: 2, total: 3))
+        expect(response.body).to include(I18n.t('onboarding.account_setups.show.add_first'))
+        expect(response.body).to include(CGI.escapeHTML(I18n.t('onboarding.account_setups.show.skip')))
+        expect(response.body).to match(/<turbo-frame[^>]*id="modal"/)
       end
 
-      it 'completes the onboarding process' do
-        patch onboarding_account_setups_path, params: valid_params
+      it 'shows the total and both groups once accounts exist' do
+        add_account('Mobile Money MTN', '62350')
+        add_account(I18n.t('account_templates.savings_account'), '48000')
 
-        expect(space.reload.onboarding_current_step).to eq('onboarding_completed')
-      end
+        get onboarding_account_setups_path
 
-      it 'redirects to the dashboard or home' do
-        patch onboarding_account_setups_path, params: valid_params
-
-        expect(response).to have_http_status(:redirect)
-        # Should redirect to dashboard after completing onboarding
-      end
-
-      it 'creates accounts with correct balances' do
-        patch onboarding_account_setups_path, params: valid_params
-
-        checking = Account.find_by(name: 'Checking Account', space: space)
-        savings = Account.find_by(name: 'Savings Account', space: space)
-
-        expect(checking.balance).to eq(1000.00)
-        expect(savings.balance).to eq(5000.00)
+        expect(response.body).to include(I18n.t('onboarding.account_setups.show.title_total'))
+        expect(response.body).to include(I18n.t('accounts.index.everyday'), I18n.t('accounts.index.set_aside'))
+        expect(response.body).to include(I18n.t('onboarding.account_setups.show.total_places', count: 2))
+        expect(response.body).not_to include(CGI.escapeHTML(I18n.t('onboarding.account_setups.show.skip')))
       end
     end
 
-    context 'with single valid transaction' do
-      let(:single_transaction_params) do
-        {
-          onboarding_account_setup_form: {
-            transactions_attributes: {
-              '0' => {
-                account_name: 'Main Account',
-                amount: 2000.00,
-                transaction_date: Date.current.to_s,
-                transaction_type_name: 'Initial Balance',
-                transaction_type_kind: 'income'
-              }
-            }
-          }
-        }
+    describe 'the real new-account sheet during onboarding' do
+      it 'is reachable before onboarding is completed' do
+        get new_account_path
+
+        expect(response).to have_http_status(:success)
       end
 
-      it 'creates one account and transaction' do
-        expect {
-          patch onboarding_account_setups_path, params: single_transaction_params
-        }.to change(Account, :count).by(1)
-         .and change(Transaction, :count).by(1)
-      end
-
-      it 'completes onboarding with single account' do
-        patch onboarding_account_setups_path, params: single_transaction_params
-
-        expect(space.reload.onboarding_current_step).to eq('onboarding_completed')
-      end
-    end
-
-    context 'with invalid parameters' do
-      it 'does not create accounts' do
-        expect {
-          patch onboarding_account_setups_path, params: invalid_params
-        }.not_to change(Account, :count)
-      end
-
-      it 'does not create transactions' do
-        expect {
-          patch onboarding_account_setups_path, params: invalid_params
-        }.not_to change(Transaction, :count)
-      end
-
-      it 'does not advance onboarding step' do
-        patch onboarding_account_setups_path, params: invalid_params
-
-        expect(space.reload.onboarding_current_step).to eq('onboarding_account_setup')
-      end
-
-      it 'renders show template with unprocessable_entity status' do
-        patch onboarding_account_setups_path, params: invalid_params
-
-        expect(response).to have_http_status(:unprocessable_entity)
-        expect(response).to render_template(:show)
-      end
-
-      it 'displays validation errors' do
-        patch onboarding_account_setups_path, params: invalid_params
-        expect(response.body).to include('account')
-      end
-    end
-
-    context 'with no transactions' do
-      let(:empty_params) do
-        {
-          onboarding_account_setup_form: {
-            transactions_attributes: {}
-          }
-        }
-      end
-
-      it 'redirects to account setups page' do
-        patch onboarding_account_setups_path, params: empty_params
+      it 'comes back to the step after a create, without a flash' do
+        add_account('Porte-monnaie', '12050')
 
         expect(response).to redirect_to(onboarding_account_setups_path)
+        expect(flash[:notice]).to be_nil
+        expect(space.accounts.pluck(:name)).to eq([ 'Porte-monnaie' ])
       end
 
-      it 'sets an error alert' do
-        patch onboarding_account_setups_path, params: empty_params
+      it 'keeps the rest of the accounts pages behind onboarding' do
+        get accounts_path
 
-        expect(flash[:alert]).to be_present
-      end
-
-      it 'does not advance onboarding' do
-        patch onboarding_account_setups_path, params: empty_params
-
-        expect(space.reload.onboarding_current_step).to eq('onboarding_account_setup')
+        expect(response).to redirect_to(onboarding_path)
       end
     end
 
-    context 'when user has completed onboarding' do
-      before do
-        sign_in completed_user, scope: :user
+    describe 'PATCH /onboarding/account_setups' do
+      it 'moves on to the first day' do
+        add_account('Porte-monnaie', '12050')
+
+        patch onboarding_account_setups_path
+
+        expect(response).to redirect_to(onboarding_first_days_path)
+        expect(space.reload.onboarding_current_step).to eq('onboarding_first_day')
       end
 
-      it 'redirects appropriately' do
-        patch onboarding_account_setups_path, params: valid_params
-        # Should redirect but may go to different location for completed users
-        expect(response).to be_redirect
-      end
-    end
+      it 'lets someone without their accounts at hand move on' do
+        patch onboarding_account_setups_path
 
-    context 'when user is not authenticated' do
-      before { sign_out :user }
-
-      it 'requires authentication' do
-        patch onboarding_account_setups_path, params: valid_params
-        # Should require login - either redirect or error
-        expect([ 302, 401, 500 ]).to include(response.status)
+        expect(response).to redirect_to(onboarding_first_days_path)
       end
 
-      it 'does not create accounts' do
-        sign_out :user
-        expect {
-          patch onboarding_account_setups_path, params: valid_params
-        }.not_to change(Account, :count)
+      it 'completes onboarding for someone who stops here' do
+        add_account('Porte-monnaie', '12050')
+
+        patch onboarding_account_setups_path, params: { stop: 1 }
+
+        expect(response).to redirect_to(dashboard_path)
+        expect(space.reload).to be_onboarding_completed
       end
-    end
-  end
 
-  describe 'parameter handling' do
-    before { sign_in user, scope: :user }
+      it 'works for a space whose country could not be guessed' do
+        space.update_columns(country: nil)
 
-    it 'permits required transaction attributes' do
-      params = {
-        onboarding_account_setup_form: {
-          transactions_attributes: {
-            '0' => {
-              account_name: 'Test Account',
-              amount: 100.00,
-              transaction_date: Date.current.to_s,
-              transaction_type_name: 'Test',
-              transaction_type_kind: 'income',
-              unpermitted_field: 'should be filtered'
-            }
-          }
-        }
-      }
+        patch onboarding_account_setups_path, params: { stop: 1 }
 
-      patch onboarding_account_setups_path, params: params
-      # Should process successfully, filtering unpermitted params
-      expect(response.status).to be_in([ 200, 302, 303, 422 ])
+        expect(space.reload).to be_onboarding_completed
+      end
     end
   end
 end

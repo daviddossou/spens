@@ -100,7 +100,8 @@ module Analytics
   def onboarding_answers(space)
     {
       financial_goals: space.financial_goals.presence, country: space.country, currency: space.currency,
-      income_frequency: space.income_frequency, main_income_source: space.main_income_source
+      income_frequency: space.income_frequency, main_income_source: space.main_income_source,
+      savings_rate: space.savings_rate
     }.compact
   end
 

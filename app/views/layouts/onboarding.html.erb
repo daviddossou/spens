@@ -37,6 +37,9 @@
       <%= yield %>
     </main>
 
+    <%# Steps open the app's real sheets (new account, new transaction). %>
+    <%= render Ui::BottomSheetComponent.new %>
+
     <%# The choice layer the profile pickers hand over to (Tour 31). %>
     <%= render Forms::PickerLayerComponent.new %>
   </body>

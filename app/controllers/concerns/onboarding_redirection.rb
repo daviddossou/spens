@@ -22,9 +22,15 @@ module OnboardingRedirection
     action_name == "destroy" # Allow sign out
   end
 
+  # Steps 2 and 3 go through the app's real sheets: new account, new transaction.
+  def onboarding_sheet?
+    controller_path.in?(%w[accounts transactions]) && action_name.in?(%w[new create])
+  end
+
   def onboarding_controller?
-    controller_name == "onboarding" || controller_name == "financial_goals" ||
+    controller_name == "onboarding" || controller_name == "savings_projections" ||
+    controller_name == "financial_goals" ||
     controller_name == "profile_setups" || controller_name == "account_setups" ||
-    controller_name == "spaces"
+    controller_name == "first_days" || controller_name == "spaces" || onboarding_sheet?
   end
 end

@@ -31,7 +31,7 @@ class AccountForm < BaseForm
     super(
       account_name: payload[:account_name],
       current_balance: payload[:current_balance],
-      set_aside: payload.key?(:set_aside) ? payload[:set_aside] : (@account&.set_aside || false)
+      set_aside: payload[:set_aside].to_s.present? ? payload[:set_aside] : default_set_aside(payload[:account_name])
     )
   end
 
@@ -74,6 +74,12 @@ class AccountForm < BaseForm
   end
 
   private
+
+  # Nobody is asked "spending or savings?": an existing account keeps its side, a new one
+  # takes the side its name suggests.
+  def default_set_aside(name)
+    @account ? @account.set_aside : Account.set_aside_name?(name)
+  end
 
   def create_account
     @account = find_or_create_account

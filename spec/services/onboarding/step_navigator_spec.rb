@@ -13,8 +13,12 @@ RSpec.describe Onboarding::StepNavigator do
       expect(described_class::STEP_PATHS).to be_frozen
     end
 
-    it 'maps onboarding_financial_goal to financial goal path' do
-      expect(described_class::STEP_PATHS['onboarding_financial_goal']).to eq(:onboarding_financial_goals_path)
+    it 'maps onboarding_savings_projection to savings projection path' do
+      expect(described_class::STEP_PATHS['onboarding_savings_projection']).to eq(:onboarding_savings_projections_path)
+    end
+
+    it 'sends a space parked on the retired financial goal step to the savings projection' do
+      expect(described_class::STEP_PATHS['onboarding_financial_goal']).to eq(:onboarding_savings_projections_path)
     end
 
     it 'maps onboarding_profile_setup to profile setup path' do
@@ -42,11 +46,19 @@ RSpec.describe Onboarding::StepNavigator do
   end
 
   describe '#current_step_path' do
-    context 'when current step is onboarding_financial_goal' do
+    context 'when current step is onboarding_savings_projection' do
+      let(:user) { create(:user, onboarding_current_step: :onboarding_savings_projection) }
+
+      it 'returns savings projection path' do
+        expect(navigator.current_step_path).to eq(Rails.application.routes.url_helpers.onboarding_savings_projections_path)
+      end
+    end
+
+    context 'when current step is the retired onboarding_financial_goal' do
       let(:user) { create(:user, onboarding_current_step: :onboarding_financial_goal) }
 
-      it 'returns financial goals path' do
-        expect(navigator.current_step_path).to eq(Rails.application.routes.url_helpers.onboarding_financial_goals_path)
+      it 'returns savings projection path' do
+        expect(navigator.current_step_path).to eq(Rails.application.routes.url_helpers.onboarding_savings_projections_path)
       end
     end
 
@@ -79,8 +91,8 @@ RSpec.describe Onboarding::StepNavigator do
         allow(space).to receive(:onboarding_current_step).and_return('unknown_step')
       end
 
-      it 'returns financial goals path as fallback' do
-        expect(navigator.current_step_path).to eq(Rails.application.routes.url_helpers.onboarding_financial_goals_path)
+      it 'returns savings projection path as fallback' do
+        expect(navigator.current_step_path).to eq(Rails.application.routes.url_helpers.onboarding_savings_projections_path)
       end
     end
 
@@ -89,15 +101,15 @@ RSpec.describe Onboarding::StepNavigator do
         allow(space).to receive(:onboarding_current_step).and_return(nil)
       end
 
-      it 'returns onboarding_financial_goals_path path as fallback' do
-        expect(navigator.current_step_path).to eq(Rails.application.routes.url_helpers.onboarding_financial_goals_path)
+      it 'returns savings projection path as fallback' do
+        expect(navigator.current_step_path).to eq(Rails.application.routes.url_helpers.onboarding_savings_projections_path)
       end
     end
   end
 
   describe 'integration with Rails routes' do
     it 'uses Rails route helpers' do
-      expect(Rails.application.routes.url_helpers).to receive(:onboarding_financial_goals_path)
+      expect(Rails.application.routes.url_helpers).to receive(:onboarding_savings_projections_path)
       navigator.current_step_path
     end
 
@@ -109,10 +121,10 @@ RSpec.describe Onboarding::StepNavigator do
   end
 
   describe 'onboarding flow step mapping' do
-    it 'maps financial goals step to financial goals path' do
-      space.update!(onboarding_current_step: :onboarding_financial_goal)
+    it 'maps savings projection step to savings projection path' do
+      space.update!(onboarding_current_step: :onboarding_savings_projection)
       navigator = described_class.new(space)
-      expect(navigator.current_step_path).to include('financial_goals')
+      expect(navigator.current_step_path).to include('savings_projections')
     end
 
     it 'maps profile setup step to profile setup path' do

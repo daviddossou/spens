@@ -1,4 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
+import { currencySymbol } from "lib/currency_symbols"
 
 const STORAGE_KEY = "spens:landing-country"
 
@@ -17,9 +18,6 @@ const TZ_MAP = {
   "Africa/Accra": "GH",
   "Europe/Paris": "FR",
 }
-
-// Display symbol per currency code (mirrors MoneyHelper#get_currency_symbol).
-const SYMBOLS = { XOF: "FCFA", XAF: "FCFA", GNF: "FG", NGN: "₦", GHS: "GH₵", EUR: "€", USD: "$" }
 
 // Rounded weekly example amount per currency (≈ 1 000 FCFA), for the copy.
 const EXAMPLE_AMOUNTS = { XOF: 1000, XAF: 1000, GNF: 15000, NGN: 2500, GHS: 25, EUR: 2, USD: 2 }
@@ -93,7 +91,7 @@ export default class extends Controller {
       el.textContent = country.cur
     })
     document.querySelectorAll("[data-currency-symbol]").forEach((el) => {
-      el.textContent = SYMBOLS[country.cur] || country.cur
+      el.textContent = currencySymbol(country.cur)
     })
     const example = EXAMPLE_AMOUNTS[country.cur]
     if (example) {

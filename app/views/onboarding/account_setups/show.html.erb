@@ -1,15 +1,69 @@
-<% content_for :title, t('.title') %>
+<% any_accounts = @everyday.any? || @set_aside.any? %>
+<% title = any_accounts ? t('.title_total') : t('.title') %>
+<% content_for :title, title %>
+<% add_link = { turbo_frame: "modal" } %>
 
-<div class="onboarding-container">
-  <%= render Onboarding::ProgressComponent.new(current_step: 'account_setup') %>
+<div class="onboarding-step">
+  <%= render Onboarding::StepHeaderComponent.new(step: 2, title: title) %>
 
+  <div class="onboarding-step__body">
+    <% if any_accounts %>
+      <div class="gather-total">
+        <p class="gather-total__label"><%= t('.total_label') %></p>
+        <p class="gather-total__amount"><%= account_money(@total) %></p>
+        <p class="gather-total__count"><%= t('.total_places', count: @everyday.size + @set_aside.size) %></p>
+      </div>
 
-  <div class="onboarding-content">
-    <header class="onboarding-header">
-      <h1><%= t('.title') %></h1>
-      <p><%= t('.subtitle') %></p>
-    </header>
+      <p class="gather-note"><%= t('.total_note') %></p>
 
-    <%= render 'form' %>
+      <% { everyday: @everyday, set_aside: @set_aside }.each do |group, accounts| %>
+        <% next if accounts.empty? %>
+        <section class="accounts-group">
+          <header class="accounts-group__head">
+            <h2 class="accounts-group__title"><%= t("accounts.index.#{group}") %></h2>
+            <span class="accounts-group__total"><%= account_money(accounts.sum(&:balance)) %></span>
+          </header>
+          <ul class="gather-list">
+            <% accounts.each do |account| %>
+              <li class="gather-list__row">
+                <span class="gather-list__name"><%= account.name %></span>
+                <span class="gather-list__balance"><%= account_money(account.balance) %></span>
+              </li>
+            <% end %>
+          </ul>
+        </section>
+      <% end %>
+
+      <%= link_to new_account_path, class: "gather-add", data: add_link do %>
+        <span aria-hidden="true">+</span> <%= t('.add_another') %>
+      <% end %>
+
+      <div class="onboarding-step__actions">
+        <%= button_to onboarding_account_setups_path, method: :patch,
+                      class: "btn btn-primary btn-lg btn-full-width onboarding-step__cta onboarding-step__cta--two-lines" do %>
+          <span><%= t('.continue') %></span>
+          <small class="onboarding-step__cta-hint"><%= t('.continue_hint') %></small>
+        <% end %>
+        <%= button_to t('.stop'), onboarding_account_setups_path, method: :patch, params: { stop: 1 },
+                      class: "onboarding-step__secondary", form_class: "onboarding-step__secondary-form" %>
+      </div>
+    <% else %>
+      <div class="gather-intro">
+        <h2 class="gather-intro__title"><%= t('.intro_title') %></h2>
+        <p class="gather-intro__text"><%= t('.intro_text') %></p>
+      </div>
+
+      <div class="gather-empty">
+        <h3 class="gather-empty__title"><%= t('.empty_title') %></h3>
+        <p class="gather-empty__text"><%= t('.empty_text') %></p>
+      </div>
+
+      <div class="onboarding-step__actions">
+        <%= link_to t('.add_first'), new_account_path,
+                    class: "btn btn-primary btn-lg btn-full-width onboarding-step__cta", data: add_link %>
+        <%= button_to t('.skip'), onboarding_account_setups_path, method: :patch,
+                      class: "onboarding-step__secondary", form_class: "onboarding-step__secondary-form" %>
+      </div>
+    <% end %>
   </div>
 </div>

@@ -2,6 +2,7 @@ fr:
   picker:
     back: "Retour"
     search: "Rechercher"
+    search_or_create: "Rechercher ou écrire un nom"
     create: "Créer"
     empty: "Rien ne correspond"
     group_planned: "Dans ton plan"

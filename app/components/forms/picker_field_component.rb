@@ -5,7 +5,7 @@
 # creation by name on submit keeps working untouched.
 class Forms::PickerFieldComponent < ViewComponent::Base
   def initialize(form:, field:, rows:, label:, placeholder:, title: nil, help_text: nil,
-                 allow_create: false, grouped: false, empty_label: nil,
+                 allow_create: false, grouped: false, empty_label: nil, focus_search: false,
                  id: nil, chain_to: nil, chain_reason: nil, chain_label: nil, field_data: {})
     @form = form
     @field = field
@@ -15,6 +15,7 @@ class Forms::PickerFieldComponent < ViewComponent::Base
     @title = title || label
     @help_text = help_text
     @allow_create = allow_create
+    @focus_search = focus_search
     @grouped = grouped
     @empty_label = empty_label
     @id = id
@@ -56,6 +57,7 @@ class Forms::PickerFieldComponent < ViewComponent::Base
       picker_grouped_value: grouped,
       picker_change_label_value: t("picker.change")
     }.tap do |data|
+      data[:picker_focus_search_value] = true if @focus_search
       data[:picker_empty_label_value] = empty_label if empty_label.present?
       data[:picker_chain_to_value] = chain_to if chain_to.present?
       data[:picker_chain_label_value] = chain_label if chain_label.present?
