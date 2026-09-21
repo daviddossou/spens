@@ -39,6 +39,7 @@ class User < ApplicationRecord
   # Associations
   has_many :owned_spaces, class_name: "Space", dependent: :destroy
   has_many :memberships, dependent: :destroy
+  has_many :push_subscriptions, dependent: :delete_all
   has_many :spaces, through: :memberships
   has_many :accounts, through: :spaces
   has_many :transaction_types, through: :spaces

@@ -13,6 +13,7 @@ class HomeController < ApplicationController
   end
 
   def show
+    load_reminder_suggestion
     # Analytics
     @currency = current_space.currency
     @total_balance = current_space.accounts.sum(:balance)
@@ -39,5 +40,15 @@ class HomeController < ApplicationController
       format.html
       format.turbo_stream if @page > 1
     end
+  end
+
+  private
+
+  # Offered only on the first page, to a member who records around the same hour.
+  def load_reminder_suggestion
+    return if params[:page].to_i > 1
+
+    @membership = current_user.memberships.find_by(space: current_space)
+    @reminder_hour = @membership && Reminders::HabitSuggestion.new(@membership).hour
   end
 end

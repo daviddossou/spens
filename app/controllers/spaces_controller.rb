@@ -28,6 +28,7 @@ class SpacesController < ApplicationController
   def edit
     @space = current_user.spaces.find(params[:id])
     @can_delete = current_user.spaces.count > 1
+    @membership = current_user.memberships.find_by(space: @space)
   end
 
   def update

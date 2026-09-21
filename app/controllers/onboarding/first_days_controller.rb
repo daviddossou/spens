@@ -11,6 +11,7 @@ class Onboarding::FirstDaysController < OnboardingController
     @categories = spend_by_category
     # From two categories up the day reads better as its split than as a list.
     @recap = @categories.size >= RECAP_FROM
+    @membership = current_user.memberships.find_by(space: current_space)
 
     track_onboarding_step_viewed(@recap ? "first_day_recap" : "first_day")
   end

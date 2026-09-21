@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_09_20_212901) do
+ActiveRecord::Schema[8.0].define(version: 2026_09_21_130510) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -188,6 +188,10 @@ ActiveRecord::Schema[8.0].define(version: 2026_09_20_212901) do
     t.uuid "space_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "reminder_enabled", default: false, null: false
+    t.integer "reminder_hour", default: 20, null: false
+    t.date "reminder_last_sent_on"
+    t.datetime "reminder_declined_at"
     t.index ["space_id"], name: "index_memberships_on_space_id"
     t.index ["user_id", "space_id"], name: "index_memberships_on_user_id_and_space_id", unique: true
     t.index ["user_id"], name: "index_memberships_on_user_id"
@@ -200,6 +204,19 @@ ActiveRecord::Schema[8.0].define(version: 2026_09_20_212901) do
     t.datetime "created_at", null: false
     t.index ["user_id", "event_name"], name: "index_meta_conversions_on_user_id_and_event_name", unique: true
     t.index ["user_id"], name: "index_meta_conversions_on_user_id"
+  end
+
+  create_table "push_subscriptions", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "user_id", null: false
+    t.text "endpoint", null: false
+    t.string "p256dh", null: false
+    t.string "auth", null: false
+    t.string "user_agent"
+    t.datetime "last_used_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["endpoint"], name: "index_push_subscriptions_on_endpoint", unique: true
+    t.index ["user_id"], name: "index_push_subscriptions_on_user_id"
   end
 
   create_table "quick_entry_attempts", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -350,6 +367,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_09_20_212901) do
   add_foreign_key "memberships", "spaces"
   add_foreign_key "memberships", "users"
   add_foreign_key "meta_conversions", "users"
+  add_foreign_key "push_subscriptions", "users"
   add_foreign_key "quick_entry_attempts", "spaces"
   add_foreign_key "quick_entry_attempts", "transactions", on_delete: :nullify
   add_foreign_key "quick_entry_attempts", "users"

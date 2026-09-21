@@ -19,6 +19,7 @@ module OnboardingRedirection
     devise_controller? || controller_path.start_with?("auth/") || controller_name == "rails/health" ||
     controller_name == "invitations" ||
     controller_name == "legal" ||
+    controller_name.in?(%w[reminders push_subscriptions]) ||
     action_name == "destroy" # Allow sign out
   end
 

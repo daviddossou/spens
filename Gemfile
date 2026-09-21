@@ -68,6 +68,9 @@ end
 
 gem "devise", "~> 4.9"
 gem "sidekiq", "~> 7.0"
+
+# Web Push (VAPID) for the evening reminder
+gem "web-push", "~> 3.0"
 gem "redis", "~> 5.0"
 gem "view_component", "~> 3.0"
 gem "rspec-rails", "~> 8.0"

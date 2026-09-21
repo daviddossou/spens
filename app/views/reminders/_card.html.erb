@@ -1,0 +1,25 @@
+<%# The reminder offer, shared by onboarding (source "onboarding", 8 PM) and the dashboard's
+    habit suggestion (source "habit", the hour the member usually notes at). Answering
+    replaces the card in place with what happens next. %>
+<% hour = suggested_hour || membership.reminder_hour %>
+<%= tag.section id: "reminder_card", class: "reminder-card", data: push_data do %>
+  <% if membership.reminder_enabled? %>
+    <p class="reminder-card__answer"><%= t('reminders.card.enabled', hour: reminder_hour_label(membership.reminder_hour)) %></p>
+  <% elsif membership.reminder_declined_at? %>
+    <p class="reminder-card__answer"><%= t('reminders.card.declined') %></p>
+  <% else %>
+    <h2 class="reminder-card__title">
+      <%= source == "habit" ? t('reminders.card.habit_title', hour: reminder_hour_label(hour)) : t('reminders.card.title') %>
+    </h2>
+    <p class="reminder-card__text"><%= t('reminders.card.text', hour: reminder_hour_label(hour)) %></p>
+    <div class="reminder-card__actions">
+      <%= button_to t('reminders.card.accept', hour: reminder_hour_label(hour)), reminder_path, method: :patch,
+                    params: { enabled: 1, hour: hour, source: source },
+                    class: "btn btn-primary btn-lg reminder-card__button", form_class: "reminder-card__form",
+                    data: { action: "click->push#subscribe" } %>
+      <%= button_to t('reminders.card.decline'), reminder_path, method: :patch,
+                    params: { decline: 1, source: source },
+                    class: "btn btn-outline-secondary btn-lg reminder-card__button", form_class: "reminder-card__form" %>
+    </div>
+  <% end %>
+<% end %>

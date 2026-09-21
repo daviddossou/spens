@@ -1,0 +1,34 @@
+en:
+  reminders:
+    hour_format: "%-l %p"
+    daily:
+      title: "Have you noted today's expenses?"
+      body: "Nothing noted today. Three seconds per expense, while you still remember."
+      cta: "Note my expenses"
+      stop_html: "Don't want this reminder anymore? %{link}"
+      stop_link: "Stop it here."
+      stop_text: "To stop this reminder:"
+    card:
+      title: "I can also remind you every evening"
+      habit_title: "You often note around %{hour}. Shall I remind you at that time?"
+      text: "Just once, at %{hour}, and only if you noted nothing. You can turn it off at any time."
+      accept: "Yes, at %{hour}"
+      decline: "Not now"
+      enabled: "Done: I'll remind you at %{hour} on days you noted nothing. You can change the time or turn it off in the space settings."
+      declined: "No problem. You can turn the reminder on whenever you want, in the space settings."
+    settings:
+      title: "Daily reminder"
+      help: "One reminder a day, only if you noted nothing. It is yours alone, not the other members'."
+      toggle: "Remind me to note my expenses"
+      hour_label: "At what time?"
+      save: "Save the reminder"
+      push_on: "This device receives notifications."
+      push_off: "Turn on notifications on this device"
+      push_blocked: "Notifications are blocked for Spens in this browser: the reminder comes by e-mail."
+      push_email: "This device does not receive notifications: the reminder comes by e-mail."
+    unsubscribe:
+      title: "Daily reminder"
+      confirm: "Stop the daily reminder for the space \"%{space}\"?"
+      button: "Stop the reminder"
+      done: "Done: no more reminders for \"%{space}\". You can turn it back on in the space settings."
+      invalid: "This link is no longer valid. You can manage the reminder in the space settings."

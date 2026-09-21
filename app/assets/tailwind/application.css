@@ -30,6 +30,7 @@
 @import "../stylesheets/components/onboarding/account_line.css";
 @import "../stylesheets/components/onboarding/account_setup_form.css";
 @import "../stylesheets/components/onboarding/step.css";
+@import "../stylesheets/components/reminder.css";
 @import "../stylesheets/components/picker.css";
 @import "../stylesheets/components/progress.css";
 @import "../stylesheets/components/pwa_install.css";

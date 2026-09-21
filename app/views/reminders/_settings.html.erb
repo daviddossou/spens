@@ -1,0 +1,27 @@
+<%# The member's own reminder for this space. Lives beside the space form, never inside it. %>
+<%= form_with model: membership, url: reminder_path(space_id: membership.space_id), method: :patch,
+              class: "reminder-settings", data: push_data.merge(turbo_frame: "_top") do |f| %>
+  <h3 class="reminder-settings__title"><%= t('reminders.settings.title') %></h3>
+  <p class="reminder-settings__help"><%= t('reminders.settings.help') %></p>
+
+  <label class="reminder-settings__toggle">
+    <%= f.check_box :reminder_enabled %>
+    <span><%= t('reminders.settings.toggle') %></span>
+  </label>
+
+  <%= render Forms::SelectFieldComponent.new(
+        form: f, field: :reminder_hour, label: t('reminders.settings.hour_label'),
+        options: (0..23).map { |hour| [ reminder_hour_label(hour), hour ] },
+        selected: membership.reminder_hour, searchable: true) %>
+
+  <div class="reminder-settings__push">
+    <p data-push-target="status" data-state="on" hidden><%= t('reminders.settings.push_on') %></p>
+    <p data-push-target="status" data-state="blocked" hidden><%= t('reminders.settings.push_blocked') %></p>
+    <p data-push-target="status" data-state="email" hidden><%= t('reminders.settings.push_email') %></p>
+    <button type="button" class="link-button" data-push-target="status" data-state="off"
+            data-action="push#subscribe" hidden><%= t('reminders.settings.push_off') %></button>
+  </div>
+
+  <%= render Ui::ButtonComponent.new(text: t('reminders.settings.save'), type: :submit, variant: :'outline-secondary',
+                                     size: :lg, full_width: true, form: f) %>
+<% end %>
