@@ -1,0 +1,29 @@
+<% font = "font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;" %>
+<% text = "color: #555; #{font} font-size: 16px; line-height: 1.5;" %>
+<h2 style="color: #333; <%= font %> margin-bottom: 16px;"><%= t('lifecycle_emails.welcome.title', name: @user.first_name) %></h2>
+
+<p style="<%= text %>"><%= t('lifecycle_emails.welcome.intro') %></p>
+
+<ul style="<%= text %> padding-left: 20px;">
+  <% t('lifecycle_emails.welcome.benefits').each do |benefit| %>
+    <li style="margin-bottom: 8px;"><%= benefit %></li>
+  <% end %>
+</ul>
+
+<div style="text-align: center; margin: 24px 0;">
+  <a href="<%= @open_url %>" style="background-color: #3F51B5; color: #fff; padding: 12px 32px; text-decoration: none; border-radius: 8px; <%= font %> font-size: 16px; font-weight: 600;">
+    <%= t('lifecycle_emails.welcome.cta') %>
+  </a>
+</div>
+
+<p style="<%= text %>">
+  <strong><%= t('lifecycle_emails.welcome.find_title') %></strong><br>
+  <%= t('lifecycle_emails.welcome.find_html', link: link_to("spens.me", @home_url, style: "color: #3F51B5;")) %>
+</p>
+
+<p style="<%= text %>"><%= t('lifecycle_emails.welcome.reply') %></p>
+
+<p style="color: #888; <%= font %> font-size: 14px; line-height: 1.5;">
+  <%= t('lifecycle_emails.welcome.stop_html', link: link_to(t('lifecycle_emails.welcome.stop_link'), @stop_url, style: "color: #888;")) %>
+</p>
+<img src="<%= @pixel_url %>" width="1" height="1" alt="" style="display: block; border: 0;">

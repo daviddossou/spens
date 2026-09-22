@@ -49,6 +49,7 @@ class Auth::RegistrationsController < ApplicationController
         email: @user.email,
         attributes: { FIRSTNAME: @user.first_name, LASTNAME: @user.last_name }.compact_blank
       )
+      WelcomeEmailJob.perform_later(@user, I18n.locale.to_s)
 
       # If joining via invitation, set the invited space as current (skip onboarding)
       if accepted_space

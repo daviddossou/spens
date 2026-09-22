@@ -31,6 +31,12 @@
         autocomplete: "email"
       ) %>
 
+      <%= render Forms::ToggleFieldComponent.new(
+        name: "user[lifecycle_emails]",
+        checked: @user.lifecycle_emails?,
+        label: t('lifecycle_emails.profile_toggle')
+      ) %>
+
       <div class="space-y-3">
         <%= render Ui::ButtonComponent.new(
           form: f,

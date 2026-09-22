@@ -59,6 +59,6 @@ module EmailConfirmation
   def email_confirmation_exempt?
     devise_controller? ||
       controller_path.start_with?("auth/") ||
-      controller_name.in?(%w[health path_configuration legal impersonations time_zones reminders push_subscriptions])
+      controller_name.in?(%w[health path_configuration legal impersonations time_zones reminders push_subscriptions email_preferences])
   end
 end

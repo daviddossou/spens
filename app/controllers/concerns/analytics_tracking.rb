@@ -12,6 +12,7 @@ module AnalyticsTracking
   included do
     before_action :set_analytics_context
     before_action :track_app_opened
+    before_action :track_email_return
     after_action :capture_analytics_event
   end
 
@@ -43,6 +44,15 @@ module AnalyticsTracking
 
     session[:analytics_opened_on] = today
     Analytics.track(current_user, "app_opened")
+  end
+
+  # Set by EmailEventsController#click; fires on the first signed-in page after the click,
+  # so a return that had to go through sign-in still counts.
+  def track_email_return
+    return unless session[:email_return] && request.get? && request.format.html?
+    return unless respond_to?(:current_user, true) && current_user
+
+    Analytics.track(current_user, "lifecycle_email_returned", email: session.delete(:email_return))
   end
 
   def capture_analytics_event

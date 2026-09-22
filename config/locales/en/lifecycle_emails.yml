@@ -1,0 +1,25 @@
+en:
+  lifecycle_emails:
+    welcome:
+      subject: "Welcome to Spens: your account is ready"
+      title: "Welcome to Spens, %{name}"
+      intro: "You just created your Spens account. Spens is your pocket ledger: you note what you spend, and you finally see where your money goes."
+      benefits:
+        - "Note an expense in a few seconds, right when it happens."
+        - "Know at any time how much is left to finish the month."
+        - "Follow your savings goals and your debts in one place."
+      cta: "Open Spens"
+      find_title: "Finding Spens again later"
+      find_html: "Go to %{link} and sign in with this e-mail address. No password to remember: we send you a code. You can also add Spens to your phone's home screen."
+      find_text: "Go to %{url} and sign in with this e-mail address. No password to remember: we send you a code. You can also add Spens to your phone's home screen."
+      reply: "A question? Just reply to this e-mail."
+      stop_html: "No longer want our guidance e-mails? %{link}"
+      stop_link: "Unsubscribe here."
+      stop_text: "To stop receiving our guidance e-mails:"
+    unsubscribe:
+      title: "Guidance e-mails"
+      confirm: "Stop receiving guidance e-mails from Spens?"
+      button: "Unsubscribe"
+      done: "Done: you will no longer receive these e-mails. Sign-in codes keep coming. You can change your mind in your profile."
+      invalid: "This link is no longer valid. You can manage these e-mails in your profile."
+    profile_toggle: "Receive guidance e-mails from Spens"
