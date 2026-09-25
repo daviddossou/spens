@@ -158,7 +158,9 @@ Rails.application.routes.draw do
       resource :savings_projections, only: [ :show, :update ]
       resource :financial_goals, only: [ :show, :update ]
       resource :profile_setups, only: [ :show, :update ]
-      resource :account_setups, only: [ :show, :update ]
+      resource :account_setups, only: [ :show, :update ] do
+        post :nudge
+      end
       resource :first_days, only: [ :show, :update ]
     end
   end

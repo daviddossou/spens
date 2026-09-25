@@ -5,6 +5,7 @@
 # Table name: memberships
 #
 #  id                    :uuid             not null, primary key
+#  accounts_nudge_at     :datetime
 #  reminder_declined_at  :datetime
 #  reminder_enabled      :boolean          default(FALSE), not null
 #  reminder_hour         :integer          default(20), not null
@@ -44,6 +45,7 @@ class Membership < ApplicationRecord
   ##
   # Scopes
   scope :reminding, -> { where(reminder_enabled: true) }
+  scope :nudge_due, -> { where(accounts_nudge_at: ..Time.current) }
 
   # The member's clock: their own zone, else the space's, else West Africa.
   def time_zone

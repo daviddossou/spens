@@ -10,6 +10,9 @@
 #     schedule: at 5am every day
 
 production:
+  onboarding_accounts_nudges:
+    class: Onboarding::AccountsNudgeJob
+    schedule: every 10 minutes
   daily_reminders:
     class: Reminders::DispatchJob
     schedule: every hour at minute 0

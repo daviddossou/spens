@@ -447,3 +447,48 @@
 .day-recap .analyses-slim__name {
   font-weight: 500;
 }
+
+/* "Remind me later" at step 2: a folded row of delays, never a way past the step. */
+.gather-later {
+  margin-top: 0.5rem;
+  text-align: center;
+}
+
+.gather-later summary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  list-style: none;
+}
+
+.gather-later summary::-webkit-details-marker {
+  display: none;
+}
+
+.gather-later__options {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.gather-later__options form {
+  display: contents;
+}
+
+.gather-later__option {
+  width: 100%;
+  min-height: 2.75rem;
+  padding-inline: 0.5rem;
+  border-radius: 12px;
+  font-size: 0.9375rem;
+}
+
+.gather-nudged {
+  margin: 1rem 0 0;
+  padding: 0.875rem 1rem;
+  background: var(--color-primary-tint);
+  border-radius: 14px;
+  line-height: 1.5;
+  color: var(--color-primary-ink);
+}

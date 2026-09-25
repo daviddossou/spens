@@ -11,8 +11,11 @@ class Onboarding::AccountSetupsController < OnboardingController
     track_onboarding_step_viewed("account_setup")
   end
 
-  # Moves on, with or without accounts ("I don't have my accounts on me"), or stops here.
+  # Moves on, or stops here. Either way at least one account exists: the step is the point
+  # where the app starts meaning something, so it cannot be skipped.
   def update
+    return redirect_to onboarding_account_setups_path, status: :see_other if current_space.accounts.active.none?
+
     current_space.update!(onboarding_current_step: stopping? ? STOPPED : NEXT_STEP)
     track_step_left
 
@@ -20,6 +23,18 @@ class Onboarding::AccountSetupsController < OnboardingController
   rescue StandardError => e
     Rails.logger.error "Error in Onboarding::AccountSetupsController#update: #{e.message}"
     redirect_to onboarding_account_setups_path, alert: t("onboarding.errors.generic"), status: :see_other
+  end
+
+  # "Remind me later": a one-off nudge back to this step, in a while chosen by the user.
+  def nudge
+    delay = Onboarding::AccountsNudge::DELAYS[params[:in].to_s]
+    return redirect_to onboarding_account_setups_path, status: :see_other unless delay
+
+    membership = current_user.memberships.find_by!(space: current_space)
+    membership.update!(accounts_nudge_at: delay.call(membership.time_zone))
+    Analytics.track(current_user, "onboarding_accounts_nudge_set", in: params[:in].to_s)
+
+    redirect_to onboarding_account_setups_path(nudged: 1), status: :see_other
   end
 
   private
@@ -37,7 +52,7 @@ class Onboarding::AccountSetupsController < OnboardingController
   def track_step_left
     names = current_space.accounts.active.pluck(:name)
     templates = names.filter_map { |name| account_template_key(name) }
-    properties = { accounts: names.size, skipped: names.empty?, stopped_here: stopping?,
+    properties = { accounts: names.size, stopped_here: stopping?,
                    account_templates: templates.uniq, custom_accounts: names.size - templates.size }
 
     track_onboarding_step_completed("account_setup", properties)

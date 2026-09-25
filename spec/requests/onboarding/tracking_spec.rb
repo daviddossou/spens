@@ -71,7 +71,7 @@ RSpec.describe "Onboarding analytics", type: :request do
     patch onboarding_account_setups_path, params: { stop: 1 }
 
     completed = event("onboarding_completed")
-    expect(completed).to include(accounts: 2, skipped: false, account_templates: %w[mobile_money], custom_accounts: 1,
+    expect(completed).to include(accounts: 2, account_templates: %w[mobile_money], custom_accounts: 1,
                                  financial_goals: %w[track_spending], country: "BJ")
     expect(completed.to_s).not_to include("Tontine")
   end

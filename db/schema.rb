@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_09_21_185437) do
+ActiveRecord::Schema[8.0].define(version: 2026_09_22_084206) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -192,6 +192,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_09_21_185437) do
     t.integer "reminder_hour", default: 20, null: false
     t.date "reminder_last_sent_on"
     t.datetime "reminder_declined_at"
+    t.datetime "accounts_nudge_at"
     t.index ["space_id"], name: "index_memberships_on_space_id"
     t.index ["user_id", "space_id"], name: "index_memberships_on_user_id_and_space_id", unique: true
     t.index ["user_id"], name: "index_memberships_on_user_id"

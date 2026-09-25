@@ -86,16 +86,24 @@ fr:
         congrats:
           one: "Félicitations ! Tu as enregistré ta première transaction. Tu as vu que c'était rapide ? À partir de maintenant, note-la au moment où tu payes."
           other: "Félicitations ! Tu as enregistré tes premières transactions. Tu as vu que c'était rapide ? À partir de maintenant, note-les au moment où tu payes."
+    accounts_nudge:
+      title: "Va chercher tes soldes"
+      body: "Ouvre ton appli Mobile Money, regarde le solde, et note-le dans Spens. Trente secondes."
+      cta: "Ajouter mon premier compte"
     account_setups:
       show:
         title: "Rassemble ton argent"
         title_total: "Ton argent en entier"
         intro_title: "Enregistre les endroits où tu gardes ton argent"
-        intro_text: "Fais l'effort d'ouvrir ton appli Mobile Money ou bancaire, de compter ton cash pour renseigner les bons montants. Commence maintenant, tu peux compléter le reste après."
+        intro_text: "Ouvre ton appli Mobile Money ou bancaire : le solde est dedans, ça prend trente secondes. Un compte suffit pour commencer, tu ajouteras les autres après."
         empty_title: "Aucun endroit pour l'instant"
         empty_text: "Commence par celui que tu connais par cœur : l'argent que tu as sur toi, là, maintenant."
         add_first: "Ajouter mon premier endroit"
-        skip: "Je n'ai pas mes comptes sur moi"
+        later: "Me le rappeler plus tard"
+        later_1h: "Dans 1 h"
+        later_tonight: "Ce soir"
+        later_tomorrow: "Demain matin"
+        nudged: "C'est noté, je te le rappelle. En attendant, un seul compte suffit pour continuer."
         total_label: "Tu as en tout"
         total_places:
           one: "dans 1 endroit"
