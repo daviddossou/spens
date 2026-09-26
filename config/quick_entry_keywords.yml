@@ -20,6 +20,9 @@ en:
       [lent, loaned, gave a loan, fronted, spotted]
     debt_borrowed:
       [borrowed, owe, i owe, took a loan]
+    # Settling a debt either way; who repays whom is read from the sentence (Parser).
+    debt_repaid:
+      [repaid, paid back, pay back, payback, paid me back, reimbursed me]
   # For transfers: which account is the source vs the destination. Matched as the word
   # right before an account name (articles like "my"/"the" are skipped).
   transfer_prepositions:
@@ -74,7 +77,9 @@ fr:
     debt_lent:
       [prete, prêté, pret, prêt, j'ai prete, avance, avancé]
     debt_borrowed:
-      [emprunte, emprunté, je dois, j'ai emprunte, dette]
+      [emprunte, emprunté, je dois, j'ai emprunte, dette, me doit]
+    debt_repaid:
+      [rembourse, remboursé, remboursee, remboursée, remboursement]
   transfer_prepositions:
     from: [de, du, depuis]
     to: [a, au, aux, vers, sur]

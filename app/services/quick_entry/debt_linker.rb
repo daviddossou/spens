@@ -22,7 +22,7 @@ module QuickEntry
     def link
       return @draft if @draft.amount.blank?
 
-      debt = matching_debt or return @draft
+      debt = matching_debt or return unlinked
 
       case @draft.kind
       when "income"    then auto_linked(debt, "debt_in")  # received from them → repaid, direction clear
@@ -33,6 +33,18 @@ module QuickEntry
     end
 
     private
+
+    # A repayment names someone we have no ongoing debt with: open the form rather than
+    # auto-create a debt that is settled the moment it exists.
+    def unlinked
+      repayment? ? @draft.with(unresolved: @draft.unresolved | [ :debt ]) : @draft
+    end
+
+    # Money flowing against the direction: they pay back what I lent, I pay back what I borrowed.
+    def repayment?
+      DEBT_KINDS.include?(@draft.kind) && DIRECTION_KIND[@draft.direction].present? &&
+        DIRECTION_KIND[@draft.direction] != @draft.kind
+    end
 
     # A clear category means it's a real categorised expense, not a debt with this person.
     def expense_debt(debt)
@@ -56,13 +68,18 @@ module QuickEntry
       )
     end
 
-    # First ongoing debt whose person name appears in the utterance (accent/case-insensitive).
+    # First ongoing debt whose person name appears in the utterance (accent/case-insensitive);
+    # when the phrase settled a direction, only a debt of that direction matches, so "prêté à
+    # Doris" never lands on what I owe her.
     def matching_debt
       normalized = CategoryText.normalize(@text)
-      @space.debts.ongoing.find do |debt|
+      candidates = @space.debts.ongoing.select do |debt|
         name = CategoryText.normalize(debt.name)
         name.length >= 2 && normalized.include?(name)
       end
+      return candidates.first if @draft.direction.blank?
+
+      candidates.find { |debt| debt.direction == @draft.direction }
     end
   end
 end

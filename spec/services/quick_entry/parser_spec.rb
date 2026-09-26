@@ -278,5 +278,75 @@ RSpec.describe QuickEntry::Parser do
       expect(draft.unresolved).to include(:debt)
       expect(draft).not_to be_confident
     end
+
+    # kind + direction drive the form's four cards: (debt_out, lent) "J'ai prêté à X",
+    # (debt_in, borrowed) "X m'a prêté", (debt_in, lent) "X m'a remboursé", (debt_out, borrowed)
+    # "J'ai remboursé X".
+    describe "who lends to whom" do
+      def flow(text, locale: :fr)
+        d = parse(text, locale: locale)
+        [ d.kind, d.direction, d.contact_name ]
+      end
+
+      it "reads 'X m'a prêté' as a loan I received (money in, I owe more)" do
+        draft = parse("Doris m'a prêté 12,95 euros", locale: :fr)
+        expect(draft.kind).to eq("debt_in")
+        expect(draft.direction).to eq("borrowed")
+        expect(draft.contact_name).to eq("Doris")
+        expect(draft.amount).to eq(12.95)
+        expect(draft).to be_confident
+      end
+
+      it "keeps 'j'ai prêté à X' as a loan I made" do
+        expect(flow("j'ai prêté 12,95 euros à Doris")).to eq([ "debt_out", "lent", "Doris" ])
+        expect(flow("prêté 5000 à Doris")).to eq([ "debt_out", "lent", "Doris" ])
+      end
+
+      it "reads 'X m'a remboursé' as them paying back what I lent" do
+        expect(flow("Doris m'a remboursé 20 euros")).to eq([ "debt_in", "lent", "Doris" ])
+        expect(flow("Doris m'a remboursé 20,50 €")).to eq([ "debt_in", "lent", "Doris" ])
+      end
+
+      it "reads 'j'ai remboursé X' as me paying back what I borrowed" do
+        expect(flow("j'ai remboursé Doris 20 euros")).to eq([ "debt_out", "borrowed", "Doris" ])
+        expect(flow("j'ai remboursé 20 euros à Doris")).to eq([ "debt_out", "borrowed", "Doris" ])
+        expect(flow("remboursé 20 euros à Doris")).to eq([ "debt_out", "borrowed", "Doris" ])
+      end
+
+      it "flips 'emprunté' and 'doit' the same way" do
+        expect(flow("j'ai emprunté 10000 à Marie")).to eq([ "debt_in", "borrowed", "Marie" ])
+        expect(flow("Marie m'a emprunté 10000")).to eq([ "debt_out", "lent", "Marie" ])
+        expect(flow("Marie me doit 10000")).to eq([ "debt_out", "lent", "Marie" ])
+      end
+
+      it "handles the English forms" do
+        expect(flow("Doris lent me 50", locale: :en)).to eq([ "debt_in", "borrowed", "Doris" ])
+        expect(flow("lent 50 to Doris", locale: :en)).to eq([ "debt_out", "lent", "Doris" ])
+        expect(flow("borrowed 50 from Doris", locale: :en)).to eq([ "debt_in", "borrowed", "Doris" ])
+        expect(flow("Doris owes me 50", locale: :en)).to eq([ "debt_out", "lent", "Doris" ])
+        expect(flow("I owe Doris 50", locale: :en)).to eq([ "debt_in", "borrowed", "Doris" ])
+        expect(flow("Doris paid me back 50", locale: :en)).to eq([ "debt_in", "lent", "Doris" ])
+        expect(flow("I paid Doris back 50", locale: :en)).to eq([ "debt_out", "borrowed", "Doris" ])
+        expect(flow("paid back 50 to Doris", locale: :en)).to eq([ "debt_out", "borrowed", "Doris" ])
+      end
+
+      it "keeps a possessive with the subject and a two-word name" do
+        expect(flow("ma soeur m'a prêté 50")).to eq([ "debt_in", "borrowed", "ma soeur" ])
+        expect(flow("Jean Paul m'a prêté 50")).to eq([ "debt_in", "borrowed", "Jean Paul" ])
+      end
+
+      it "reads the flow but no person from a pronoun subject" do
+        draft = parse("elle m'a prêté 50", locale: :fr)
+        expect([ draft.kind, draft.direction ]).to eq([ "debt_in", "borrowed" ])
+        expect(draft.contact_name).to be_nil
+        expect(draft.unresolved).to include(:debt)
+      end
+
+      it "leaves a refund with nobody on the other side as income" do
+        draft = parse("remboursement Amazon 20 euros", locale: :fr)
+        expect(draft.kind).to eq("income")
+        expect(parse("refund 20 from the store").kind).to eq("income")
+      end
+    end
   end
 end

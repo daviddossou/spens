@@ -9,7 +9,22 @@ module QuickEntry
     # Words tolerated between a fee amount and its keyword ("700 comme frais", "fee of 700").
     FEE_FILLERS = %w[de du d of as comme en pour].freeze
     DEBT_KINDS = %w[debt_in debt_out].freeze
-    DEBT_DIRECTION = { "debt_out" => "lent", "debt_in" => "borrowed" }.freeze
+    # Keyword group → what the verb says happened, before reading who did it to whom.
+    DEBT_VERBS = { "debt_repaid" => :repaid, "debt_lent" => :lent, "debt_borrowed" => :borrowed }.freeze
+    # kind + direction of each debt movement: a loan I made, a loan I received, and their repayments.
+    LENT_OUT     = [ "debt_out", "lent" ].freeze
+    LENT_IN      = [ "debt_in", "lent" ].freeze
+    BORROWED_IN  = [ "debt_in", "borrowed" ].freeze
+    BORROWED_OUT = [ "debt_out", "borrowed" ].freeze
+    # The speaker as the verb's object ("Doris m'a prêté", "lent me", "owes me", "from me").
+    OBJECT_ME = /\A(?:me|m['’]\p{L}+)\z/i
+    # The speaker as the verb's subject ("j'ai remboursé", "I paid back").
+    SUBJECT_ME = /\A(?:i|je|j['’]\p{L}+)\z/i
+    # Subjects that name nobody: the person then comes from the LLM or the form.
+    SUBJECT_PRONOUNS = %w[il elle on ils elles qui he she they it who someone somebody].freeze
+    POSSESSIVES = %w[mon ma mes my].freeze
+    # "paid back" with the person in between ("paid Doris back", "pay her back").
+    PAY_BACK = /\bpa(?:id|y)\b(?:\s+\S+){1,2}\s+back\b/
     # Prepositions that introduce the debt's counterparty ("to John", "à Jean", "from Marie").
     PERSON_PREPS = %w[to from a au aux chez unto].freeze
     # Words that end a name run, so we never swallow "…to John for rent" into the name.
@@ -48,9 +63,9 @@ module QuickEntry
       DEBT_KINDS.include?(@kind)
     end
 
-    # A debt keyword fixed the direction (lent → debt_out, borrowed → debt_in); pull the
-    # counterparty out of the text so a brand-new loan can auto-create without the LLM. No
-    # person found → prefill the debt form (unresolved: :debt) instead of guessing.
+    # A debt verb fixed the flow and direction; pull the counterparty out of the text so a
+    # brand-new loan can auto-create without the LLM. No person found → prefill the debt form
+    # (unresolved: :debt) instead of guessing.
     def debt_draft
       person = detect_person
 
@@ -63,7 +78,7 @@ module QuickEntry
         amount: @amount,
         account_name: detect_account,
         contact_name: person,
-        direction: DEBT_DIRECTION.fetch(@kind),
+        direction: @direction,
         fee_amount: @fee,
         transaction_date: detect_date,
         description: @text.presence,
@@ -72,24 +87,74 @@ module QuickEntry
       )
     end
 
-    # The counterparty is the word after the last person-preposition ("…to John"), keeping a
-    # second word only when it reads as a proper name ("Jean Paul"). Original casing is kept
-    # for display; FindOrCreateDebtService matches case-insensitively.
+    # The counterparty: the sentence's subject when the speaker is the object ("Doris m'a
+    # prêté"), else the word after the last person-preposition ("…to John") or right after the
+    # verb ("lent John 50"). Original casing is kept for display; FindOrCreateDebtService
+    # matches case-insensitively.
     def detect_person
+      return subject_person if object_me?
+
+      preposition_person || verb_object_person
+    end
+
+    def preposition_person
       toks = raw_tokens
-      low  = toks.map { |t| translit(t) }
+      low  = translit_tokens
       idx  = low.rindex { |t| PERSON_PREPS.include?(t) }
       return nil unless idx && idx + 1 < toks.size
-      return nil if name_stop?(low[idx + 1])
+      return nil if idx.positive? && low[idx - 1] == "m" # "m a prêté" dictated without its apostrophe
 
-      name = [ toks[idx + 1] ]
-      nxt  = toks[idx + 2]
-      name << nxt if nxt && capitalized?(nxt) && !name_stop?(low[idx + 2])
+      name_at(idx + 1)
+    end
+
+    # "lent John 50", "j'ai remboursé Doris". A repayment only reads a name here when the
+    # speaker is the subject: "remboursement Amazon" is a refund, not a debt.
+    def verb_object_person
+      return nil if @debt_verb == :repaid && !subject_me?
+
+      idx = verb_index or return nil
+      name_at(idx + 1)
+    end
+
+    # The word(s) right before the object pronoun (FR: "Doris m'a…") or the verb (EN: "Doris
+    # lent me…"); a possessive is kept ("ma soeur"). A pronoun subject names nobody.
+    def subject_person
+      idx = @lang == "fr" ? object_me_indices.first : verb_index
+      return nil if idx.nil? || idx.zero?
+
+      low = translit_tokens
+      return nil if SUBJECT_PRONOUNS.include?(low[idx - 1]) || name_stop?(low[idx - 1])
+
+      name = [ raw_tokens[idx - 1] ]
+      prev = idx - 2
+      if prev >= 0 && POSSESSIVES.include?(low[prev])
+        name.unshift(raw_tokens[prev])
+      elsif prev >= 0 && capitalized?(raw_tokens[prev]) && capitalized?(name.first) && !name_stop?(low[prev])
+        name.unshift(raw_tokens[prev])
+      end
+      name.join(" ")
+    end
+
+    # The name starting at token idx, keeping a second word only when it reads as a proper
+    # name ("Jean Paul").
+    def name_at(idx)
+      toks = raw_tokens
+      low  = translit_tokens
+      return nil if idx >= toks.size || name_stop?(low[idx]) || SUBJECT_PRONOUNS.include?(low[idx])
+
+      name = [ toks[idx] ]
+      nxt  = toks[idx + 1]
+      name << nxt if nxt && capitalized?(nxt) && !name_stop?(low[idx + 1])
       name.join(" ")
     end
 
     def name_stop?(tok)
-      tok.nil? || tok.empty? || ARTICLES.include?(tok) || NAME_STOPS.include?(tok) || number_token?(tok)
+      tok.nil? || tok.empty? || ARTICLES.include?(tok) || NAME_STOPS.include?(tok) || number_token?(tok) ||
+        tok.match?(OBJECT_ME) || tok.match?(SUBJECT_ME)
+    end
+
+    def translit_tokens
+      @translit_tokens ||= raw_tokens.map { |t| translit(t) }
     end
 
     def capitalized?(tok)
@@ -205,17 +270,73 @@ module QuickEntry
     # --- kind ---------------------------------------------------------------
 
     def detect_kind
-      kw = Keywords.kind(@lang)
-      detected =
-        if match_any?(kw["debt_lent"]) then "debt_out"
-        elsif match_any?(kw["debt_borrowed"]) then "debt_in"
-        elsif match_any?(kw["transfer"]) then "transfer"
-        elsif match_any?(kw["income"]) then "income"
-        else learned_kind
-        end
-
+      detected = debt_kind || plain_kind
       @explicit_kind = !detected.nil?
       detected || "expense"
+    end
+
+    def plain_kind
+      kw = Keywords.kind(@lang)
+      if match_any?(kw["transfer"]) then "transfer"
+      elsif match_any?(kw["income"]) then "income"
+      else learned_kind
+      end
+    end
+
+    # A debt verb plus who did it to whom settle the flow and the direction together. The
+    # speaker as the verb's object flips it: "Doris m'a prêté" is a loan I received, "Doris
+    # owes me" one I made. A repayment with nobody on the other side is a plain refund.
+    def debt_kind
+      kw = Keywords.kind(@lang)
+      @debt_verb = DEBT_VERBS.find { |group, _| match_any?(kw[group]) }&.last
+      @debt_verb ||= :repaid if @lang == "en" && loose_text.match?(PAY_BACK)
+      return nil unless @debt_verb
+
+      @kind, @direction =
+        case @debt_verb
+        when :lent     then object_me? ? BORROWED_IN : LENT_OUT
+        when :borrowed then object_me? ? LENT_OUT : BORROWED_IN
+        when :repaid   then repayment_flow
+        end
+      @kind
+    end
+
+    # "Doris m'a remboursé" → money in against what I lent; "j'ai remboursé Doris" /
+    # "remboursé 50 à Doris" → money out against what I borrowed; otherwise not a debt.
+    def repayment_flow
+      return LENT_IN if object_me?
+      return BORROWED_OUT if subject_me? || preposition_person.present?
+
+      [ nil, nil ]
+    end
+
+    # FR puts the object pronoun before the verb ("m'a prêté"), EN after ("lent me").
+    def object_me?
+      return @object_me if defined?(@object_me)
+
+      verb = verb_index
+      @object_me = !verb.nil? && object_me_indices.any? { |i| @lang == "fr" ? i < verb : i > verb }
+    end
+
+    def object_me_indices
+      low = translit_tokens
+      low.each_index.select do |i|
+        low[i].match?(OBJECT_ME) || (low[i] == "m" && %w[a ont].include?(low[i + 1]))
+      end
+    end
+
+    def subject_me?
+      translit_tokens.any? { |t| t.match?(SUBJECT_ME) }
+    end
+
+    # Position of the debt verb: the first token carrying a significant word of the matched
+    # keyword group (so "j'ai prêté" locates "prêté", "owes" is found through "owe").
+    def verb_index
+      return @verb_index if defined?(@verb_index)
+
+      words = Array(Keywords.kind(@lang)[DEBT_VERBS.key(@debt_verb)])
+              .flat_map { |p| translit(p).split(/[^a-z0-9-]+/) }.select { |w| w.length >= 3 }.uniq
+      @verb_index = translit_tokens.index { |t| words.any? { |w| t.include?(w) } }
     end
 
     # Learned verbs (LearnedKeyword), consulted only after the built-in sets miss, so they fill

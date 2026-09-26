@@ -56,6 +56,33 @@ RSpec.describe QuickEntry::DebtLinker do
     expect(described_class.link(d, text: "Remboursement par Sosthène", space: space)).to eq(d)
   end
 
+  it "links a repayment to the debt of the direction the phrase settled" do
+    create(:debt, user: user, name: "Ama", direction: "lent")
+    borrowed = create(:debt, user: user, name: "Ama", direction: "borrowed")
+    repayment = draft(kind: "debt_out").with(direction: "borrowed", contact_name: "Ama")
+
+    linked = described_class.link(repayment, text: "j'ai remboursé Ama 5000", space: space)
+
+    expect(linked.debt_id).to eq(borrowed.id)
+    expect(linked).to be_confident
+  end
+
+  it "opens the form for a repayment from someone we have no ongoing debt with" do
+    repayment = draft(kind: "debt_in").with(direction: "lent", contact_name: "Doris")
+
+    linked = described_class.link(repayment, text: "Doris m'a remboursé 5000", space: space)
+
+    expect(linked.debt_id).to be_nil
+    expect(linked.unresolved).to include(:debt)
+    expect(linked).not_to be_confident
+  end
+
+  it "still auto-creates a new loan with a new person" do
+    loan = draft(kind: "debt_in").with(direction: "borrowed", contact_name: "Doris")
+
+    expect(described_class.link(loan, text: "Doris m'a prêté 5000", space: space)).to be_confident
+  end
+
   it "matches the person accent- and case-insensitively" do
     debt = create(:debt, user: user, name: "Sosthène", direction: "lent")
 
