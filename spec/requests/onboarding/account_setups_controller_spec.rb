@@ -22,13 +22,13 @@ RSpec.describe 'Onboarding::AccountSetupsController', type: :request do
     before { sign_in user, scope: :user }
 
     describe 'GET /onboarding/account_setups' do
-      it 'opens on the invitation to add a first place, with a way to skip' do
+      it 'opens on the invitation to add a first place, with a reminder for later' do
         get onboarding_account_setups_path
 
         expect(response).to have_http_status(:success)
         expect(response.body).to include(I18n.t('onboarding.step_header_component.step', step: 2, total: 3))
         expect(response.body).to include(I18n.t('onboarding.account_setups.show.add_first'))
-        expect(response.body).to include(CGI.escapeHTML(I18n.t('onboarding.account_setups.show.skip')))
+        expect(response.body).to include(CGI.escapeHTML(I18n.t('onboarding.account_setups.show.later')))
         expect(response.body).to match(/<turbo-frame[^>]*id="modal"/)
       end
 
@@ -41,7 +41,7 @@ RSpec.describe 'Onboarding::AccountSetupsController', type: :request do
         expect(response.body).to include(I18n.t('onboarding.account_setups.show.title_total'))
         expect(response.body).to include(I18n.t('accounts.index.everyday'), I18n.t('accounts.index.set_aside'))
         expect(response.body).to include(I18n.t('onboarding.account_setups.show.total_places', count: 2))
-        expect(response.body).not_to include(CGI.escapeHTML(I18n.t('onboarding.account_setups.show.skip')))
+        expect(response.body).not_to include(CGI.escapeHTML(I18n.t('onboarding.account_setups.show.later')))
       end
     end
 
@@ -77,10 +77,11 @@ RSpec.describe 'Onboarding::AccountSetupsController', type: :request do
         expect(space.reload.onboarding_current_step).to eq('onboarding_first_day')
       end
 
-      it 'lets someone without their accounts at hand move on' do
+      it 'refuses to move on without an account' do
         patch onboarding_account_setups_path
 
-        expect(response).to redirect_to(onboarding_first_days_path)
+        expect(response).to redirect_to(onboarding_account_setups_path)
+        expect(space.reload.onboarding_current_step).to eq('onboarding_account_setup')
       end
 
       it 'completes onboarding for someone who stops here' do
@@ -94,10 +95,31 @@ RSpec.describe 'Onboarding::AccountSetupsController', type: :request do
 
       it 'works for a space whose country could not be guessed' do
         space.update_columns(country: nil)
+        add_account('Porte-monnaie', '12050')
 
         patch onboarding_account_setups_path, params: { stop: 1 }
 
         expect(space.reload).to be_onboarding_completed
+      end
+    end
+
+    describe 'POST /onboarding/account_setups/nudge' do
+      it 'schedules a one-off nudge and keeps the user on the step' do
+        allow(Analytics).to receive(:track)
+        travel_to Time.utc(2026, 9, 22, 9) do # 10:00 in Porto-Novo
+          post nudge_onboarding_account_setups_path, params: { in: 'tonight' }
+        end
+
+        expect(response).to redirect_to(onboarding_account_setups_path(nudged: 1))
+        expect(user.memberships.find_by(space: space).accounts_nudge_at).to eq(Time.utc(2026, 9, 22, 19))
+        expect(space.reload.onboarding_current_step).to eq('onboarding_account_setup')
+      end
+
+      it 'ignores an unknown delay' do
+        post nudge_onboarding_account_setups_path, params: { in: 'never' }
+
+        expect(response).to redirect_to(onboarding_account_setups_path)
+        expect(user.memberships.find_by(space: space).accounts_nudge_at).to be_nil
       end
     end
   end

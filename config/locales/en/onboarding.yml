@@ -86,16 +86,24 @@ en:
         congrats:
           one: "Congratulations! You recorded your first transaction. See how quick that was? From now on, note it the moment you pay."
           other: "Congratulations! You recorded your first transactions. See how quick that was? From now on, note them the moment you pay."
+    accounts_nudge:
+      title: "Go get your balances"
+      body: "Open your Mobile Money app, check the balance, and note it in Spens. Thirty seconds."
+      cta: "Add my first account"
     account_setups:
       show:
         title: "Gather your money"
         title_total: "All your money"
         intro_title: "Record the places where you keep your money"
-        intro_text: "Take the time to open your Mobile Money or banking app and count your cash, so the amounts are right. Start now, you can fill in the rest later."
+        intro_text: "Open your Mobile Money or banking app: the balance is right there, it takes thirty seconds. One account is enough to start, you will add the others later."
         empty_title: "No place yet"
         empty_text: "Start with the one you know by heart: the money you have on you, right now."
         add_first: "Add my first place"
-        skip: "I don't have my accounts on me"
+        later: "Remind me later"
+        later_1h: "In 1 hour"
+        later_tonight: "Tonight"
+        later_tomorrow: "Tomorrow morning"
+        nudged: "Noted, I will remind you. Meanwhile, one account is enough to continue."
         total_label: "You have in total"
         total_places:
           one: "in 1 place"

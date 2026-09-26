@@ -58,11 +58,23 @@
         <p class="gather-empty__text"><%= t('.empty_text') %></p>
       </div>
 
+      <% if params[:nudged] %>
+        <p class="gather-nudged"><%= t('.nudged') %></p>
+      <% end %>
+
       <div class="onboarding-step__actions">
         <%= link_to t('.add_first'), new_account_path,
                     class: "btn btn-primary btn-lg btn-full-width onboarding-step__cta", data: add_link %>
-        <%= button_to t('.skip'), onboarding_account_setups_path, method: :patch,
-                      class: "onboarding-step__secondary", form_class: "onboarding-step__secondary-form" %>
+        <%# Not a way out: the step waits for one account. A nudge brings the user back. %>
+        <details class="gather-later">
+          <summary class="onboarding-step__secondary"><%= t('.later') %></summary>
+          <div class="gather-later__options">
+            <% Onboarding::AccountsNudge::DELAYS.each_key do |key| %>
+              <%= button_to t(".later_#{key}"), nudge_onboarding_account_setups_path, params: { in: key },
+                            class: "btn btn-outline-secondary gather-later__option" %>
+            <% end %>
+          </div>
+        </details>
       </div>
     <% end %>
   </div>

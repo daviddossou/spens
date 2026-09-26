@@ -9,6 +9,10 @@ RSpec.describe 'Onboarding::FirstDaysController', type: :request do
   let(:space) { user.spaces.first }
   let(:copy) { ->(key, **options) { CGI.escapeHTML(I18n.t("onboarding.first_days.show.#{key}", **options)) } }
 
+  # Fixed noon: the controller reads "today" in the member's zone (UTC+1); around midnight
+  # UTC the spec's Date.current and the controller's would name different days.
+  before { travel_to Time.utc(2026, 9, 22, 12) }
+
   def note_expense(amount, category)
     post transactions_path, params: { transaction: { kind: 'expense', amount: amount, transaction_type_name: category,
                                                      transaction_date: Date.current } }
