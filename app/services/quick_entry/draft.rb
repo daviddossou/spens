@@ -25,13 +25,13 @@ module QuickEntry
 
     # Enough to auto-create without review. Debts also auto-create a NEW counterparty when the
     # direction is clear (a known debt links by id; a new one is created from name + direction on
-    # submit) — but never when the direction itself is unresolved. New accounts still need the form.
+    # submit) — but never when the direction or the person is still unresolved. New accounts still need the form.
     def confident?
       return false if unresolved.include?(:amount)
 
       case kind
       when *CATEGORY_KINDS then amount.present? && transaction_type_name.present?
-      when *DEBT_KINDS     then amount.present? && (debt_id.present? || (contact_name.present? && direction.present?)) && unresolved.exclude?(:direction)
+      when *DEBT_KINDS     then amount.present? && (debt_id.present? || (contact_name.present? && direction.present?)) && (unresolved & %i[direction debt]).empty?
       when "transfer"      then amount.present? && from_account_name.present? && to_account_name.present?
       else false
       end
