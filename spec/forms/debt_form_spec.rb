@@ -96,19 +96,19 @@ RSpec.describe DebtForm, type: :model do
       it 'is invalid without contact_name' do
         form.contact_name = nil
         expect(form).not_to be_valid
-        expect(form.errors[:contact_name]).to include("can't be blank")
+        expect(form.errors).to be_of_kind(:contact_name, :blank)
       end
 
       it 'is invalid with empty contact_name' do
         form.contact_name = ''
         expect(form).not_to be_valid
-        expect(form.errors[:contact_name]).to include("can't be blank")
+        expect(form.errors).to be_of_kind(:contact_name, :blank)
       end
 
       it 'is invalid with contact_name longer than 100 characters' do
         form.contact_name = 'a' * 101
         expect(form).not_to be_valid
-        expect(form.errors[:contact_name]).to include('is too long (maximum is 100 characters)')
+        expect(form.errors).to be_of_kind(:contact_name, :too_long)
       end
 
       it 'is valid with contact_name of 100 characters' do
@@ -130,13 +130,13 @@ RSpec.describe DebtForm, type: :model do
       it 'is invalid with zero total_lent' do
         form.total_lent = 0
         expect(form).not_to be_valid
-        expect(form.errors[:total_lent]).to include('must be greater than 0')
+        expect(form.errors).to be_of_kind(:total_lent, :greater_than)
       end
 
       it 'is invalid with negative total_lent' do
         form.total_lent = -100
         expect(form).not_to be_valid
-        expect(form.errors[:total_lent]).to include('must be greater than 0')
+        expect(form.errors).to be_of_kind(:total_lent, :greater_than)
       end
 
       it 'is valid with positive total_lent' do
@@ -165,7 +165,7 @@ RSpec.describe DebtForm, type: :model do
       it 'is invalid with negative total_reimbursed' do
         form.total_reimbursed = -100
         expect(form).not_to be_valid
-        expect(form.errors[:total_reimbursed]).to include('must be greater than or equal to 0')
+        expect(form.errors).to be_of_kind(:total_reimbursed, :greater_than_or_equal_to)
       end
 
       it 'is valid with blank total_reimbursed' do

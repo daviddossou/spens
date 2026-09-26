@@ -68,13 +68,13 @@ RSpec.describe Onboarding::FinancialGoalForm, type: :model do
       it 'is invalid without financial_goals' do
         form = described_class.new(space, { financial_goals: nil })
         expect(form).not_to be_valid
-        expect(form.errors[:financial_goals]).to include("can't be blank")
+        expect(form.errors).to be_of_kind(:financial_goals, :blank)
       end
 
       it 'is invalid with empty financial_goals' do
         form = described_class.new(space, { financial_goals: [] })
         expect(form).not_to be_valid
-        expect(form.errors[:financial_goals]).to include("can't be blank")
+        expect(form.errors).to be_of_kind(:financial_goals, :blank)
       end
 
       it 'is valid with financial_goals present' do
@@ -162,7 +162,7 @@ RSpec.describe Onboarding::FinancialGoalForm, type: :model do
         end
         allow(space).to receive(:invalid?).and_return(true)
         allow(space).to receive(:errors).and_return(
-          instance_double(ActiveModel::Errors, messages: { country: [ 'is required for this step' ] })
+          ActiveModel::Errors.new(space).tap { |e| e.add(:country, "is required for this step") }
         )
       end
 
@@ -172,7 +172,7 @@ RSpec.describe Onboarding::FinancialGoalForm, type: :model do
 
       it 'promotes user errors to form errors' do
         form.submit
-        expect(form.errors[:country]).to include('is required for this step')
+        expect(form.errors[:country]).to include("Country is required for this step")
       end
 
       it 'does not save the space' do
@@ -195,7 +195,7 @@ RSpec.describe Onboarding::FinancialGoalForm, type: :model do
 
       it 'adds error to base' do
         form.submit
-        expect(form.errors[:base]).to include('Database error')
+        expect(form.errors[:base]).to include(I18n.t("errors.messages.unexpected"))
       end
 
       it 'rescues the exception' do

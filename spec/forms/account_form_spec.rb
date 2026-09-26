@@ -64,13 +64,13 @@ RSpec.describe AccountForm, type: :model do
       it 'is invalid without account_name' do
         form.account_name = nil
         expect(form).not_to be_valid
-        expect(form.errors[:account_name]).to include("can't be blank")
+        expect(form.errors).to be_of_kind(:account_name, :blank)
       end
 
       it 'is invalid with empty account_name' do
         form.account_name = ''
         expect(form).not_to be_valid
-        expect(form.errors[:account_name]).to include("can't be blank")
+        expect(form.errors).to be_of_kind(:account_name, :blank)
       end
 
       it 'is invalid with account_name longer than 100 characters' do
@@ -177,7 +177,7 @@ RSpec.describe AccountForm, type: :model do
       it 'returns false when validation fails' do
         form.account_name = nil
         expect(form.submit).to be(false)
-        expect(form.errors[:account_name]).to include("can't be blank")
+        expect(form.errors).to be_of_kind(:account_name, :blank)
       end
 
       it 'does not create account' do
@@ -342,7 +342,7 @@ RSpec.describe AccountForm, type: :model do
 
       it 'adds error to base' do
         form.submit
-        expect(form.errors[:base]).to include("Service error")
+        expect(form.errors[:base]).to include(I18n.t("errors.messages.unexpected"))
       end
 
       it 'logs the error' do

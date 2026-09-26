@@ -127,14 +127,14 @@ RSpec.describe Onboarding::ProfileSetupForm, type: :model do
         form = described_class.new(space, { country: 'US', currency: 'USD' })
         form.country = nil
         expect(form).not_to be_valid
-        expect(form.errors[:country]).to include("can't be blank")
+        expect(form.errors).to be_of_kind(:country, :blank)
       end
 
       it 'is invalid with empty country' do
         form = described_class.new(space, { country: 'US', currency: 'USD' })
         form.country = ''
         expect(form).not_to be_valid
-        expect(form.errors[:country]).to include("can't be blank")
+        expect(form.errors).to be_of_kind(:country, :blank)
       end
 
       it 'is valid with country present' do
@@ -167,7 +167,7 @@ RSpec.describe Onboarding::ProfileSetupForm, type: :model do
       it 'is invalid with currency not in Space::CURRENCIES' do
         form = described_class.new(space, valid_payload.merge(currency: 'INVALID'))
         expect(form).not_to be_valid
-        expect(form.errors[:currency]).to include('is not included in the list')
+        expect(form.errors).to be_of_kind(:currency, :inclusion)
       end
 
       it 'is valid with currency in Space::CURRENCIES' do
@@ -192,7 +192,7 @@ RSpec.describe Onboarding::ProfileSetupForm, type: :model do
       it 'is invalid with value not in Space::INCOME_FREQUENCIES' do
         form = described_class.new(space, valid_payload.merge(income_frequency: 'invalid'))
         expect(form).not_to be_valid
-        expect(form.errors[:income_frequency]).to include('is not included in the list')
+        expect(form.errors).to be_of_kind(:income_frequency, :inclusion)
       end
 
       it 'is valid with value in Space::INCOME_FREQUENCIES' do
@@ -324,7 +324,7 @@ RSpec.describe Onboarding::ProfileSetupForm, type: :model do
         end
         allow(space).to receive(:invalid?).and_return(true)
         allow(space).to receive(:errors).and_return(
-          instance_double(ActiveModel::Errors, messages: { base: [ 'Some user validation error' ] })
+          ActiveModel::Errors.new(space).tap { |e| e.add(:base, "Some user validation error") }
         )
       end
 
@@ -356,7 +356,7 @@ RSpec.describe Onboarding::ProfileSetupForm, type: :model do
 
       it 'adds error to base' do
         form.submit
-        expect(form.errors[:base]).to include('Database connection lost')
+        expect(form.errors[:base]).to include(I18n.t("errors.messages.unexpected"))
       end
 
       it 'rescues the exception' do

@@ -46,13 +46,13 @@ RSpec.describe TransactionForm, type: :model do
       it 'is invalid without kind' do
         form.kind = nil
         expect(form).not_to be_valid
-        expect(form.errors[:kind]).to include("can't be blank")
+        expect(form.errors).to be_of_kind(:kind, :blank)
       end
 
       it 'is invalid with invalid kind' do
         form.kind = 'invalid'
         expect(form).not_to be_valid
-        expect(form.errors[:kind]).to include("is not included in the list")
+        expect(form.errors).to be_of_kind(:kind, :inclusion)
       end
     end
 
@@ -65,19 +65,19 @@ RSpec.describe TransactionForm, type: :model do
       it 'is invalid without amount' do
         form.amount = nil
         expect(form).not_to be_valid
-        expect(form.errors[:amount]).to include("can't be blank")
+        expect(form.errors).to be_of_kind(:amount, :blank)
       end
 
       it 'is invalid with zero amount' do
         form.amount = 0
         expect(form).not_to be_valid
-        expect(form.errors[:amount]).to include("must be greater than 0")
+        expect(form.errors).to be_of_kind(:amount, :greater_than)
       end
 
       it 'is invalid with negative amount' do
         form.amount = -50
         expect(form).not_to be_valid
-        expect(form.errors[:amount]).to include("must be greater than 0")
+        expect(form.errors).to be_of_kind(:amount, :greater_than)
       end
     end
 
@@ -90,7 +90,7 @@ RSpec.describe TransactionForm, type: :model do
       it 'is invalid without transaction_date' do
         form.transaction_date = nil
         expect(form).not_to be_valid
-        expect(form.errors[:transaction_date]).to include("can't be blank")
+        expect(form.errors).to be_of_kind(:transaction_date, :blank)
       end
 
       it 'is valid with past date' do
@@ -121,7 +121,7 @@ RSpec.describe TransactionForm, type: :model do
           it 'requires transaction_type_name' do
             form.transaction_type_name = nil
             expect(form).not_to be_valid
-            expect(form.errors[:transaction_type_name]).to include("can't be blank")
+            expect(form.errors).to be_of_kind(:transaction_type_name, :blank)
           end
 
           it 'does not require from_account_name' do
@@ -147,21 +147,21 @@ RSpec.describe TransactionForm, type: :model do
       it 'requires from_account_name' do
         form.from_account_name = nil
         expect(form).not_to be_valid
-        expect(form.errors[:from_account_name]).to include("can't be blank")
+        expect(form.errors).to be_of_kind(:from_account_name, :blank)
       end
 
       it 'requires to_account_name' do
         form.to_account_name = nil
         expect(form).not_to be_valid
-        expect(form.errors[:to_account_name]).to include("can't be blank")
+        expect(form.errors).to be_of_kind(:to_account_name, :blank)
       end
 
       it 'requires both transfer accounts' do
         form.from_account_name = nil
         form.to_account_name = nil
         expect(form).not_to be_valid
-        expect(form.errors[:from_account_name]).to include("can't be blank")
-        expect(form.errors[:to_account_name]).to include("can't be blank")
+        expect(form.errors).to be_of_kind(:from_account_name, :blank)
+        expect(form.errors).to be_of_kind(:to_account_name, :blank)
       end
 
       it 'does not require account_name' do
@@ -172,6 +172,14 @@ RSpec.describe TransactionForm, type: :model do
       it 'does not require transaction_type_name' do
         form.transaction_type_name = nil
         expect(form).to be_valid
+      end
+
+      it "tells the user which account is missing, without the technical field name" do
+        form = described_class.new(space, kind: "transfer", amount: 100, to_account_name: "Wave")
+        I18n.with_locale(:fr) do
+          form.valid?
+          expect(form.errors.full_messages).to include("Choisis le compte depuis lequel l'argent a été envoyé.")
+        end
       end
 
       context 'different_accounts_for_transfer validation' do
@@ -185,35 +193,35 @@ RSpec.describe TransactionForm, type: :model do
           form.from_account_name = 'Checking'
           form.to_account_name = 'Checking'
           expect(form).not_to be_valid
-          expect(form.errors[:to_account_name]).to include(I18n.t('errors.messages.different_account'))
+          expect(form.errors).to be_of_kind(:to_account_name, :different_account)
         end
 
         it 'is invalid when accounts are the same (case insensitive)' do
           form.from_account_name = 'checking'
           form.to_account_name = 'CHECKING'
           expect(form).not_to be_valid
-          expect(form.errors[:to_account_name]).to include(I18n.t('errors.messages.different_account'))
+          expect(form.errors).to be_of_kind(:to_account_name, :different_account)
         end
 
         it 'is invalid when accounts are the same (with whitespace)' do
           form.from_account_name = '  Checking  '
           form.to_account_name = 'Checking'
           expect(form).not_to be_valid
-          expect(form.errors[:to_account_name]).to include(I18n.t('errors.messages.different_account'))
+          expect(form.errors).to be_of_kind(:to_account_name, :different_account)
         end
 
         it 'skips the different-accounts check when from_account_name is missing' do
           form.from_account_name = nil
           form.to_account_name = 'Savings'
           form.valid?
-          expect(form.errors[:to_account_name]).not_to include(I18n.t('errors.messages.different_account'))
+          expect(form.errors).not_to be_of_kind(:to_account_name, :different_account)
         end
 
         it 'skips the different-accounts check when to_account_name is missing' do
           form.from_account_name = 'Checking'
           form.to_account_name = nil
           form.valid?
-          expect(form.errors[:to_account_name]).not_to include(I18n.t('errors.messages.different_account'))
+          expect(form.errors).not_to be_of_kind(:to_account_name, :different_account)
         end
       end
     end
@@ -881,7 +889,7 @@ RSpec.describe TransactionForm, type: :model do
 
       it 'adds custom error to base' do
         form.submit
-        expect(form.errors[:base]).to include("Service error")
+        expect(form.errors[:base]).to include(I18n.t("errors.messages.unexpected"))
       end
 
       it 'logs the error' do
