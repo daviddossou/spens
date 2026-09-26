@@ -1,5 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
-import { formatMoney } from "lib/money"
+import { formatMoney, parseAmount } from "lib/money"
 
 // Connects to data-controller="goal-form"
 // Drives the create/edit goal form: the target amount feeds the CTA (which
@@ -51,7 +51,7 @@ export default class extends Controller {
   }
 
   #num(target) {
-    return target && target.value !== "" ? parseFloat(target.value) : NaN
+    return target && target.value !== "" ? parseAmount(target.value) : NaN
   }
 
   #target() { return this.hasAmountTarget ? this.#num(this.amountTarget) : NaN }

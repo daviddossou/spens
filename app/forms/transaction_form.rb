@@ -13,6 +13,7 @@ class TransactionForm < BaseForm
   attribute :to_account_name, :string
   attribute :amount, :decimal
   attribute :fee_amount, :decimal
+  amount_attributes :amount, :fee_amount
   attribute :transaction_date, :date, default: -> { Date.current }
   attribute :transaction_type_name, :string
   attribute :note, :string

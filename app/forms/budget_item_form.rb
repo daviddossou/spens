@@ -11,6 +11,7 @@ class BudgetItemForm < BaseForm
   attribute :to_account_name, :string
   attribute :contact_name, :string
   attribute :amount, :decimal
+  amount_attributes :amount
   attribute :frequency, :string, default: "monthly"
   attribute :rollover, :boolean, default: false
   attribute :essential, :boolean, default: true

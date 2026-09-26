@@ -242,8 +242,8 @@
 <% heading.with_hint do %><span class="tx-detail__hint"><%= t('transactions.form.fee_hint') %></span><% end %>
 <% end %>
           <%= render Forms::InputFieldComponent.new(
-            form: f, field: :fee_amount, type: :number_field, label: "", required: false,
-            prepend: get_currency_symbol(current_space.currency), step: "0.01", min: "0",
+            form: f, field: :fee_amount, label: "", required: false,
+            prepend: get_currency_symbol(current_space.currency), inputmode: "decimal", autocomplete: "off",
             placeholder: t('transactions.form.fee_amount_placeholder')) %>
         </div>
       <% end %>

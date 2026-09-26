@@ -10,6 +10,7 @@ class Onboarding::TransactionForm < BaseForm
   # Attributes
   attribute :account_name, :string
   attribute :amount, :decimal
+  amount_attributes :amount
   attribute :transaction_date, :date, default: -> { Date.current }
   attribute :transaction_type_name, :string,
             default: -> { I18n.t("transactions.initial_balance.type_name") }

@@ -1,5 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
-import { formatMoney } from "lib/money"
+import { formatMoney, parseAmount } from "lib/money"
 
 // Drives the budget-line form's advanced settings: frequency segments, the
 // "no end / until a date" choice, the rollover toggle, and — crucially — the
@@ -84,7 +84,7 @@ export default class extends Controller {
     // Rollover sub-line: a concrete figure once an amount is entered, showing
     // what carries into next month; otherwise the plain concept.
     if (this.hasRolloverExampleTarget) {
-      const raw = this.hasAmountTarget ? parseFloat(this.amountTarget.value) : NaN
+      const raw = this.hasAmountTarget ? parseAmount(this.amountTarget.value) : NaN
       if (raw > 0 && this.hasRolloverExampleValue) {
         const loc = this.hasLocaleValue ? this.localeValue : undefined
         const planned = raw
@@ -115,7 +115,7 @@ export default class extends Controller {
   }
 
   #ctaState(freq) {
-    const raw = this.hasAmountTarget ? parseFloat(this.amountTarget.value) : NaN
+    const raw = this.hasAmountTarget ? parseAmount(this.amountTarget.value) : NaN
     if (!(raw > 0)) return { text: this.ctaEmptyValue, disabled: true }
 
     const missing = this.#missingRequired()

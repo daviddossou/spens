@@ -8,6 +8,7 @@ class DebtForm < BaseForm
   attribute :contact_name, :string
   attribute :total_lent, :decimal
   attribute :total_reimbursed, :decimal, default: 0.0
+  amount_attributes :total_lent, :total_reimbursed
   attribute :note, :string
   attribute :direction, :string, default: "lent"
   attribute :account_name, :string
