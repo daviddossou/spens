@@ -10,10 +10,8 @@ class Onboarding::SavingsProjectionsController < OnboardingController
     @form = build_form(savings_projection_params)
 
     if @form.submit
-      # No amounts leave the app: the rate is a preference, the income is not sent.
-      track_onboarding_step_completed("savings_projection",
-                                      savings_rate: @form.savings_rate, country: current_space.country,
-                                      currency: current_space.currency)
+      # No exact amount leaves the app: the income and the projections travel as brackets.
+      track_onboarding_step_completed("savings_projection", projection_properties)
       redirect_to next_step_path, status: :see_other
     else
       track_onboarding_step_failed("savings_projection", @form)
@@ -34,6 +32,15 @@ class Onboarding::SavingsProjectionsController < OnboardingController
     Onboarding::LocaleGuess.new(request: request, picked_country: params[:landing_country],
                                 picked_currency: params[:landing_currency],
                                 time_zone: params[:time_zone].presence || current_user.time_zone)
+  end
+
+  def projection_properties
+    monthly = @form.monthly_saving
+    { savings_rate: @form.savings_rate, country: current_space.country, currency: current_space.currency,
+      income_bracket: Analytics.amount_bracket(@form.monthly_income),
+      monthly_saving_bracket: Analytics.amount_bracket(monthly),
+      savings_1y_bracket: Analytics.amount_bracket(monthly * 12),
+      savings_3y_bracket: Analytics.amount_bracket(monthly * 36) }
   end
 
   def savings_projection_params
