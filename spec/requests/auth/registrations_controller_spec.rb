@@ -29,6 +29,45 @@ RSpec.describe Auth::RegistrationsController, type: :request do
     end
   end
 
+  describe "landing hand-off" do
+    let(:landing) do
+      { country: "FR", currency: "EUR", income: "2500", savings_rate: "20", goals: "pay_off_debt",
+        accounts: [ { name: "Cash", amount: "150" } ] }
+    end
+
+    it "keeps the landing choices from the sign-up link and applies them to the new space" do
+      allow(Analytics).to receive(:track)
+
+      get new_user_registration_path(landing: landing)
+      post user_registration_path, params: valid_params
+
+      space = User.find_by(email: "jane@example.com").spaces.first
+      expect(space).to have_attributes(country: "FR", currency: "EUR", monthly_income: 2500, savings_rate: 20,
+                                       financial_goals: %w[pay_off_debt])
+      expect(space.accounts.pluck(:name, :balance)).to eq([ [ "Cash", 150 ] ])
+      expect(Analytics).to have_received(:track).with(an_instance_of(User), "user_signed_up",
+        hash_including(landing_country: "FR", landing_currency: "EUR", landing_goals: %w[pay_off_debt], landing_accounts: 1))
+      expect(Analytics).to have_received(:track).with(an_instance_of(User), "onboarding_goal_chosen",
+        hash_including(goal: "pay_off_debt", from_landing: true))
+    end
+
+    it "uses the choices once" do
+      get new_user_registration_path(landing: landing)
+      post user_registration_path, params: valid_params
+      delete destroy_user_session_path
+      post user_registration_path, params: { user: { first_name: "Jo", email: "jo@example.com" } }
+
+      expect(User.find_by(email: "jo@example.com").spaces.first.accounts).to be_empty
+    end
+
+    it "ignores a link without valid choices" do
+      get new_user_registration_path(landing: { country: "ZZ" })
+      post user_registration_path, params: valid_params
+
+      expect(User.find_by(email: "jane@example.com").spaces.first.country).to be_nil
+    end
+  end
+
   describe "POST /sign_up" do
     context "with valid parameters" do
       it "creates a new user" do

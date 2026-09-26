@@ -33,6 +33,10 @@ class Auth::RegistrationsController < ApplicationController
         onboarding_current_step: "onboarding_financial_goal"
       )
 
+      landing = consume_landing_choices
+      landing.apply_to(space, user: @user)
+      track_landing_goals(landing)
+
       # Accept pending invitation if present
       accepted_space = accept_pending_invitation(@user)
 
@@ -43,7 +47,8 @@ class Auth::RegistrationsController < ApplicationController
       touch_session_activity
 
       Analytics.identify(@user)
-      Analytics.track(@user, "user_signed_up", Analytics.acquisition_properties(@user).merge(invited: accepted_space.present?))
+      Analytics.track(@user, "user_signed_up",
+                      Analytics.acquisition_properties(@user).merge(landing.analytics_properties, invited: accepted_space.present?))
       track_meta_registration(@user)
       Brevo.upsert_contact_later(
         email: @user.email,
@@ -86,6 +91,13 @@ class Auth::RegistrationsController < ApplicationController
   def render_form_again(status)
     @user = User.new(params.fetch(:user, {}).permit(:first_name, :email))
     render :new, status: status
+  end
+
+  # The diagnostic's problems, one event each like the goals step would send.
+  def track_landing_goals(landing)
+    landing.goals.each do |goal|
+      Analytics.track(@user, "onboarding_goal_chosen", goal: goal, from_landing: true, first_space: true)
+    end
   end
 
   # CompleteRegistration on both channels — CAPI now, pixel queued for the next
