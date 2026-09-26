@@ -9,6 +9,7 @@ class GoalForm < BaseForm
   attribute :account_name, :string
   attribute :current_balance, :decimal
   attribute :target_amount, :decimal
+  amount_attributes :current_balance, :target_amount
   attribute :deadline, :date
 
   ##

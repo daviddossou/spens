@@ -1,5 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
-import { formatMoney } from "lib/money"
+import { formatMoney, parseAmount } from "lib/money"
 
 // Connects to data-controller="budget-scope"
 // One sheet, two scopes for editing a budget line: "this month only" (a per-month
@@ -43,7 +43,7 @@ export default class extends Controller {
   // The amber note names the new amount the changed months take on.
   syncAmber() {
     if (!this.hasAmberAmountTarget) return
-    const raw = this.hasAmountTarget ? parseFloat(this.amountTarget.value) : NaN
+    const raw = this.hasAmountTarget ? parseAmount(this.amountTarget.value) : NaN
     const text = raw > 0
       ? formatMoney(raw, this.currencyValue, this.hasLocaleValue ? this.localeValue : undefined)
       : ""

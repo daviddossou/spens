@@ -1,5 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
-import { formatMoney } from "lib/money"
+import { formatMoney, parseAmount } from "lib/money"
 
 // The debt branch of the transaction form: pick a person, then choose from four
 // written-out sentences (lend / get repaid / borrow / repay). Each card writes
@@ -114,7 +114,7 @@ export default class extends Controller {
   }
 
   #amount() {
-    const v = parseFloat(this.amountInput?.value)
+    const v = parseAmount(this.amountInput?.value)
     return v > 0 ? v : 0
   }
 

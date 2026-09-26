@@ -1,5 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
-import { formatMoney } from "lib/money"
+import { formatMoney, parseAmount } from "lib/money"
 
 // Connects to data-controller="debt-form"
 // Drives the create/edit debt form: direction tiles swap the labels and recap,
@@ -55,7 +55,7 @@ export default class extends Controller {
   }
 
   #amount() {
-    return this.hasAmountTarget ? parseFloat(this.amountTarget.value) : NaN
+    return this.hasAmountTarget ? parseAmount(this.amountTarget.value) : NaN
   }
 
   #money(value) {

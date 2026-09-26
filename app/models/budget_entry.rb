@@ -32,6 +32,8 @@
 #  fk_rails_...  (transaction_type_id => transaction_types.id)
 #
 class BudgetEntry < ApplicationRecord
+  include AmountInput
+  amount_attributes :planned_amount
   ##
   # Associations
   belongs_to :space

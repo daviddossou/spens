@@ -7,6 +7,7 @@ class AccountForm < BaseForm
 
   attribute :account_name, :string
   attribute :current_balance, :decimal
+  amount_attributes :current_balance
   attribute :set_aside, :boolean, default: false
 
   ##

@@ -7,18 +7,19 @@ RSpec.describe Forms::AmountFieldComponent, type: :component do
     ActionView::Helpers::FormBuilder.new("debt", object, vc_test_controller.view_context, {})
   end
 
-  it "renders a decimal number input through the form builder with its currency" do
+  it "renders a decimal-keyboard text input through the form builder with its currency" do
     rendered = render_inline(described_class.new(
       form: builder, field: :total_lent, value: 25_000, currency: "FCFA", aria_label: "Amount",
       placeholder: "0", autofocus: true, data: { debt_form_target: "amount", action: "input->debt-form#onAmount" }
     ))
     input = rendered.at_css("input.budget-amount__input")
-    expect(input["type"]).to eq("number")
+    expect(input["type"]).to eq("text")
     expect(input["name"]).to eq("debt[total_lent]")
     expect(input["value"]).to eq("25000")
-    expect(input["step"]).to eq("0.01")
-    expect(input["min"]).to eq("0.01")
+    expect(input["step"]).to be_nil
+    expect(input["min"]).to be_nil
     expect(input["inputmode"]).to eq("decimal")
+    expect(input["autocomplete"]).to eq("off")
     expect(input["aria-label"]).to eq("Amount")
     expect(input["autofocus"]).to be_present
     expect(input["required"]).to be_nil
@@ -37,14 +38,14 @@ RSpec.describe Forms::AmountFieldComponent, type: :component do
 
   it "renders a bare named input without a builder" do
     rendered = render_inline(described_class.new(
-      name: :amount, value: 1500.0, currency: "FCFA", aria_label: "Amount", required: true, min: "0"
+      name: :amount, value: 1500.0, currency: "FCFA", aria_label: "Amount", required: true
     ))
     input = rendered.at_css("input")
     expect(input["name"]).to eq("amount")
     expect(input["id"]).to eq("amount")
     expect(input["value"]).to eq("1500")
     expect(input["required"]).to be_present
-    expect(input["min"]).to eq("0")
+    expect(input["type"]).to eq("text")
   end
 
   it "renders the period slot and the block content, and appends classes" do

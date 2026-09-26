@@ -1,5 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
-import { formatMoney } from "lib/money"
+import { formatMoney, parseAmount } from "lib/money"
 
 // Drives the debt branch of the budget-line form. The money direction is two
 // written-out sentences ("I repay Georges" / "Georges repays me") with the
@@ -97,7 +97,7 @@ export default class extends Controller {
   }
 
   #amount() {
-    const value = parseFloat(this.amountInput?.value)
+    const value = parseAmount(this.amountInput?.value)
     return value > 0 ? value : 0
   }
 

@@ -17,13 +17,12 @@
       <%= render Forms::InputFieldComponent.new(
         form: form,
         field: :amount,
-        type: :number_field,
         label: t('.initial_amount'),
         required: true,
         help_text: t('.amount_help'),
         prepend: @currency,
-        step: "0.01",
-        min: "0"
+        inputmode: "decimal",
+        autocomplete: "off"
       ) %>
     </div>
 

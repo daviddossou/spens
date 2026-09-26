@@ -1,5 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
-import { formatMoney } from "lib/money"
+import { formatMoney, parseAmount } from "lib/money"
 
 // Connects to data-controller="account-form"
 // Drives the create/edit account form: the CTA names a missing name, a live
@@ -30,7 +30,7 @@ export default class extends Controller {
   syncAll() { this.syncCta(); this.syncGap(); this.syncRecap() }
 
   #amount() {
-    const raw = this.hasAmountTarget ? parseFloat(this.amountTarget.value) : NaN
+    const raw = this.hasAmountTarget ? parseAmount(this.amountTarget.value) : NaN
     return Number.isFinite(raw) ? raw : 0
   }
 

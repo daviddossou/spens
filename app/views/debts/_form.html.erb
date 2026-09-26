@@ -76,9 +76,9 @@
 <% heading.with_hint do %><span class="tx-detail__hint"><%= t(".reimbursed_hint") %></span><% end %>
 <% end %>
         <%= render Forms::InputFieldComponent.new(
-          form: form, field: :total_reimbursed, type: :number_field, label: "", required: false,
+          form: form, field: :total_reimbursed, label: "", required: false,
           value: (form.object.total_reimbursed.to_f.positive? ? form.object.total_reimbursed : nil),
-          prepend: currency_symbol, step: "0.01", min: "0", placeholder: "0") %>
+          prepend: currency_symbol, inputmode: "decimal", autocomplete: "off", placeholder: "0") %>
       </div>
 
       <%# Note — for what the app can't compute. %>

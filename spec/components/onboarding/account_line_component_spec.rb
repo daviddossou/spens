@@ -108,10 +108,10 @@ RSpec.describe Onboarding::AccountLineComponent, type: :component do
       bank = I18n.t('account_templates.bank')
       expect(JSON.parse(picker['data-picker-rows-value'])).to include('value' => bank, 'label' => bank.sub(/\A\S+\s/, ''), 'icon' => bank[/\A\S+/])
       expect(rendered.css('input[type="hidden"][name*="account_name"]')).to be_present
-      expect(rendered.css('input[type="text"]')).to be_empty
+      expect(rendered.css('input[type="text"][name*="account_name"]')).to be_empty
     end
 
-    it 'renders amount field with currency prepend' do
+    it 'renders the amount as a decimal-keyboard text field with currency prepend' do
       rendered = render_inline(described_class.new(
         form: form,
         index: 0,
@@ -119,7 +119,9 @@ RSpec.describe Onboarding::AccountLineComponent, type: :component do
         currency: 'XOF'
       ))
 
-      expect(rendered.css('input[type="number"]')).to be_present
+      amount = rendered.at_css('input[name*="[amount]"]')
+      expect(amount['type']).to eq('text')
+      expect(amount['inputmode']).to eq('decimal')
       expect(rendered.to_html).to include('XOF')
     end
 

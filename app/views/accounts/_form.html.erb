@@ -13,7 +13,7 @@
   <%# The balance is the hero: how much is in it today, typed first. %>
   <%= render Forms::AmountFieldComponent.new(
         form: form, field: :current_balance, value: form.object.current_balance,
-        currency: currency_symbol, min: "0", autofocus: !editing, aria_label: t('.amount_label'),
+        currency: currency_symbol, autofocus: !editing, aria_label: t('.amount_label'),
         data: { account_form_target: "amount", action: "input->account-form#onAmount" }) %>
 
   <%# Naming a new account is a choice first (bank, Mobile Money, cash…), typed only when

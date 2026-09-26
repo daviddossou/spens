@@ -38,8 +38,8 @@
   <%# Already put aside — the starting point. %>
   <div class="goal-form__field">
     <%= render Forms::InputFieldComponent.new(
-      form: form, field: :current_balance, type: :number_field, label: t(".saved_label"),
-      required: false, prepend: currency_symbol, step: "0.01", min: "0", placeholder: "0",
+      form: form, field: :current_balance, label: t(".saved_label"),
+      required: false, prepend: currency_symbol, inputmode: "decimal", autocomplete: "off", placeholder: "0",
       value: (form.object.current_balance && (form.object.current_balance % 1 == 0 ? form.object.current_balance.to_i : form.object.current_balance.to_f)),
       field_data: { goal_form_target: "currentBalance" }) %>
   </div>

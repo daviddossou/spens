@@ -1,5 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
-import { formatMoney } from "lib/money"
+import { formatMoney, parseAmount } from "lib/money"
 
 // Connects to data-controller="transaction-form"
 export default class extends Controller {
@@ -105,7 +105,7 @@ export default class extends Controller {
   syncCta() {
     if (!this.hasCtaTarget || !this.hasCtaTemplateValue) return
 
-    const raw = this.hasAmountTarget ? parseFloat(this.amountTarget.value) : NaN
+    const raw = this.hasAmountTarget ? parseAmount(this.amountTarget.value) : NaN
     if (raw > 0) {
       const value = formatMoney(raw, this.currencyValue, this.hasLocaleValue ? this.localeValue : undefined)
       this.ctaTarget.textContent = this.ctaTemplateValue.replace("%{amount}", value)
