@@ -29,16 +29,14 @@ class Onboarding::FinancialGoalForm < BaseForm
     space.assign_attributes(financial_goals: financial_goals, onboarding_current_step: NEXT_STEP)
 
     if space.invalid?
-      promote_errors(space.errors.messages)
+      promote_errors(space.errors)
 
       return false
     end
 
     space.save!
-  rescue => e
-    add_custom_error(:base, e.message)
-
-    false
+  rescue StandardError => e
+    handle_submit_error(e)
   end
 
   def available_goals

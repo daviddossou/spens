@@ -66,9 +66,7 @@ class GoalForm < BaseForm
       goal
     end
   rescue StandardError => e
-    Rails.logger.error "GoalForm submit error: #{e.message}\n#{e.backtrace.join("\n")}"
-    add_custom_error(:base, e.message)
-    false
+    handle_submit_error(e)
   end
 
   def account_suggestions
