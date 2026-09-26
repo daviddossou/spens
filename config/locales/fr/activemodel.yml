@@ -32,3 +32,132 @@ fr:
         other_than: "doit être différent de %{count}"
         present: "doit être vide"
         required: "doit exister"
+      # Form objects speak to the user in full sentences: the message stands alone,
+      # without the technical attribute name in front of it.
+      models:
+        transaction:
+          format: "%{message}"
+          attributes:
+            kind:
+              blank: "Choisis le type d'opération."
+              inclusion: "Choisis le type d'opération."
+            amount:
+              blank: "Indique le montant."
+              not_a_number: "Le montant doit être un nombre."
+              greater_than: "Le montant doit être supérieur à zéro."
+            fee_amount:
+              not_a_number: "Les frais doivent être un nombre."
+              greater_than_or_equal_to: "Les frais ne peuvent pas être négatifs."
+            transaction_date:
+              blank: "Indique la date de l'opération."
+            transaction_type_name:
+              blank: "Choisis une catégorie."
+            from_account_name:
+              blank: "Choisis le compte depuis lequel l'argent a été envoyé."
+            to_account_name:
+              blank: "Choisis le compte qui a reçu l'argent."
+              different_account: "Choisis deux comptes différents pour ce transfert."
+            contact_name:
+              blank: "Indique avec qui est cette dette."
+            direction:
+              blank: "Précise si tu as prêté ou emprunté cet argent."
+              inclusion: "Précise si tu as prêté ou emprunté cet argent."
+        debt:
+          format: "%{message}"
+          attributes:
+            contact_name:
+              blank: "Indique le nom de la personne."
+              too_long: "Le nom de la personne est trop long (%{count} caractères maximum)."
+            total_lent:
+              not_a_number: "Le montant doit être un nombre."
+              greater_than: "Le montant doit être supérieur à zéro."
+            total_reimbursed:
+              not_a_number: "Le montant remboursé doit être un nombre."
+              greater_than_or_equal_to: "Le montant remboursé ne peut pas être négatif."
+        account:
+          format: "%{message}"
+          attributes:
+            account_name:
+              blank: "Donne un nom à ce compte."
+              too_long: "Le nom du compte est trop long (%{count} caractères maximum)."
+            current_balance:
+              not_a_number: "Le solde doit être un nombre."
+        goal:
+          format: "%{message}"
+          attributes:
+            goal_name:
+              blank: "Donne un nom à ton objectif."
+              too_long: "Le nom de l'objectif est trop long (%{count} caractères maximum)."
+            account_name:
+              blank: "Choisis le compte sur lequel tu mets cet argent de côté."
+            current_balance:
+              not_a_number: "Le solde doit être un nombre."
+            target_amount:
+              not_a_number: "Le montant visé doit être un nombre."
+              greater_than: "Le montant visé doit être supérieur à zéro."
+        budget_item:
+          format: "%{message}"
+          attributes:
+            kind:
+              blank: "Choisis le type de ligne."
+              inclusion: "Choisis le type de ligne."
+            amount:
+              blank: "Indique le montant."
+              not_a_number: "Le montant doit être un nombre."
+              greater_than: "Le montant doit être supérieur à zéro."
+            frequency:
+              blank: "Choisis une fréquence."
+              inclusion: "Choisis une fréquence."
+            starts_on:
+              blank: "Indique le mois de début."
+            transaction_type_name:
+              blank: "Choisis une catégorie."
+            to_account_name:
+              blank: "Choisis le compte qui reçoit l'argent."
+              different_account: "Choisis deux comptes différents pour ce transfert."
+            contact_name:
+              blank: "Indique avec qui est cette dette."
+        onboarding_transaction_form:
+          format: "%{message}"
+          attributes:
+            account_name:
+              blank: "Donne un nom à ce compte."
+            amount:
+              blank: "Indique le solde de ce compte."
+              not_a_number: "Le solde doit être un nombre."
+              greater_than: "Le solde doit être supérieur à zéro."
+            transaction_date:
+              blank: "Indique une date."
+            transaction_type_name:
+              blank: "Choisis une catégorie."
+            transaction_type_kind:
+              inclusion: "Ce type d'opération n'existe pas."
+        onboarding_account_setup_form:
+          format: "%{message}"
+        onboarding/profile_setup_form:
+          format: "%{message}"
+          attributes:
+            country:
+              blank: "Choisis ton pays."
+            currency:
+              blank: "Choisis ta devise."
+              inclusion: "Choisis une devise dans la liste."
+            income_frequency:
+              inclusion: "Choisis une fréquence de revenu dans la liste."
+        onboarding/savings_projection_form:
+          format: "%{message}"
+          attributes:
+            monthly_income:
+              blank: "Indique ton revenu mensuel."
+              not_a_number: "Le revenu mensuel doit être un nombre."
+              greater_than: "Le revenu mensuel doit être supérieur à zéro."
+            savings_rate:
+              blank: "Choisis la part que tu veux épargner."
+              not_a_number: "La part épargnée doit être un nombre."
+              not_an_integer: "La part épargnée doit être un nombre entier."
+              in: "La part épargnée doit être comprise entre 1 et 40 %."
+        onboarding/financial_goal_form:
+          format: "%{message}"
+          attributes:
+            financial_goals:
+              blank: "Choisis au moins un objectif."

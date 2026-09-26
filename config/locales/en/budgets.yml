@@ -46,8 +46,8 @@ en:
       rollover_help: "Whatever is left at the end of the month is added to next month's budget. Handy for bulk or spaced-out purchases."
       ends_on_label: "Ends on (optional)"
       ends_on_help: "Leave empty to keep it going, or set a date to stop it — like when a loan is fully repaid."
-      ends_on_before_starts_on: "needs to come after the start date"
-      already_budgeted: "is already in your budget — edit that line instead"
+      ends_on_before_starts_on: "The end date must come after the start date."
+      already_budgeted: "This line is already in your budget — edit that one instead."
       # Hero amount
       per_monthly: "a month"
       per_quarterly: "a quarter"

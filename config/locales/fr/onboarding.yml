@@ -20,11 +20,11 @@ fr:
       description: "Je veux être remboursé sans fâcher personne"
 
   validations:
-    invalid_goal: "n'est pas un objectif financier valide"
+    invalid_goal: "Choisis un objectif dans la liste."
 
   onboarding:
     validations:
-      invalid_goal: "%{goals} n'est pas un objectif financier valide"
+      invalid_goal: "%{goals} : cet objectif n'existe pas. Choisis un objectif dans la liste."
     errors:
       generic: "Une erreur est survenue. Réessaie."
     step_header_component:

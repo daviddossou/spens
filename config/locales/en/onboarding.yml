@@ -20,11 +20,11 @@ en:
       description: "I want to be repaid without souring any friendship"
 
   validations:
-    invalid_goal: "is not a valid goal"
+    invalid_goal: "Choose a goal from the list."
 
   onboarding:
     validations:
-      invalid_goal: "%{goals} is not a valid goal"
+      invalid_goal: "%{goals}: this goal doesn't exist. Choose a goal from the list."
     errors:
       generic: "Something went wrong. Please try again."
     step_header_component:

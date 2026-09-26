@@ -197,9 +197,9 @@ en:
       error: "Couldn't reactivate this debt"
     errors:
       not_found: "Not found"
-      reimbursed_exceeds_lent: "Repaid amount can't be more than the total"
-      total_lent_cannot_be_less: "can't be less than the current amount"
-      total_reimbursed_cannot_be_less: "can't be less than the current amount"
+      reimbursed_exceeds_lent: "The repaid amount can't exceed the total amount."
+      total_lent_cannot_be_less: "The total amount can't be lower than what is already recorded."
+      total_reimbursed_cannot_be_less: "The repaid amount can't be lower than what was already repaid."
     transaction_type:
       debt_in:
         lent: "Repayment received"
