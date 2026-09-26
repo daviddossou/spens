@@ -385,7 +385,7 @@ RSpec.describe Onboarding::AccountSetupForm, type: :model do
         allow_any_instance_of(Onboarding::TransactionForm).to receive(:should_skip?).and_return(false)
         allow_any_instance_of(Onboarding::TransactionForm).to receive(:submit).and_return(false)
         allow_any_instance_of(Onboarding::TransactionForm).to receive(:errors).and_return(
-          double(messages: { base: [ 'Transaction error' ] })
+          ActiveModel::Errors.new(Object.new).tap { |e| e.add(:base, "Transaction error") }
         )
       end
 
@@ -423,7 +423,7 @@ RSpec.describe Onboarding::AccountSetupForm, type: :model do
 
       it 'adds error message' do
         form.submit
-        expect(form.errors[:base]).to include('Database error')
+        expect(form.errors[:base]).to include(I18n.t("errors.messages.unexpected"))
       end
 
       it 'logs the error' do

@@ -46,8 +46,8 @@ fr:
       rollover_help: "Ce qui reste à la fin du mois s'ajoute au budget du mois suivant. Pratique pour les achats groupés ou espacés."
       ends_on_label: "Se termine le (optionnel)"
       ends_on_help: "Laissez vide pour continuer, ou choisissez une date d'arrêt — par exemple quand un prêt est remboursé."
-      ends_on_before_starts_on: "doit venir après la date de début"
-      already_budgeted: "est déjà dans ton budget — modifie cette ligne"
+      ends_on_before_starts_on: "La date de fin doit venir après la date de début."
+      already_budgeted: "Cette ligne est déjà dans ton budget — modifie-la plutôt."
       # Montant héros
       per_monthly: "par mois"
       per_quarterly: "par trimestre"

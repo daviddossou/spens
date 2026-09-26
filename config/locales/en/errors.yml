@@ -30,6 +30,7 @@ en:
         one: "1 error prohibited this %{resource} from being saved:"
         other: "%{count} errors prohibited this %{resource} from being saved:"
       different_account: "must be different from the source account"
+      unexpected: "Something went wrong, please try again in a moment."
     attributes:
       email: "Email"
       password: "Password"

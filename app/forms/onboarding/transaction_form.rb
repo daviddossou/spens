@@ -21,7 +21,7 @@ class Onboarding::TransactionForm < BaseForm
   ##
   # Validations
   validates :account_name, presence: true
-  validates :amount, presence: true, numericality: { greater_than: 0 }
+  validates :amount, presence: true, numericality: { greater_than: 0, allow_nil: true }
   validates :transaction_date, presence: true
   validates :transaction_type_name, presence: true
   validates :transaction_type_kind, inclusion: { in: TransactionType.kinds.keys }
@@ -60,9 +60,7 @@ class Onboarding::TransactionForm < BaseForm
       transaction
     end
   rescue StandardError => e
-    Rails.logger.error "Onboarding::TransactionForm submit error: #{e.message}\n#{e.backtrace.join("\n")}"
-    add_custom_error(:base, e.message)
-    false
+    handle_submit_error(e)
   end
 
   def should_skip?
@@ -92,7 +90,7 @@ class Onboarding::TransactionForm < BaseForm
     ).call
 
     if transaction.invalid?
-      promote_errors(transaction.errors.messages)
+      promote_errors(transaction.errors)
     end
 
     transaction

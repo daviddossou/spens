@@ -41,6 +41,8 @@ module Spens
     # i18n configuration
     config.i18n.available_locales = [ :en, :fr ]
     config.i18n.default_locale = :en
+    # Lets a model choose how its errors read (form objects use "%{message}" alone).
+    config.active_model.i18n_customize_full_message = true
 
     # Solid Errors records exceptions in the dedicated `errors` database (all envs)
     config.solid_errors.connects_to = { database: { writing: :errors } }

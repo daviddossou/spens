@@ -197,9 +197,9 @@ fr:
       error: "Impossible de réactiver cette dette"
     errors:
       not_found: "Introuvable"
-      reimbursed_exceeds_lent: "Le montant remboursé ne peut pas dépasser le total"
-      total_lent_cannot_be_less: "ne peut pas être inférieur au montant actuel"
-      total_reimbursed_cannot_be_less: "ne peut pas être inférieur au montant actuel"
+      reimbursed_exceeds_lent: "Le montant remboursé ne peut pas dépasser le montant total."
+      total_lent_cannot_be_less: "Le montant total ne peut pas être inférieur à ce qui est déjà enregistré."
+      total_reimbursed_cannot_be_less: "Le montant remboursé ne peut pas être inférieur à ce qui a déjà été remboursé."
     transaction_type:
       debt_in:
         lent: "Remboursement reçu"

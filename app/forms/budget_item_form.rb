@@ -24,7 +24,7 @@ class BudgetItemForm < BaseForm
   ##
   # Validations
   validates :kind, presence: true, inclusion: { in: BudgetItem::KINDS }
-  validates :amount, presence: true, numericality: { greater_than: 0 }
+  validates :amount, presence: true, numericality: { greater_than: 0, allow_nil: true }
   validates :frequency, presence: true, inclusion: { in: BudgetItem::FREQUENCIES }
   validates :starts_on, presence: true
   validate :ends_on_not_before_starts_on
@@ -140,9 +140,7 @@ class BudgetItemForm < BaseForm
     promote_errors(e.record.errors)
     false
   rescue StandardError => e
-    Rails.logger.error "BudgetItemForm submit error: #{e.message}\n#{e.backtrace.join("\n")}"
-    add_custom_error(:base, e.message)
-    false
+    handle_submit_error(e)
   end
 
   ##
@@ -258,7 +256,7 @@ class BudgetItemForm < BaseForm
     return unless from_account_name.present? && to_account_name.present? &&
                   from_account_name.strip.downcase == to_account_name.strip.downcase
 
-    errors.add(:to_account_name, I18n.t("errors.messages.different_account"))
+    errors.add(:to_account_name, :different_account)
   end
 
   def ends_on_not_before_starts_on

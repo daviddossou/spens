@@ -99,11 +99,11 @@ en:
       no_transactions: "No transactions yet"
     errors:
       not_found: "Goal not found"
-      deadline_in_past: "needs to be in the future"
+      deadline_in_past: "Choose a date in the future."
     balance_adjustment_in_note: "Balance adjustment (increase)"
     balance_adjustment_in_description: "Balance adjustment for %{account_name}: +%{amount}"
     balance_adjustment_out_note: "Balance adjustment (decrease)"
     balance_adjustment_out_description: "Balance adjustment for %{account_name}: -%{amount}"
   errors:
     messages:
-      goal_must_be_greater: "must be greater than current balance"
+      goal_must_be_greater: "The target amount must be greater than the current balance."

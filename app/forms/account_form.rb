@@ -56,9 +56,7 @@ class AccountForm < BaseForm
       account
     end
   rescue StandardError => e
-    Rails.logger.error "AccountForm submit error: #{e.message}\n#{e.backtrace.join("\n")}"
-    add_custom_error(:base, e.message)
-    false
+    handle_submit_error(e)
   end
 
   # Only names you could still want: templates minus the ones already taken.

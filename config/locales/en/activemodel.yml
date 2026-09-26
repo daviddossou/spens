@@ -32,3 +32,132 @@ en:
         other_than: "must be other than %{count}"
         present: "must be blank"
         required: "must exist"
+      # Form objects speak to the user in full sentences: the message stands alone,
+      # without the technical attribute name in front of it.
+      models:
+        transaction:
+          format: "%{message}"
+          attributes:
+            kind:
+              blank: "Choose the type of operation."
+              inclusion: "Choose the type of operation."
+            amount:
+              blank: "Enter the amount."
+              not_a_number: "The amount must be a number."
+              greater_than: "The amount must be greater than zero."
+            fee_amount:
+              not_a_number: "The fee must be a number."
+              greater_than_or_equal_to: "The fee can't be negative."
+            transaction_date:
+              blank: "Enter the date of the operation."
+            transaction_type_name:
+              blank: "Choose a category."
+            from_account_name:
+              blank: "Choose the account the money was sent from."
+            to_account_name:
+              blank: "Choose the account that received the money."
+              different_account: "Choose two different accounts for this transfer."
+            contact_name:
+              blank: "Tell us who this debt is with."
+            direction:
+              blank: "Say whether you lent or borrowed this money."
+              inclusion: "Say whether you lent or borrowed this money."
+        debt:
+          format: "%{message}"
+          attributes:
+            contact_name:
+              blank: "Enter the person's name."
+              too_long: "The person's name is too long (%{count} characters max)."
+            total_lent:
+              not_a_number: "The amount must be a number."
+              greater_than: "The amount must be greater than zero."
+            total_reimbursed:
+              not_a_number: "The repaid amount must be a number."
+              greater_than_or_equal_to: "The repaid amount can't be negative."
+        account:
+          format: "%{message}"
+          attributes:
+            account_name:
+              blank: "Give this account a name."
+              too_long: "The account name is too long (%{count} characters max)."
+            current_balance:
+              not_a_number: "The balance must be a number."
+        goal:
+          format: "%{message}"
+          attributes:
+            goal_name:
+              blank: "Give your goal a name."
+              too_long: "The goal name is too long (%{count} characters max)."
+            account_name:
+              blank: "Choose the account you're setting this money aside in."
+            current_balance:
+              not_a_number: "The balance must be a number."
+            target_amount:
+              not_a_number: "The target amount must be a number."
+              greater_than: "The target amount must be greater than zero."
+        budget_item:
+          format: "%{message}"
+          attributes:
+            kind:
+              blank: "Choose the type of line."
+              inclusion: "Choose the type of line."
+            amount:
+              blank: "Enter the amount."
+              not_a_number: "The amount must be a number."
+              greater_than: "The amount must be greater than zero."
+            frequency:
+              blank: "Choose a frequency."
+              inclusion: "Choose a frequency."
+            starts_on:
+              blank: "Enter the starting month."
+            transaction_type_name:
+              blank: "Choose a category."
+            to_account_name:
+              blank: "Choose the account that receives the money."
+              different_account: "Choose two different accounts for this transfer."
+            contact_name:
+              blank: "Tell us who this debt is with."
+        onboarding_transaction_form:
+          format: "%{message}"
+          attributes:
+            account_name:
+              blank: "Give this account a name."
+            amount:
+              blank: "Enter this account's balance."
+              not_a_number: "The balance must be a number."
+              greater_than: "The balance must be greater than zero."
+            transaction_date:
+              blank: "Enter a date."
+            transaction_type_name:
+              blank: "Choose a category."
+            transaction_type_kind:
+              inclusion: "This type of operation doesn't exist."
+        onboarding_account_setup_form:
+          format: "%{message}"
+        onboarding/profile_setup_form:
+          format: "%{message}"
+          attributes:
+            country:
+              blank: "Choose your country."
+            currency:
+              blank: "Choose your currency."
+              inclusion: "Choose a currency from the list."
+            income_frequency:
+              inclusion: "Choose an income frequency from the list."
+        onboarding/savings_projection_form:
+          format: "%{message}"
+          attributes:
+            monthly_income:
+              blank: "Enter your monthly income."
+              not_a_number: "Your monthly income must be a number."
+              greater_than: "Your monthly income must be greater than zero."
+            savings_rate:
+              blank: "Choose how much you want to save."
+              not_a_number: "The savings share must be a number."
+              not_an_integer: "The savings share must be a whole number."
+              in: "The savings share must be between 1 and 40%."
+        onboarding/financial_goal_form:
+          format: "%{message}"
+          attributes:
+            financial_goals:
+              blank: "Choose at least one goal."

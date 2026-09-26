@@ -37,7 +37,7 @@ RSpec.describe BaseForm, type: :model do
     it 'validates attributes' do
       form.name = nil
       expect(form).not_to be_valid
-      expect(form.errors[:name]).to include("can't be blank")
+      expect(form.errors).to be_of_kind(:name, :blank)
     end
 
     it 'is valid with correct attributes' do
@@ -143,8 +143,30 @@ RSpec.describe BaseForm, type: :model do
 
       form.send(:add_custom_error, :email, 'custom error')
 
-      expect(form.errors[:name]).to include("can't be blank")
+      expect(form.errors).to be_of_kind(:name, :blank)
       expect(form.errors[:email]).to include('custom error')
+    end
+  end
+
+  describe "#promote_errors with an ActiveModel::Errors object" do
+    it "keeps the child's full sentence" do
+      child = ActiveModel::Errors.new(Object.new).tap { |e| e.add(:base, "Account already exists.") }
+      form.send(:promote_errors, child)
+      expect(form.errors[:base]).to include("Account already exists.")
+    end
+  end
+
+  describe "#handle_submit_error" do
+    it "hides technical exception messages behind a generic one" do
+      allow(Rails.logger).to receive(:error)
+      expect(form.send(:handle_submit_error, StandardError.new("PG::ConnectionBad"))).to be(false)
+      expect(form.errors[:base]).to eq([ I18n.t("errors.messages.unexpected") ])
+      expect(Rails.logger).to have_received(:error).with(/TestForm submit error: PG::ConnectionBad/)
+    end
+
+    it "shows a UserFacingError as is" do
+      form.send(:handle_submit_error, BaseForm::UserFacingError.new("Choose an account."))
+      expect(form.errors[:base]).to eq([ "Choose an account." ])
     end
   end
 end

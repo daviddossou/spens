@@ -46,16 +46,14 @@ class Onboarding::ProfileSetupForm < BaseForm
     )
 
     if space.invalid?
-      promote_errors(space.errors.messages)
+      promote_errors(space.errors)
 
       return false
     end
 
     space.save!
   rescue StandardError => e
-    add_custom_error(:base, e.message)
-
-    false
+    handle_submit_error(e)
   end
 
   attr_reader :space

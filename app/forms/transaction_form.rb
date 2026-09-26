@@ -28,7 +28,7 @@ class TransactionForm < BaseForm
   ##
   # Validations
   validates :kind, presence: true, inclusion: { in: %w[expense income transfer transfer_in transfer_out debt_in debt_out debt_writeoff compensation] }
-  validates :amount, presence: true, numericality: { greater_than: 0 }
+  validates :amount, presence: true, numericality: { greater_than: 0, allow_nil: true }
   validates :fee_amount, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
   validates :transaction_date, presence: true
 
@@ -145,9 +145,7 @@ class TransactionForm < BaseForm
 
     true
   rescue StandardError => e
-    Rails.logger.error "TransactionForm submit error: #{e.message}\n#{e.backtrace.join("\n")}"
-    add_custom_error(:base, e.message)
-    false
+    handle_submit_error(e)
   end
 
   ##
@@ -249,6 +247,6 @@ class TransactionForm < BaseForm
     return unless from_account_name.present? && to_account_name.present? &&
                   from_account_name.strip.downcase == to_account_name.strip.downcase
 
-    errors.add(:to_account_name, I18n.t("errors.messages.different_account"))
+    errors.add(:to_account_name, :different_account)
   end
 end

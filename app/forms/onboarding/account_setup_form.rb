@@ -57,7 +57,7 @@ class Onboarding::AccountSetupForm < BaseForm
 
         result = transaction_form.submit
         unless result
-          promote_errors(transaction_form.errors.messages)
+          promote_errors(transaction_form.errors)
           raise ActiveRecord::Rollback
         end
       end
@@ -69,10 +69,7 @@ class Onboarding::AccountSetupForm < BaseForm
 
     success
   rescue StandardError => e
-    Rails.logger.error "AccountSetupForm submit error: #{e.message}\n#{e.backtrace.join("\n")}"
-    add_custom_error(:base, e.message)
-
-    false
+    handle_submit_error(e)
   end
 
   private

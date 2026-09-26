@@ -18,7 +18,7 @@ class Onboarding::SavingsProjectionForm < BaseForm
 
   ##
   # Validations
-  validates :monthly_income, numericality: { greater_than: 0 }
+  validates :monthly_income, presence: true, numericality: { greater_than: 0, allow_nil: true }
   validates :savings_rate, numericality: { only_integer: true, in: RATE_RANGE }
 
   def initialize(space, payload = {}, guess: nil)
@@ -40,16 +40,14 @@ class Onboarding::SavingsProjectionForm < BaseForm
                             onboarding_current_step: NEXT_STEP, **guessed_locale)
 
     if space.invalid?
-      promote_errors(space.errors.messages)
+      promote_errors(space.errors)
 
       return false
     end
 
     space.save!
   rescue StandardError => e
-    add_custom_error(:base, e.message)
-
-    false
+    handle_submit_error(e)
   end
 
   # The currency the amounts are shown in before the space has a confirmed one.
