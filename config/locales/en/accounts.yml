@@ -40,7 +40,7 @@ en:
       income_hint: "Opens an income entry of %{amount}"
     form:
       account_label: "Account Name"
-      account_placeholder: "e.g. Cash, Bank, Mobile Money..."
+      account_placeholder: "e.g. Wallet, Bank, Mobile Money..."
       account_help: "Give your account a name"
       amount_label: "Current amount"
       name_label: "What do you call it?"

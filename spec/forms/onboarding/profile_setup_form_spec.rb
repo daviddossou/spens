@@ -27,7 +27,7 @@ RSpec.describe Onboarding::ProfileSetupForm, type: :model do
     end
 
     it 'defines NEXT_STEP' do
-      expect(described_class::NEXT_STEP).to eq('onboarding_account_setup')
+      expect(described_class::NEXT_STEP).to eq('onboarding_first_day')
     end
   end
 
@@ -253,7 +253,7 @@ RSpec.describe Onboarding::ProfileSetupForm, type: :model do
 
       it 'updates user onboarding_current_step to NEXT_STEP' do
         form.submit
-        expect(space.reload.onboarding_current_step).to eq('onboarding_account_setup')
+        expect(space.reload.onboarding_current_step).to eq('onboarding_first_day')
       end
 
       it 'saves the user to the database' do
@@ -312,7 +312,7 @@ RSpec.describe Onboarding::ProfileSetupForm, type: :model do
 
       it 'advances to next step' do
         form.submit
-        expect(space.reload.onboarding_current_step).to eq('onboarding_account_setup')
+        expect(space.reload.onboarding_current_step).to eq('onboarding_first_day')
       end
     end
 
@@ -373,7 +373,7 @@ RSpec.describe Onboarding::ProfileSetupForm, type: :model do
         form.submit
       }.to change { space.reload.onboarding_current_step }
         .from('onboarding_profile_setup')
-        .to('onboarding_account_setup')
+        .to('onboarding_first_day')
     end
 
     it 'persists all profile setup data' do

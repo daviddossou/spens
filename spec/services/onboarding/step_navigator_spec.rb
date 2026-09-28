@@ -25,8 +25,13 @@ RSpec.describe Onboarding::StepNavigator do
       expect(described_class::STEP_PATHS['onboarding_profile_setup']).to eq(:onboarding_profile_setups_path)
     end
 
-    it 'maps onboarding_account_setup to account setup path' do
-      expect(described_class::STEP_PATHS['onboarding_account_setup']).to eq(:onboarding_account_setups_path)
+    it 'maps onboarding_account_setup on to the first day' do
+      expect(described_class::STEP_PATHS['onboarding_account_setup']).to eq(:onboarding_first_days_path)
+    end
+
+    it 'maps the balances and the summary to their steps' do
+      expect(described_class::STEP_PATHS['onboarding_balances']).to eq(:onboarding_balances_path)
+      expect(described_class::STEP_PATHS['onboarding_summary']).to eq(:onboarding_summaries_path)
     end
 
     it 'maps onboarding_completed to dashboard path' do
@@ -73,8 +78,8 @@ RSpec.describe Onboarding::StepNavigator do
     context 'when current step is onboarding_account_setup' do
       let(:user) { create(:user, onboarding_current_step: :onboarding_account_setup, country: 'BJ') }
 
-      it 'returns account setup path' do
-        expect(navigator.current_step_path).to eq(Rails.application.routes.url_helpers.onboarding_account_setups_path)
+      it 'returns the first day path' do
+        expect(navigator.current_step_path).to eq(Rails.application.routes.url_helpers.onboarding_first_days_path)
       end
     end
 
@@ -133,10 +138,10 @@ RSpec.describe Onboarding::StepNavigator do
       expect(navigator.current_step_path).to include('profile_setups')
     end
 
-    it 'maps account setup step to account setup path' do
+    it 'maps a space parked on the account setup step to the first day' do
       space.update!(onboarding_current_step: :onboarding_account_setup, country: 'US')
       navigator = described_class.new(space)
-      expect(navigator.current_step_path).to include('account_setups')
+      expect(navigator.current_step_path).to include('first_days')
     end
 
     it 'maps completed step to dashboard path' do

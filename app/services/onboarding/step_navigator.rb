@@ -2,12 +2,15 @@
 
 class Onboarding::StepNavigator
   # The financial goals step left the flow; a space parked on it restarts at the projection.
+  # Accounts are no longer gathered up front: a space parked there goes on to its first day.
   STEP_PATHS = {
     "onboarding_savings_projection" => :onboarding_savings_projections_path,
     "onboarding_financial_goal" => :onboarding_savings_projections_path,
     "onboarding_profile_setup" => :onboarding_profile_setups_path,
-    "onboarding_account_setup" => :onboarding_account_setups_path,
+    "onboarding_account_setup" => :onboarding_first_days_path,
     "onboarding_first_day" => :onboarding_first_days_path,
+    "onboarding_balances" => :onboarding_balances_path,
+    "onboarding_summary" => :onboarding_summaries_path,
     "onboarding_completed" => :dashboard_path
   }.freeze
 

@@ -1,0 +1,87 @@
+<% content_for :title, t('.title') %>
+<% symbol = get_currency_symbol(current_space.currency) %>
+<% chips = @suggestions.first(Onboarding::BalancesForm::CHIPS) %>
+
+<div class="onboarding-step">
+  <%= render Onboarding::StepHeaderComponent.new(step: 3, title: t('.title')) %>
+
+  <%= form_with model: @form, url: onboarding_balances_path, method: :patch, scope: :balances,
+                class: "onboarding-step__body balances",
+                data: { controller: "onboarding--balances",
+                        onboarding__balances_currency_value: symbol,
+                        onboarding__balances_locale_value: I18n.locale,
+                        onboarding__balances_morning_value: t('.morning', amount: '%{amount}'),
+                        onboarding__balances_placeholder_value: t('.placeholder'),
+                        onboarding__balances_remove_value: t('.remove'),
+                        onboarding__balances_picker_title_value: t('picker.account'),
+                        onboarding__balances_rows_value: @suggestions.map { |name|
+                          icon, label = picker_icon_and_label(name)
+                          { value: name, label: label, icon: icon }
+                        }.to_json } do |f| %>
+    <%= render Forms::ErrorsComponent.new(object: @form) %>
+
+    <p class="gather-note"><%= t('.lead_html') %></p>
+
+    <% @form.accounts.each do |account| %>
+      <% icon, label = picker_icon_and_label(account.name) %>
+      <% spent = @spent[account.id] || 0 %>
+      <div class="balance-card">
+        <div class="balance-card__head">
+          <span class="balance-card__icon" aria-hidden="true"><%= icon %></span>
+          <div>
+            <p class="balance-card__name"><%= label %></p>
+            <p class="balance-card__spent"><%= t('.spent_today', amount: account_money(spent)) %></p>
+          </div>
+        </div>
+        <label class="savings-projection__income balance-card__field">
+          <%= text_field_tag "balances[balances][#{account.id}]", @form.balance_for(account),
+                             inputmode: "decimal", autocomplete: "off", required: true,
+                             placeholder: t('.placeholder'), class: "savings-projection__input",
+                             aria: { label: t('.balance_label', account: label) },
+                             data: { onboarding__balances_target: "input", spent: spent.to_f,
+                                     action: "input->onboarding--balances#sync" } %>
+          <span class="savings-projection__addon savings-projection__addon--end"><%= symbol %></span>
+        </label>
+        <p class="balance-card__morning" data-onboarding--balances-target="morning" hidden></p>
+      </div>
+    <% end %>
+
+    <div data-onboarding--balances-target="extras"></div>
+
+    <div class="balance-more">
+      <p class="balance-more__label"><%= t('.maybe_also') %></p>
+      <div class="balance-chips" data-onboarding--balances-target="chips">
+        <% chips.each do |name| %>
+          <button type="button" class="name-chip" data-name="<%= name %>"
+                  data-action="onboarding--balances#addChip">+ <%= name %></button>
+        <% end %>
+      </div>
+      <button type="button" class="link-button balance-more__other" data-action="onboarding--balances#pickOther">
+        <%= t('.add_other') %>
+      </button>
+    </div>
+
+    <template data-onboarding--balances-target="template">
+      <div class="balance-card balance-card--extra">
+        <div class="balance-card__head">
+          <span class="balance-card__icon" aria-hidden="true" data-slot="icon"></span>
+          <div>
+            <p class="balance-card__name" data-slot="name"></p>
+          </div>
+          <button type="button" class="balance-card__remove" data-action="onboarding--balances#remove"></button>
+        </div>
+        <input type="hidden" data-slot="hidden">
+        <label class="savings-projection__income balance-card__field">
+          <input type="text" inputmode="decimal" autocomplete="off" class="savings-projection__input"
+                 data-slot="amount" data-action="input->onboarding--balances#sync">
+          <span class="savings-projection__addon savings-projection__addon--end"><%= symbol %></span>
+        </label>
+      </div>
+    </template>
+
+    <div class="onboarding-step__actions">
+      <%= f.button t('.continue'), type: :submit, class: "btn btn-primary btn-lg btn-full-width onboarding-step__cta",
+                   data: { onboarding__balances_target: "cta" } %>
+    </div>
+  <% end %>
+</div>

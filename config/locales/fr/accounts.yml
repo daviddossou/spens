@@ -40,7 +40,7 @@ fr:
       income_hint: "Ouvre la saisie d'un revenu de %{amount}"
     form:
       account_label: "Nom du compte"
-      account_placeholder: "ex. Espèces, Banque, Mobile Money..."
+      account_placeholder: "ex. Porte-monnaie, Banque, Mobile Money..."
       account_help: "Donne un nom à ce compte"
       amount_label: "Montant actuel"
       name_label: "Comment tu l'appelles ?"

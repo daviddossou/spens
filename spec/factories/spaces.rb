@@ -43,8 +43,12 @@ FactoryBot.define do
       onboarding_current_step { "onboarding_profile_setup" }
     end
 
-    trait :onboarding_account_setup do
-      onboarding_current_step { "onboarding_account_setup" }
+    trait :onboarding_first_day do
+      onboarding_current_step { "onboarding_first_day" }
+    end
+
+    trait :onboarding_balances do
+      onboarding_current_step { "onboarding_balances" }
     end
   end
 end

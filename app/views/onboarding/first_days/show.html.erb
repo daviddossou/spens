@@ -2,40 +2,14 @@
 <% add_link = { turbo_frame: "modal" } %>
 
 <div class="onboarding-step">
-  <%= render Onboarding::StepHeaderComponent.new(step: 3, title: t('.title')) %>
+  <%= render Onboarding::StepHeaderComponent.new(step: 2, title: t('.title')) %>
 
   <div class="onboarding-step__body">
-    <% if @recap %>
-      <% _, top_name = picker_icon_and_label(@categories.keys.first) %>
-      <div class="gather-total">
-        <p class="gather-total__label"><%= t('.today') %></p>
-        <p class="gather-total__amount"><%= account_money(@total) %></p>
-        <p class="gather-total__count"><%= t('.mostly', category: top_name.downcase) %></p>
-      </div>
-
-      <div class="analyses-card day-recap">
-        <%= render Analytics::DistributionComponent.new(
-              rows: @categories.map { |name, amount| [ name, amount ] },
-              limit: 4, more_label: t('.other_categories', count: [ @categories.size - 4, 0 ].max)) %>
-      </div>
-
-      <p class="savings-projection__note"><%= t('.congrats', count: @expenses.size) %></p>
-
-      <%= link_to new_transaction_path(kind: "expense"), class: "gather-add", data: add_link do %>
-        <span aria-hidden="true">+</span> <%= t('.add_another') %>
-      <% end %>
-
-      <%= render "reminders/card", membership: @membership, source: "onboarding", suggested_hour: nil if @membership %>
-
-      <div class="onboarding-step__actions">
-        <%= button_to t('.done_for_today'), onboarding_first_days_path, method: :patch,
-                      class: "btn btn-primary btn-lg btn-full-width onboarding-step__cta" %>
-      </div>
-    <% elsif @expenses.any? %>
+    <% if @expenses.any? %>
       <div class="gather-total">
         <p class="gather-total__label"><%= t('.noted_today') %></p>
         <p class="gather-total__amount"><%= account_money(@total) %></p>
-        <p class="gather-total__count"><%= t('.expenses', count: @expenses.size) %></p>
+        <p class="gather-total__count"><%= t('.expenses', count: @expenses.size) %> · <%= t('.accounts', count: @accounts_count) %></p>
       </div>
 
       <div class="day-list">
@@ -53,7 +27,7 @@
       <%= render "reminders/card", membership: @membership, source: "onboarding", suggested_hour: nil if @membership %>
 
       <div class="onboarding-step__actions">
-        <%= button_to t('.done_for_today'), onboarding_first_days_path, method: :patch,
+        <%= button_to t('.continue'), onboarding_first_days_path, method: :patch,
                       class: "btn btn-primary btn-lg btn-full-width onboarding-step__cta" %>
       </div>
     <% else %>
@@ -67,11 +41,10 @@
         <p class="gather-empty__text"><%= t('.empty_text') %></p>
       </div>
 
+      <%# No way past: the step waits for one expense. %>
       <div class="onboarding-step__actions">
         <%= link_to t('.add_first'), new_transaction_path(kind: "expense"),
                     class: "btn btn-primary btn-lg btn-full-width onboarding-step__cta", data: add_link %>
-        <%= button_to t('.skip'), onboarding_first_days_path, method: :patch,
-                      class: "onboarding-step__secondary", form_class: "onboarding-step__secondary-form" %>
       </div>
     <% end %>
   </div>

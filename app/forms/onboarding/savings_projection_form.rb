@@ -4,7 +4,7 @@ class Onboarding::SavingsProjectionForm < BaseForm
   ##
   # Constants
   CURRENT_STEP = "onboarding_savings_projection"
-  NEXT_STEP = "onboarding_account_setup"
+  NEXT_STEP = "onboarding_first_day"
   DEFAULT_INCOME = 150_000
   DEFAULT_RATE = 10
   RATE_RANGE = (1..40)

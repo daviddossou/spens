@@ -4,6 +4,8 @@ class TransactionForm < BaseForm
   ##
   # Attributes
   attr_accessor :space, :transaction, :user
+  # Onboarding: an expense without an account cannot make the accounts exist.
+  attr_accessor :account_required
   attr_writer :debt
   attr_reader :account_id, :debt_id
 
@@ -34,6 +36,7 @@ class TransactionForm < BaseForm
 
   # Conditional validations based on kind
   validates :transaction_type_name, presence: true, unless: -> { transfer? || debt_transaction? }
+  validates :account_name, presence: true, if: -> { account_required && !transfer? && !debt_transaction? }
   validates :from_account_name, presence: true, if: :double_transfer?
   validates :to_account_name, presence: true, if: :double_transfer?
   validate :different_accounts_for_transfer, if: :double_transfer?
@@ -170,6 +173,17 @@ class TransactionForm < BaseForm
 
   def default_account_suggestions
     AccountSuggestionsService.new(space).defaults_with_balances
+  end
+
+  # One-tap shortcuts under the account picker while onboarding: the accounts already
+  # created today, then the places money usually sits (never "cash" — a place, not a form).
+  ACCOUNT_CHIP_TEMPLATES = %i[wallet mobile_money bank cash_box].freeze
+  ACCOUNT_CHIPS = 4
+
+  def account_chip_names
+    existing = space.accounts.active.order(created_at: :asc).pluck(:name)
+    templates = Account.templates.values_at(*ACCOUNT_CHIP_TEMPLATES) & AccountSuggestionsService.new(space).template_names
+    (existing + templates).first(ACCOUNT_CHIPS)
   end
 
   def kind_params(target_kind)

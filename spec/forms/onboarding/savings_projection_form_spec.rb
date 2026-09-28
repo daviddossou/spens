@@ -44,7 +44,7 @@ RSpec.describe Onboarding::SavingsProjectionForm do
 
       expect(form.submit).to be_truthy
       expect(space.reload).to have_attributes(monthly_income: 200_000, savings_rate: 15,
-                                              onboarding_current_step: 'onboarding_account_setup')
+                                              onboarding_current_step: 'onboarding_first_day')
     end
 
     it 'stores the guessed country and currency on a space without a country' do

@@ -281,7 +281,7 @@
   cursor: pointer;
 }
 
-/* Step 2: gather your money */
+/* Step 2: the day (the intro / empty / total cards) */
 .gather-intro {
   padding: 1.25rem;
   background: var(--color-white);
@@ -352,6 +352,157 @@
   overflow-wrap: anywhere;
 }
 
+.gather-add {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 3.25rem;
+  margin-top: 1rem;
+  border: 1.5px dashed var(--color-light-gray);
+  border-radius: 16px;
+  font-weight: 600;
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+/* The day's list */
+.day-list {
+  margin-top: 0.875rem;
+  background: var(--color-white);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+/* Step 3: one balance per account */
+.balances .gather-note {
+  margin: 0 0 1rem;
+}
+
+.balance-card {
+  padding: 1rem 1rem 1.125rem;
+  margin-bottom: 0.875rem;
+  background: var(--color-white);
+  border-radius: 20px;
+}
+
+.balance-card__head {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.875rem;
+}
+
+.balance-card__head > div {
+  flex: 1;
+  min-width: 0;
+}
+
+.balance-card__icon {
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.balance-card__name {
+  margin: 0;
+  font-size: 1.0625rem;
+  font-weight: 700;
+  color: var(--color-charcoal-black);
+}
+
+.balance-card__spent {
+  margin: 0.125rem 0 0;
+  font-size: 0.9375rem;
+  color: var(--color-text-secondary);
+}
+
+.balance-card__remove {
+  flex: none;
+  border: 0;
+  background: none;
+  padding: 0.25rem;
+  font: inherit;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+}
+
+.balance-card__field {
+  margin-bottom: 0;
+}
+
+.savings-projection__addon--end {
+  border-right: 0;
+  border-left: 1.5px solid var(--color-border-input);
+  background: transparent;
+}
+
+.balance-card__morning {
+  margin: 0.625rem 0 0;
+  font-size: 0.9375rem;
+  color: var(--color-success-dark);
+}
+
+.balance-card__morning {
+  font-weight: 600;
+}
+
+.balance-more {
+  margin-top: 0.5rem;
+}
+
+.balance-more__label {
+  margin: 0 0 0.625rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-muted-strong);
+}
+
+.balance-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.balance-chips .name-chip {
+  min-height: 2.75rem;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.balance-more__other {
+  display: inline-block;
+  margin-top: 0.875rem;
+  padding: 0;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+/* The reward: the total, the accounts, one quiet sentence */
+.onboarding-step-header__eyebrow--done {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0;
+  color: var(--color-success-dark);
+}
+
+.summary-check {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  background: var(--color-success-dark);
+  color: var(--color-white);
+  font-size: 0.875rem;
+}
+
 .gather-note {
   margin: 0.875rem 0 0.5rem;
   padding: 0.875rem 1rem;
@@ -362,7 +513,7 @@
 }
 
 .gather-list {
-  margin: 0;
+  margin: 0.875rem 0 0;
   padding: 0;
   list-style: none;
   background: var(--color-white);
@@ -392,103 +543,4 @@
   font-weight: 600;
   font-variant-numeric: tabular-nums;
   color: var(--color-charcoal-black);
-}
-
-.gather-add {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  min-height: 3.25rem;
-  margin-top: 1rem;
-  border: 1.5px dashed var(--color-light-gray);
-  border-radius: 16px;
-  font-weight: 600;
-  color: var(--color-primary);
-  text-decoration: none;
-}
-
-.onboarding-step__cta--two-lines {
-  flex-direction: column;
-  gap: 0.125rem;
-  padding-block: 0.625rem;
-  line-height: 1.25;
-}
-
-.onboarding-step__cta-hint {
-  font-size: 0.8125rem;
-  font-weight: 500;
-  opacity: 0.85;
-}
-
-/* Step 3: the first day */
-.day-list {
-  margin-top: 0.875rem;
-  background: var(--color-white);
-  border-radius: 16px;
-  overflow: hidden;
-}
-
-/* The analyses card spaces its rows for a full page; here the split is one tight block. */
-.day-recap {
-  margin-top: 0.875rem;
-  gap: 0;
-  box-shadow: none;
-}
-
-.day-recap .analyses-stack {
-  margin-bottom: 0.625rem;
-}
-
-.day-recap .analyses-slim {
-  padding: 0.3125rem 0;
-}
-
-.day-recap .analyses-slim__name {
-  font-weight: 500;
-}
-
-/* "Remind me later" at step 2: a folded row of delays, never a way past the step. */
-.gather-later {
-  margin-top: 0.5rem;
-  text-align: center;
-}
-
-.gather-later summary {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  list-style: none;
-}
-
-.gather-later summary::-webkit-details-marker {
-  display: none;
-}
-
-.gather-later__options {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 0.5rem;
-  margin-top: 0.5rem;
-}
-
-.gather-later__options form {
-  display: contents;
-}
-
-.gather-later__option {
-  width: 100%;
-  min-height: 2.75rem;
-  padding-inline: 0.5rem;
-  border-radius: 12px;
-  font-size: 0.9375rem;
-}
-
-.gather-nudged {
-  margin: 1rem 0 0;
-  padding: 0.875rem 1rem;
-  background: var(--color-primary-tint);
-  border-radius: 14px;
-  line-height: 1.5;
-  color: var(--color-primary-ink);
 }

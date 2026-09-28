@@ -92,6 +92,8 @@ class Space < ApplicationRecord
     onboarding_profile_setup: "onboarding_profile_setup",
     onboarding_account_setup: "onboarding_account_setup",
     onboarding_first_day: "onboarding_first_day",
+    onboarding_balances: "onboarding_balances",
+    onboarding_summary: "onboarding_summary",
     onboarding_completed: "onboarding_completed"
   }
 

@@ -62,17 +62,21 @@ RSpec.describe "Onboarding analytics", type: :request do
     )
   end
 
-  it "names suggested accounts by template key and keeps custom names private" do
-    space.update!(onboarding_current_step: "onboarding_account_setup", country: "BJ", currency: "XOF",
+  it "counts the day's expenses and accounts, and keeps account names private" do
+    space.update!(onboarding_current_step: "onboarding_first_day", country: "BJ", currency: "XOF",
                   financial_goals: %w[track_spending])
 
-    post accounts_path, params: { account: { account_name: I18n.t("account_templates.mobile_money"), current_balance: "5000" } }
-    post accounts_path, params: { account: { account_name: "Tontine de maman", current_balance: "1000" } }
-    patch onboarding_account_setups_path, params: { stop: 1 }
+    post transactions_path, params: { transaction: { kind: "expense", amount: "2000", transaction_type_name: "Riz",
+                                                     account_name: I18n.t("account_templates.mobile_money") } }
+    post transactions_path, params: { transaction: { kind: "expense", amount: "500", transaction_type_name: "Zem",
+                                                     account_name: "Tontine de maman" } }
+    patch onboarding_first_days_path
+    accounts = space.accounts.order(:created_at)
+    patch onboarding_balances_path, params: { balances: { balances: { accounts.first.id => "8 500", accounts.last.id => "12000" },
+                                                          extra: [ { name: I18n.t("account_templates.bank"), amount: "50000" } ] } }
 
     completed = event("onboarding_completed")
-    expect(completed).to include(accounts: 2, account_templates: %w[mobile_money], custom_accounts: 1,
-                                 financial_goals: %w[track_spending], country: "BJ")
+    expect(completed).to include(expenses: 2, accounts: 3, extra_accounts: 1, financial_goals: %w[track_spending], country: "BJ")
     expect(completed.to_s).not_to include("Tontine")
   end
 
