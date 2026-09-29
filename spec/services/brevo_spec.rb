@@ -31,6 +31,38 @@ RSpec.describe Brevo do
     end
   end
 
+  describe '.lifecycle_attributes' do
+    it 'mirrors identity, dates, locale and source without money' do
+      user = create(:user, first_name: 'Jane', last_name: nil, acquisition: { 'utm_source' => 'guide', 'guide_link' => 'action-ch1' })
+      user.update_columns(created_at: Time.zone.parse('2026-09-12 09:00'), last_active_at: Time.zone.parse('2026-09-20 18:00'))
+      user.owned_spaces.update_all(locale: 'fr', country: 'BJ')
+
+      expect(described_class.lifecycle_attributes(user)).to eq(
+        FIRSTNAME: 'Jane', SIGNED_UP_AT: '2026-09-12', LAST_ACTIVE_AT: '2026-09-20',
+        LOCALE: 'fr', COUNTRY: 'BJ', SOURCE: 'action-ch1'
+      )
+    end
+  end
+
+  describe '.ensure_attributes' do
+    it 'creates each attribute and treats an existing one as done' do
+      allow(described_class).to receive(:enabled?).and_return(true)
+      allow(Rails.logger).to receive(:warn)
+      allow(described_class).to receive(:post_json) do |url, body|
+        expect(url).to match(%r{/contacts/attributes/normal/[A-Z_]+\z})
+        expect(body).to include(type: 'date').or include(type: 'text')
+        instance_double(Net::HTTPBadRequest, code: '400', body: '{"code":"duplicate_parameter"}').tap do |r|
+          allow(r).to receive(:is_a?).with(Net::HTTPSuccess).and_return(false)
+        end
+      end
+
+      described_class.ensure_attributes
+
+      expect(described_class).to have_received(:post_json).exactly(Brevo::ATTRIBUTES.size).times
+      expect(Rails.logger).not_to have_received(:warn)
+    end
+  end
+
   describe '.sync_contact' do
     it 'no-ops when disabled' do
       allow(described_class).to receive(:enabled?).and_return(false)
