@@ -45,10 +45,7 @@ class Auth::RegistrationsController < ApplicationController
       Analytics.identify(@user)
       Analytics.track(@user, "user_signed_up", Analytics.acquisition_properties(@user).merge(invited: accepted_space.present?))
       track_meta_registration(@user)
-      Brevo.upsert_contact_later(
-        email: @user.email,
-        attributes: { FIRSTNAME: @user.first_name, LASTNAME: @user.last_name }.compact_blank
-      )
+      Brevo.upsert_contact_later(email: @user.email, attributes: Brevo.lifecycle_attributes(@user))
       WelcomeEmailJob.perform_later(@user, I18n.locale.to_s)
 
       # If joining via invitation, set the invited space as current (skip onboarding)
