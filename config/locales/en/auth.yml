@@ -9,6 +9,7 @@ en:
       email: "Email"
       email_placeholder: "you@example.com"
       continue: "Continue"
+      email_suggestion: "Did you mean %{email}?"
       user_not_found: "No account found with this email. Sign up first."
 
     registrations:
@@ -19,6 +20,7 @@ en:
       last_name: "Last name"
       email: "Email"
       continue: "Continue"
+      email_suggestion: "Did you mean %{email}?"
       signed_up: "Welcome! Your account has been created."
 
     verifications:

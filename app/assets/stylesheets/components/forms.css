@@ -134,6 +134,25 @@
   margin-top: 0.25rem;
 }
 
+/* Typo nudge under a field, e.g. "Did you mean name@gmail.com?" */
+.form-suggestion {
+  margin-top: -1rem;
+  margin-bottom: 1.5rem;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.form-suggestion__accept {
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-weight: 500;
+  color: var(--color-primary);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
 /* Form input */
 .form-input {
   display: block;
