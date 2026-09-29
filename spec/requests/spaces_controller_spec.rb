@@ -55,7 +55,7 @@ RSpec.describe SpacesController, type: :request do
       it "sets the onboarding step" do
         post spaces_path, params: { space: { name: "Business" } }
         new_space = Space.find_by(name: "Business")
-        expect(new_space.onboarding_current_step).to eq("onboarding_financial_goal")
+        expect(new_space.onboarding_current_step).to eq("onboarding_first_day")
       end
 
       it "sets the new space as current" do

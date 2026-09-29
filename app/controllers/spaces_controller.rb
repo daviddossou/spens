@@ -13,7 +13,7 @@ class SpacesController < ApplicationController
 
   def create
     @space = Space.new(space_params.merge(user: current_user))
-    @space.onboarding_current_step = "onboarding_financial_goal"
+    @space.onboarding_current_step = "onboarding_first_day"
     @space.locale ||= I18n.locale.to_s
 
     if @space.save

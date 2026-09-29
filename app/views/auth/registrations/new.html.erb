@@ -4,8 +4,14 @@
   <%= link_to t('auth.registrations.sign_in_link'), new_user_session_path, class: "font-medium text-primary hover:text-secondary" %>
 <% end %>
 
-<%= form_with model: @user, url: user_registration_path, method: :post, class: "space-y-6" do |f| %>
+<%= form_with model: @user, url: user_registration_path, method: :post, class: "space-y-6",
+              data: { controller: "onboarding--landing-country", onboarding__landing_country_confirmed_value: false } do |f| %>
   <%= render Forms::ErrorsComponent.new(object: @user, detailed: true) %>
+
+  <%# Where the new space will live: the landing's pick and the browser's time zone. %>
+  <%= hidden_field_tag :landing_country, nil, data: { onboarding__landing_country_target: "country" } %>
+  <%= hidden_field_tag :landing_currency, nil, data: { onboarding__landing_country_target: "currency" } %>
+  <%= hidden_field_tag :time_zone, nil, data: { onboarding__landing_country_target: "timeZone" } %>
 
   <%= render Forms::InputFieldComponent.new(
     form: f,
