@@ -8,8 +8,8 @@ require "csv"
 #
 #   bin/rails segments:feedback
 #   CUTOFF=2026-09-26 DORMANT_DAYS=14 OUT=tmp/segments EXCLUDE=me@x.com,other@y.com bin/rails segments:feedback
-#   In production the variables must travel inside the command, the shell's don't reach the container:
-#   kamal app exec -i 'DORMANT_DAYS=4 bin/rails segments:feedback'
+#   In production the entrypoint execs its arguments without a shell, so pass the variables through env:
+#   kamal app exec -i 'env DORMANT_DAYS=4 bin/rails segments:feedback'
 namespace :segments do
   desc "Export feedback e-mail segments (A/B/C) as CSV, read-only"
   task feedback: :environment do
