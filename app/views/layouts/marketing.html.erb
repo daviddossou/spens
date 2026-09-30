@@ -33,5 +33,7 @@
   <body class="landing-body">
     <%= yield %>
     <%= render Privacy::ConsentBannerComponent.new %>
+    <%# The account picker of the "gather your money" block hands over to this layer. %>
+    <%= render Forms::PickerLayerComponent.new %>
   </body>
 </html>

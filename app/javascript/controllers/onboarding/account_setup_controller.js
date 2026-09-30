@@ -7,39 +7,6 @@ export default class extends Controller {
 
   connect() {
     this.updateRemoveButtons()
-    this.prefillFromLanding()
-  }
-
-  // Accounts entered on the landing page (before sign-up) are kept in
-  // localStorage; restore them here, then clear the stash.
-  prefillFromLanding() {
-    let accounts
-    try {
-      accounts = JSON.parse(localStorage.getItem("spens:landing-accounts"))
-    } catch { return }
-    if (!Array.isArray(accounts) || accounts.length === 0) return
-
-    const firstName = this.accountLineTargets[0]?.querySelector('input[name*="[account_name]"]')
-    if (firstName && firstName.value.trim() !== "") return // form already has data
-
-    while (this.accountLineTargets.length < accounts.length) {
-      this.addLine({ preventDefault() {} })
-    }
-    accounts.forEach((account, i) => {
-      const line = this.accountLineTargets[i]
-      this.setFieldValue(line.querySelector('input[name*="[account_name]"]'), account.name)
-      this.setFieldValue(line.querySelector('input[name*="[amount]"]'), account.amount)
-    })
-    try { localStorage.removeItem("spens:landing-accounts") } catch {}
-  }
-
-  // The account name is a picker: its hidden input holds the value, the
-  // controller repaints the visible label from it.
-  setFieldValue(field, value) {
-    if (!field || !value) return
-    field.value = value
-    const picker = field.closest('[data-controller~="picker"]')
-    if (picker) this.application.getControllerForElementAndIdentifier(picker, "picker")?.render()
   }
 
   addLine(event) {

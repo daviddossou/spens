@@ -15,6 +15,7 @@ class ApplicationController < ActionController::Base
   include ActivityStamping
   include AnalyticsTracking
   include MetaTracking
+  include LandingHandoff
   include SeoIndexing
 
   protected

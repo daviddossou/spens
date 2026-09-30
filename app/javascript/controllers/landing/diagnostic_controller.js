@@ -1,6 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 // Self-diagnostic checklist: toggle cards, count them, swap the recap message per tier.
+// The checked cards' goals are read by landing--handoff when a sign-up link is clicked.
 export default class extends Controller {
   static targets = ["card", "count", "title", "line"]
   static values = { tiers: Object }
@@ -19,12 +20,5 @@ export default class extends Controller {
     this.countTarget.textContent = n
     this.titleTarget.textContent = this.tiersValue[tier].title
     this.lineTarget.textContent = this.tiersValue[tier].line
-
-    // Stash the matching financial goals so onboarding can pre-select them.
-    const goals = [...new Set(checked.flatMap((c) => (c.dataset.goals || "").split(" ").filter(Boolean)))]
-    try {
-      if (goals.length > 0) localStorage.setItem("spens:landing-goals", JSON.stringify(goals))
-      else localStorage.removeItem("spens:landing-goals")
-    } catch {}
   }
 }

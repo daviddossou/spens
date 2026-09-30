@@ -3,7 +3,7 @@ import AccountsController from "../../../../app/javascript/controllers/landing/a
 import { startStimulus } from "../../helpers/stimulus"
 
 const markup = `
-  <form data-controller="landing--accounts">
+  <form data-controller="landing--accounts" data-action="submit->landing--accounts#submit">
     <div data-onboarding--account-setup-target="accountLine">
       <span class="form-input-addon--prepend"></span>
       <input name="accounts[0][account_name]" value="Cash">
@@ -17,7 +17,6 @@ const markup = `
     <strong data-landing--accounts-target="total"></strong>
     <div data-landing--accounts-target="recap"><a href="/sign-up">Continue</a></div>
     <p data-landing--accounts-target="note"></p>
-    <button type="button" data-action="landing--accounts#save">Save</button>
   </form>
 `
 
@@ -32,15 +31,15 @@ describe("Landing AccountsController", () => {
     expect(document.querySelector("[data-landing--accounts-target='note']").hidden).toBe(false)
   })
 
-  it("persists non-empty account rows", async () => {
+  it("submits by clicking the CTA, so the hand-off sees the rows", async () => {
     vi.stubGlobal("requestAnimationFrame", callback => callback())
     await startStimulus("landing--accounts", AccountsController, markup)
+    const link = document.querySelector("a")
+    let clicked = false
+    link.addEventListener("click", (e) => { clicked = true; e.preventDefault() })
 
-    document.querySelector("button").click()
+    document.querySelector("form").dispatchEvent(new Event("submit", { bubbles: true, cancelable: true }))
 
-    expect(JSON.parse(localStorage.getItem("spens:landing-accounts"))).toEqual([
-      { name: "Cash", amount: "1200" },
-      { name: "Bank", amount: "300" }
-    ])
+    expect(clicked).toBe(true)
   })
 })

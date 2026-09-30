@@ -10,7 +10,7 @@ const tiers = {
 }
 
 describe("Landing DiagnosticController", () => {
-  it("tracks checked cards, updates the tier, and persists unique goals", async () => {
+  it("tracks checked cards and updates the tier", async () => {
     await startStimulus("landing--diagnostic", DiagnosticController, `
       <div data-controller="landing--diagnostic" data-landing--diagnostic-tiers-value='${JSON.stringify(tiers)}'>
         <button data-landing--diagnostic-target="card" data-action="landing--diagnostic#toggle" data-goals="save budget"></button>
@@ -25,6 +25,6 @@ describe("Landing DiagnosticController", () => {
 
     expect(document.querySelector("[data-landing--diagnostic-target='count']")).toHaveTextContent("2")
     expect(document.querySelector("[data-landing--diagnostic-target='title']")).toHaveTextContent("Low")
-    expect(JSON.parse(localStorage.getItem("spens:landing-goals"))).toEqual(["save", "budget", "debt"])
+    expect(localStorage.getItem("spens:landing-goals")).toBeNull()
   })
 })
