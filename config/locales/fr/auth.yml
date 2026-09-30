@@ -9,6 +9,7 @@ fr:
       email: "Email"
       email_placeholder: "toi@exemple.com"
       continue: "Continuer"
+      email_suggestion: "Vouliez-vous dire %{email} ?"
       user_not_found: "Aucun compte avec cet email. Inscris-toi d'abord."
 
     registrations:
@@ -19,6 +20,7 @@ fr:
       last_name: "Nom"
       email: "Email"
       continue: "Continuer"
+      email_suggestion: "Vouliez-vous dire %{email} ?"
       signed_up: "Bienvenue ! Ton compte est créé."
 
     verifications:
