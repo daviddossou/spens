@@ -48,7 +48,9 @@ RSpec.describe Segments::FeedbackExporter do
     user = signed_up("c@gmail.com")
     user.update_columns(confirmed_at: signup + 2.days)
 
-    expect(export.segments[:c].sole["derniere_activite"]).to eq("2026-09-14")
+    result = export
+    expect(result.segments[:c].sole["derniere_activite"]).to eq("2026-09-14")
+    expect(result.report).to include("dont 1 revenus un autre jour et 0 seulement actifs")
   end
 
   it "puts a recently active user in segment C" do
