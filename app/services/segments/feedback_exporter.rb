@@ -32,7 +32,7 @@ module Segments
       seen = Set.new
       out_of_scope = User.where("created_at > ?", @cutoff.end_of_day).count
 
-      User.where(created_at: ..@cutoff.end_of_day).order(:created_at).find_each do |user|
+      User.where(created_at: ..@cutoff.end_of_day).find_each do |user|
         email = user.email.to_s.downcase.strip
         if @excluded_emails.include?(email) then exclusions["adresse exclue"] += 1
         elsif email.match?(TEST_EMAIL) then exclusions["compte de test"] += 1
@@ -74,7 +74,7 @@ module Segments
     end
 
     def classify(row)
-      returned = row[:last_activity_at] && row[:last_activity_at].to_date > row[:signed_up_on]
+      returned = row[:returned] = row[:last_activity_at].present? && row[:last_activity_at].to_date > row[:signed_up_on]
       dormant = row[:last_activity_at].nil? || row[:last_activity_at] < @now - @dormant_days.days
       return :c if returned || !dormant
 
@@ -97,13 +97,14 @@ module Segments
         "Périmètre : comptes créés jusqu'au #{@cutoff.iso8601} inclus. Hors périmètre (créés après) : #{out_of_scope}.",
         "Segment A (rien saisi) : #{segments[:a].size}",
         "Segment B (commencé puis parti) : #{segments[:b].size}",
-        "Segment C (revenus ou actifs, pas d'e-mail) : #{segments[:c].size}",
+        "Segment C (revenus ou actifs, pas d'e-mail) : #{segments[:c].size}, dont #{segments[:c].count { |r| r[:returned] }} " \
+        "revenus un autre jour et #{segments[:c].count { |r| !r[:returned] }} seulement actifs dans les #{@dormant_days} derniers jours",
         "Total : #{total}",
         "Exclusions : #{exclusions.empty? ? 'aucune' : exclusions.map { |k, v| "#{k} #{v}" }.join(', ')}",
         "Adresses suspectes : #{suspects} (faute de frappe sur le domaine ; aucun log de rebond n'existe en base)",
         "Critère d'activité : users.last_active_at (stampé à chaque requête, au plus une fois par heure) ; avant son " \
         "ajout, max(sign-in Devise, confirmation e-mail, dernier push, dernière écriture sur espace/adhésion/compte/" \
-        "transaction/budget/objectif/dette). " \
+        "transaction/budget/objectif/dette ; jamais les envois de push ou de rappels). " \
         "Dormant = aucune activité depuis #{@dormant_days} jours.",
         "Arbitrages : lignes de budget et objectifs n'ont pas d'auteur, attribués au propriétaire de l'espace ; " \
         "comptes/transactions/dettes sans user_id attribués au propriétaire ; soldes de départ non comptés comme transactions."

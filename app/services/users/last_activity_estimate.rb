@@ -2,8 +2,8 @@
 
 # Best guess of when a user last used the app, for rows that predate users.last_active_at.
 # No session log exists: the answer is the newest of the Devise sign-in stamps (only refreshed
-# by an OTP login), the e-mail confirmation (start of the second session), the last push usage
-# and the newest write on anything the user authored or owns.
+# by an OTP login), the e-mail confirmation (start of the second session) and the newest write
+# on anything the user authored or owns. Push delivery and reminder stamps are system writes.
 module Users
   module LastActivityEstimate
     module_function
@@ -12,7 +12,6 @@ module Users
       owned_ids = user.owned_spaces.pluck(:id)
       [
         user.last_active_at, user.current_sign_in_at, user.last_sign_in_at, user.confirmed_at,
-        user.push_subscriptions.maximum(:last_used_at),
         user.memberships.maximum(:updated_at),
         Space.where(id: owned_ids).maximum(:updated_at),
         authored(Account, user, owned_ids).maximum(:updated_at),
