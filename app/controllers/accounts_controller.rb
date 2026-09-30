@@ -84,10 +84,9 @@ class AccountsController < ApplicationController
 
   private
 
-  # Mid-onboarding the sheet was opened from the "gather your money" step: go back to it,
-  # where the new total speaks for itself.
+  # Mid-onboarding the sheet was opened from a step: go back to it.
   def after_create_path
-    return onboarding_account_setups_path unless current_space.onboarding_completed?
+    return onboarding_path unless current_space.onboarding_completed?
 
     flash[:notice] = t(".success")
     account_path(id: @form.account.id)

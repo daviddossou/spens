@@ -25,9 +25,9 @@ export default class extends Controller {
 
     if (!this.isOpen) this.show()
     this.listTarget.scrollTop = 0
-    // The keyboard is imposed only where typing is the likely answer (naming an account).
-    // Same gesture as the tap, or iOS refuses to raise it.
-    if (request.focusSearch) this.searchTarget.focus({ preventScroll: true })
+    // The search is focused on opening so typing starts at once. Same gesture as the tap,
+    // or iOS refuses to raise the keyboard. A request can opt out with focusSearch: false.
+    if (request.focusSearch !== false) this.searchTarget.focus({ preventScroll: true })
   }
 
   show() {

@@ -23,7 +23,7 @@
         phrase_filled_count: filled.size,
         phrase_text: @text.to_s,
         phrase_needs_ai: @phrase_needs_ai ? "true" : "false",
-        action: "tom-select:change->transaction-form#keepTypedText",
+        action: "tom-select:change->transaction-form#keepTypedText change->transaction-form#syncCta",
         transaction_form_currency_value: get_currency_symbol(current_space.currency),
         transaction_form_locale_value: I18n.locale,
         transaction_form_date_today_value: t('transactions.form.date_hint_today'),
@@ -31,6 +31,7 @@
         transaction_form_balances_value: current_space.accounts.map { |a| [ a.name, a.balance ] }.to_h.to_json,
         transaction_form_cta_template_value: t('transactions.form.cta_save_amount', amount: '%{amount}'),
         transaction_form_cta_empty_value: (@form.editing? ? t('transactions.edit.update_transaction') : t('transactions.form.cta_need_amount')),
+        transaction_form_cta_need_account_value: (t('transactions.form.cta_need_account') if @form.account_required),
         debt_fields_debts_by_name_value: @form.debts_by_name.to_json,
         debt_fields_balances_value: @form.debt_balances_by_name.to_json,
         debt_fields_currency_value: get_currency_symbol(current_space.currency),
@@ -183,14 +184,31 @@
           allow_create: true, grouped: true) %>
       </div>
 
-      <div class="transaction-form__account<%= ' is-filled' if filled.include?('account_name') %>">
-        <%= render Forms::PickerFieldComponent.new(
-          form: f, field: :account_name,
-          label: t('transactions.form.account_label'), title: t('picker.account'),
-          placeholder: t('transactions.form.account_placeholder'),
-          rows: picker_account_rows(@form.account_suggestions, current_space.currency),
-          allow_create: true) %>
-      </div>
+      <% if @form.account_required %>
+        <%# Onboarding: the account is the answer to "paid with what?", one tap away. %>
+        <div class="transaction-form__account<%= ' is-filled' if filled.include?('account_name') %>"
+             data-controller="name-chips" data-action="change->name-chips#render"
+             data-name-chips-suggestions-value="<%= @form.account_chip_names.to_json %>"
+             data-name-chips-limit-value="<%= TransactionForm::ACCOUNT_CHIPS %>">
+          <%= render Forms::PickerFieldComponent.new(
+            form: f, field: :account_name,
+            label: t('transactions.form.account_label'), title: t('picker.account'),
+            placeholder: t('transactions.form.account_placeholder'),
+            rows: picker_account_rows(@form.account_suggestions, current_space.currency),
+            allow_create: true,
+            field_data: { name_chips_target: "input", transaction_form_target: "account" }) %>
+          <div class="name-chips" data-name-chips-target="chips" hidden></div>
+        </div>
+      <% else %>
+        <div class="transaction-form__account<%= ' is-filled' if filled.include?('account_name') %>">
+          <%= render Forms::PickerFieldComponent.new(
+            form: f, field: :account_name,
+            label: t('transactions.form.account_label'), title: t('picker.account'),
+            placeholder: t('transactions.form.account_placeholder'),
+            rows: picker_account_rows(@form.account_suggestions, current_space.currency),
+            allow_create: true) %>
+        </div>
+      <% end %>
     <% end %>
 
     <!-- More Details Toggle -->

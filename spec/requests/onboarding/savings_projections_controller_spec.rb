@@ -53,7 +53,7 @@ RSpec.describe 'Onboarding::SavingsProjectionsController', type: :request do
     it 'saves the answers with the guessed country and moves on' do
       patch onboarding_savings_projections_path, params: params.merge(landing_country: 'BJ', landing_currency: 'XOF')
 
-      expect(response).to redirect_to(onboarding_account_setups_path)
+      expect(response).to redirect_to(onboarding_first_days_path)
       expect(space.reload).to have_attributes(monthly_income: 200_000, savings_rate: 20, country: 'BJ', currency: 'XOF')
     end
 

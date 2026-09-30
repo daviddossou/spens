@@ -3,11 +3,11 @@ import { formatMoney, parseAmount } from "lib/money"
 
 // Connects to data-controller="transaction-form"
 export default class extends Controller {
-  static targets = ["optionalFields", "toggleButton", "amount", "cta", "balances",
+  static targets = ["optionalFields", "toggleButton", "amount", "account", "cta", "balances",
     "datePill", "dateField", "dateInput", "dateHint"]
   static values = {
-    currency: String, locale: String, ctaTemplate: String, ctaEmpty: String, balances: Object,
-    dateToday: String, dateYesterday: String
+    currency: String, locale: String, ctaTemplate: String, ctaEmpty: String, ctaNeedAccount: String,
+    balances: Object, dateToday: String, dateYesterday: String
   }
 
   connect() {
@@ -101,17 +101,24 @@ export default class extends Controller {
   }
 
   // The submit button carries the amount ("Save 24.90 €") and names what's
-  // missing while it's blank ("Enter an amount").
+  // missing while it's blank ("Enter an amount"). While onboarding the account is
+  // required too: the button stays off until one is picked.
   syncCta() {
     if (!this.hasCtaTarget || !this.hasCtaTemplateValue) return
 
     const raw = this.hasAmountTarget ? parseAmount(this.amountTarget.value) : NaN
-    if (raw > 0) {
+    const needsAccount = this.hasCtaNeedAccountValue && this.ctaNeedAccountValue &&
+      this.hasAccountTarget && !this.accountTarget.value.trim()
+    if (raw > 0 && needsAccount) {
+      this.ctaTarget.textContent = this.ctaNeedAccountValue
+      this.ctaTarget.disabled = true
+    } else if (raw > 0) {
       const value = formatMoney(raw, this.currencyValue, this.hasLocaleValue ? this.localeValue : undefined)
       this.ctaTarget.textContent = this.ctaTemplateValue.replace("%{amount}", value)
       this.ctaTarget.disabled = false
     } else {
       this.ctaTarget.textContent = this.ctaEmptyValue
+      this.ctaTarget.disabled = needsAccount
     }
   }
 

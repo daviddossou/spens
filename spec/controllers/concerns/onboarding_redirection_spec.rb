@@ -144,8 +144,8 @@ RSpec.describe OnboardingRedirection, type: :controller do
       end
     end
 
-    context 'when controller name is account_setups' do
-      before { allow(controller).to receive(:controller_name).and_return('account_setups') }
+    context 'when controller name is first_days' do
+      before { allow(controller).to receive(:controller_name).and_return('first_days') }
 
       it 'returns true' do
         expect(controller.send(:onboarding_controller?)).to be true

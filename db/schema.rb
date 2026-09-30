@@ -192,7 +192,6 @@ ActiveRecord::Schema[8.0].define(version: 2026_09_28_230203) do
     t.integer "reminder_hour", default: 20, null: false
     t.date "reminder_last_sent_on"
     t.datetime "reminder_declined_at"
-    t.datetime "accounts_nudge_at"
     t.index ["space_id"], name: "index_memberships_on_space_id"
     t.index ["user_id", "space_id"], name: "index_memberships_on_user_id_and_space_id", unique: true
     t.index ["user_id"], name: "index_memberships_on_user_id"

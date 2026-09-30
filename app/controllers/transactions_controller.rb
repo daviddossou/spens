@@ -109,6 +109,7 @@ class TransactionsController < ApplicationController
 
     @form = TransactionForm.new(current_space, merged)
     @form.user = current_user
+    @form.account_required = !current_space.onboarding_completed?
     @form.quick_entry_attempt_id = @phrase_attempt.id if @phrase_attempt
 
     # Opened from a person's page: the "who" is known, so the field hides and the

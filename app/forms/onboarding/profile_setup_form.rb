@@ -4,7 +4,7 @@ class Onboarding::ProfileSetupForm < BaseForm
   ##
   # Constants
   CURRENT_STEP = "onboarding_profile_setup"
-  NEXT_STEP = "onboarding_account_setup"
+  NEXT_STEP = "onboarding_first_day"
 
   ##
   # Attributes

@@ -60,6 +60,7 @@ services:
         rm -f tmp/pids/server.pid &&
         bundle install &&
         bin/rails db:prepare &&
+        bin/rails tailwindcss:build &&
         bin/rails server -b 0.0.0.0 -p 3000
       "
     stdin_open: true
@@ -93,7 +94,7 @@ services:
     container_name: spens_ngrok
     image: ngrok/ngrok:latest
     ports:
-      - "4042:4040"  # ngrok web interface
+      - "4042:4040"  # ngrok web interface (4040/4041 are taken by anka)
     environment:
       - NGROK_AUTHTOKEN=${NGROK_AUTHTOKEN}
     command: ["http", "web:3000", "--log", "stdout"]

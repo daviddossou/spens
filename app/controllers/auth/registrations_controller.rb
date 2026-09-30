@@ -25,15 +25,18 @@ class Auth::RegistrationsController < ApplicationController
     ).compact_blank
 
     if @user.save
-      # Create default space (membership auto-created via callback)
+      # Create default space (membership auto-created via callback). Sign-up is step 1 of
+      # onboarding: the space opens on its first day, in the country the browser suggests.
+      landing = consume_landing_choices
+      guess = locale_guess(landing)
       space = Space.create!(
         user: @user,
         name: I18n.t("spaces.default_name", default: "Personal"),
         locale: I18n.locale.to_s,
-        onboarding_current_step: "onboarding_financial_goal"
+        onboarding_current_step: "onboarding_first_day",
+        country: guess.country, currency: guess.currency || Space.new.currency
       )
 
-      landing = consume_landing_choices
       landing.apply_to(space, user: @user)
       track_landing_goals(landing)
 
@@ -88,6 +91,13 @@ class Auth::RegistrationsController < ApplicationController
   def render_form_again(status)
     @user = User.new(params.fetch(:user, {}).permit(:first_name, :email))
     render :new, status: status
+  end
+
+  # The landing's pick wins over the browser's hints (Cloudflare header, time zone).
+  def locale_guess(landing)
+    Onboarding::LocaleGuess.new(request: request, picked_country: landing.country || params[:landing_country],
+                                picked_currency: landing.currency || params[:landing_currency],
+                                time_zone: params[:time_zone])
   end
 
   # The diagnostic's problems, one event each like the goals step would send.

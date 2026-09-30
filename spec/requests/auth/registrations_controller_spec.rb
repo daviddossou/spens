@@ -101,11 +101,19 @@ RSpec.describe Auth::RegistrationsController, type: :request do
         expect(new_user.encrypted_password).to be_present
       end
 
-      it "sets the onboarding step" do
-        post user_registration_path, params: valid_params
+      it "opens the space on its first day, in the country the browser suggests" do
+        post user_registration_path, params: valid_params.merge(time_zone: "Africa/Porto-Novo")
         new_user = User.find_by(email: "jane@example.com")
         new_space = new_user.spaces.first
-        expect(new_space.onboarding_current_step).to eq("onboarding_financial_goal")
+        expect(new_space.onboarding_current_step).to eq("onboarding_first_day")
+        expect(new_space).to have_attributes(country: "BJ", currency: "XOF")
+      end
+
+      it "keeps the default currency when nothing says where the user lives" do
+        post user_registration_path, params: valid_params
+        new_space = User.find_by(email: "jane@example.com").spaces.first
+        expect(new_space.country).to be_nil
+        expect(new_space.currency).to eq("XOF")
       end
     end
 

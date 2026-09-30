@@ -7,7 +7,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
   protected
 
   def after_sign_up_path_for(resource)
-    resource.update!(onboarding_current_step: "onboarding_financial_goal")
+    resource.update!(onboarding_current_step: "onboarding_first_day")
     onboarding_path
   end
 

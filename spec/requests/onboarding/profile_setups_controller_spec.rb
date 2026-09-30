@@ -93,15 +93,14 @@ RSpec.describe 'Onboarding::ProfileSetupsController', type: :request do
         patch onboarding_profile_setups_path, params: valid_params
 
         space.reload
-        expect(space.onboarding_current_step).to eq('onboarding_account_setup')
+        expect(space.onboarding_current_step).to eq('onboarding_first_day')
       end
 
       it 'redirects to next step path' do
         patch onboarding_profile_setups_path, params: valid_params
 
         expect(response).to have_http_status(:redirect)
-        # Should redirect to account setup (next step)
-        expect(response).to redirect_to("#{onboarding_account_setups_path}")
+        expect(response).to redirect_to(onboarding_first_days_path)
       end
     end
 

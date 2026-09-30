@@ -13,20 +13,25 @@ RSpec.describe Onboarding::StepNavigator do
       expect(described_class::STEP_PATHS).to be_frozen
     end
 
-    it 'maps onboarding_savings_projection to savings projection path' do
-      expect(described_class::STEP_PATHS['onboarding_savings_projection']).to eq(:onboarding_savings_projections_path)
+    it 'sends the retired savings projection step on to the first day' do
+      expect(described_class::STEP_PATHS['onboarding_savings_projection']).to eq(:onboarding_first_days_path)
     end
 
-    it 'sends a space parked on the retired financial goal step to the savings projection' do
-      expect(described_class::STEP_PATHS['onboarding_financial_goal']).to eq(:onboarding_savings_projections_path)
+    it 'sends the retired financial goal step on to the first day' do
+      expect(described_class::STEP_PATHS['onboarding_financial_goal']).to eq(:onboarding_first_days_path)
     end
 
-    it 'maps onboarding_profile_setup to profile setup path' do
-      expect(described_class::STEP_PATHS['onboarding_profile_setup']).to eq(:onboarding_profile_setups_path)
+    it 'sends the retired profile step on to the first day' do
+      expect(described_class::STEP_PATHS['onboarding_profile_setup']).to eq(:onboarding_first_days_path)
     end
 
-    it 'maps onboarding_account_setup to account setup path' do
-      expect(described_class::STEP_PATHS['onboarding_account_setup']).to eq(:onboarding_account_setups_path)
+    it 'maps onboarding_account_setup on to the first day' do
+      expect(described_class::STEP_PATHS['onboarding_account_setup']).to eq(:onboarding_first_days_path)
+    end
+
+    it 'maps the balances and the summary to their steps' do
+      expect(described_class::STEP_PATHS['onboarding_balances']).to eq(:onboarding_balances_path)
+      expect(described_class::STEP_PATHS['onboarding_summary']).to eq(:onboarding_summaries_path)
     end
 
     it 'maps onboarding_completed to dashboard path' do
@@ -49,32 +54,32 @@ RSpec.describe Onboarding::StepNavigator do
     context 'when current step is onboarding_savings_projection' do
       let(:user) { create(:user, onboarding_current_step: :onboarding_savings_projection) }
 
-      it 'returns savings projection path' do
-        expect(navigator.current_step_path).to eq(Rails.application.routes.url_helpers.onboarding_savings_projections_path)
+      it 'returns the first day path' do
+        expect(navigator.current_step_path).to eq(Rails.application.routes.url_helpers.onboarding_first_days_path)
       end
     end
 
     context 'when current step is the retired onboarding_financial_goal' do
       let(:user) { create(:user, onboarding_current_step: :onboarding_financial_goal) }
 
-      it 'returns savings projection path' do
-        expect(navigator.current_step_path).to eq(Rails.application.routes.url_helpers.onboarding_savings_projections_path)
+      it 'returns the first day path' do
+        expect(navigator.current_step_path).to eq(Rails.application.routes.url_helpers.onboarding_first_days_path)
       end
     end
 
     context 'when current step is onboarding_profile_setup' do
       let(:user) { create(:user, onboarding_current_step: :onboarding_profile_setup) }
 
-      it 'returns profile setup path' do
-        expect(navigator.current_step_path).to eq(Rails.application.routes.url_helpers.onboarding_profile_setups_path)
+      it 'returns the first day path' do
+        expect(navigator.current_step_path).to eq(Rails.application.routes.url_helpers.onboarding_first_days_path)
       end
     end
 
     context 'when current step is onboarding_account_setup' do
       let(:user) { create(:user, onboarding_current_step: :onboarding_account_setup, country: 'BJ') }
 
-      it 'returns account setup path' do
-        expect(navigator.current_step_path).to eq(Rails.application.routes.url_helpers.onboarding_account_setups_path)
+      it 'returns the first day path' do
+        expect(navigator.current_step_path).to eq(Rails.application.routes.url_helpers.onboarding_first_days_path)
       end
     end
 
@@ -92,7 +97,7 @@ RSpec.describe Onboarding::StepNavigator do
       end
 
       it 'returns savings projection path as fallback' do
-        expect(navigator.current_step_path).to eq(Rails.application.routes.url_helpers.onboarding_savings_projections_path)
+        expect(navigator.current_step_path).to eq(Rails.application.routes.url_helpers.onboarding_first_days_path)
       end
     end
 
@@ -102,14 +107,14 @@ RSpec.describe Onboarding::StepNavigator do
       end
 
       it 'returns savings projection path as fallback' do
-        expect(navigator.current_step_path).to eq(Rails.application.routes.url_helpers.onboarding_savings_projections_path)
+        expect(navigator.current_step_path).to eq(Rails.application.routes.url_helpers.onboarding_first_days_path)
       end
     end
   end
 
   describe 'integration with Rails routes' do
     it 'uses Rails route helpers' do
-      expect(Rails.application.routes.url_helpers).to receive(:onboarding_savings_projections_path)
+      expect(Rails.application.routes.url_helpers).to receive(:onboarding_first_days_path)
       navigator.current_step_path
     end
 
@@ -121,22 +126,22 @@ RSpec.describe Onboarding::StepNavigator do
   end
 
   describe 'onboarding flow step mapping' do
-    it 'maps savings projection step to savings projection path' do
+    it 'maps the retired savings projection step to the first day' do
       space.update!(onboarding_current_step: :onboarding_savings_projection)
       navigator = described_class.new(space)
-      expect(navigator.current_step_path).to include('savings_projections')
+      expect(navigator.current_step_path).to include('first_days')
     end
 
-    it 'maps profile setup step to profile setup path' do
+    it 'maps the retired profile step to the first day' do
       space.update!(onboarding_current_step: :onboarding_profile_setup)
       navigator = described_class.new(space)
-      expect(navigator.current_step_path).to include('profile_setups')
+      expect(navigator.current_step_path).to include('first_days')
     end
 
-    it 'maps account setup step to account setup path' do
+    it 'maps a space parked on the account setup step to the first day' do
       space.update!(onboarding_current_step: :onboarding_account_setup, country: 'US')
       navigator = described_class.new(space)
-      expect(navigator.current_step_path).to include('account_setups')
+      expect(navigator.current_step_path).to include('first_days')
     end
 
     it 'maps completed step to dashboard path' do

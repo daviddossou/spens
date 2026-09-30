@@ -38,7 +38,8 @@ export default class extends Controller {
       allowCreate: this.allowCreateValue,
       emptyLabel: this.hasEmptyLabelValue ? this.emptyLabelValue : null,
       grouped: this.groupedValue,
-      focusSearch: this.focusSearchValue,
+      // Only an explicit choice reaches the layer, which focuses the search by default.
+      ...(this.hasFocusSearchValue ? { focusSearch: this.focusSearchValue } : {}),
       onSelect: (row, typed) => this.commit(row, typed),
       ...extra
     }
