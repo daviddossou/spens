@@ -88,7 +88,7 @@ fr:
         title: "Ton argent"
         lead_html: "Donne ce que tu as <strong>maintenant</strong>, après tes dépenses d'aujourd'hui. On s'occupe du reste."
         spent_today: "%{amount} dépensé aujourd'hui"
-        placeholder: "Combien as-tu en ce moment ?"
+        placeholder: "Combien maintenant ?"
         balance_label: "Solde de %{account}"
         morning: "Ce matin tu avais donc %{amount}"
         maybe_also: "Tu as peut-être aussi"

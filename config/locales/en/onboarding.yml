@@ -88,7 +88,7 @@ en:
         title: "Your money"
         lead_html: "Give what you have <strong>now</strong>, after today's expenses. We take care of the rest."
         spent_today: "%{amount} spent today"
-        placeholder: "How much do you have right now?"
+        placeholder: "How much right now?"
         balance_label: "%{account} balance"
         morning: "So this morning you had %{amount}"
         maybe_also: "You may also have"

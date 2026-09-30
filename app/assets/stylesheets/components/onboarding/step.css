@@ -50,7 +50,7 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  padding: 1.5rem 1.25rem calc(1.25rem + env(safe-area-inset-bottom, 0px));
+  padding: 1.5rem 1.25rem 0;
 }
 
 .onboarding-step__lead {
@@ -60,9 +60,18 @@
   color: var(--color-text-secondary);
 }
 
+/* Pinned to the bottom of the screen however long the step gets: the way on is always in view. */
 .onboarding-step__actions {
-  margin-top: auto;
-  padding-top: 1.5rem;
+  position: sticky;
+  bottom: 0;
+  z-index: 1;
+  margin: auto -1.25rem 0;
+  padding: 1rem 1.25rem calc(1rem + env(safe-area-inset-bottom, 0px));
+  background: linear-gradient(to bottom, rgba(248, 249, 250, 0), var(--color-off-white) 1.25rem);
+}
+
+.onboarding-step__actions form {
+  margin: 0;
 }
 
 .onboarding-step__cta {
