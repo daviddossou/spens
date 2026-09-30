@@ -32,7 +32,7 @@ module Segments
       seen = Set.new
       out_of_scope = User.where("created_at > ?", @cutoff.end_of_day).count
 
-      User.where(created_at: ..@cutoff.end_of_day).order(:created_at).find_each do |user|
+      User.where(created_at: ..@cutoff.end_of_day).find_each do |user|
         email = user.email.to_s.downcase.strip
         if @excluded_emails.include?(email) then exclusions["adresse exclue"] += 1
         elsif email.match?(TEST_EMAIL) then exclusions["compte de test"] += 1
