@@ -23,6 +23,12 @@ RSpec.describe Users::LastActivityEstimate do
     expect(described_class.call(user)).to be_within(1.second).of(2.days.ago)
   end
 
+  it "ignores push delivery stamps, which are system writes" do
+    create(:push_subscription, user: user, last_used_at: 1.hour.ago)
+
+    expect(described_class.call(user)).to be_within(1.second).of(1.year.ago)
+  end
+
   it "prefers last_active_at when it is the newest" do
     user.update_columns(last_active_at: 1.hour.ago)
 
