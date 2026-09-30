@@ -33,7 +33,7 @@
       <div><dt><%= t("admin.cols.phone") %></dt><dd><%= @user.phone_number.presence || "—" %></dd></div>
       <div><dt><%= t("admin.cols.joined") %></dt><dd><%= @user.created_at.strftime("%Y-%m-%d") %></dd></div>
       <div><dt><%= t("admin.cols.sign_ins") %></dt><dd><%= @user.sign_in_count %></dd></div>
-      <div><dt><%= t("admin.cols.last_seen") %></dt><dd><%= @user.current_sign_in_at&.strftime("%Y-%m-%d %H:%M") || "—" %></dd></div>
+      <div><dt><%= t("admin.cols.last_seen") %></dt><dd><%= (@user.last_active_at || @user.current_sign_in_at)&.strftime("%Y-%m-%d %H:%M") || "—" %></dd></div>
     </dl>
   </section>
 

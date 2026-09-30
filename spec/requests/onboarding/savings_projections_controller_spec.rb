@@ -57,14 +57,17 @@ RSpec.describe 'Onboarding::SavingsProjectionsController', type: :request do
       expect(space.reload).to have_attributes(monthly_income: 200_000, savings_rate: 20, country: 'BJ', currency: 'XOF')
     end
 
-    it 'tracks the rate but never the income' do
+    it 'tracks the rate and the projections as brackets, never the exact income' do
       allow(Analytics).to receive(:track)
 
       patch onboarding_savings_projections_path, params: params
 
       expect(Analytics).to have_received(:track).with(user, 'onboarding_step_completed', satisfy { |properties|
         properties[:step] == 'savings_projection' && properties[:savings_rate] == 20 &&
-          properties.none? { |key, _| key.to_s.include?('income') && key != :income_frequency }
+          properties[:income_bracket] == '200k-500k' && properties[:monthly_saving_bracket] == '20k-50k' &&
+          properties[:savings_1y_bracket] == '200k-500k' && properties[:savings_3y_bracket] == '1M-2M' &&
+          properties.values.none? { |value| value.to_s == '200000' } &&
+          properties['$set'][:income_bracket] == '200k-500k'
       })
     end
 

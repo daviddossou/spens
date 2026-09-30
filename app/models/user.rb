@@ -2,30 +2,31 @@
 #
 # Table name: users
 #
-#  id                     :uuid             not null, primary key
-#  acquisition            :jsonb            not null
-#  admin                  :boolean          default(FALSE), not null
-#  confirmed_at           :datetime
-#  current_sign_in_at     :datetime
-#  current_sign_in_ip     :string
-#  email                  :string           default(""), not null, indexed
-#  encrypted_password     :string           default(""), not null
-#  first_name             :string
-#  last_name              :string
-#  last_sign_in_at        :datetime
-#  last_sign_in_ip        :string
+#  id                               :uuid             not null, primary key
+#  acquisition                      :jsonb            not null
+#  admin                            :boolean          default(FALSE), not null
+#  confirmed_at                     :datetime
+#  current_sign_in_at               :datetime
+#  current_sign_in_ip               :string
+#  email                            :string           default(""), not null, indexed
+#  encrypted_password               :string           default(""), not null
+#  first_name                       :string
+#  last_active_at                   :datetime
+#  last_name                        :string
+#  last_sign_in_at                  :datetime
+#  last_sign_in_ip                  :string
 #  lifecycle_emails_unsubscribed_at :datetime
-#  otp_code               :string
-#  otp_sent_at            :datetime
-#  phone_number           :string
-#  remember_created_at    :datetime
-#  reset_password_sent_at :datetime
-#  reset_password_token   :string           indexed
-#  sign_in_count          :integer          default(0), not null
-#  time_zone              :string
-#  welcome_email_sent_at  :datetime
-#  created_at             :datetime         not null
-#  updated_at             :datetime         not null
+#  otp_code                         :string
+#  otp_sent_at                      :datetime
+#  phone_number                     :string
+#  remember_created_at              :datetime
+#  reset_password_sent_at           :datetime
+#  reset_password_token             :string           indexed
+#  sign_in_count                    :integer          default(0), not null
+#  time_zone                        :string
+#  welcome_email_sent_at            :datetime
+#  created_at                       :datetime         not null
+#  updated_at                       :datetime         not null
 #
 # Indexes
 #

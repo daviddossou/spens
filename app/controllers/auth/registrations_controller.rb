@@ -27,7 +27,8 @@ class Auth::RegistrationsController < ApplicationController
     if @user.save
       # Create default space (membership auto-created via callback). Sign-up is step 1 of
       # onboarding: the space opens on its first day, in the country the browser suggests.
-      guess = locale_guess
+      landing = consume_landing_choices
+      guess = locale_guess(landing)
       space = Space.create!(
         user: @user,
         name: I18n.t("spaces.default_name", default: "Personal"),
@@ -35,6 +36,9 @@ class Auth::RegistrationsController < ApplicationController
         onboarding_current_step: "onboarding_first_day",
         country: guess.country, currency: guess.currency || Space.new.currency
       )
+
+      landing.apply_to(space, user: @user)
+      track_landing_goals(landing)
 
       # Accept pending invitation if present
       accepted_space = accept_pending_invitation(@user)
@@ -46,12 +50,10 @@ class Auth::RegistrationsController < ApplicationController
       touch_session_activity
 
       Analytics.identify(@user)
-      Analytics.track(@user, "user_signed_up", Analytics.acquisition_properties(@user).merge(invited: accepted_space.present?))
+      Analytics.track(@user, "user_signed_up",
+                      Analytics.acquisition_properties(@user).merge(landing.analytics_properties, invited: accepted_space.present?))
       track_meta_registration(@user)
-      Brevo.upsert_contact_later(
-        email: @user.email,
-        attributes: { FIRSTNAME: @user.first_name, LASTNAME: @user.last_name }.compact_blank
-      )
+      Brevo.upsert_contact_later(email: @user.email, attributes: Brevo.lifecycle_attributes(@user))
       WelcomeEmailJob.perform_later(@user, I18n.locale.to_s)
 
       # If joining via invitation, set the invited space as current (skip onboarding)
@@ -91,9 +93,18 @@ class Auth::RegistrationsController < ApplicationController
     render :new, status: status
   end
 
-  def locale_guess
-    Onboarding::LocaleGuess.new(request: request, picked_country: params[:landing_country],
-                                picked_currency: params[:landing_currency], time_zone: params[:time_zone])
+  # The landing's pick wins over the browser's hints (Cloudflare header, time zone).
+  def locale_guess(landing)
+    Onboarding::LocaleGuess.new(request: request, picked_country: landing.country || params[:landing_country],
+                                picked_currency: landing.currency || params[:landing_currency],
+                                time_zone: params[:time_zone])
+  end
+
+  # The diagnostic's problems, one event each like the goals step would send.
+  def track_landing_goals(landing)
+    landing.goals.each do |goal|
+      Analytics.track(@user, "onboarding_goal_chosen", goal: goal, from_landing: true, first_space: true)
+    end
   end
 
   # CompleteRegistration on both channels — CAPI now, pixel queued for the next

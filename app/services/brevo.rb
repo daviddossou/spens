@@ -34,6 +34,42 @@ module Brevo
     nil
   end
 
+  # Contact attributes mirrored from the app so Brevo can segment on lifecycle, never on money.
+  # They must exist as attributes in Brevo first (dates as YYYY-MM-DD).
+  def lifecycle_attributes(user)
+    space = user.owned_spaces.order(:created_at).first
+    acquisition = user.acquisition || {}
+    {
+      FIRSTNAME: user.first_name,
+      LASTNAME: user.last_name,
+      SIGNED_UP_AT: user.created_at.to_date.iso8601,
+      LAST_ACTIVE_AT: user.last_active_at&.to_date&.iso8601,
+      LOCALE: space&.locale,
+      COUNTRY: space&.country,
+      SOURCE: acquisition["guide_link"].presence || acquisition["utm_source"].presence
+    }.compact_blank
+  end
+
+  # Contact attributes every synced field needs on the Brevo side. Creating an existing one
+  # answers 400 duplicate_parameter, which is the idempotent case.
+  ATTRIBUTES = {
+    "SIGNED_UP_AT" => "date", "LAST_ACTIVE_AT" => "date",
+    "LOCALE" => "text", "COUNTRY" => "text", "SOURCE" => "text"
+  }.freeze
+
+  def ensure_attributes
+    return unless enabled?
+
+    ATTRIBUTES.each do |name, type|
+      response = post_json("#{API_BASE}/contacts/attributes/normal/#{name}", { type: type })
+      next if response.is_a?(Net::HTTPSuccess) || response.body.to_s.include?("duplicate_parameter")
+
+      Rails.logger.warn("[Brevo] attribute #{name} not created (#{response.code}): #{response.body}")
+    end
+  rescue StandardError => e
+    Rails.logger.warn("[Brevo] ensure_attributes failed: #{e.message}")
+  end
+
   def enabled?
     config[:enabled]
   end

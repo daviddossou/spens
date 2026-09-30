@@ -15,6 +15,8 @@ RSpec.describe "Public component pages", type: :request do
         if page == "welcome"
           expect(html.css('[data-controller="savings-calculator"] input')).not_to be_empty
           expect(html.css('[data-landing--features-target="card"]')).not_to be_empty
+          # The account picker of the "gather your money" block opens in this shared layer.
+          expect(html.at_css('#picker-layer[data-controller="picker-layer"]')).to be_present
         elsif page == "guide"
           expect(html.css('a[download][data-landing--meta-events-placement-param]').length).to eq(2)
         end

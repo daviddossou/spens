@@ -67,4 +67,11 @@ RSpec.describe Analytics do
 
     expect { described_class.track(user, "x") }.not_to raise_error
   end
+
+  describe ".amount_bracket" do
+    it "bands amounts in 1-2-5 steps per decade" do
+      expect([ nil, 0, 7, 12, 1_500, 150_000, 499_999.99, 2_000_000 ].map { |a| described_class.amount_bracket(a) })
+        .to eq([ nil, "0", "5-10", "10-20", "1k-2k", "100k-200k", "200k-500k", "2M-5M" ])
+    end
+  end
 end

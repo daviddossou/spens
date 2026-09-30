@@ -5,7 +5,9 @@
 <% end %>
 
 <%= form_with model: @user, url: user_registration_path, method: :post, class: "space-y-6",
-              data: { controller: "onboarding--landing-country", onboarding__landing_country_confirmed_value: false } do |f| %>
+              data: { controller: "email-suggest onboarding--landing-country",
+                      email_suggest_message_value: t('auth.registrations.email_suggestion'),
+                      onboarding__landing_country_confirmed_value: false } do |f| %>
   <%= render Forms::ErrorsComponent.new(object: @user, detailed: true) %>
 
   <%# Where the new space will live: the landing's pick and the browser's time zone. %>
@@ -28,8 +30,13 @@
     type: :email_field,
     label: t('auth.registrations.email'),
     autocomplete: "email",
-    required: true
+    required: true,
+    field_data: { email_suggest_target: "input", action: "blur->email-suggest#check input->email-suggest#hide" }
   ) %>
+  <p class="form-suggestion" hidden data-email-suggest-target="hint">
+    <span data-email-suggest-target="before"></span><button type="button" class="form-suggestion__accept"
+      data-email-suggest-target="suggestion" data-action="email-suggest#accept"></button><span data-email-suggest-target="after"></span>
+  </p>
 
   <%= render "shared/turnstile" %>
 

@@ -12,8 +12,10 @@ class ApplicationController < ActionController::Base
   include EmailConfirmation
   include OnboardingRedirection
   include Impersonation
+  include ActivityStamping
   include AnalyticsTracking
   include MetaTracking
+  include LandingHandoff
   include SeoIndexing
 
   protected

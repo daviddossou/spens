@@ -96,13 +96,36 @@ module Analytics
     Rails.logger.warn("[Analytics] group_identify failed: #{e.message}")
   end
 
-  # What a space answered during onboarding. Nothing free-text, no amounts.
+  # What a space answered during onboarding. Nothing free-text, no exact amounts: the
+  # income travels as a bracket.
   def onboarding_answers(space)
     {
       financial_goals: space.financial_goals.presence, country: space.country, currency: space.currency,
       income_frequency: space.income_frequency, main_income_source: space.main_income_source,
-      savings_rate: space.savings_rate
+      savings_rate: space.savings_rate, income_bracket: amount_bracket(space.monthly_income)
     }.compact
+  end
+
+  # 1-2-5 bands per decade ("100k-200k", "2k-5k", "1M-2M"): readable in any currency and
+  # coarse enough to leave the exact figure in the app.
+  def amount_bracket(amount)
+    return if amount.nil?
+
+    value = amount.to_d
+    return "0" if value <= 0
+
+    decade = 10**Math.log10(value).floor
+    low = [ 1, 2, 5 ].reverse.find { |step| value >= step * decade } * decade
+    high = { 1 => 2, 2 => 5, 5 => 10 }[low / decade] * decade
+    "#{compact_amount(low)}-#{compact_amount(high)}"
+  end
+
+  def compact_amount(amount)
+    if amount >= 1_000_000_000 then "#{amount / 1_000_000_000}B"
+    elsif amount >= 1_000_000 then "#{amount / 1_000_000}M"
+    elsif amount >= 1_000 then "#{amount / 1_000}k"
+    else amount.to_s
+    end
   end
 
   # The same answers as PostHog person properties, with one boolean per problem

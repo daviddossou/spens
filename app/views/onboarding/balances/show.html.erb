@@ -34,7 +34,8 @@
           </div>
         </div>
         <label class="savings-projection__income balance-card__field">
-          <%= text_field_tag "balances[balances][#{account.id}]", @form.balance_for(account),
+          <%# An account that came with a balance (from the landing) shows it, to confirm or correct. %>
+          <%= text_field_tag "balances[balances][#{account.id}]", @form.balance_for(account) || (account.balance.to_i if account.balance.positive?),
                              inputmode: "decimal", autocomplete: "off", required: true,
                              placeholder: t('.placeholder'), class: "savings-projection__input",
                              aria: { label: t('.balance_label', account: label) },

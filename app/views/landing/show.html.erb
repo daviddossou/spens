@@ -21,7 +21,7 @@
   sign_up = new_user_registration_path
 %>
 
-<div data-controller="landing--meta-events"
+<div data-controller="landing--meta-events landing--handoff"
      data-landing--meta-events-url-value="<%= meta_events_path %>"
      data-landing--meta-events-page-value="landing"
      data-landing--meta-events-events-value="<%= (@meta_landing_event_ids || {}).to_json %>">
@@ -170,7 +170,7 @@
         <div class="landing-recap__total"><span data-landing--accounts-target="total">0</span> <span data-currency-label>XOF</span></div>
       </div>
       <%= render Ui::ButtonComponent.new(text: t("landing.accounts.cta"), url: sign_up, styled: false, classes: "landing-btn-light",
-                  data: { action: "landing--accounts#save landing--meta-events#signup", "landing--meta-events-placement-param": "accounts" }) %>
+                  data: { action: "landing--meta-events#signup", "landing--meta-events-placement-param": "accounts" }) %>
     </div>
     <p class="landing-acc__note" data-landing--accounts-target="note" hidden><%= t("landing.accounts.note") %></p>
   </div>
