@@ -536,13 +536,18 @@ module QuickEntry
       return nil if months.blank?
 
       pattern = months.keys.sort_by { |k| -k.length }.join("|")
-      m = loose_text.match(/(?:\ble\s+)?\b(?:(\d{1,2})(?:er|st|nd|rd|th)?\s+)?(#{pattern})\b\.?,?\s*(?:(\d{1,2})(?:st|nd|rd|th)?\b)?,?\s*(\d{4})?/)
+      # A number right after the month is its day only when none came before, and never
+      # the start of a decimal: "27 septembre 13.76€" keeps 13.76 as the amount.
+      year = /(?:,?\s*\b(20\d{2})\b(?![.,]\d))?/
+      m = loose_text.match(/(?:\ble\s+)?\b(\d{1,2})(?:er|st|nd|rd|th)?\s+(#{pattern})\b\.?#{year}/) ||
+          loose_text.match(/\b(#{pattern})\b\.?,?\s*(\d{1,2})(?:st|nd|rd|th)?\b(?![.,]\d)#{year}/)
       return nil unless m
 
-      day = (m[1] || m[3]).to_i
+      day, month = m[1].match?(/\A\d/) ? [ m[1], m[2] ] : [ m[2], m[1] ]
+      day = day.to_i
       return nil unless day.between?(1, 31)
 
-      date = build_date(m[4], months[m[2]], day) or return nil
+      date = build_date(m[3], months[month], day) or return nil
       ignore_for_amount(m[0])
       date
     end

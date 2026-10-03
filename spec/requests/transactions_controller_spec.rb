@@ -559,6 +559,17 @@ RSpec.describe TransactionsController, type: :request do
         expect(transaction.reload.account).to eq(new_account)
       end
 
+      it "detaches the account when 'no account' is picked" do
+        patch transaction_path(id: transaction.id), params: { transaction: { account_name: "" } }
+        expect(transaction.reload.account).to be_nil
+        expect(account.reload.balance).to eq(0)
+      end
+
+      it "keeps the account when another fact is edited" do
+        patch transaction_path(id: transaction.id), params: { transaction: { transaction_type_name: "Dining" } }
+        expect(transaction.reload.account).to eq(account)
+      end
+
       it "keeps the same account when account_name matches current" do
         patch transaction_path(id: transaction.id), params: {
           transaction: { account_name: "Cash" }

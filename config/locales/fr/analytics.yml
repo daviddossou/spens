@@ -61,9 +61,6 @@ fr:
       you_owe: "Tu dois"
       who_owes_you: "Qui te doit"
       whom_you_owe: "À qui tu dois"
-      both_sides_html: "%{name} est des deux côtés : net, %{net}."
-      both_sides_you_owe: "tu lui dois %{amount}"
-      both_sides_owes_you: "il te doit %{amount}"
       section_saved: "Ce que tu mets de côté"
       saved_title: "Mis de côté en %{month}"
       saved_streak:

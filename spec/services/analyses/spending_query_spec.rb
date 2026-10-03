@@ -105,6 +105,21 @@ RSpec.describe Analyses::SpendingQuery do
       expect(split[:pct_essential]).to eq(88)
     end
 
+    it "splits essential/plaisir over twelve months" do
+      groceries = type("expense", "Courses X")
+      item = create(:budget_item, space: space, transaction_type: groceries, amount: 60_000, essential: true)
+      last_month = Date.current.beginning_of_month << 1
+      create(:budget_entry, space: space, budget_item: item, transaction_type: groceries,
+                            planned_amount: 60_000, month: last_month)
+      spend(50_000, type: groceries, on: last_month + 1)
+      spend(3_000, type: type("expense", "Loisirs X"), on: last_month + 1)
+
+      twelve = described_class.new(space: space, period: Analyses::Period.new("twelve_months"))
+      split = twelve.essential_split
+      expect(split).to include(essential: 50_000, plaisir: 0, unclassified: 3_000)
+      expect(twelve.plan).to include(months_ok: 1, months_total: 12)
+    end
+
     it "is nil without any budget line" do
       spend(5_000, type: type("expense", "Courses X"))
       expect(query.plan).to be_nil

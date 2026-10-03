@@ -37,8 +37,10 @@ class UpdateTransactionService
       updates[:transaction_type] = resolved_type
     end
 
-    if @attributes[:account_name].present?
-      found = FindOrCreateAccountService.new(@transaction.space, @attributes[:account_name]).call
+    # A blank name is the picker's "no account" answer: the row detaches.
+    if @attributes.key?(:account_name)
+      name = @attributes[:account_name]
+      found = name.present? ? FindOrCreateAccountService.new(@transaction.space, name).call : nil
       updates[:account] = reuse_if_same(found, @transaction.account)
     end
 

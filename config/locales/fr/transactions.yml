@@ -33,7 +33,7 @@ fr:
         one: "1 champ rempli · vérifie et enregistre"
         other: "%{count} champs remplis · vérifie et enregistre"
       person_you_owe: "tu lui dois %{amount}"
-      person_they_owe: "il te doit %{amount}"
+      person_they_owe: "te doit %{amount}"
       person_settled: "vous êtes à jour"
     form:
       kind_label: "Type"
