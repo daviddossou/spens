@@ -18,3 +18,4 @@ en:
     account_to: "To which account?"
     any_account: "Doesn't matter — from any account"
     no_account: "None — the money already left"
+    none_account: "No account"

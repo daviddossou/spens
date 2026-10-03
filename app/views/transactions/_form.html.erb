@@ -171,7 +171,7 @@
           label: t('transactions.form.account_label'), title: t('picker.account'),
           placeholder: t('transactions.form.account_placeholder'),
           rows: picker_account_rows(@form.account_suggestions, current_space.currency),
-          allow_create: true) %>
+          allow_create: true, empty_label: t('picker.none_account')) %>
       </div>
     <% else %>
       <!-- Regular Mode: category first (what), then account -->
@@ -206,7 +206,7 @@
             label: t('transactions.form.account_label'), title: t('picker.account'),
             placeholder: t('transactions.form.account_placeholder'),
             rows: picker_account_rows(@form.account_suggestions, current_space.currency),
-            allow_create: true) %>
+            allow_create: true, empty_label: t('picker.none_account')) %>
         </div>
       <% end %>
     <% end %>

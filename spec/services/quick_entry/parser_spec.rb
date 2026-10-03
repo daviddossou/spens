@@ -126,6 +126,15 @@ RSpec.describe QuickEntry::Parser do
 
       expect(parse("16/06 taxi 1500", locale: :fr).amount).to eq(1500)
       expect(parse("approvisionnement 2300 le 16 juin 2026", locale: :fr).amount).to eq(2300)
+    end
+
+    it "keeps a decimal amount written right after a named date" do
+      draft = parse("Carrefour 27 septembre 13.76€", locale: :fr)
+      expect(draft.amount).to eq(13.76)
+      expect(draft.transaction_date).to eq(Date.new(Date.current.year, 9, 27))
+      expect(parse("Carrefour 27 septembre 13,76 €", locale: :fr).amount).to eq(13.76)
+      expect(parse("Carrefour 27 septembre 1500", locale: :fr).amount).to eq(1500)
+      expect(parse("groceries june 16 12.50").amount).to eq(12.5)
       expect(parse("5k groceries 3 days ago").amount).to eq(5000)
     end
   end

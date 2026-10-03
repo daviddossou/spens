@@ -208,16 +208,21 @@ module Analyses
     # One light pass per month; a month that was never materialized has no
     # entries and simply doesn't count as "in plan".
     def months_plan
-      readings = @period.months.filter_map { |m| month_within_plan?(m) }
-      { months_ok: readings.count(true), months_total: @period.months.size }
+      readings = @period.months.filter_map { |m| month_reading(m) }
+      { months_ok: readings.count { |r| r[:ok] }, months_total: @period.months.size,
+        spent_on_plan: readings.sum { |r| r[:spent] }.round(2),
+        essential_spent: readings.sum { |r| r[:essential] }.round(2) }
     end
 
-    def month_within_plan?(month)
+    def month_reading(month)
       entries = @space.budget_entries.for_month(month).expense.includes(:budget_item, transaction_type: :children)
       return nil if entries.empty?
 
       actuals = Budgets::ActualsQuery.new(space: @space, month: month)
-      entries.sum { |e| actuals.for_entry(e) } <= entries.sum(&:planned_amount).to_f
+      by_entry = entries.index_with { |e| actuals.for_entry(e) }
+      spent = by_entry.values.sum
+      { ok: spent <= entries.sum(&:planned_amount).to_f, spent: spent,
+        essential: by_entry.sum { |e, v| e.budget_item.essential ? v : 0 } }
     end
 
     def aggregate_plan
