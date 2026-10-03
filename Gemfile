@@ -80,7 +80,7 @@ gem "simplecov", "~> 0.22.0"
 gem "rubocop", "~> 1.81"
 gem "rubocop-rails", "~> 2.33"
 gem "rubocop-rspec", "~> 3.7"
-gem "countries", "~> 7.0"
+gem "countries", "~> 8.1"
 gem "money", "~> 6.16"
 gem "money-rails", "~> 1.15"
 
