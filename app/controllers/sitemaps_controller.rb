@@ -2,7 +2,7 @@
 
 # sitemap.xml: the indexable public pages, each with its language alternates.
 class SitemapsController < ApplicationController
-  PAGES = %i[landing guide privacy terms].freeze
+  PAGES = %i[landing download guide privacy terms].freeze
   seo_indexable :show
 
   def show

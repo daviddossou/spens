@@ -1,0 +1,155 @@
+<%
+  content_for :title, t("download.meta.title")
+  content_for :description, t("download.meta.description")
+  sign_up = new_user_registration_path
+  display_url = @download_url.sub(%r{\Ahttps?://}, "")
+  chrome_intent = "intent://#{display_url}#Intent;scheme=https;package=com.android.chrome;end"
+  platforms = %w[android ios desktop]
+  step_icons = {
+    "android" => render(Ui::IconComponent.new(:dots_vertical, classes: "download-step__glyph")),
+    "ios" => render(Ui::IconComponent.new(:share, classes: "download-step__glyph"))
+  }
+%>
+
+<div data-controller="download"
+     data-download-url-value="<%= @download_url %>"
+     data-download-copied-value="<%= t("download.copied") %>">
+<div class="landing-dark">
+  <%= render Marketing::NavigationComponent.new do %>
+    <%= link_to t("download.nav.back"), landing_path, class: "landing-nav__link" %>
+    <%= link_to t("landing.nav.sign_in"), new_user_session_path, class: "landing-nav__link landing-nav__link--signin" %>
+    <%= render Ui::ButtonComponent.new(text: t("landing.nav.cta"), url: sign_up, styled: false, classes: "landing-nav__cta") %>
+  <% end %>
+
+  <header class="download-hero">
+    <img src="/icon-192.png" alt="" class="download-hero__icon" width="72" height="72">
+    <h1 class="download-hero__title"><%= t("download.hero.title") %></h1>
+    <p class="download-hero__subtitle"><%= t("download.hero.subtitle") %></p>
+  </header>
+</div>
+
+<section class="landing-sect download-sect">
+  <div class="download-card">
+    <div class="download-tabs" role="tablist" aria-label="<%= t("download.tabs.label") %>">
+      <% platforms.each do |platform| %>
+        <button type="button" class="download-tabs__tab" role="tab" id="download-tab-<%= platform %>"
+                aria-controls="download-panel-<%= platform %>" aria-selected="<%= platform == "android" %>"
+                tabindex="<%= platform == "android" ? 0 : -1 %>"
+                data-platform="<%= platform %>" data-download-target="tab" data-action="download#choose">
+          <%= t("download.tabs.#{platform}") %>
+        </button>
+      <% end %>
+    </div>
+
+    <div class="download-done" role="status" hidden data-download-target="done">
+      <%= render Ui::IconComponent.new(:check, classes: "download-done__icon") %>
+      <div>
+        <p class="download-done__title"><%= t("download.done.title") %></p>
+        <p class="download-done__body"><%= t("download.done.body") %></p>
+      </div>
+    </div>
+
+    <% platforms.each do |platform| %>
+      <div class="download-panel" role="tabpanel" id="download-panel-<%= platform %>"
+           aria-labelledby="download-tab-<%= platform %>" data-platform="<%= platform %>"
+           data-download-target="panel" <%= "hidden" unless platform == "android" %>>
+
+        <% if platform == "android" %>
+          <div class="download-notice" hidden data-download-target="inAppNotice">
+            <p><%= t("download.android.in_app") %></p>
+            <div class="download-notice__actions">
+              <a href="<%= chrome_intent %>" class="download-btn download-btn--primary" data-action="download#openInBrowser"><%= t("download.android.open_chrome") %></a>
+              <button type="button" class="download-btn" data-action="download#copyLink">
+                <%= render Ui::IconComponent.new(:copy, classes: "download-btn__icon") %>
+                <span data-download-target="copyLabel"><%= t("download.copy") %></span>
+              </button>
+            </div>
+          </div>
+        <% elsif platform == "ios" %>
+          <div class="download-notice" hidden data-download-target="safariNotice">
+            <p><%= t("download.ios.safari") %></p>
+            <div class="download-notice__actions">
+              <button type="button" class="download-btn download-btn--primary" data-action="download#copyLink">
+                <%= render Ui::IconComponent.new(:copy, classes: "download-btn__icon") %>
+                <span data-download-target="copyLabel"><%= t("download.copy") %></span>
+              </button>
+            </div>
+          </div>
+        <% end %>
+
+        <% if platform == "desktop" %>
+          <div class="download-desktop">
+            <div class="download-qr">
+              <div class="download-qr__code">
+                <%= qr_code_svg("#{@download_url}?utm_source=download_qr", label: t("download.desktop.qr_label", url: display_url)) %>
+              </div>
+              <div>
+                <h2 class="download-panel__title"><%= t("download.desktop.qr_title") %></h2>
+                <p class="download-panel__text"><%= t("download.desktop.qr_body") %></p>
+                <p class="download-qr__url"><%= display_url %></p>
+              </div>
+            </div>
+            <div class="download-desktop__computer">
+              <h2 class="download-panel__title"><%= t("download.desktop.computer_title") %></h2>
+              <div class="download-install" hidden data-download-target="installBox">
+                <button type="button" class="download-btn download-btn--primary download-btn--lg" data-action="download#install">
+                  <%= render Ui::IconComponent.new(:download, classes: "download-btn__icon") %>
+                  <%= t("download.install") %>
+                </button>
+              </div>
+              <p class="download-panel__text"><%= t("download.desktop.computer_body") %></p>
+              <%= link_to t("download.desktop.open_web"), new_user_session_path, class: "download-link" %>
+            </div>
+          </div>
+        <% else %>
+          <% if platform == "android" %>
+            <div class="download-install" hidden data-download-target="installBox">
+              <button type="button" class="download-btn download-btn--primary download-btn--lg" data-action="download#install">
+                <%= render Ui::IconComponent.new(:download, classes: "download-btn__icon") %>
+                <%= t("download.install") %>
+              </button>
+              <p class="download-install__or" hidden data-download-target="manualLabel"><%= t("download.manual_label") %></p>
+            </div>
+          <% end %>
+          <ol class="download-steps">
+            <% t("download.#{platform}.steps").each do |step| %>
+              <li class="download-step">
+                <span class="download-step__text"><%= sanitize(step, tags: %w[strong]).gsub("%{url}", ERB::Util.h(display_url)).gsub("%{icon}", step_icons.fetch(platform)).html_safe %></span>
+              </li>
+            <% end %>
+          </ol>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+</section>
+
+<section class="landing-sect landing-sect--mist">
+  <div class="landing-container landing-container--narrow">
+    <div class="landing-eyebrow landing-eyebrow--deep"><%= t("download.faq.eyebrow") %></div>
+    <h2 class="landing-h2"><%= t("download.faq.title") %></h2>
+    <div class="download-faq">
+      <% t("download.faq.items").each do |item| %>
+        <details class="download-faq__item">
+          <summary class="download-faq__question"><%= item[:q] %></summary>
+          <p class="download-faq__answer"><%= item[:a] %></p>
+        </details>
+      <% end %>
+    </div>
+  </div>
+</section>
+
+<footer class="landing-sect landing-sect--dark landing-final">
+  <div class="landing-container">
+    <h2 class="landing-h2 landing-h2--on-dark landing-final__title"><%= t("download.final.title") %></h2>
+    <p class="landing-final__body"><%= t("download.final.body") %></p>
+    <%= render Ui::ButtonComponent.new(text: t("landing.hero.cta"), url: sign_up, styled: false, classes: "landing-btn-light landing-btn-light--lg") %>
+    <%= render Marketing::FooterComponent.new(classes: "landing-final__footer") do %>
+      <%= link_to t("download.nav.back"), landing_path %>
+      <%= link_to t("landing.footer.privacy"), privacy_path %>
+      <%= link_to t("landing.footer.terms"), terms_path %>
+      <a href="mailto:contact@spens.me"><%= t("landing.footer.contact") %></a>
+    <% end %>
+  </div>
+</footer>
+</div>

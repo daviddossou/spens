@@ -20,10 +20,14 @@ class Ui::IconComponent < ViewComponent::Base
     borrow: %(<path stroke-linecap="round" stroke-linejoin="round" d="M7 8l-4 4 4 4M3 12h12M19 4v16"/>),
     wallet: %(<path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>),
     archive: %(<path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>),
-    dots: %(<circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/>)
+    dots: %(<circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/>),
+    dots_vertical: %(<circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/>),
+    download: %(<path stroke-linecap="round" stroke-linejoin="round" d="M12 4v11m0 0l-4-4m4 4l4-4M5 19h14"/>),
+    share: %(<path stroke-linecap="round" stroke-linejoin="round" d="M12 3v12M8 7l4-4 4 4M8 11H6a1 1 0 00-1 1v8a1 1 0 001 1h12a1 1 0 001-1v-8a1 1 0 00-1-1h-2"/>),
+    copy: %(<rect x="9" y="9" width="11" height="11" rx="2"/><path stroke-linecap="round" stroke-linejoin="round" d="M5 15V6a2 2 0 012-2h9"/>)
   }.freeze
 
-  FILLED = %i[dots].freeze
+  FILLED = %i[dots dots_vertical].freeze
 
   def initialize(name, classes: nil, stroke_width: 2, **html_options)
     @name = name.to_sym

@@ -29,6 +29,10 @@
   <%= render Marketing::NavigationComponent.new(guide: false) do %>
     <a href="#feat" class="landing-nav__link"><%= t("landing.nav.features") %></a>
     <a href="#tarifs" class="landing-nav__link"><%= t("landing.nav.pricing") %></a>
+    <%= link_to download_path, class: "landing-nav__link landing-nav__link--download", "aria-label": t("landing.nav.download") do %>
+      <%= render Ui::IconComponent.new(:download, classes: "landing-nav__link-icon") %>
+      <span class="landing-nav__link-label"><%= t("landing.nav.download") %></span>
+    <% end %>
     <%= link_to t("landing.nav.sign_in"), new_user_session_path, class: "landing-nav__link landing-nav__link--signin" %>
     <%= render Marketing::LocalePickerComponent.new(countries: countries) %>
     <%= render Ui::ButtonComponent.new(text: t("landing.nav.cta"), url: sign_up, styled: false, classes: "landing-nav__cta",
@@ -42,6 +46,10 @@
     <div class="landing-hero__cta-row">
       <%= render Ui::ButtonComponent.new(text: t("landing.hero.cta"), url: sign_up, styled: false, classes: "landing-btn-light landing-btn-light--lg",
                   data: { action: "landing--meta-events#signup", "landing--meta-events-placement-param": "hero" }) %>
+      <%= link_to download_path, class: "landing-btn-ghost landing-btn-ghost--lg" do %>
+        <%= render Ui::IconComponent.new(:download, classes: "landing-btn-ghost__icon") %>
+        <%= t("landing.hero.download") %>
+      <% end %>
     </div>
     <div class="landing-hero__row">
       <div class="landing-hero__side">
@@ -200,11 +208,18 @@
   <div class="landing-container">
     <h2 class="landing-h2 landing-h2--on-dark landing-final__title"><%= t("landing.final.title") %></h2>
     <p class="landing-final__body"><%= t("landing.final.body") %></p>
-    <%= render Ui::ButtonComponent.new(text: t("landing.final.cta"), url: sign_up, styled: false, classes: "landing-btn-light landing-btn-light--lg",
-                data: { action: "landing--meta-events#signup", "landing--meta-events-placement-param": "final" }) %>
+    <div class="landing-final__cta-row">
+      <%= render Ui::ButtonComponent.new(text: t("landing.final.cta"), url: sign_up, styled: false, classes: "landing-btn-light landing-btn-light--lg",
+                  data: { action: "landing--meta-events#signup", "landing--meta-events-placement-param": "final" }) %>
+      <%= link_to download_path, class: "landing-btn-ghost landing-btn-ghost--lg" do %>
+        <%= render Ui::IconComponent.new(:download, classes: "landing-btn-ghost__icon") %>
+        <%= t("landing.hero.download") %>
+      <% end %>
+    </div>
     <%= render Marketing::FooterComponent.new(classes: "landing-final__footer") do %>
       <%= link_to t("landing.footer.privacy"), privacy_path %>
       <%= link_to t("landing.footer.terms"), terms_path %>
+      <%= link_to t("landing.footer.download"), download_path %>
       <a href="mailto:contact@spens.me"><%= t("landing.footer.contact") %></a>
       <span><span data-lang-label><%= I18n.locale.to_s.upcase %></span> · <span data-currency-label>XOF</span></span>
     <% end %>

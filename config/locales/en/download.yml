@@ -1,0 +1,59 @@
+en:
+  download:
+    meta:
+      title: "Install the Spens app"
+      description: "Install Spens in seconds from your browser, on Android, iPhone or computer. No app store needed."
+    nav:
+      back: "Back to the site"
+    hero:
+      title: "Install Spens on your phone"
+      subtitle: "No app store needed: Spens installs from your browser in seconds. Then it opens in one tap from your home screen, like any app."
+    tabs:
+      label: "Your device"
+      android: "Android"
+      ios: "iPhone"
+      desktop: "Computer"
+    done:
+      title: "It's installed!"
+      body: "Find Spens on your home screen and open it in one tap."
+    install: "Install Spens"
+    manual_label: "Or by hand:"
+    copy: "Copy link"
+    copied: "Link copied"
+    android:
+      in_app: "You're in another app's built-in browser, which can't install Spens. Open this page in Chrome."
+      open_chrome: "Open in Chrome"
+      steps:
+        - "Open <strong>%{url}</strong> in Chrome."
+        - "Tap the %{icon} menu at the top right."
+        - "Choose <strong>Install app</strong> or <strong>Add to Home screen</strong>."
+        - "Confirm: the Spens icon appears on your home screen."
+    ios:
+      safari: "On iPhone, Spens installs from Safari. Copy the link, then paste it into Safari."
+      steps:
+        - "Open <strong>%{url}</strong> in Safari."
+        - "Tap the Share button %{icon} at the bottom of the screen."
+        - "Scroll down and tap <strong>Add to Home Screen</strong>."
+        - "Tap <strong>Add</strong>: the Spens icon appears on your home screen."
+    desktop:
+      qr_title: "Scan with your phone"
+      qr_body: "Open your phone's camera and point it at this code: this page opens right away, with the steps to install."
+      qr_label: "QR code to %{url}"
+      computer_title: "On this computer"
+      computer_body: "In Chrome or Edge, click the install icon on the right of the address bar. You can also just use Spens in your browser."
+      open_web: "Use Spens in the browser"
+    faq:
+      eyebrow: "Common questions"
+      title: "Good to know"
+      items:
+        - q: "Is it a real app?"
+          a: "Yes. Once installed, Spens has its own icon on your home screen, opens full screen and can send you notifications. It updates itself: nothing to download again."
+        - q: "Why isn't it on the Play Store or the App Store?"
+          a: "The Android app is coming soon to the Play Store. In the meantime, this version installs straight from your browser and does the same thing."
+        - q: "I can't see the option to install."
+          a: "Make sure you're in Chrome (Android) or Safari (iPhone), not in the WhatsApp, Instagram or Facebook browser. If Spens is already installed, the option no longer shows: look for its icon on your home screen."
+        - q: "Is my data the same everywhere?"
+          a: "Yes. Sign in with the same e-mail address on your phone, your computer or the installed app: everything stays in sync."
+    final:
+      title: "No account yet?"
+      body: "Create your account in a minute, then install Spens to keep it at hand."

@@ -1,9 +1,9 @@
 class LandingController < ApplicationController
   layout "marketing"
-  seo_indexable :show, :guide
+  seo_indexable :show, :guide, :download
 
-  before_action :meta_issue_page_view_id, only: [ :show, :guide, :guide_thanks ]
-  after_action :meta_track_page_view, only: [ :show, :guide, :guide_thanks ]
+  before_action :meta_issue_page_view_id, only: [ :show, :guide, :guide_thanks, :download ]
+  after_action :meta_track_page_view, only: [ :show, :guide, :guide_thanks, :download ]
 
   def show
     return redirect_to dashboard_path if user_signed_in?
@@ -29,6 +29,13 @@ class LandingController < ApplicationController
 
   # Shown after the guide download starts: bridges the guide's actions into Spens.
   def guide_thanks
+  end
+
+  # Install page for the PWA: per-device steps, a QR code for desktop visitors.
+  def download
+    return redirect_to root_path if turbo_native_app?
+
+    @download_url = helpers.seo_origin + download_path(locale: I18n.locale)
   end
 
   private

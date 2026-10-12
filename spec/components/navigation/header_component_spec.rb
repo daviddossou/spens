@@ -126,6 +126,17 @@ RSpec.describe Navigation::HeaderComponent, type: :component do
         expect(support_link.text).to include(I18n.t("navigation.header.contact_support"))
       end
 
+      it "links to the install page in the browser" do
+        rendered = render_inline(component)
+        expect(rendered.css("a.app-header__dropdown-item--browser-only[href='/download']")).to be_present
+      end
+
+      it "hides the install link in the native app" do
+        allow(vc_test_controller).to receive(:turbo_native_app?).and_return(true)
+        rendered = render_inline(component)
+        expect(rendered.css(".app-header__dropdown-item--browser-only")).to be_empty
+      end
+
       it "renders a log out link" do
         rendered = render_inline(component)
         logout_link = rendered.css(".app-header__dropdown-item--danger").first

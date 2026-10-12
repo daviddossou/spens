@@ -1,0 +1,59 @@
+fr:
+  download:
+    meta:
+      title: "Installer l'application Spens"
+      description: "Installe Spens en quelques secondes depuis ton navigateur, sur Android, iPhone ou ordinateur. Sans passer par un store."
+    nav:
+      back: "Retour au site"
+    hero:
+      title: "Installe Spens sur ton téléphone"
+      subtitle: "Pas besoin de store : Spens s'installe depuis ton navigateur en quelques secondes. Ensuite, il s'ouvre en un geste depuis ton écran d'accueil, comme une app."
+    tabs:
+      label: "Ton appareil"
+      android: "Android"
+      ios: "iPhone"
+      desktop: "Ordinateur"
+    done:
+      title: "C'est installé !"
+      body: "Retrouve Spens sur ton écran d'accueil et ouvre-le en un geste."
+    install: "Installer Spens"
+    manual_label: "Ou à la main :"
+    copy: "Copier le lien"
+    copied: "Lien copié"
+    android:
+      in_app: "Tu es dans le navigateur d'une autre app, qui ne peut pas installer Spens. Ouvre cette page dans Chrome."
+      open_chrome: "Ouvrir dans Chrome"
+      steps:
+        - "Ouvre <strong>%{url}</strong> dans Chrome."
+        - "Touche le menu %{icon} en haut à droite."
+        - "Choisis <strong>Installer l'application</strong> ou <strong>Ajouter à l'écran d'accueil</strong>."
+        - "Confirme : l'icône Spens apparaît sur ton écran d'accueil."
+    ios:
+      safari: "Sur iPhone, Spens s'installe depuis Safari. Copie le lien, puis colle-le dans Safari."
+      steps:
+        - "Ouvre <strong>%{url}</strong> dans Safari."
+        - "Touche le bouton Partager %{icon} en bas de l'écran."
+        - "Fais défiler et touche <strong>Sur l'écran d'accueil</strong>."
+        - "Touche <strong>Ajouter</strong> : l'icône Spens apparaît sur ton écran d'accueil."
+    desktop:
+      qr_title: "Scanne avec ton téléphone"
+      qr_body: "Ouvre l'appareil photo de ton téléphone et vise ce code : cette page s'ouvre directement, avec les étapes pour l'installer."
+      qr_label: "QR code vers %{url}"
+      computer_title: "Sur cet ordinateur"
+      computer_body: "Avec Chrome ou Edge, clique sur l'icône d'installation à droite de la barre d'adresse. Tu peux aussi simplement utiliser Spens dans ton navigateur."
+      open_web: "Utiliser Spens dans le navigateur"
+    faq:
+      eyebrow: "Questions fréquentes"
+      title: "Bon à savoir"
+      items:
+        - q: "C'est une vraie application ?"
+          a: "Oui. Une fois installé, Spens a son icône sur ton écran d'accueil, s'ouvre en plein écran et peut t'envoyer des notifications. Il se met à jour tout seul : rien à retélécharger."
+        - q: "Pourquoi ce n'est pas sur le Play Store ou l'App Store ?"
+          a: "L'application Android arrive bientôt sur le Play Store. En attendant, cette version s'installe directement depuis ton navigateur et fait la même chose."
+        - q: "Je ne vois pas l'option pour installer."
+          a: "Vérifie que tu es dans Chrome (Android) ou Safari (iPhone), et pas dans le navigateur de WhatsApp, Instagram ou Facebook. Si Spens est déjà installé, l'option n'apparaît plus : cherche son icône sur ton écran d'accueil."
+        - q: "Je retrouve mes données partout ?"
+          a: "Oui. Connecte-toi avec la même adresse e-mail sur ton téléphone, ton ordinateur ou l'app installée : tout est synchronisé."
+    final:
+      title: "Pas encore de compte ?"
+      body: "Crée ton compte en une minute, puis installe Spens pour l'avoir toujours sous la main."

@@ -16,7 +16,7 @@ RSpec.describe "SEO metadata", type: :request do
   end
 
   describe "indexable public pages" do
-    %w[welcome guide privacy terms].each do |page|
+    %w[welcome download guide privacy terms].each do |page|
       it "lets /#{page} be indexed, with a canonical and language alternates" do
         get "/fr/#{page}?utm_source=guide"
 
@@ -77,7 +77,7 @@ RSpec.describe "SEO metadata", type: :request do
       expect(response.media_type).to eq("application/xml")
       locs = Nokogiri::XML(response.body).remove_namespaces!.xpath("//loc").map(&:text)
       expect(locs).to match_array(
-        %w[welcome guide privacy terms].product(%w[en fr]).map { |page, locale| "https://spens.me/#{locale}/#{page}" }
+        %w[welcome download guide privacy terms].product(%w[en fr]).map { |page, locale| "https://spens.me/#{locale}/#{page}" }
       )
     end
   end

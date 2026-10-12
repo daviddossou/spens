@@ -146,7 +146,41 @@
   border-radius: 14px;
 }
 
+/* Secondary, on dark backgrounds */
+.landing-btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 600;
+  padding: 13px 26px;
+  border: 1.5px solid rgba(255, 255, 255, 0.35);
+  border-radius: 12px;
+  white-space: nowrap;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.landing-btn-ghost:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.6);
+}
+
+.landing-btn-ghost--lg {
+  font-size: 17px;
+  padding: 15px 30px;
+  border-radius: 14px;
+}
+
+.landing-btn-ghost__icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
 .landing-btn-light:focus-visible,
+.landing-btn-ghost:focus-visible,
 .landing-nav__cta:focus-visible,
 .landing-price__cta:focus-visible {
   outline: none;
@@ -183,6 +217,17 @@
 
 .landing-nav__link:hover {
   color: #fff;
+}
+
+.landing-nav__link--download {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.landing-nav__link-icon {
+  width: 18px;
+  height: 18px;
 }
 
 .landing-nav__cta {
@@ -1166,6 +1211,14 @@
   text-wrap: pretty;
 }
 
+.landing-final__cta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  justify-content: center;
+  align-items: center;
+}
+
 .landing-final__footer {
   display: flex;
   justify-content: center;
@@ -1196,6 +1249,22 @@
 
   .landing-nav__link {
     display: none;
+  }
+
+  /* Icon only: the one nav link phones need most */
+  .landing-nav__link--download {
+    display: inline-flex;
+    padding: 6px;
+    color: #fff;
+  }
+
+  .landing-nav__link-label {
+    display: none;
+  }
+
+  .landing-nav__link-icon {
+    width: 22px;
+    height: 22px;
   }
 
   .landing-grid-4 {
@@ -1264,6 +1333,20 @@
 
   .landing-hero__subtitle {
     font-size: 16px;
+  }
+
+  .landing-hero__cta-row,
+  .landing-final__cta-row {
+    flex-direction: column;
+  }
+
+  .landing-hero__cta-row .landing-btn-ghost,
+  .landing-final__cta-row .landing-btn-light,
+  .landing-final__cta-row .landing-btn-ghost {
+    width: 100%;
+    box-sizing: border-box;
+    justify-content: center;
+    text-align: center;
   }
 
   .landing-hero__cta-row .landing-btn-light {
