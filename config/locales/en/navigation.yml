@@ -5,6 +5,7 @@ en:
       settings: "Settings"
       learned_words: "Learned words"
       admin: "Admin"
+      install_app: "Install the app"
       contact_support: "Contact Support"
       log_out: "Log Out"
     bottom_nav:

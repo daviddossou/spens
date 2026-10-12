@@ -8,12 +8,14 @@ fr:
       features: "Fonctionnalités"
       pricing: "Tarifs"
       cta: "Commencer"
+      download: "Télécharger l'app"
       picker_title: "Pays · langue · devise"
     hero:
       badge: "Gratuit au lancement · avantage aux premiers inscrits"
       title: "Es-tu satisfait de l'état de tes finances aujourd'hui ?"
       subtitle: "Épargner n'est pas une question de revenu, mais d'habitude, et l'habitude commence par voir clair. Spens réunit tout ton argent, suit tes dettes et transforme tes fins de mois en marge d'épargne."
       cta: "Commencer à épargner"
+      download: "Télécharger l'app"
       card_debts:
         label: "On me doit"
         amount: "↑ 1,33M"
@@ -125,4 +127,5 @@ fr:
       copyright: "© %{year} Spens"
       privacy: "Confidentialité"
       terms: "Conditions"
+      download: "Application"
       contact: "Contact"

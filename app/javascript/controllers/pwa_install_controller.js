@@ -1,4 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
+import { detectPlatform, isStandalone } from "lib/platform"
 
 const STORAGE_KEY = "spens-pwa-install"
 const SNOOZE_DAYS = 14
@@ -12,10 +13,11 @@ export default class extends Controller {
   connect() {
     this.deferredPrompt = null
 
-    if (this.isStandalone() || !this.shouldNudge()) return
+    if (isStandalone() || !this.shouldNudge()) return
 
-    if (this.isIos()) {
-      if (this.isIosSafari()) this.show(true)
+    const { os, safari } = detectPlatform()
+    if (os === "ios") {
+      if (safari) this.show(true)
       return
     }
 
@@ -96,19 +98,5 @@ export default class extends Controller {
     } catch {
       // localStorage unavailable (private mode) — just skip persistence
     }
-  }
-
-  isStandalone() {
-    return window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true
-  }
-
-  isIos() {
-    return /iphone|ipad|ipod/i.test(navigator.userAgent) ||
-      (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1)
-  }
-
-  isIosSafari() {
-    // Exclude in-app browsers and Chrome/Firefox on iOS, which can't add to home screen
-    return this.isIos() && /safari/i.test(navigator.userAgent) && !/crios|fxios|edgios/i.test(navigator.userAgent)
   }
 }

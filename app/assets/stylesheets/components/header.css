@@ -233,6 +233,13 @@
   background-color: var(--color-danger-20, #fcd9d6);
 }
 
+/* Already installed: nothing left to install */
+@media (display-mode: standalone) {
+  .app-header__dropdown-item--browser-only {
+    display: none;
+  }
+}
+
 .app-header__dropdown-icon {
   width: 18px;
   height: 18px;

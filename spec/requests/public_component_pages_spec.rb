@@ -5,7 +5,7 @@ require "rails_helper"
 RSpec.describe "Public component pages", type: :request do
   include Devise::Test::IntegrationHelpers
   %w[fr en].each do |locale|
-    [ "welcome", "guide", "guide/thanks" ].each do |page|
+    [ "welcome", "guide", "guide/thanks", "download" ].each do |page|
       it "renders #{page} in #{locale} with its navigation and no missing translations" do
         get "/#{locale}/#{page}"
         expect(response).to have_http_status(:ok)
@@ -17,10 +17,40 @@ RSpec.describe "Public component pages", type: :request do
           expect(html.css('[data-landing--features-target="card"]')).not_to be_empty
           # The account picker of the "gather your money" block opens in this shared layer.
           expect(html.at_css('#picker-layer[data-controller="picker-layer"]')).to be_present
+          expect(html.css(%(a[href="/#{locale}/download"])).length).to be >= 3
         elsif page == "guide"
           expect(html.css('a[download][data-landing--meta-events-placement-param]').length).to eq(2)
+        elsif page == "download"
+          expect(html.css('[data-download-target="panel"]').map { |panel| panel["data-platform"] }).to eq(%w[android ios desktop])
+          expect(html.at_css(".download-qr__code svg")).to be_present
         end
       end
+    end
+  end
+
+  describe "GET /download" do
+    it "points the QR code and copy button at the localized canonical page" do
+      allow(Rails.application.config.x).to receive(:canonical_origin).and_return("https://spens.me")
+      get "/en/download"
+      html = Nokogiri::HTML(response.body)
+      expect(html.at_css("[data-controller='download']")["data-download-url-value"]).to eq("https://spens.me/en/download")
+      expect(html.at_css(".download-qr__url").text).to eq("spens.me/en/download")
+    end
+
+    it "is shown to signed-in members too" do
+      sign_in create(:user)
+      get "/download"
+      expect(response).to have_http_status(:ok)
+    end
+
+    it "sends the native app home" do
+      get "/download", headers: { "User-Agent" => "Turbo Native Android Mozilla/5.0 (Linux; Android 14; wv)" }
+      expect(response).to redirect_to(root_path)
+    end
+
+    it "is also reachable as /install" do
+      get "/fr/install"
+      expect(response).to redirect_to("/fr/download")
     end
   end
 

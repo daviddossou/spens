@@ -46,6 +46,9 @@ Rails.application.routes.draw do
     get "welcome", to: "landing#show", as: :landing
     get "guide", to: "landing#guide", as: :guide
     get "guide/thanks", to: "landing#guide_thanks", as: :guide_thanks
+    # Install page for the PWA (until the store apps ship): one link to share
+    get "download", to: "landing#download", as: :download
+    get "install", to: redirect { |params, _| "/#{[ params[:locale], "download" ].compact.join("/")}" }
     post "meta/events", to: "meta_events#create", as: :meta_events
     # Short redirects printed in the guide PDF (QR codes + links)
     get "g/:code", to: "short_links#show", as: :short_link

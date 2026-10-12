@@ -8,12 +8,14 @@ en:
       features: "Features"
       pricing: "Pricing"
       cta: "Get started"
+      download: "Get the app"
       picker_title: "Country · language · currency"
     hero:
       badge: "Free at launch · early users get an advantage"
       title: "Are you happy with the state of your finances today?"
       subtitle: "Saving isn't about income, it's about habit, and habit starts with seeing clearly. Spens brings all your money together, tracks your debts and turns your month-ends into savings margin."
       cta: "Start saving"
+      download: "Get the app"
       card_debts:
         label: "Owed to me"
         amount: "↑ 1.33M"
@@ -125,4 +127,5 @@ en:
       copyright: "© %{year} Spens"
       privacy: "Privacy"
       terms: "Terms"
+      download: "App"
       contact: "Contact"
