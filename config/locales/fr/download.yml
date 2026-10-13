@@ -17,12 +17,13 @@ fr:
       title: "C'est installé !"
       body: "Retrouve Spens sur ton écran d'accueil et ouvre-le en un geste."
     install: "Installer Spens"
-    manual_label: "Ou à la main :"
     copy: "Copier le lien"
     copied: "Lien copié"
     android:
       in_app: "Tu es dans le navigateur d'une autre app, qui ne peut pas installer Spens. Ouvre cette page dans Chrome."
       open_chrome: "Ouvrir dans Chrome"
+      hint: "Spens s'ajoute à ton écran d'accueil, comme une app."
+      manual: "Ça ne marche pas ? Installe-le à la main"
       steps:
         - "Ouvre <strong>%{url}</strong> dans Chrome."
         - "Touche le menu %{icon} en haut à droite."
@@ -30,6 +31,7 @@ fr:
         - "Confirme : l'icône Spens apparaît sur ton écran d'accueil."
     ios:
       safari: "Sur iPhone, Spens s'installe depuis Safari. Copie le lien, puis colle-le dans Safari."
+      intro: "Sur iPhone, Apple ne permet pas l'installation en un geste. Ça se fait en quatre étapes :"
       steps:
         - "Ouvre <strong>%{url}</strong> dans Safari."
         - "Touche le bouton Partager %{icon} en bas de l'écran."

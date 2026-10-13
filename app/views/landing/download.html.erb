@@ -102,22 +102,33 @@
             </div>
           </div>
         <% else %>
+          <% steps = capture do %>
+            <ol class="download-steps">
+              <% t("download.#{platform}.steps").each do |step| %>
+                <li class="download-step">
+                  <span class="download-step__text"><%= sanitize(step, tags: %w[strong]).gsub("%{url}", ERB::Util.h(display_url)).gsub("%{icon}", step_icons.fetch(platform)).html_safe %></span>
+                </li>
+              <% end %>
+            </ol>
+          <% end %>
           <% if platform == "android" %>
-            <div class="download-install" hidden data-download-target="installBox">
+            <%# Plan A: one tap on the browser's own install prompt %>
+            <div class="download-install" data-download-target="installBox">
               <button type="button" class="download-btn download-btn--primary download-btn--lg" data-action="download#install">
                 <%= render Ui::IconComponent.new(:download, classes: "download-btn__icon") %>
                 <%= t("download.install") %>
               </button>
-              <p class="download-install__or" hidden data-download-target="manualLabel"><%= t("download.manual_label") %></p>
+              <p class="download-install__hint"><%= t("download.android.hint") %></p>
             </div>
+            <%# Plan B: opened when the prompt isn't available %>
+            <details class="download-manual" data-download-target="manual">
+              <summary class="download-manual__toggle"><%= t("download.android.manual") %></summary>
+              <%= steps %>
+            </details>
+          <% else %>
+            <p class="download-panel__text"><%= t("download.ios.intro") %></p>
+            <%= steps %>
           <% end %>
-          <ol class="download-steps">
-            <% t("download.#{platform}.steps").each do |step| %>
-              <li class="download-step">
-                <span class="download-step__text"><%= sanitize(step, tags: %w[strong]).gsub("%{url}", ERB::Util.h(display_url)).gsub("%{icon}", step_icons.fetch(platform)).html_safe %></span>
-              </li>
-            <% end %>
-          </ol>
         <% end %>
       </div>
     <% end %>

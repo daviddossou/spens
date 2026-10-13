@@ -17,12 +17,13 @@ en:
       title: "It's installed!"
       body: "Find Spens on your home screen and open it in one tap."
     install: "Install Spens"
-    manual_label: "Or by hand:"
     copy: "Copy link"
     copied: "Link copied"
     android:
       in_app: "You're in another app's built-in browser, which can't install Spens. Open this page in Chrome."
       open_chrome: "Open in Chrome"
+      hint: "Spens lands on your home screen, like any app."
+      manual: "Didn't work? Install it by hand"
       steps:
         - "Open <strong>%{url}</strong> in Chrome."
         - "Tap the %{icon} menu at the top right."
@@ -30,6 +31,7 @@ en:
         - "Confirm: the Spens icon appears on your home screen."
     ios:
       safari: "On iPhone, Spens installs from Safari. Copy the link, then paste it into Safari."
+      intro: "On iPhone, Apple doesn't allow one-tap installs. It takes four steps:"
       steps:
         - "Open <strong>%{url}</strong> in Safari."
         - "Tap the Share button %{icon} at the bottom of the screen."
