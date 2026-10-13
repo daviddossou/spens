@@ -3,24 +3,27 @@ import { detectPlatform } from "lib/platform"
 
 const BANNER_STORAGE_KEY = "spens-pwa-install"
 
-// /download: opens the visitor's platform tab, offers the native install
-// prompt where the browser has one, and steers in-app browsers out.
+// /download: opens the visitor's platform tab. Plan A is the browser's own
+// install prompt; plan B, the manual steps, opens when it isn't available.
 export default class extends Controller {
-  static targets = ["tab", "panel", "installBox", "manualLabel", "inAppNotice", "safariNotice", "done", "copyLabel"]
+  static targets = ["tab", "panel", "installBox", "manual", "inAppNotice", "safariNotice", "done", "copyLabel"]
   static values = { url: String, copied: String }
 
   connect() {
     this.platform = detectPlatform()
     this.select(this.platform.os)
 
-    if (this.platform.inApp) this.inAppNoticeTargets.forEach((el) => (el.hidden = false))
+    if (this.platform.inApp) {
+      this.inAppNoticeTargets.forEach((el) => (el.hidden = false))
+      this.installBoxTargets.forEach((el) => (el.hidden = true))
+      this.openManual()
+    }
     if (this.platform.os === "ios" && !this.platform.safari) this.safariNoticeTargets.forEach((el) => (el.hidden = false))
 
     this.beforeInstallPrompt = (event) => {
       event.preventDefault()
       this.deferredPrompt = event
       this.installBoxTargets.forEach((el) => (el.hidden = false))
-      this.manualLabelTargets.forEach((el) => (el.hidden = false))
     }
     this.appInstalled = () => this.showDone()
     window.addEventListener("beforeinstallprompt", this.beforeInstallPrompt)
@@ -51,7 +54,12 @@ export default class extends Controller {
   }
 
   async install() {
-    if (!this.deferredPrompt) return
+    if (!this.deferredPrompt) {
+      window.posthog?.capture("download_install_fallback", { os: this.platform.os })
+      this.openManual()
+      this.manualTargets[0]?.scrollIntoView({ behavior: "smooth", block: "start" })
+      return
+    }
     this.deferredPrompt.prompt()
     const { outcome } = await this.deferredPrompt.userChoice
     this.deferredPrompt = null
@@ -72,6 +80,10 @@ export default class extends Controller {
       label.textContent = this.copiedValue
       setTimeout(() => (label.textContent = label.dataset.original), 2500)
     })
+  }
+
+  openManual() {
+    this.manualTargets.forEach((details) => (details.open = true))
   }
 
   openInBrowser() {

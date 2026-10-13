@@ -3,6 +3,7 @@ import DownloadController from "../../../app/javascript/controllers/download_con
 import { flushStimulus, startStimulus } from "../helpers/stimulus"
 
 const IPHONE_INSTAGRAM = "Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 Instagram 300.0"
+const ANDROID_WEBVIEW = "Mozilla/5.0 (Linux; Android 13; Pixel 7; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/129.0 Mobile Safari/537.36"
 const ANDROID_CHROME = "Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0 Mobile Safari/537.36"
 
 const html = `
@@ -13,8 +14,8 @@ const html = `
     <div data-download-target="done" hidden></div>
     <div data-download-target="panel" data-platform="android">
       <div data-download-target="inAppNotice" hidden></div>
-      <div data-download-target="installBox" hidden><button id="install" data-action="download#install">Install</button></div>
-      <p data-download-target="manualLabel" hidden></p>
+      <div data-download-target="installBox"><button id="install" data-action="download#install">Install</button></div>
+      <details data-download-target="manual"><summary>By hand</summary><ol></ol></details>
     </div>
     <div data-download-target="panel" data-platform="ios" hidden>
       <div data-download-target="safariNotice" hidden>
@@ -29,6 +30,28 @@ const panel = (platform) => document.querySelector(`[data-download-target="panel
 
 describe("DownloadController", () => {
   afterEach(() => vi.unstubAllGlobals())
+
+  it("falls back to the manual steps when the browser has no install prompt", async () => {
+    vi.stubGlobal("navigator", { ...navigator, userAgent: ANDROID_CHROME })
+    Element.prototype.scrollIntoView = vi.fn()
+    await startStimulus("download", DownloadController, html)
+    const manual = document.querySelector("[data-download-target='manual']")
+    expect(manual.open).toBe(false)
+
+    document.querySelector("#install").click()
+
+    expect(manual.open).toBe(true)
+    expect(manual.scrollIntoView).toHaveBeenCalled()
+  })
+
+  it("skips the install button in an app's built-in browser", async () => {
+    vi.stubGlobal("navigator", { ...navigator, userAgent: ANDROID_WEBVIEW })
+    await startStimulus("download", DownloadController, html)
+
+    expect(document.querySelector("[data-download-target='inAppNotice']").hidden).toBe(false)
+    expect(document.querySelector("[data-download-target='installBox']").hidden).toBe(true)
+    expect(document.querySelector("[data-download-target='manual']").open).toBe(true)
+  })
 
   it("opens the iPhone tab and asks in-app browsers to switch to Safari", async () => {
     vi.stubGlobal("navigator", { ...navigator, userAgent: IPHONE_INSTAGRAM, clipboard: { writeText: vi.fn().mockResolvedValue() } })
@@ -64,7 +87,6 @@ describe("DownloadController", () => {
       userChoice: Promise.resolve({ outcome: "accepted" })
     }))
 
-    expect(document.querySelector("[data-download-target='installBox']").hidden).toBe(false)
     expect(document.querySelector("[data-download-target='inAppNotice']").hidden).toBe(true)
 
     document.querySelector("#install").click()
@@ -72,6 +94,7 @@ describe("DownloadController", () => {
 
     expect(prompt).toHaveBeenCalledOnce()
     expect(document.querySelector("[data-download-target='done']").hidden).toBe(false)
+    expect(document.querySelector("[data-download-target='manual']").open).toBe(false)
     expect(JSON.parse(localStorage.getItem("spens-pwa-install"))).toEqual({ installed: true })
   })
 })
