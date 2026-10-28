@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_10_28_001958) do
+ActiveRecord::Schema[8.0].define(version: 2026_10_28_010828) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -114,6 +114,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_10_28_001958) do
     t.string "whatsapp_group_url"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "registrations_closed", default: false, null: false
     t.index ["campaign"], name: "index_cohorts_on_campaign", unique: true
   end
 

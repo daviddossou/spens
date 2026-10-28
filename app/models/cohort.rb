@@ -2,12 +2,13 @@
 #
 # Table name: cohorts
 #
-#  id                 :uuid             not null, primary key
-#  active             :boolean          default(FALSE), not null
-#  campaign           :string           not null, indexed
-#  whatsapp_group_url :string
-#  created_at         :datetime         not null
-#  updated_at         :datetime         not null
+#  id                   :uuid             not null, primary key
+#  active               :boolean          default(FALSE), not null
+#  campaign             :string           not null, indexed
+#  registrations_closed :boolean          default(FALSE), not null
+#  whatsapp_group_url   :string
+#  created_at           :datetime         not null
+#  updated_at           :datetime         not null
 #
 # Indexes
 #
@@ -23,6 +24,15 @@ class Cohort < ApplicationRecord
 
   def self.current
     active.order(updated_at: :desc).first
+  end
+
+  def self.current!
+    current || raise(ActiveRecord::RecordNotFound, "no active cohort")
+  end
+
+  # The sign-up page offers the group only while the cohort takes members.
+  def open?
+    !registrations_closed && whatsapp_group_url.present?
   end
 
   # Idempotent: creates the cohort if needed, makes it the only active one, and

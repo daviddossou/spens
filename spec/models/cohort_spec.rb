@@ -20,4 +20,12 @@ RSpec.describe Cohort, type: :model do
       expect(described_class.activate!("cohorte-nov").whatsapp_group_url).to eq("https://chat.whatsapp.com/KEEP")
     end
   end
+
+  describe "#open?" do
+    it "offers the group only with a URL and while registrations are open" do
+      expect(build(:cohort)).to be_open
+      expect(build(:cohort, registrations_closed: true)).not_to be_open
+      expect(build(:cohort, whatsapp_group_url: nil)).not_to be_open
+    end
+  end
 end

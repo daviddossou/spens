@@ -2,12 +2,13 @@
 #
 # Table name: cohorts
 #
-#  id                 :uuid             not null, primary key
-#  active             :boolean          default(FALSE), not null
-#  campaign           :string           not null, indexed
-#  whatsapp_group_url :string
-#  created_at         :datetime         not null
-#  updated_at         :datetime         not null
+#  id                   :uuid             not null, primary key
+#  active               :boolean          default(FALSE), not null
+#  campaign             :string           not null, indexed
+#  registrations_closed :boolean          default(FALSE), not null
+#  whatsapp_group_url   :string
+#  created_at           :datetime         not null
+#  updated_at           :datetime         not null
 #
 # Indexes
 #
