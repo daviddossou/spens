@@ -77,7 +77,8 @@ RSpec.describe "SEO metadata", type: :request do
       expect(response.media_type).to eq("application/xml")
       locs = Nokogiri::XML(response.body).remove_namespaces!.xpath("//loc").map(&:text)
       expect(locs).to match_array(
-        %w[welcome download guide privacy terms].product(%w[en fr]).map { |page, locale| "https://spens.me/#{locale}/#{page}" }
+        %w[welcome download guide privacy terms].product(%w[en fr]).map { |page, locale| "https://spens.me/#{locale}/#{page}" } +
+        %w[https://spens.me/cohorte]
       )
     end
   end
