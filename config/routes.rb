@@ -48,6 +48,8 @@ Rails.application.routes.draw do
     get "guide/thanks", to: "landing#guide_thanks", as: :guide_thanks
     # Install page for the PWA (until the store apps ship): one link to share
     get "download", to: "landing#download", as: :download
+    # Sign-up page of the WhatsApp training cohort (French only, one URL)
+    get "cohorte", to: "cohorts#show", as: :cohort
     get "install", to: redirect { |params, _| "/#{[ params[:locale], "download" ].compact.join("/")}" }
     post "meta/events", to: "meta_events#create", as: :meta_events
     # Short redirects printed in the guide PDF (QR codes + links)
