@@ -10,9 +10,12 @@ class MetaEventsController < ApplicationController
     "view_content" => "ViewContent",
     "lead_hero" => "Lead",
     "lead_final" => "Lead",
-    "signup_start" => "spens_signup_start"
+    "signup_start" => "spens_signup_start",
+    "cohort_join" => "spens_cohorte_join",
+    "cohort_waitlist" => "spens_cohorte_waitlist"
   }.freeze
   SIGNUP_PLACEMENTS = %w[nav hero diagnostic accounts pricing final].freeze
+  COHORT_PLACEMENTS = %w[top bottom].freeze
 
   rate_limit to: 30, within: 1.minute, only: :create
 
@@ -24,6 +27,7 @@ class MetaEventsController < ApplicationController
     custom_data = {}
     custom_data[:content_name] = params[:event].delete_prefix("lead_") if event_name == "Lead"
     custom_data[:content_name] = params[:placement].presence_in(SIGNUP_PLACEMENTS) if event_name == "spens_signup_start"
+    custom_data[:content_name] = params[:placement].presence_in(COHORT_PLACEMENTS) if params[:event].start_with?("cohort_")
 
     meta_send_server_event(event_name, event_id: event_id, user: current_user, custom_data: custom_data.compact)
     head :no_content
