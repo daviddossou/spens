@@ -106,6 +106,7 @@ RSpec.describe DeviseConfiguration, type: :controller do
     before do
       allow(sessions_controller).to receive(:request).and_return(ActionDispatch::Request.new({}))
       allow(sessions_controller).to receive(:response).and_return(ActionDispatch::Response.new)
+      allow(sessions_controller).to receive(:session).and_return({})
     end
 
     it 'properly configures redirect paths for Devise sessions controller' do

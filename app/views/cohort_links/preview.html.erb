@@ -1,0 +1,13 @@
+<%# Served to link-preview fetchers (WhatsApp, Slack...) instead of the redirect,
+    so the message card shows Spens rather than the sign-in page. %>
+<!DOCTYPE html>
+<html lang="<%= I18n.locale %>">
+  <head>
+    <meta charset="utf-8">
+    <title>Spens</title>
+    <%= render "shared/seo", title: "Spens" %>
+  </head>
+  <body>
+    <p><%= t("seo.description") %></p>
+  </body>
+</html>

@@ -14,6 +14,6 @@ class Onboarding::SummariesController < OnboardingController
     current_space.update!(onboarding_current_step: "onboarding_completed")
     track_onboarding_step_completed("summary")
 
-    redirect_to dashboard_path, status: :see_other
+    redirect_to consume_return_path || dashboard_path, status: :see_other
   end
 end

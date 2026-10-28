@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_09_28_230203) do
+ActiveRecord::Schema[8.0].define(version: 2026_10_28_001958) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -106,6 +106,15 @@ ActiveRecord::Schema[8.0].define(version: 2026_09_28_230203) do
     t.datetime "updated_at", null: false
     t.index ["space_id", "tokens"], name: "index_category_memories_on_space_id_and_tokens", unique: true
     t.index ["space_id"], name: "index_category_memories_on_space_id"
+  end
+
+  create_table "cohorts", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "campaign", null: false
+    t.boolean "active", default: false, null: false
+    t.string "whatsapp_group_url"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["campaign"], name: "index_cohorts_on_campaign", unique: true
   end
 
   create_table "debts", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -243,6 +252,18 @@ ActiveRecord::Schema[8.0].define(version: 2026_09_28_230203) do
     t.index ["user_id"], name: "index_quick_entry_attempts_on_user_id"
   end
 
+  create_table "short_link_clicks", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "code", null: false
+    t.string "campaign"
+    t.text "user_agent"
+    t.string "referer"
+    t.uuid "user_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["code"], name: "index_short_link_clicks_on_code"
+    t.index ["user_id"], name: "index_short_link_clicks_on_user_id"
+  end
+
   create_table "spaces", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "name", null: false
     t.string "currency", default: "XOF"
@@ -374,6 +395,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_09_28_230203) do
   add_foreign_key "quick_entry_attempts", "spaces"
   add_foreign_key "quick_entry_attempts", "transactions", on_delete: :nullify
   add_foreign_key "quick_entry_attempts", "users"
+  add_foreign_key "short_link_clicks", "users"
   add_foreign_key "spaces", "users"
   add_foreign_key "transaction_types", "spaces"
   add_foreign_key "transaction_types", "transaction_types", column: "parent_id"
