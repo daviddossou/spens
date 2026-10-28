@@ -2,6 +2,8 @@
 
 module DeviseConfiguration
   extend ActiveSupport::Concern
+  # A link may have asked for a precise screen before sign-in.
+  include ReturnPath
 
   included do
     before_action :configure_permitted_parameters, if: :devise_controller?
@@ -10,7 +12,7 @@ module DeviseConfiguration
   protected
 
   def after_sign_in_path_for(resource)
-    dashboard_path
+    consume_return_path || dashboard_path
   end
 
   def after_sign_out_path_for(resource_or_scope)

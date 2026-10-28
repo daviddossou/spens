@@ -16,4 +16,8 @@ xml.urlset xmlns: "http://www.sitemaps.org/schemas/sitemap/0.9", "xmlns:xhtml": 
       end
     end
   end
+
+  @single_language_pages.each do |page|
+    xml.url { xml.loc url_in.(page, nil) }
+  end
 end

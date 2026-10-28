@@ -6,7 +6,9 @@ class LandingController < ApplicationController
   after_action :meta_track_page_view, only: [ :show, :guide, :guide_thanks, :download ]
 
   def show
-    return redirect_to dashboard_path if user_signed_in?
+    # A link to one section of the page (the calculator, from the cohort links)
+    # is for members too: only a plain visit by a member goes to the dashboard.
+    return redirect_to dashboard_path if user_signed_in? && params[:section].blank?
     # The Android app opens straight on sign-in; the landing is a web thing.
     return redirect_to new_user_session_path if turbo_native_app?
 

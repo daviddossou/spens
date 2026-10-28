@@ -1,0 +1,399 @@
+<%#
+  Sign-up page of the WhatsApp cohort. Served as its own document: inline CSS,
+  no image, no app bundle. data-cohort switches the top block between the two
+  states (open / full); both are in the DOM, CSS shows one.
+%>
+<%
+  title = "Apprendre à épargner, en onze jours"
+  description = "Un message par jour, une seule chose à faire. Dans un groupe WhatsApp. Gratuit."
+  page_url = seo_origin + cohort_path(locale: nil)
+  image_url = seo_origin + "/og-cohorte.png"
+%>
+<!doctype html>
+<html lang="fr" data-cohort="<%= @full ? "full" : "open" %>">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title><%= title %> — Spens</title>
+<meta name="description" content="<%= description %>">
+<meta name="theme-color" content="#2c3044">
+<link rel="canonical" href="<%= page_url %>">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<%= csrf_meta_tags %>
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Spens">
+<meta property="og:locale" content="fr_FR">
+<meta property="og:title" content="<%= title %>">
+<meta property="og:description" content="<%= description %>">
+<meta property="og:url" content="<%= page_url %>">
+<meta property="og:image" content="<%= image_url %>">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Apprendre à épargner, en onze jours — un groupe WhatsApp gratuit, un message par jour.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="<%= title %>">
+<meta name="twitter:description" content="<%= description %>">
+<meta name="twitter:image" content="<%= image_url %>">
+<%= tag.script({
+  "@context": "https://schema.org", "@type": "Event",
+  name: title, description: description, url: page_url, image: image_url, inLanguage: "fr",
+  startDate: "2026-11-01", endDate: "2026-11-11",
+  eventAttendanceMode: "https://schema.org/OnlineEventAttendanceMode",
+  eventStatus: "https://schema.org/EventScheduled",
+  location: { "@type": "VirtualLocation", url: page_url },
+  isAccessibleForFree: true,
+  offers: { "@type": "Offer", price: "0", priceCurrency: "XOF", availability: "https://schema.org/#{@full ? "SoldOut" : "InStock"}", url: page_url },
+  organizer: { "@type": "Organization", name: "Spens", url: seo_origin }
+}.to_json.html_safe, type: "application/ld+json") %>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --navy:#2c3044;
+  --accent:#3F51B5;
+  --accent-hover:#303f9f;
+  --lavender:#c5cae8;
+  --tint:#ECEDFA;
+  --badge:#DDE0F7;
+  --ground:#FAFAFC;
+  --surface:#FFFFFF;
+  --line:#e2e3e9;
+  --ink:#282A33;
+  --ink-muted:#5b606e;
+  --on-navy-muted:#BEC1D8;
+  --radius:14px;
+  --font:Inter, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--font);-webkit-font-smoothing:antialiased}
+h1,h2,p{margin:0}
+strong{font-weight:700}
+svg{flex:none}
+.wrap{max-width:1080px;margin:0 auto}
+
+/* Switch: only one of the two top blocks is visible */
+html[data-cohort="open"] .only-full{display:none !important}
+html[data-cohort="full"] .only-open{display:none !important}
+
+/* Button */
+.btn{display:flex;align-items:center;justify-content:center;gap:10px;min-height:56px;padding:0 30px;border-radius:var(--radius);background:var(--accent);color:#fff;font-size:17px;font-weight:700;text-decoration:none;-webkit-tap-highlight-color:transparent}
+.btn:hover{background:var(--accent-hover)}
+.btn:focus-visible{outline:3px solid #fff;outline-offset:3px}
+
+/* Hero */
+.hero{background:var(--navy);color:#fff;padding:32px 24px 30px}
+.hero-grid{display:grid;gap:72px;align-items:center}
+.hero-text{display:flex;flex-direction:column;gap:18px}
+.hero h1{font-size:34px;line-height:1.1;font-weight:800;letter-spacing:-.02em}
+.hero .sub{font-size:16px;line-height:1.5;color:var(--on-navy-muted)}
+.recognition{padding:16px 18px;border-radius:var(--radius);background:rgba(255,255,255,.07);font-size:17px;line-height:1.5;font-weight:500}
+.actions{display:flex;flex-direction:column;gap:18px}
+.date{order:-1;display:flex;gap:12px;align-items:flex-start;padding:14px 16px;border-radius:var(--radius);background:var(--lavender);color:var(--navy);font-size:16px;line-height:1.4;font-weight:500}
+.date strong{font-weight:800}
+.hero-full h1{font-size:32px;line-height:1.12}
+.hero-full .sub{font-size:17px}
+.cover-wrap{display:none}
+
+/* Sections */
+section{padding:40px 24px}
+section + section{border-top:1px solid var(--line)}
+h2{font-size:24px;line-height:1.2;font-weight:800;letter-spacing:-.015em}
+.why{padding-top:48px}
+.why-grid{display:grid;gap:16px}
+.why p{font-size:17px;line-height:1.6}
+.why-body{display:flex;flex-direction:column;gap:16px}
+.guide-card{margin-top:8px;display:flex;gap:16px;align-items:center;padding:14px;border-radius:16px;background:var(--surface);border:1px solid var(--line)}
+.mini-cover{flex:none;width:62px;height:84px;border-radius:5px;background:var(--accent);padding:8px 7px;display:flex;flex-direction:column;justify-content:space-between;box-shadow:0 4px 10px rgba(43,46,69,.18);color:#fff;font-size:6.5px;line-height:1.15;font-weight:700}
+.mini-cover i{width:10px;height:10px;border-radius:50%;background:#fff}
+.guide-card b{display:block;font-size:14px;line-height:1.35;font-weight:700}
+.guide-card small{display:block;margin-top:4px;font-size:13px;line-height:1.4;color:var(--ink-muted)}
+
+.stack{display:flex;flex-direction:column;gap:20px}
+.steps{display:grid;gap:20px}
+.step{display:flex;gap:14px;align-items:flex-start}
+.step-icon{flex:none;width:40px;height:40px;border-radius:12px;background:var(--tint);color:var(--accent);display:flex;align-items:center;justify-content:center}
+.step p{padding-top:9px;font-size:16px;line-height:1.55}
+
+.outcomes{display:grid;gap:12px}
+.outcome{display:flex;gap:14px;align-items:flex-start;padding:16px;border-radius:var(--radius);background:var(--surface);border:1px solid var(--line)}
+.outcome span{flex:none;padding:3px 7px;border-radius:6px;background:var(--badge);color:var(--accent);font-size:12px;font-weight:800}
+.outcome p{font-size:16px;line-height:1.5}
+
+.know{background:var(--lavender);color:var(--navy)}
+section.know{border-top:0}
+.know-list{display:grid;gap:18px}
+.know-item{display:flex;gap:14px;align-items:flex-start}
+.know-item svg{margin-top:2px}
+.know-item p{font-size:16px;line-height:1.5;font-weight:500}
+
+footer{background:var(--navy);color:#fff;padding:44px 24px 56px}
+.sign{max-width:680px;margin:0 auto;display:flex;flex-direction:column;gap:24px}
+.sign p{font-size:17px;line-height:1.6}
+
+/* Marketing-consent banner (same cookie as the rest of the site) */
+.consent{position:fixed;bottom:16px;left:16px;right:16px;z-index:40;max-width:680px;margin:0 auto;display:flex;flex-direction:column;gap:12px;padding:16px 20px;border-radius:var(--radius);background:var(--surface);color:var(--ink);box-shadow:0 16px 44px rgba(40,42,51,.35)}
+.consent p{font-size:13.5px;line-height:1.5;color:var(--ink-muted)}
+.consent a{color:var(--accent);text-decoration:underline}
+.consent-actions{display:flex;gap:10px}
+.consent button{flex:1;border:0;padding:9px 18px;border-radius:10px;background:var(--navy);color:#fff;font:inherit;font-size:14px;font-weight:700;cursor:pointer}
+.consent button.ghost{background:transparent;color:var(--ink-muted);border:1px solid var(--line)}
+
+/* Desktop */
+@media (min-width:900px){
+  .hero{padding:88px 40px 96px}
+  .hero-grid{grid-template-columns:1fr 1fr}
+  .hero-text{gap:22px;max-width:580px}
+  .hero h1{font-size:56px;line-height:1.06;letter-spacing:-.025em}
+  .hero .sub{font-size:19px}
+  .hero-full .sub{font-size:20px}
+  .recognition{padding:20px 22px;border-radius:16px;font-size:18px;line-height:1.55}
+  .actions{flex-direction:row;flex-wrap:wrap;align-items:center;gap:14px;margin-top:6px}
+  .date{order:0;align-items:center;min-height:56px;padding:0 18px;font-size:15px;gap:10px}
+  .btn{display:inline-flex}
+  .cover-wrap{display:flex;justify-content:center}
+  .cover{position:relative;width:300px;height:400px;border-radius:10px;background:var(--accent);padding:30px 26px;display:flex;flex-direction:column;justify-content:space-between;box-shadow:0 24px 60px rgba(0,0,0,.35);transform:rotate(3deg)}
+  .cover .kicker{font-size:10px;letter-spacing:.16em;font-weight:500;color:rgba(255,255,255,.75)}
+  .cover .ttl{display:block;margin-top:22px;font-size:27px;line-height:1.12;font-weight:800}
+  .cover .pages{font-size:13px;font-weight:500;color:rgba(255,255,255,.85)}
+  .cover .tag{position:absolute;right:-54px;bottom:40px;transform:rotate(-3deg);padding:14px 18px;border-radius:12px;background:#fff;color:var(--ink);box-shadow:0 12px 30px rgba(0,0,0,.25)}
+  .cover .tag small{display:block;font-size:10px;letter-spacing:.12em;font-weight:700;color:var(--ink-muted)}
+  .cover .tag b{display:block;margin-top:4px;font-size:20px;font-weight:800}
+
+  section{padding:80px 40px}
+  h2{font-size:36px;line-height:1.15;letter-spacing:-.02em}
+  .why{padding:96px 40px 80px}
+  .why-grid{grid-template-columns:1fr 1fr;gap:48px 72px}
+  .why p{font-size:18px;line-height:1.65}
+  .guide-card{display:none}
+  .stack{gap:36px}
+  .steps{grid-template-columns:repeat(3,1fr);gap:40px}
+  .step{flex-direction:column;gap:16px}
+  .step-icon{width:48px;height:48px;border-radius:14px}
+  .step p{padding-top:0;font-size:17px;line-height:1.6}
+  .outcomes{grid-template-columns:1fr 1fr;gap:16px}
+  .outcome{padding:24px;border-radius:16px;gap:16px}
+  .outcome span{font-size:13px;padding:4px 8px}
+  .outcome p{font-size:17px}
+  .know{padding:72px 40px}
+  .know-list{grid-template-columns:repeat(3,1fr);gap:40px}
+  .know-item{flex-direction:column}
+  .know-item p{font-size:17px;line-height:1.55}
+  footer{padding:88px 40px 104px}
+  .sign{align-items:center;text-align:center;gap:32px}
+  .sign p{font-size:22px;line-height:1.55}
+  .sign .btn{padding:0 34px}
+  .consent{flex-direction:row;align-items:center}
+  .consent button{flex:none}
+}
+</style>
+
+<%= render "shared/posthog" %>
+<%= render "shared/meta_pixel" %>
+</head>
+<body>
+
+<%# State 1: registrations open %>
+<header class="hero only-open">
+  <div class="wrap hero-grid">
+    <div class="hero-text">
+      <h1>Apprendre à épargner, en onze jours</h1>
+      <p class="sub">Un message par jour, une seule chose à faire. Dans un groupe WhatsApp. Gratuit.</p>
+      <p class="recognition">Tu as peut-être téléchargé notre guide sans trouver le temps de le lire. Quarante-cinq pages, c'est normal. C'est exactement pour ça que ce groupe existe.</p>
+      <div class="actions">
+        <a class="btn" href="<%= @group_url %>" data-track="join" data-placement="top">
+          <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-12.4 7.4L3 20.5l1.6-5.3A8.4 8.4 0 1 1 21 11.5z"/></svg>
+          Rejoindre le groupe
+        </a>
+        <p class="date">
+          <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4.5" width="18" height="16" rx="2.5"/><path d="M3 9.5h18M8 2.5v4M16 2.5v4"/></svg>
+          <span>La première promo démarre le <strong>dimanche 1er novembre.</strong></span>
+        </p>
+      </div>
+    </div>
+    <div class="cover-wrap" aria-hidden="true">
+      <div class="cover">
+        <div><span class="kicker">GUIDE SPENS · 2026</span><span class="ttl">Apprendre à épargner, même quand on pense ne pas gagner assez</span></div>
+        <span class="pages">45 pages</span>
+        <div class="tag"><small>EN ONZE MESSAGES</small><b>1 par jour, à 13h</b></div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<%# State 2: cohort full %>
+<header class="hero hero-full only-full">
+  <div class="wrap hero-grid">
+    <div class="hero-text">
+      <h1>La promo de novembre est complète.</h1>
+      <p class="sub">Écris-moi, et je t'ajoute à celle de décembre.</p>
+      <div class="actions">
+        <a class="btn" href="<%= @waitlist_url %>" data-track="waitlist" data-placement="top">
+          <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-12.4 7.4L3 20.5l1.6-5.3A8.4 8.4 0 1 1 21 11.5z"/></svg>
+          Envoyer un message
+        </a>
+      </div>
+    </div>
+    <div class="cover-wrap" aria-hidden="true">
+      <div class="cover">
+        <div><span class="kicker">GUIDE SPENS · 2026</span><span class="ttl">Apprendre à épargner, même quand on pense ne pas gagner assez</span></div>
+        <span class="pages">45 pages</span>
+        <div class="tag"><small>EN ONZE MESSAGES</small><b>1 par jour, à 13h</b></div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="why">
+    <div class="wrap why-grid">
+      <h2>Pourquoi ce groupe existe</h2>
+      <div class="why-body">
+        <p>Le guide a été téléchargé plus de mille fois. Très peu de gens l'ont lu jusqu'au bout, et je le comprends : personne n'a quarante-cinq pages de temps libre.</p>
+        <p>Alors je l'ai découpé en onze messages, un par jour, chacun avec une seule chose à faire. Le contenu est le même. <strong>C'est la façon de le recevoir qui change.</strong></p>
+        <div class="guide-card">
+          <div class="mini-cover" aria-hidden="true"><span>Apprendre à épargner, même quand on pense ne pas gagner assez</span><i></i></div>
+          <div><b>Apprendre à épargner, même quand on pense ne pas gagner assez</b><small>Le guide Spens · 45 pages · Édition 2026</small></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap stack">
+      <h2>Comment ça se passe</h2>
+      <div class="steps">
+        <div class="step">
+          <span class="step-icon"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span>
+          <p>Un message chaque jour à <strong>13h</strong>, pendant <strong>onze jours</strong>.</p>
+        </div>
+        <div class="step">
+          <span class="step-icon"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>
+          <p>Chaque message explique une idée et se termine par une seule action. Une dizaine de minutes, souvent moins.</p>
+        </div>
+        <div class="step">
+          <span class="step-icon"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3.5h11a1.5 1.5 0 0 1 1.5 1.5v14a1.5 1.5 0 0 1-1.5 1.5H6z"/><path d="M6 3.5v17M9.5 8h5.5M9.5 11.5h5.5"/></svg></span>
+          <p>Tu peux tout faire dans un carnet. Si tu préfères que ce soit plus rapide, j'ai développé Spens pour faire les calculs à ta place — c'est gratuit.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap stack">
+      <h2>Ce que tu auras à la fin</h2>
+      <div class="outcomes">
+        <div class="outcome"><span>01</span><p>Tu sauras combien tu as, exactement, tous comptes confondus.</p></div>
+        <div class="outcome"><span>02</span><p>Tu sauras combien ton mois te coûte au minimum.</p></div>
+        <div class="outcome"><span>03</span><p>Tu auras commencé à mettre de l'argent de côté, à un endroit séparé de ton argent du quotidien.</p></div>
+        <div class="outcome"><span>04</span><p>Tu auras un budget qui te ressemble, et un rendez-vous mensuel pour le tenir.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="know">
+    <div class="wrap stack">
+      <h2>Trois choses à savoir avant d'entrer</h2>
+      <div class="know-list">
+        <div class="know-item">
+          <svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="13" rx="2"/><path d="M12 8v13M3 12.5h18M12 8c-1.5-3-5-4-5-1.5S10 8 12 8zM12 8c1.5-3 5-4 5-1.5S14 8 12 8z"/></svg>
+          <p>C'est gratuit, et il n'y a rien à payer à aucun moment.</p>
+        </div>
+        <div class="know-item">
+          <svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4.5" y="10.5" width="15" height="10.5" rx="2"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/></svg>
+          <p>On ne te demandera jamais tes montants. Tes chiffres restent chez toi.</p>
+        </div>
+        <div class="know-item">
+          <svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20.5c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6M16 4.8a3.5 3.5 0 0 1 0 6.4M18.5 14.8c1.9.8 3 2.8 3 5.7"/></svg>
+          <p>C'est un groupe WhatsApp : les membres voient les numéros les uns des autres.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="sign">
+    <p>Je m'appelle <strong>David</strong>, je développe Spens et j'ai écrit le guide. C'est la première promo, on sera une cinquantaine.</p>
+    <a class="btn only-open" href="<%= @group_url %>" data-track="join" data-placement="bottom">
+      <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-12.4 7.4L3 20.5l1.6-5.3A8.4 8.4 0 1 1 21 11.5z"/></svg>
+      Rejoindre le groupe
+    </a>
+    <a class="btn only-full" href="<%= @waitlist_url %>" data-track="waitlist" data-placement="bottom">
+      <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-12.4 7.4L3 20.5l1.6-5.3A8.4 8.4 0 1 1 21 11.5z"/></svg>
+      Envoyer un message
+    </a>
+  </div>
+</footer>
+
+<% if Meta.pixel_enabled? && meta_consent_state.nil? %>
+  <%# Same mkt_consent cookie as the site's banner: accepting reloads so the pixel boots. %>
+  <div class="consent" role="dialog" aria-live="polite" aria-label="<%= t("consent.aria_label") %>">
+    <p><%= t("consent.text") %> <%= link_to t("consent.privacy"), privacy_path(locale: :fr) %></p>
+    <div class="consent-actions">
+      <button type="button" class="ghost" data-consent="denied"><%= t("consent.decline") %></button>
+      <button type="button" data-consent="granted"><%= t("consent.accept") %></button>
+    </div>
+  </div>
+  <script>
+  document.querySelectorAll('[data-consent]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      var value = b.getAttribute('data-consent');
+      document.cookie = 'mkt_consent=' + value + '; path=/; expires=' + new Date(Date.now() + 365 * 864e5).toUTCString() + '; SameSite=Lax';
+      if (value === 'granted') location.reload(); else b.closest('.consent').remove();
+    });
+  });
+  </script>
+<% end %>
+
+<script>
+(function () {
+  var params = new URLSearchParams(location.search);
+
+  // UTMs: read on arrival, kept for the session, sent with the click event
+  var KEYS = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term', 'fbclid'];
+  var utm = {};
+  try { utm = JSON.parse(sessionStorage.getItem('spens_utm') || '{}'); } catch (e) {}
+  var fresh = false;
+  KEYS.forEach(function (k) { var v = params.get(k); if (v) { utm[k] = v; fresh = true; } });
+  if (fresh) { try { sessionStorage.setItem('spens_utm', JSON.stringify(utm)); } catch (e) {} }
+
+  // Pixel event + its CAPI double share the server-issued id (beacon only names the key).
+  var EVENTS = { join: 'spens_cohorte_join', waitlist: 'spens_cohorte_waitlist' };
+  var EVENT_IDS = <%= @meta_cohort_event_ids.to_json.html_safe %>;
+  var BEACON = <%= meta_events_path.to_json.html_safe %>;
+  var COHORT = <%= (@cohort&.campaign || "cohorte").to_json.html_safe %>;
+
+  document.querySelectorAll('a[data-track]').forEach(function (a) {
+    a.addEventListener('click', function (ev) {
+      var key = a.getAttribute('data-track');
+      var placement = a.getAttribute('data-placement');
+      var payload = Object.assign({ cohort: COHORT, placement: placement }, utm);
+      var eventId = EVENT_IDS['cohort_' + key];
+
+      if (window.posthog && posthog.capture) posthog.capture('cohort_' + key + '_clicked', payload);
+      if (!window.fbq) return; // no pixel (not consented, blocked): the link opens normally
+      fbq('trackCustom', EVENTS[key], payload, eventId ? { eventID: eventId } : undefined);
+      var token = (document.querySelector('meta[name="csrf-token"]') || {}).content;
+      fetch(BEACON, {
+        method: 'POST', keepalive: true,
+        headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': token },
+        body: JSON.stringify({ event: 'cohort_' + key, placement: placement })
+      }).catch(function () {});
+
+      // ~300 ms for the pixel to leave before heading to WhatsApp
+      if (ev.metaKey || ev.ctrlKey || ev.shiftKey || ev.button === 1) return;
+      ev.preventDefault();
+      var href = a.href;
+      setTimeout(function () { location.href = href; }, 300);
+    });
+  });
+})();
+</script>
+</body>
+</html>
