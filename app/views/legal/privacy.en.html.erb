@@ -6,7 +6,7 @@
     <p class="legal__back"><%= link_to "← Spens", landing_path %></p>
 
     <h1>Privacy Policy</h1>
-    <p class="legal__updated">Last updated: July 27, 2026</p>
+    <p class="legal__updated">Last updated: November 24, 2026</p>
 
     <p>
       Spens is a personal pocket ledger: you record your transactions, budgets, savings goals, debts
@@ -23,26 +23,27 @@
 
     <h2>2. What we collect</h2>
     <ul>
-      <li><strong>Account data</strong> — your email address and first name, used to create your account and sign you in. Sign-in uses a one-time code sent by email: we store no passwords.</li>
+      <li><strong>Account data</strong> — your email address and first name (and, if you provide them, your last name and phone number), used to create your account and sign you in. Sign-in uses a one-time code sent by email: we store no passwords.</li>
       <li><strong>Financial data you enter</strong> — transactions (amounts, categories, descriptions, dates), budgets, goals, debts and accounts. This data exists only because you type it in; Spens does not connect to your banks.</li>
-      <li><strong>Quick add (text, and soon voice)</strong> — when you use quick add, the text you type (and, in the future, voice recordings you dictate) is analyzed to extract a transaction. This processing is done by an AI model that we host ourselves on our own servers: nothing is sent to any third-party AI provider (no OpenAI, no Google, etc.).</li>
-      <li><strong>Technical data</strong> — only what is strictly needed to run the service: a session cookie, your device's time zone, and server logs.</li>
+      <li><strong>Quick add</strong> — when you describe a transaction in one sentence, it is first analyzed by our own rules, on our servers. When those rules are not enough, <strong>the sentence alone</strong> is sent to Anthropic's Claude AI model to extract the amount, type and category. Your name, email and accounts are never sent to it. Anthropic does not use this data to train its models.</li>
+      <li><strong>Voice dictation</strong> — the microphone button uses your phone's own speech recognition (Google on Android, Apple on iOS), only when you tap it. Only the transcribed text reaches us: we never receive or keep any audio recording.</li>
+      <li><strong>Reminders and emails</strong> — if you turn them on, reminders are sent to you as notifications (through your browser's or phone's notification service) and/or by email. We also send a few onboarding emails (welcome, tips), which you can unsubscribe from at any time from any of them.</li>
+      <li><strong>Usage measurement</strong> — we measure how Spens is used (pages viewed, actions in the app) with PostHog, linked to your account, to understand what works and improve the service. <strong>Your amounts and transactions are not included.</strong></li>
+      <li><strong>Technical data</strong> — what is needed to run the service: a session cookie, your device's time zone, and server logs.</li>
     </ul>
     <p>
-      Today, the only cookies set are those <strong>strictly required for your session</strong>:
-      Spens currently uses no third-party analytics and no advertising trackers. If we introduce
-      measurement or advertising cookies in the future (for example to run campaigns on Facebook or
-      other platforms), they will only be set <strong>with your prior consent</strong>, collected
-      through a cookie banner you can accept, decline or change at any time. This policy will be
-      updated accordingly. In any case, <strong>your financial data will never be shared with
-      advertising networks</strong>.
+      <strong>Advertising cookies.</strong> If you accept them through the cookie banner, we use the
+      Meta Pixel and Meta's Conversions API to measure how our campaigns perform (for example, knowing
+      that a sign-up came from a Facebook ad). Your email is sent in encrypted (hashed) form. Without
+      your consent, nothing is sent to Meta. You can change your mind at any time. In any case,
+      <strong>your financial data is never shared with advertising networks</strong>.
     </p>
 
     <h2>3. Why we process it (legal bases)</h2>
     <ul>
-      <li><strong>Performance of the service</strong> (GDPR art. 6.1.b) — storing and displaying your financial data, signing you in, running quick add and shared spaces.</li>
-      <li><strong>Legitimate interest</strong> (GDPR art. 6.1.f) — service security, abuse prevention, technical logs.</li>
-      <li><strong>Consent</strong> (GDPR art. 6.1.a) — for voice dictation once available (the microphone will only ever be used on your explicit action), and for any future measurement or advertising cookies.</li>
+      <li><strong>Performance of the service</strong> (GDPR art. 6.1.b) — storing and displaying your financial data, signing you in, running quick add, reminders and shared spaces.</li>
+      <li><strong>Legitimate interest</strong> (GDPR art. 6.1.f) — service security, abuse prevention, technical logs, usage measurement to improve Spens, onboarding emails.</li>
+      <li><strong>Consent</strong> (GDPR art. 6.1.a) — for voice dictation (the microphone is only ever used on your explicit action), notifications and advertising cookies.</li>
     </ul>
     <p>Your data is never sold or rented, and your financial data is never used for advertising.</p>
 
@@ -53,11 +54,23 @@
       spaces remain private.
     </p>
 
-    <h2>5. Where your data lives</h2>
+    <h2>5. Where your data lives and who helps us</h2>
     <p>
-      Your data is hosted on Hetzner servers located in <strong>Germany (European Union)</strong>.
-      Transactional emails (sign-in codes, invitations) are sent through Brevo, a provider based in
-      France. We do not transfer your data outside the European Union.
+      Your data is hosted on Hetzner servers located in the <strong>United States</strong>. To run
+      Spens, we rely on a few providers, each limited to what it needs:
+    </p>
+    <ul>
+      <li><strong>Hetzner</strong> (Germany, servers located in the United States) — server and database hosting.</li>
+      <li><strong>Cloudflare</strong> (United States) — domain name, protection and routing of traffic to our servers.</li>
+      <li><strong>Brevo</strong> (France) — sending emails (sign-in codes, invitations, reminders, onboarding emails).</li>
+      <li><strong>Anthropic</strong> (United States) — analyzing quick-add sentences when our rules are not enough.</li>
+      <li><strong>PostHog</strong> (United States) — usage measurement.</li>
+      <li><strong>Meta</strong> (United States) — measuring advertising campaigns, only with your consent.</li>
+    </ul>
+    <p>
+      Your data is therefore stored and processed outside the European Union, mainly in the United
+      States. These transfers are covered by the safeguards provided for by the GDPR (the European Commission's
+      standard contractual clauses or the EU–US Data Privacy Framework).
     </p>
 
     <h2>6. How long we keep it</h2>
@@ -89,7 +102,7 @@
 
     <h2>9. Changes to this policy</h2>
     <p>
-      This policy may evolve, in particular when new features (such as voice dictation) launch. If a
+      This policy may evolve, in particular when new features launch. If a
       significant change is made, you will be informed in the app or by email.
     </p>
   </div>
