@@ -708,22 +708,22 @@ RSpec.describe "Transactions phrase fill", type: :request do
 
     context "with the AI pass" do
       let(:llm_result) do
-        QuickEntry::LlmParser::Result.new(
+        QuickEntry::AnthropicParser::Result.new(
           kind: "income", amount: 45_000, category_key: "gift_received",
           category_name: TransactionTaxonomy.name("gift_received", :en), phrase: "from parents", label: "From parents"
         )
       end
 
       before do
-        allow(QuickEntry::LlmParser).to receive(:enabled?).and_return(true)
-        allow(QuickEntry::LlmParser).to receive(:new).and_return(instance_double(QuickEntry::LlmParser, parse: llm_result))
+        allow(QuickEntry::AnthropicParser).to receive(:enabled?).and_return(true)
+        allow(QuickEntry::AnthropicParser).to receive(:new).and_return(instance_double(QuickEntry::AnthropicParser, parse: llm_result))
       end
 
       it "flags a rules-only pass that left gaps so the sheet asks for the AI" do
         get new_transaction_path(text: "received 45000 from parents")
 
         expect(response.body).to include('data-phrase-needs-ai="true"')
-        expect(QuickEntry::LlmParser).not_to have_received(:new)
+        expect(QuickEntry::AnthropicParser).not_to have_received(:new)
       end
 
       it "does not ask for the AI on a phrase without an amount or a second word" do
@@ -823,15 +823,15 @@ RSpec.describe "Transactions phrase fill", type: :request do
     end
 
     it "asks the AI for a category only when the form is submitted without one" do
-      allow(QuickEntry::LlmParser).to receive(:enabled?).and_return(true)
+      allow(QuickEntry::AnthropicParser).to receive(:enabled?).and_return(true)
       llm = instance_double(
-        QuickEntry::LlmParser,
-        parse: QuickEntry::LlmParser::Result.new(
+        QuickEntry::AnthropicParser,
+        parse: QuickEntry::AnthropicParser::Result.new(
           kind: "expense", amount: 3000, category_key: "groceries",
           category_name: TransactionTaxonomy.name("groceries", :en), phrase: "ndogou", label: "Ndogou"
         )
       )
-      allow(QuickEntry::LlmParser).to receive(:new).and_return(llm)
+      allow(QuickEntry::AnthropicParser).to receive(:new).and_return(llm)
 
       expect do
         perform_enqueued_jobs { submit(text: "3000 ndogou", amount: 3000, transaction_type_name: "") }
@@ -855,8 +855,8 @@ RSpec.describe "Transactions phrase fill", type: :request do
     end
 
     it "never consults the AI when the category is already chosen" do
-      allow(QuickEntry::LlmParser).to receive(:enabled?).and_return(true)
-      expect(QuickEntry::LlmParser).not_to receive(:new)
+      allow(QuickEntry::AnthropicParser).to receive(:enabled?).and_return(true)
+      expect(QuickEntry::AnthropicParser).not_to receive(:new)
 
       submit(text: "2000 zem")
       expect(response).to have_http_status(:see_other)
