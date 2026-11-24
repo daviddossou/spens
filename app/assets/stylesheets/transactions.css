@@ -554,8 +554,18 @@
   margin: 0;
 }
 
+/* Typed fields match the picker fields beside them. */
+.transaction-form .form-input:not(.form-input-group .form-input) {
+  min-height: 3rem;
+  padding: 0.75rem 0.875rem;
+  font-size: 1rem;
+  color: var(--text-dark);
+  background: var(--bg-surface);
+  border-radius: var(--radius-md);
+}
+
 .is-filled .picker__control,
-.is-filled .form-input {
+.transaction-form .is-filled .form-input {
   background: rgba(var(--color-primary-rgb), 0.05);
   border-color: var(--color-primary-20);
 }

@@ -19,6 +19,25 @@
 #   bin/rails quick_entry:challenge
 #   bin/rails "quick_entry:challenge[<space_id>]"
 namespace :quick_entry do
+  # Post-deploy: a space once learned a person's name as a keyword ("doris" -> debt_in), which
+  # turned every phrase naming them into a debt. Drops the personal rows made only of names.
+  desc "Forget personal learned keywords/aliases that are only a person's name"
+  task forget_person_names: :environment do
+    removed = 0
+    Space.joins(:debts).distinct.find_each do |space|
+      names = space.debts.distinct.pluck(:name).flat_map { |n| CategoryText.normalize(n).split }.to_set
+      [ LearnedKeyword, LearnedAlias ].each do |model|
+        model.where(space: space).find_each do |row|
+          next unless row.phrase.split.all? { |token| names.include?(token) }
+
+          row.destroy!
+          removed += 1
+        end
+      end
+    end
+    puts "person-name learnings removed: #{removed}"
+  end
+
   # Post-deploy: seeds the system tier of learned_aliases from the YML dictionary, making the
   # DB the runtime source (CategoryAliasMatcher falls back to the YML until this has run).
   # Idempotent; never overwrites a phrase a learned/admin row already owns.

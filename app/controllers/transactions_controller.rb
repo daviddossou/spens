@@ -87,6 +87,7 @@ class TransactionsController < ApplicationController
       parse = parse_phrase(@text, ai: params[:ai] == "1")
       parsed = parse.draft.to_form_payload.slice(*PARSED_KEYS)
       parsed.delete(:kind) unless parse.ai_draft || phrase_decided_kind?(parsed)
+      unpin_guessed_debt!(parsed)
       # Rules alone left gaps: the sheet asks for one AI pass once the user pauses.
       @phrase_needs_ai = params[:ai] != "1" && !parse.draft.confident? && phrase_settled?(parse.draft) &&
                          QuickEntry::Coordinator.ai_enabled?
@@ -144,6 +145,15 @@ class TransactionsController < ApplicationController
     return {} unless params[:locked].is_a?(ActionController::Parameters)
 
     params[:locked].permit(*PARSED_KEYS).to_h.symbolize_keys.compact_blank
+  end
+
+  # A guessed debt only prefills the person; the user can still change it.
+  def unpin_guessed_debt!(parsed)
+    debt_id = parsed.delete(:debt_id) or return
+    debt = current_space.debts.find_by(id: debt_id) or return
+
+    parsed[:contact_name] ||= debt.name
+    parsed[:direction] ||= debt.direction
   end
 
   # A bare phrase ("2000 zem") parses as an expense by default; only a category or an

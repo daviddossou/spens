@@ -37,7 +37,7 @@
         debt_fields_currency_value: get_currency_symbol(current_space.currency),
         debt_fields_locale_value: I18n.locale,
         debt_fields_contact_name_value: @form.contact_name,
-        debt_fields_locked_value: @form.debt_id.present? || @person_locked,
+        debt_fields_locked_value: @person_locked,
         debt_fields_labels_value: {
           someone: t('transactions.form.debt_someone'),
           titles: { lent_out: t('transactions.form.debt_lent_out_title'), lent_in: t('transactions.form.debt_lent_in_title'),
@@ -57,14 +57,11 @@
     <%= f.hidden_field :quick_entry_attempt_id %>
     <%= f.hidden_field :label %>
 
-    <!-- Kind Selector (hidden when opened from a specific debt — the kind is fixed) -->
-    <% unless @form.debt_id.present? %>
-      <div class="transaction-form__kind">
-        <%= render Transactions::KindSelectorComponent.new(label: t('transactions.form.kind_label', default: 'Type'),
+    <div class="transaction-form__kind">
+      <%= render Transactions::KindSelectorComponent.new(label: t('transactions.form.kind_label', default: 'Type'),
   options: transaction_top_level_options(@form).map { |opt| opt.merge(url: transaction_kind_switch_path(@form, opt[:kind]), filled: opt[:selected] && filled.include?('kind')) },
   data: { turbo_frame: "transaction_form", action: "kind-switch#switch" }) %>
-      </div>
-    <% end %>
+    </div>
 
     <!-- Amount hero: entered on the phone's numeric keyboard, focused by default -->
     <%= render Forms::AmountFieldComponent.new(
@@ -124,12 +121,10 @@
       <%= f.hidden_field :debt_id %>
       <%= f.hidden_field :direction, data: { debt_fields_target: "directionInput" } %>
 
-      <!-- Who? Hidden when the person is already known. A debt fixes it via
-           debt_id; a person page carries the name in a hidden field so it's still
-           submitted. -->
+      <!-- Who? Hidden only on a person's page, which carries the name in a hidden field. -->
       <% if @person_locked %>
         <%= f.hidden_field :contact_name %>
-      <% elsif !@form.debt_id.present? %>
+      <% else %>
         <div class="transaction-form__contact<%= ' is-filled' if filled.include?('contact_name') %>">
           <%= render Forms::NameFieldComponent.new(
             form: f, field: :contact_name,
