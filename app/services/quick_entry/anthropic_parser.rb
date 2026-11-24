@@ -12,7 +12,7 @@ module QuickEntry
   # OWN parent taxonomy, with the children sent as hints so a word like "coca" lands on the
   # right parent), the salient phrase (the human note), the two accounts (transfer), or the
   # person + direction (debt). We re-resolve the category against the taxonomy; the model never
-  # invents a category name. Returns the same shape as LlmParser so the Coordinator is agnostic.
+  # invents a category name.
   API_URL = "https://api.anthropic.com/v1/messages"
   API_VERSION = "2023-06-01"
 
