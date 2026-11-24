@@ -687,9 +687,10 @@ RSpec.describe "Transactions phrase fill", type: :request do
     end
 
     it "keeps the kind selector when the phrase links a debt, so the user can still switch" do
-      debt = create(:debt, user: user, name: "Doris", direction: "lent")
+      debt = create(:debt, user: user, name: "Doris", direction: "borrowed")
+      LearnedKeyword.personal_teach(space: space, phrase: "doris", kind: "debt_in")
 
-      get new_transaction_path(text: "received 10000 from Doris")
+      get new_transaction_path(text: "24€ Doris")
 
       expect(response.body).to include("transaction-form__kind")
       expect(response.body).to include('value="Doris"')
