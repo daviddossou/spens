@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_10_28_010828) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_24_230304) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -36,6 +36,34 @@ ActiveRecord::Schema[8.0].define(version: 2026_10_28_010828) do
     t.datetime "created_at", null: false
     t.index ["user_id", "name"], name: "index_activation_milestones_on_user_id_and_name", unique: true
     t.index ["user_id"], name: "index_activation_milestones_on_user_id"
+  end
+
+  create_table "active_storage_attachments", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "name", null: false
+    t.string "record_type", null: false
+    t.uuid "record_id", null: false
+    t.uuid "blob_id", null: false
+    t.datetime "created_at", null: false
+    t.index ["blob_id"], name: "index_active_storage_attachments_on_blob_id"
+    t.index ["record_type", "record_id", "name", "blob_id"], name: "index_active_storage_attachments_uniqueness", unique: true
+  end
+
+  create_table "active_storage_blobs", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "key", null: false
+    t.string "filename", null: false
+    t.string "content_type"
+    t.text "metadata"
+    t.string "service_name", null: false
+    t.bigint "byte_size", null: false
+    t.string "checksum"
+    t.datetime "created_at", null: false
+    t.index ["key"], name: "index_active_storage_blobs_on_key", unique: true
+  end
+
+  create_table "active_storage_variant_records", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "blob_id", null: false
+    t.string "variation_digest", null: false
+    t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
   end
 
   create_table "admin_audit_logs", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -284,6 +312,61 @@ ActiveRecord::Schema[8.0].define(version: 2026_10_28_010828) do
     t.index ["user_id"], name: "index_spaces_on_user_id"
   end
 
+  create_table "statement_import_lines", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "statement_import_id", null: false
+    t.integer "position", null: false
+    t.integer "capture_index", null: false
+    t.string "status", null: false
+    t.string "kind"
+    t.decimal "amount", precision: 15, scale: 2
+    t.decimal "fee", precision: 15, scale: 2
+    t.string "currency"
+    t.date "occurred_on"
+    t.datetime "occurred_at"
+    t.string "label"
+    t.string "reference"
+    t.decimal "balance", precision: 15, scale: 2
+    t.uuid "account_id"
+    t.uuid "counterpart_account_id"
+    t.uuid "debt_id"
+    t.boolean "needs_review", default: false, null: false
+    t.jsonb "flags", default: [], null: false
+    t.uuid "duplicate_of_id"
+    t.uuid "existing_transaction_id"
+    t.jsonb "extracted", default: {}, null: false
+    t.string "decision", default: "pending", null: false
+    t.uuid "created_transaction_id"
+    t.jsonb "final"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["account_id"], name: "index_statement_import_lines_on_account_id"
+    t.index ["counterpart_account_id"], name: "index_statement_import_lines_on_counterpart_account_id"
+    t.index ["created_transaction_id"], name: "index_statement_import_lines_on_created_transaction_id"
+    t.index ["debt_id"], name: "index_statement_import_lines_on_debt_id"
+    t.index ["duplicate_of_id"], name: "index_statement_import_lines_on_duplicate_of_id"
+    t.index ["existing_transaction_id"], name: "index_statement_import_lines_on_existing_transaction_id"
+    t.index ["statement_import_id"], name: "index_statement_import_lines_on_statement_import_id"
+  end
+
+  create_table "statement_imports", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "space_id", null: false
+    t.uuid "user_id", null: false
+    t.uuid "account_id"
+    t.string "status", default: "reading", null: false
+    t.string "source"
+    t.string "model"
+    t.jsonb "reads", default: [], null: false
+    t.text "error"
+    t.datetime "saved_at"
+    t.datetime "undone_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["account_id"], name: "index_statement_imports_on_account_id"
+    t.index ["space_id"], name: "index_statement_imports_on_space_id"
+    t.index ["status"], name: "index_statement_imports_on_status"
+    t.index ["user_id"], name: "index_statement_imports_on_user_id"
+  end
+
   create_table "taxonomy_nodes", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "key", null: false
     t.string "kind", null: false
@@ -329,10 +412,12 @@ ActiveRecord::Schema[8.0].define(version: 2026_10_28_010828) do
     t.uuid "transfer_group_id"
     t.uuid "fee_parent_id"
     t.string "label"
+    t.uuid "statement_import_id"
     t.index ["account_id"], name: "index_transactions_on_account_id"
     t.index ["debt_id"], name: "index_transactions_on_debt_id"
     t.index ["fee_parent_id"], name: "index_transactions_on_fee_parent_id"
     t.index ["space_id"], name: "index_transactions_on_space_id"
+    t.index ["statement_import_id"], name: "index_transactions_on_statement_import_id"
     t.index ["transaction_date"], name: "index_transactions_on_transaction_date"
     t.index ["transaction_type_id"], name: "index_transactions_on_transaction_type_id"
     t.index ["transfer_group_id"], name: "index_transactions_on_transfer_group_id"
@@ -371,6 +456,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_10_28_010828) do
   add_foreign_key "accounts", "spaces"
   add_foreign_key "accounts", "users"
   add_foreign_key "activation_milestones", "users"
+  add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "admin_audit_logs", "users", column: "admin_user_id"
   add_foreign_key "budget_entries", "budget_items"
   add_foreign_key "budget_entries", "spaces"
@@ -398,11 +485,22 @@ ActiveRecord::Schema[8.0].define(version: 2026_10_28_010828) do
   add_foreign_key "quick_entry_attempts", "users"
   add_foreign_key "short_link_clicks", "users"
   add_foreign_key "spaces", "users"
+  add_foreign_key "statement_import_lines", "accounts", column: "counterpart_account_id", on_delete: :nullify
+  add_foreign_key "statement_import_lines", "accounts", on_delete: :nullify
+  add_foreign_key "statement_import_lines", "debts", on_delete: :nullify
+  add_foreign_key "statement_import_lines", "statement_import_lines", column: "duplicate_of_id", on_delete: :nullify
+  add_foreign_key "statement_import_lines", "statement_imports"
+  add_foreign_key "statement_import_lines", "transactions", column: "created_transaction_id", on_delete: :nullify
+  add_foreign_key "statement_import_lines", "transactions", column: "existing_transaction_id", on_delete: :nullify
+  add_foreign_key "statement_imports", "accounts", on_delete: :nullify
+  add_foreign_key "statement_imports", "spaces"
+  add_foreign_key "statement_imports", "users"
   add_foreign_key "transaction_types", "spaces"
   add_foreign_key "transaction_types", "transaction_types", column: "parent_id"
   add_foreign_key "transactions", "accounts"
   add_foreign_key "transactions", "debts"
   add_foreign_key "transactions", "spaces"
+  add_foreign_key "transactions", "statement_imports", on_delete: :nullify
   add_foreign_key "transactions", "transaction_types"
   add_foreign_key "transactions", "users"
 end

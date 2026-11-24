@@ -1,0 +1,14 @@
+en:
+  activerecord:
+    errors:
+      models:
+        statement_import:
+          attributes:
+            captures:
+              format: "%{message}"
+              blank: "Add at least one screenshot or statement."
+              too_many: "You can import up to %{count} captures at a time."
+              invalid_type: "Only images (JPEG, PNG, WebP) and PDF statements can be read."
+              too_big: "Each capture must be under 10 MB."
+            base:
+              unavailable: "Statement import is not available right now."

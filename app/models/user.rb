@@ -51,6 +51,7 @@ class User < ApplicationRecord
   has_many :invitations, foreign_key: :invited_by_id, dependent: :destroy
   has_many :meta_conversions, dependent: :destroy
   has_many :activation_milestones, dependent: :destroy
+  has_many :statement_imports, dependent: :destroy
 
   ##
   # Constants
@@ -112,6 +113,11 @@ class User < ApplicationRecord
   # every server-side Meta send for this user — CAPI is not a consent bypass.
   def meta_consented?
     acquisition["consent"] == true
+  end
+
+  # Single gate for the first Pro feature; free for everyone at launch.
+  def can_use_statement_import?
+    true
   end
 
   private
