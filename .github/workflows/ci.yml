@@ -7,7 +7,7 @@ on:
 
 jobs:
   scan_ruby:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     steps:
       - name: Checkout code
@@ -23,7 +23,7 @@ jobs:
         run: bin/brakeman --no-pager
 
   scan_js:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     steps:
       - name: Checkout code
@@ -39,7 +39,7 @@ jobs:
         run: bin/importmap audit
 
   lint:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -54,7 +54,7 @@ jobs:
         run: bin/rubocop -f github
 
   test_js:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     steps:
       - name: Checkout code
@@ -73,7 +73,7 @@ jobs:
         run: npm run test:javascript
 
   test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     services:
       postgres:
@@ -115,7 +115,7 @@ jobs:
           bundle exec rspec
 
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     # Only deploy after a merge lands on main, and only once every check is green.
     needs: [ test, test_js, lint, scan_ruby, scan_js ]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
