@@ -46,5 +46,8 @@ module Spens
 
     # Solid Errors records exceptions in the dedicated `errors` database (all envs)
     config.solid_errors.connects_to = { database: { writing: :errors } }
+
+    # No attachment is ever resized: Rails 8.1 otherwise warns at boot about image_processing.
+    config.active_storage.variant_processor = :disabled
   end
 end

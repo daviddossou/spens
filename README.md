@@ -56,7 +56,7 @@ URL-scoped locale (`/en/...`, `/fr/...`) with automatic detection from browser h
 
 | Layer | Technology |
 |-------|------------|
-| Framework | Rails 8.0.3, Ruby 3.3.4 |
+| Framework | Rails 8.1, Ruby 3.3.14 |
 | Database | PostgreSQL 16 (UUID primary keys) |
 | Frontend | Hotwire (Turbo + Stimulus), Tailwind CSS, Importmap |
 | Components | ViewComponent |
