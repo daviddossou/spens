@@ -42,4 +42,9 @@ RSpec.describe QuickEntry::PhraseExtractor do
     create(:transaction_type, space: space, name: "Contribution DD", kind: :expense)
     expect(extract("contribution zoomzoom 500", locale: :fr)).to eq("zoomzoom")
   end
+
+  it "never keeps the name of a person the space has a debt with" do
+    create(:debt, space: space, name: "Doris", direction: "borrowed", status: :paid)
+    expect(extract("24€ Doris", locale: :fr)).to be_nil
+  end
 end

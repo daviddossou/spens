@@ -697,12 +697,13 @@ RSpec.describe "Transactions phrase fill", type: :request do
       expect(response.body).not_to include(%(value="#{debt.id}"))
     end
 
-    it "hides the kind selector when opened from a debt's page" do
-      debt = create(:debt, user: user, name: "Doris", direction: "lent")
+    it "keeps the kind selector on a debt's page, where only the person is fixed" do
+      create(:debt, user: user, name: "Doris", direction: "lent")
 
-      get new_transaction_path(kind: "debt_in", debt_id: debt.id, text: "10000")
+      get new_transaction_path(kind: "debt_out", contact_name: "Doris", person_locked: 1, text: "10000")
 
-      expect(response.body).not_to include("transaction-form__kind")
+      expect(response.body).to include("transaction-form__kind")
+      expect(response.body).not_to include("transaction-form__contact")
     end
 
     context "with the AI pass" do

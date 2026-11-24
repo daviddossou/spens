@@ -147,7 +147,7 @@ class TransactionsController < ApplicationController
     params[:locked].permit(*PARSED_KEYS).to_h.symbolize_keys.compact_blank
   end
 
-  # Only a debt's page may pin the form; a guessed debt stays editable.
+  # A guessed debt only prefills the person; the user can still change it.
   def unpin_guessed_debt!(parsed)
     debt_id = parsed.delete(:debt_id) or return
     debt = current_space.debts.find_by(id: debt_id) or return

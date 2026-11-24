@@ -93,6 +93,7 @@ module QuickEntry
         *Array(preps["from"]), *Array(preps["to"]),
         *@space.accounts.pluck(:name),
         *@space.transaction_types.pluck(:name),
+        *@space.debts.distinct.pluck(:name),
         *@exclude,
         *STOPWORDS
       ].compact
