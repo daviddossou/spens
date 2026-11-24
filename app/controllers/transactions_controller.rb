@@ -147,9 +147,7 @@ class TransactionsController < ApplicationController
     params[:locked].permit(*PARSED_KEYS).to_h.symbolize_keys.compact_blank
   end
 
-  # A debt_id pins the form (no kind selector, no "who"): only a debt page may do that.
-  # A debt the phrase guessed becomes a prefilled person + direction, still changeable;
-  # on save the same ongoing debt is found again by name and direction.
+  # Only a debt's page may pin the form; a guessed debt stays editable.
   def unpin_guessed_debt!(parsed)
     debt_id = parsed.delete(:debt_id) or return
     debt = current_space.debts.find_by(id: debt_id) or return
