@@ -6,7 +6,7 @@
     <p class="legal__back"><%= link_to "← Spens", landing_path %></p>
 
     <h1>Privacy Policy</h1>
-    <p class="legal__updated">Last updated: November 24, 2026</p>
+    <p class="legal__updated">Last updated: November 25, 2026</p>
 
     <p>
       Spens is a personal pocket ledger: you record your transactions, budgets, savings goals, debts
@@ -26,6 +26,7 @@
       <li><strong>Account data</strong> — your email address and first name (and, if you provide them, your last name and phone number), used to create your account and sign you in. Sign-in uses a one-time code sent by email: we store no passwords.</li>
       <li><strong>Financial data you enter</strong> — transactions (amounts, categories, descriptions, dates), budgets, goals, debts and accounts. This data exists only because you type it in; Spens does not connect to your banks.</li>
       <li><strong>Quick add</strong> — when you describe a transaction in one sentence, it is first analyzed by our own rules, on our servers. When those rules are not enough, <strong>the sentence alone</strong> is sent to Anthropic's Claude AI model to extract the amount, type and category. Your name, email and accounts are never sent to it. Anthropic does not use this data to train its models.</li>
+      <li><strong>Statement import</strong> — if you import screenshots or PDF statements (banking app, SMS from your provider…), they are sent to Anthropic's Claude AI model to extract the transactions, along with your name and the names of your accounts so transfers between your own accounts can be recognized. A capture may hold other information visible on screen (account numbers, names of the people you deal with): only capture what you want to import. Nothing is added to your transactions without your confirmation. Anthropic does not use this data to train its models.</li>
       <li><strong>Voice dictation</strong> — the microphone button uses your phone's own speech recognition (Google on Android, Apple on iOS), only when you tap it. Only the transcribed text reaches us: we never receive or keep any audio recording.</li>
       <li><strong>Reminders and emails</strong> — if you turn them on, reminders are sent to you as notifications (through your browser's or phone's notification service) and/or by email. We also send a few onboarding emails (welcome, tips), which you can unsubscribe from at any time from any of them.</li>
       <li><strong>Usage measurement</strong> — we measure how Spens is used (pages viewed, actions in the app) with PostHog, linked to your account, to understand what works and improve the service. <strong>Your amounts and transactions are not included.</strong></li>
@@ -41,7 +42,7 @@
 
     <h2>3. Why we process it (legal bases)</h2>
     <ul>
-      <li><strong>Performance of the service</strong> (GDPR art. 6.1.b) — storing and displaying your financial data, signing you in, running quick add, reminders and shared spaces.</li>
+      <li><strong>Performance of the service</strong> (GDPR art. 6.1.b) — storing and displaying your financial data, signing you in, running quick add, statement import, reminders and shared spaces.</li>
       <li><strong>Legitimate interest</strong> (GDPR art. 6.1.f) — service security, abuse prevention, technical logs, usage measurement to improve Spens, onboarding emails.</li>
       <li><strong>Consent</strong> (GDPR art. 6.1.a) — for voice dictation (the microphone is only ever used on your explicit action), notifications and advertising cookies.</li>
     </ul>
@@ -63,7 +64,7 @@
       <li><strong>Hetzner</strong> (Germany, servers located in the United States) — server and database hosting.</li>
       <li><strong>Cloudflare</strong> (United States) — domain name, protection and routing of traffic to our servers.</li>
       <li><strong>Brevo</strong> (France) — sending emails (sign-in codes, invitations, reminders, onboarding emails).</li>
-      <li><strong>Anthropic</strong> (United States) — analyzing quick-add sentences when our rules are not enough.</li>
+      <li><strong>Anthropic</strong> (United States) — analyzing quick-add sentences when our rules are not enough, and reading the captures and statements you import.</li>
       <li><strong>PostHog</strong> (United States) — usage measurement.</li>
       <li><strong>Meta</strong> (United States) — measuring advertising campaigns, only with your consent.</li>
     </ul>
@@ -77,6 +78,7 @@
     <ul>
       <li>Your data is kept for as long as your account is active.</li>
       <li>If you <strong>delete your account</strong>, all of your data is permanently erased. Backup copies are purged within 30 days at most.</li>
+      <li><strong>Imported captures and statements</strong> are kept for 90 days, to check and improve how they are read, then deleted automatically. The transactions you created from them stay in your account.</li>
       <li>Technical logs are kept for a limited time for security purposes, then deleted.</li>
     </ul>
 

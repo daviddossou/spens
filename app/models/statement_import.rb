@@ -36,6 +36,8 @@ class StatementImport < ApplicationRecord
   MAX_CAPTURES = 5
   CONTENT_TYPES = %w[image/jpeg image/png image/webp application/pdf].freeze
   MAX_BYTES = 10.megabytes
+  # Stated in the privacy policy: change both together.
+  CAPTURE_RETENTION = 90.days
 
   belongs_to :space
   belongs_to :user

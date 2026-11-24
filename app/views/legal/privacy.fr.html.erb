@@ -6,7 +6,7 @@
     <p class="legal__back"><%= link_to "← Spens", landing_path %></p>
 
     <h1>Politique de confidentialité</h1>
-    <p class="legal__updated">Dernière mise à jour : 24 novembre 2026</p>
+    <p class="legal__updated">Dernière mise à jour : 25 novembre 2026</p>
 
     <p>
       Spens est un carnet de dépenses personnel : vous y enregistrez vos transactions, budgets,
@@ -26,6 +26,7 @@
       <li><strong>Données de compte</strong> — votre adresse email et votre prénom (et, si vous les renseignez, votre nom et votre numéro de téléphone), utilisés pour créer votre compte et vous connecter. La connexion se fait par code à usage unique envoyé par email : nous ne stockons aucun mot de passe.</li>
       <li><strong>Données financières que vous saisissez</strong> — transactions (montants, catégories, descriptions, dates), budgets, objectifs, dettes et comptes. Ces données existent uniquement parce que vous les saisissez ; Spens ne se connecte pas à vos banques.</li>
       <li><strong>Saisie rapide</strong> — lorsque vous décrivez une transaction en une phrase, elle est d'abord analysée par nos propres règles, sur nos serveurs. Quand ces règles ne suffisent pas, <strong>la phrase seule</strong> est envoyée au modèle d'IA Claude d'Anthropic pour en extraire le montant, le type et la catégorie. Ni votre nom, ni votre email, ni vos comptes ne lui sont transmis. Anthropic n'utilise pas ces données pour entraîner ses modèles.</li>
+      <li><strong>Import de relevés</strong> — si vous importez des captures d'écran ou des relevés PDF (application bancaire, SMS de votre opérateur…), ils sont envoyés au modèle d'IA Claude d'Anthropic pour en extraire les transactions, avec votre nom et le nom de vos comptes pour reconnaître les virements entre vos comptes. Une capture peut contenir d'autres informations visibles à l'écran (numéros de compte, noms de vos correspondants) : ne capturez que ce que vous souhaitez importer. Rien n'est ajouté à vos transactions sans votre validation. Anthropic n'utilise pas ces données pour entraîner ses modèles.</li>
       <li><strong>Dictée vocale</strong> — le bouton micro utilise la reconnaissance vocale de votre téléphone (Google sur Android, Apple sur iOS), uniquement lorsque vous appuyez dessus. Seul le texte transcrit nous parvient : nous ne recevons ni ne conservons aucun enregistrement audio.</li>
       <li><strong>Rappels et emails</strong> — si vous les activez, des rappels vous sont envoyés par notification (via le service de notification de votre navigateur ou de votre téléphone) et/ou par email. Nous vous envoyons aussi quelques emails d'accompagnement (bienvenue, conseils), dont vous pouvez vous désabonner à tout moment depuis chaque email.</li>
       <li><strong>Mesure d'usage</strong> — nous mesurons l'utilisation de Spens (pages vues, actions dans l'application) avec PostHog, rattachée à votre compte, pour comprendre ce qui fonctionne et améliorer le service. <strong>Vos montants et vos transactions n'y figurent pas.</strong></li>
@@ -42,7 +43,7 @@
 
     <h2>3. Pourquoi nous les traitons (bases légales)</h2>
     <ul>
-      <li><strong>Exécution du service</strong> (art. 6.1.b RGPD) — stocker et afficher vos données financières, vous connecter, faire fonctionner la saisie rapide, les rappels et les espaces partagés.</li>
+      <li><strong>Exécution du service</strong> (art. 6.1.b RGPD) — stocker et afficher vos données financières, vous connecter, faire fonctionner la saisie rapide, l'import de relevés, les rappels et les espaces partagés.</li>
       <li><strong>Intérêt légitime</strong> (art. 6.1.f RGPD) — sécurité du service, prévention des abus, journaux techniques, mesure d'usage pour améliorer Spens, emails d'accompagnement.</li>
       <li><strong>Consentement</strong> (art. 6.1.a RGPD) — pour la dictée vocale (le micro n'est utilisé que sur action explicite de votre part), les notifications et les cookies publicitaires.</li>
     </ul>
@@ -65,7 +66,7 @@
       <li><strong>Hetzner</strong> (Allemagne, serveurs situés aux États-Unis) — hébergement des serveurs et de la base de données.</li>
       <li><strong>Cloudflare</strong> (États-Unis) — nom de domaine, protection et acheminement du trafic vers nos serveurs.</li>
       <li><strong>Brevo</strong> (France) — envoi des emails (codes de connexion, invitations, rappels, emails d'accompagnement).</li>
-      <li><strong>Anthropic</strong> (États-Unis) — analyse des phrases de la saisie rapide, lorsque nos règles ne suffisent pas.</li>
+      <li><strong>Anthropic</strong> (États-Unis) — analyse des phrases de la saisie rapide, lorsque nos règles ne suffisent pas, et lecture des captures et relevés que vous importez.</li>
       <li><strong>PostHog</strong> (États-Unis) — mesure d'usage.</li>
       <li><strong>Meta</strong> (États-Unis) — mesure des campagnes publicitaires, uniquement avec votre consentement.</li>
     </ul>
@@ -79,6 +80,7 @@
     <ul>
       <li>Vos données sont conservées tant que votre compte est actif.</li>
       <li>Si vous <strong>supprimez votre compte</strong>, l'ensemble de vos données est effacé définitivement. Les copies de sauvegarde sont purgées sous 30 jours au plus.</li>
+      <li>Les <strong>captures et relevés importés</strong> sont conservés 90 jours, le temps de vérifier et d'améliorer leur lecture, puis supprimés automatiquement. Les transactions que vous en avez tirées restent dans votre compte.</li>
       <li>Les journaux techniques sont conservés pour une durée limitée à des fins de sécurité, puis supprimés.</li>
     </ul>
 
