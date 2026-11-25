@@ -41,6 +41,7 @@ class Space < ApplicationRecord
   has_many :transaction_types, dependent: :destroy
   has_many :transactions, dependent: :destroy
   has_many :debts, dependent: :destroy
+  has_many :statement_imports, dependent: :destroy
   has_many :budget_items, dependent: :destroy
   has_many :budget_entries, dependent: :destroy
   # The space's own learned vocabulary (personal tier — see Learnable)

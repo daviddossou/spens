@@ -19,3 +19,9 @@ Rails.application.config.x.quick_entry_anthropic = {
   api_key: anthropic_api_key,
   model: ENV.fetch("ANTHROPIC_MODEL", "claude-haiku-4-5-20251001")
 }
+
+# Statement import reads captures with a vision model; same key, its own model.
+Rails.application.config.x.statement_import = {
+  api_key: anthropic_api_key,
+  model: ENV.fetch("STATEMENT_IMPORT_MODEL", "claude-haiku-5-5")
+}

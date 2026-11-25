@@ -14,6 +14,7 @@
 #  debt_id             :uuid             indexed
 #  fee_parent_id       :uuid             indexed
 #  space_id            :uuid             not null, indexed
+#  statement_import_id :uuid             indexed
 #  transaction_type_id :uuid             not null, indexed
 #  transfer_group_id   :uuid             indexed
 #  user_id             :uuid             indexed
@@ -24,6 +25,7 @@
 #  index_transactions_on_debt_id              (debt_id)
 #  index_transactions_on_fee_parent_id        (fee_parent_id)
 #  index_transactions_on_space_id             (space_id)
+#  index_transactions_on_statement_import_id  (statement_import_id)
 #  index_transactions_on_transaction_date     (transaction_date)
 #  index_transactions_on_transaction_type_id  (transaction_type_id)
 #  index_transactions_on_transfer_group_id    (transfer_group_id)
@@ -34,6 +36,7 @@
 #  fk_rails_...  (account_id => accounts.id)
 #  fk_rails_...  (debt_id => debts.id)
 #  fk_rails_...  (space_id => spaces.id)
+#  fk_rails_...  (statement_import_id => statement_imports.id) ON DELETE => nullify
 #  fk_rails_...  (transaction_type_id => transaction_types.id)
 #  fk_rails_...  (user_id => users.id)
 #
@@ -47,6 +50,7 @@ class Transaction < ApplicationRecord
   belongs_to :transaction_type
   belongs_to :account, optional: true
   belongs_to :debt, optional: true
+  belongs_to :statement_import, optional: true
 
   # A provider fee recorded as its own expense, linked to the transaction it
   # belongs to so it can be edited/removed alongside its parent.

@@ -1,0 +1,14 @@
+fr:
+  activerecord:
+    errors:
+      models:
+        statement_import:
+          attributes:
+            captures:
+              format: "%{message}"
+              blank: "Ajoute au moins une capture ou un relevé."
+              too_many: "Tu peux importer jusqu'à %{count} captures à la fois."
+              invalid_type: "Seules les images (JPEG, PNG, WebP) et les relevés PDF peuvent être lus."
+              too_big: "Chaque capture doit faire moins de 10 Mo."
+            base:
+              unavailable: "L'import de relevés n'est pas disponible pour le moment."
