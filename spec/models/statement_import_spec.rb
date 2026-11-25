@@ -1,5 +1,36 @@
 # frozen_string_literal: true
 
+# == Schema Information
+#
+# Table name: statement_imports
+#
+#  id         :uuid             not null, primary key
+#  error      :text
+#  model      :string
+#  reads      :jsonb            not null
+#  saved_at   :datetime
+#  source     :string
+#  status     :string           default("draft"), not null, indexed
+#  undone_at  :datetime
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#  account_id :uuid             indexed
+#  space_id   :uuid             not null, indexed
+#  user_id    :uuid             not null, indexed
+#
+# Indexes
+#
+#  index_statement_imports_on_account_id  (account_id)
+#  index_statement_imports_on_space_id    (space_id)
+#  index_statement_imports_on_status      (status)
+#  index_statement_imports_on_user_id     (user_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (account_id => accounts.id) ON DELETE => nullify
+#  fk_rails_...  (space_id => spaces.id)
+#  fk_rails_...  (user_id => users.id)
+#
 require "rails_helper"
 
 RSpec.describe StatementImport do
@@ -31,5 +62,23 @@ RSpec.describe StatementImport do
 
     expect(import.reload.account).to be_nil
     expect(import.lines.first.account).to be_nil
+  end
+  it "counts a PDF one slot per page" do
+    import = create(:statement_import, user: user, status: "draft")
+    import.captures.attach(io: StringIO.new(blank_pdf(3)), filename: "s.pdf", content_type: "application/pdf", metadata: { "pages" => 3 })
+
+    expect(import.slots_used).to eq(4)
+    expect(import.room_left).to eq(1)
+    expect(import).not_to be_full
+  end
+
+  it "starts the reading only from a draft with captures and an account" do
+    import = create(:statement_import, user: user, status: "draft")
+    account = create(:account, space: import.space)
+
+    expect(import.analyze!(nil)).to be(false)
+    expect { expect(import.analyze!(account)).to be(true) }.to have_enqueued_job(StatementImports::ReadJob)
+    expect(import.reload).to have_attributes(status: "reading", account: account)
+    expect(import.analyze!(account)).to be(false)
   end
 end

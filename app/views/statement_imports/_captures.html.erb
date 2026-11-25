@@ -1,0 +1,66 @@
+<%# The captures and the account, chosen before anything is read. %>
+<div class="pro-banner">
+  <%= render Ui::ProBadgeComponent.new %>
+  <p><%= t('statement_imports.pro_banner_html') %></p>
+</div>
+
+<section class="si-captures" aria-labelledby="si-captures-title">
+  <div class="si-section-head">
+    <h2 class="si-section-head__title" id="si-captures-title"><%= t('statement_imports.captures.title') %></h2>
+    <span class="si-count<%= ' si-count--full' if import.full? %>"><%= import.slots_used %> / <%= StatementImport::MAX_CAPTURES %></span>
+  </div>
+
+  <div class="si-grid">
+    <% import.captures.each_with_index do |capture, index| %>
+      <figure class="si-tile">
+        <% if capture.image? %>
+          <%= image_tag url_for(capture), alt: t('statement_imports.captures.alt', number: index + 1), class: "si-tile__image" %>
+        <% else %>
+          <div class="si-tile__file">
+            <%= render Ui::IconComponent.new(:document, stroke_width: 1.6) %>
+            <span class="si-tile__name"><%= capture.filename %></span>
+            <span class="si-tile__pages"><%= t('statement_imports.captures.pdf_pages', count: capture.blob.metadata.fetch("pages", 1)) %></span>
+          </div>
+        <% end %>
+        <%= button_to statement_import_capture_path(statement_import_id: import.id, id: capture.id), method: :delete, class: "si-tile__remove",
+              form_class: "si-tile__remove-form",
+              aria: { label: t('statement_imports.captures.remove', number: index + 1) } do %>
+          <%= render Ui::IconComponent.new(:close, stroke_width: 2.4) %>
+        <% end %>
+      </figure>
+    <% end %>
+
+    <% if import.full? %>
+      <div class="si-tile si-tile--limit"><%= t('statement_imports.captures.limit_tile') %></div>
+    <% else %>
+      <%= form_with url: statement_import_captures_path(statement_import_id: import.id), multipart: true, class: "si-tile si-tile--add",
+            data: { controller: "auto-submit" } do %>
+        <label class="si-tile__add">
+          <%= render Ui::IconComponent.new(:plus, stroke_width: 1.8) %>
+          <span><%= t('statement_imports.captures.add') %></span>
+          <input type="file" name="captures[]" accept="image/*,application/pdf" multiple hidden data-action="change->auto-submit#submit">
+        </label>
+      <% end %>
+    <% end %>
+  </div>
+
+  <% if import.full? %>
+    <p class="si-notice si-notice--amber"><%= t('statement_imports.captures.limit_html', count: StatementImport::MAX_CAPTURES) %></p>
+  <% end %>
+  <p class="si-help"><%= t('statement_imports.captures.help') %></p>
+</section>
+
+<%= form_with model: StatementImportAccountForm.new(account_name: import.account&.name),
+      url: analyze_statement_import_path(id: import.id), method: :post, class: "si-account" do |f| %>
+  <%= render Forms::PickerFieldComponent.new(
+        form: f, field: :account_name,
+        label: t('statement_imports.account.label'), title: t('picker.account'),
+        placeholder: t('transactions.form.account_placeholder'),
+        rows: account_rows, allow_create: true) %>
+  <p class="si-help"><%= t('statement_imports.account.help') %></p>
+
+  <div class="si-footer">
+    <%= render Ui::ButtonComponent.new(text: t('statement_imports.analyze', count: import.captures.size), type: :submit,
+          variant: :primary, size: :lg, full_width: true, disabled: import.captures.empty?) %>
+  </div>
+<% end %>

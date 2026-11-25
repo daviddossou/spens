@@ -29,6 +29,14 @@ RSpec.describe QuickEntry::AnthropicParser do
   end
 
   describe "#parse" do
+    it "keeps the subcategory named for a parent, and only one of its own children" do
+      stub_tool_use("kind" => "income", "amount" => 1000, "category" => TransactionTaxonomy.name("salary_employment", :fr), "subcategory" => TransactionTaxonomy.name("salary", :fr))
+      expect(parser.parse("sal david").subcategory_key).to eq("salary")
+
+      stub_tool_use("kind" => "income", "amount" => 1000, "category" => TransactionTaxonomy.name("salary_employment", :fr), "subcategory" => "Transport")
+      expect(parser.parse("sal david").subcategory_key).to be_nil
+    end
+
     it "resolves the model's category label to a taxonomy key and keeps the salient phrase" do
       stub_tool_use("kind" => "expense", "amount" => 5000, "category" => "Transport", "phrase" => "coca")
 

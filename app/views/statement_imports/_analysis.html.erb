@@ -1,0 +1,14 @@
+<%# Each capture is read in the background; the cards refresh until it is done. %>
+<div class="si-analysis">
+  <div class="si-analysis__icon"><%= render Ui::IconComponent.new(:sparkles, stroke_width: 1.6) %></div>
+  <h2 class="si-analysis__title"><%= t("statement_imports.analysis.title_#{import.status}", default: t('statement_imports.analysis.title_reading')) %></h2>
+  <p class="si-analysis__text"><%= t("statement_imports.analysis.text_#{import.status}", default: t('statement_imports.analysis.text_reading')) %></p>
+
+  <div class="si-progress"
+       <% if import.reading? %>data-controller="poll" data-poll-url-value="<%= progress_statement_import_path(id: import.id) %>"<% end %>>
+    <%= render "progress", import: import %>
+  </div>
+
+  <%= button_to t('statement_imports.analysis.cancel'), statement_import_path(id: import.id), method: :delete,
+        class: "si-analysis__cancel", form_class: "si-analysis__cancel-form" %>
+</div>

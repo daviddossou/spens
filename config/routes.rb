@@ -68,6 +68,25 @@ Rails.application.routes.draw do
                          constraints: { fact: /category|account|date/ }
     end
 
+    # Statement import
+    resources :statement_imports, only: [ :create, :show, :destroy ] do
+      member do
+        get :progress
+        post :analyze
+        post :save
+        post :undo
+      end
+      post :dismiss_hint, on: :collection
+      resources :captures, only: [ :create, :destroy ], module: :statement_imports
+      resources :lines, only: [ :edit, :update ], module: :statement_imports do
+        member do
+          post :restore
+          post :ignore
+          post :keep
+        end
+      end
+    end
+
     # Goals
     resources :goals, only: [ :index, :show, :new, :create, :edit, :update, :destroy ]
 

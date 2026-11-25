@@ -1,0 +1,36 @@
+<% reads = import.reads.index_by { _1["capture_index"] } %>
+<ul class="si-progress__list">
+  <% import.captures.each_with_index do |capture, index| %>
+    <% read = reads[index] %>
+    <% state = read.nil? ? "reading" : (read["result"] ? "done" : "error") %>
+    <% status_text = case state
+                     when "done" then t('statement_imports.analysis.lines_read', count: Array(read.dig("result", "lines")).size)
+                     when "error" then t('statement_imports.analysis.unreadable')
+                     else t('statement_imports.analysis.reading')
+                     end %>
+    <li class="si-card si-card--<%= state %>">
+      <div class="si-card__thumb">
+        <% if capture.image? %>
+          <%= image_tag url_for(capture), alt: "" %>
+        <% else %>
+          <%= render Ui::IconComponent.new(:document, stroke_width: 1.6) %>
+        <% end %>
+      </div>
+      <div class="si-card__body">
+        <div class="si-card__row">
+          <span class="si-card__name"><%= t('statement_imports.analysis.capture', number: index + 1) %></span>
+          <span class="si-card__status"><%= status_text %></span>
+        </div>
+        <div class="si-card__bar" role="presentation"><span></span></div>
+      </div>
+      <span class="si-card__mark" aria-hidden="true">
+        <% if state == "done" %><%= render Ui::IconComponent.new(:check, stroke_width: 2.4) %>
+        <% elsif state == "error" %><%= render Ui::IconComponent.new(:close, stroke_width: 2.4) %>
+        <% end %>
+      </span>
+    </li>
+  <% end %>
+</ul>
+<% unless import.reading? %>
+  <span hidden data-poll-done-url="<%= statement_import_path(id: import.id) %>"></span>
+<% end %>

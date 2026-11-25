@@ -252,8 +252,11 @@ module StatementImports
       end
     end
 
+    # Ticked by default, except a line already in Spens, and an amount in another currency: it is
+    # never saved as is, the user gives the amount in the space currency first.
     def decision(draft)
-      draft.proposed? && draft.existing_transaction_id.nil? ? "pending" : "skipped"
+      ok = draft.proposed? && draft.existing_transaction_id.nil? && !draft.flags.include?("foreign_currency")
+      ok ? "pending" : "skipped"
     end
   end
 end

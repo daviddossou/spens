@@ -23,6 +23,7 @@ en:
       phrase_placeholder_person: "e.g. she paid me back 20k"
       phrase_placeholder_goal: "e.g. 25k from MTN"
       phrase_help: "Write it as one sentence and the fields below fill in. Or skip it and fill them by hand."
+      phrase_help_with_import_html: "Write it as one sentence, dictate it, or import up to <strong>%{count} statement captures</strong>. Or skip it and fill in by hand."
       phrase_reading: "Reading…"
       dictate: "Dictate the transaction"
       dictating: "Listening, tap to stop"

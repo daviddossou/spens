@@ -78,6 +78,14 @@
   --color-separator-2: #f4f5f8;
   --color-amber-ink: #8a4f00; /* text on amber fills */
   --color-amber-ink-soft: #96601a;
+  --color-amber-wash: #fff6e8; /* amber notices (limits, lines to review) */
+  --color-amber-line: #f2ddbb;
+  --color-pro-gold: #f5c451; /* the PRO pill text */
+  --color-pro-wash: #f4f5fc; /* Pro banner */
+  --color-pro-line: #e1e4f5;
+  --color-add-line: #b9bfe0; /* dashed "add" tiles */
+  --color-add-wash: #f7f8fe;
+  --color-toast-action: #a9b4f5; /* action text on the dark toast */
   --color-neutral-pill: #e4e6ee; /* inactive icon pill / segment */
   --color-primary-tint: #eef0f8; /* softest indigo wash for info encarts */
   --color-primary-ink: #3d4a8f; /* readable indigo text on the tint */

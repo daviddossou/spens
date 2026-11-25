@@ -2,31 +2,32 @@
 #
 # Table name: users
 #
-#  id                               :uuid             not null, primary key
-#  acquisition                      :jsonb            not null
-#  admin                            :boolean          default(FALSE), not null
-#  confirmed_at                     :datetime
-#  current_sign_in_at               :datetime
-#  current_sign_in_ip               :string
-#  email                            :string           default(""), not null, indexed
-#  encrypted_password               :string           default(""), not null
-#  first_name                       :string
-#  last_active_at                   :datetime
-#  last_name                        :string
-#  last_sign_in_at                  :datetime
-#  last_sign_in_ip                  :string
-#  lifecycle_emails_unsubscribed_at :datetime
-#  otp_code                         :string
-#  otp_sent_at                      :datetime
-#  phone_number                     :string
-#  remember_created_at              :datetime
-#  reset_password_sent_at           :datetime
-#  reset_password_token             :string           indexed
-#  sign_in_count                    :integer          default(0), not null
-#  time_zone                        :string
-#  welcome_email_sent_at            :datetime
-#  created_at                       :datetime         not null
-#  updated_at                       :datetime         not null
+#  id                                 :uuid             not null, primary key
+#  acquisition                        :jsonb            not null
+#  admin                              :boolean          default(FALSE), not null
+#  confirmed_at                       :datetime
+#  current_sign_in_at                 :datetime
+#  current_sign_in_ip                 :string
+#  email                              :string           default(""), not null, indexed
+#  encrypted_password                 :string           default(""), not null
+#  first_name                         :string
+#  last_active_at                     :datetime
+#  last_name                          :string
+#  last_sign_in_at                    :datetime
+#  last_sign_in_ip                    :string
+#  lifecycle_emails_unsubscribed_at   :datetime
+#  otp_code                           :string
+#  otp_sent_at                        :datetime
+#  phone_number                       :string
+#  remember_created_at                :datetime
+#  reset_password_sent_at             :datetime
+#  reset_password_token               :string           indexed
+#  sign_in_count                      :integer          default(0), not null
+#  statement_import_hint_dismissed_at :datetime
+#  time_zone                          :string
+#  welcome_email_sent_at              :datetime
+#  created_at                         :datetime         not null
+#  updated_at                         :datetime         not null
 #
 # Indexes
 #
@@ -115,7 +116,8 @@ class User < ApplicationRecord
     acquisition["consent"] == true
   end
 
-  # Single gate for the first Pro feature; free for everyone at launch.
+  # Single gate for the first Pro feature; free for everyone at launch. The day it turns paid,
+  # only this changes.
   def can_use_statement_import?
     true
   end

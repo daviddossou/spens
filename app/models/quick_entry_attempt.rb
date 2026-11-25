@@ -44,7 +44,7 @@ class QuickEntryAttempt < ApplicationRecord
   # Named to avoid shadowing ActiveRecord's #transaction; the column is transaction_id.
   belongs_to :created_transaction, class_name: "Transaction", foreign_key: :transaction_id, optional: true
 
-  SOURCES = %w[rules ai manual_fallback].freeze
+  SOURCES = %w[rules ai manual_fallback statement_import].freeze
 
   enum :outcome, {
     pending: "pending",  # just created, not yet acted on

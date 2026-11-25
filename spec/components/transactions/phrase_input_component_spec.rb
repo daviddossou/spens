@@ -84,4 +84,20 @@ RSpec.describe Transactions::PhraseInputComponent, type: :component do
       expect(rendered.at_css(".phrase-band__mic")).to be_nil
     end
   end
+  it "has no photo entry without statement import access" do
+    expect(rendered.at_css(".phrase-band__photo")).to be_nil
+  end
+
+  context "with statement import access" do
+    let(:rendered) { render_inline(described_class.new(text: text, phrase_context_key: phrase_context_key, statement_import: true)) }
+
+    it "puts the photo entry, marked PRO, before the mic, with its action sheet" do
+      buttons = rendered.css(".phrase-band__field button").map { _1["class"] }
+      expect(buttons.index("phrase-band__photo")).to be < buttons.index("phrase-band__mic")
+      expect(rendered.at_css(".phrase-band__photo .pro-badge")).to be_present
+      expect(rendered.css("dialog.action-sheet input[type=file]").map { _1["accept"] }).to eq(%w[image/* image/* application/pdf])
+      expect(rendered.at_css("dialog.action-sheet input[capture=environment]")).to be_present
+      expect(rendered.at_css(".phrase-band__help").text).to include("5 statement captures")
+    end
+  end
 end

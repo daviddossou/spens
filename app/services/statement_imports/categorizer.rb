@@ -1,0 +1,103 @@
+# frozen_string_literal: true
+
+module StatementImports
+  # Gives each expense/income line its category through the SAME pipeline as quick add
+  # (QuickEntry::Coordinator): the space's learned vocabulary and aliases first, then category
+  # memory, and Claude only when the rules found nothing. A category the rules found is trusted;
+  # one only the AI found is shown as uncertain, to review.
+  class Categorizer
+    CATEGORY_KINDS = %w[expense income].freeze
+    # Nothing found: file the line under "Other" rather than ask the user to fill it in. Set to
+    # false to require a category again (the review then blocks the save).
+    FALLBACK_TO_OTHER = true
+    FALLBACK_KEYS = { "expense" => "other_expense", "income" => "other_income" }.freeze
+    THREADS = 4
+
+    def self.call(import)
+      new(import).call
+    end
+
+    def initialize(import)
+      @import = import
+      @space = import.space
+      @locale = @space.locale.presence || I18n.default_locale
+    end
+
+    def call
+      lines = @import.lines.proposed.where(kind: CATEGORY_KINDS).to_a
+      queue = Queue.new
+      lines.each { queue << _1 }
+      results = Concurrent::Map.new
+      Array.new([ THREADS, lines.size ].min) do
+        Thread.new do
+          Rails.application.executor.wrap do
+            while (line = (queue.pop(true) rescue nil))
+              results[line.id] = categorize(line)
+            end
+          end
+        end
+      end.each(&:join)
+
+      lines.each do |line|
+        name, source, categorization = results[line.id]
+        line.update!(transaction_type_name: name, category_source: source, categorization: categorization)
+      end
+    end
+
+    private
+
+    # => [transaction_type_name, "rules" | "ai" | nil, what the pipeline saw]. The last part is what
+    # quick add logs on a QuickEntryAttempt, so a saved line feeds the same learners.
+    def categorize(line)
+      text = phrase(line)
+      parse = QuickEntry::Coordinator.call(text, space: @space, locale: @locale, ai: false)
+      source = "rules" if fits?(parse.draft, line)
+      if source.nil? && QuickEntry::Coordinator.ai_enabled?
+        parse = QuickEntry::Coordinator.call(text, space: @space, locale: @locale, ai: true)
+        source = "ai" if fits?(parse.draft, line)
+      end
+      name = parse.draft.transaction_type_name if source
+      name = subcategory_name(parse) || name if source == "ai"
+      if name.nil? && FALLBACK_TO_OTHER
+        name = TransactionTaxonomy.name(FALLBACK_KEYS.fetch(line.kind), @locale)
+        source = "fallback"
+      end
+      [ name, source, { "text" => text, "locale" => @locale.to_s, "proposed" => (name unless source == "fallback"),
+                    "draft" => parse.draft.to_form_payload.as_json, "ai_draft" => parse.ai_draft } ]
+    rescue StandardError => e
+      Rails.logger.warn("StatementImports::Categorizer line #{line.id}: #{e.message}")
+      [ nil, nil, nil ]
+    end
+
+    # Read like a quick-add phrase: the amount, then the words of the label that can carry a category.
+    # Operation numbers go, and so do the words that would make the parser read another kind
+    # ("TRANSFER INTERNATIONAL … aide familiale" is an expense here: our rules already decided the
+    # kind, the parser is only asked for the category). Money in is said as received, as a user
+    # would type it, so the parser looks on the income side.
+    def phrase(line)
+      label = line.label.to_s.gsub(/\d{4,}|[*@]+/, " ")
+      label = kind_words.reduce(label) { |text, word| text.gsub(/(?<![[:alnum:]])#{Regexp.escape(word)}(?![[:alnum:]])/i, " ") }.squish
+      received = I18n.t("statement_imports.received_word", locale: @locale) if line.kind == "income"
+      [ received, line.amount.abs.to_i, label ].compact.join(" ")
+    end
+
+    # Kind keywords of both languages: statements mix French and English ("TRANSFER", "RETRAIT").
+    def kind_words
+      @kind_words ||= %w[fr en].flat_map do |lang|
+        QuickEntry::Keywords.kind(lang).values_at("transfer", "debt_lent", "debt_borrowed", "debt_repaid").flatten.compact
+      end.uniq.sort_by { -_1.length }
+    end
+
+    # Claude stayed on a parent ("Salaire & Emploi"): a bank line is better filed under the
+    # child it named ("Salaire"), still shown as uncertain.
+    def subcategory_name(parse)
+      key = parse.ai_draft&.dig("subcategory_key") or return nil
+      TransactionTaxonomy.name(key, @locale)
+    end
+
+    # The category must belong to the line's side: an income category never lands on an expense.
+    def fits?(draft, line)
+      draft.transaction_type_name.present? && draft.kind == line.kind
+    end
+  end
+end

@@ -19,6 +19,51 @@
           aria: { label: t('transactions.new.phrase_label') },
           data: { phrase_fill_target: "input", dictation_target: "input",
                   action: "input->phrase-fill#type keydown->phrase-fill#submitOnEnter" } %>
+    <% if statement_import? %>
+    <div class="phrase-band__import" data-controller="statement-entry">
+      <button type="button" class="phrase-band__photo" aria-haspopup="dialog"
+              aria-label="<%= t('statement_imports.entry.button') %>"
+              data-statement-entry-target="button" data-action="statement-entry#open">
+        <%= render Ui::IconComponent.new(:photo, stroke_width: 1.6) %>
+        <%= render Ui::ProBadgeComponent.new(floating: true) %>
+      </button>
+      <dialog class="action-sheet" aria-labelledby="statement-entry-title"
+              data-statement-entry-target="dialog"
+              data-action="click->statement-entry#backdrop close->statement-entry#closed">
+        <%= form_with url: statement_imports_path, multipart: true, class: "action-sheet__form",
+              data: { turbo_frame: "_top", statement_entry_target: "form" } do %>
+          <div class="action-sheet__group">
+            <div class="action-sheet__head">
+              <h3 class="action-sheet__title" id="statement-entry-title">
+                <%= t('statement_imports.title') %> <%= render Ui::ProBadgeComponent.new %>
+              </h3>
+              <p class="action-sheet__text"><%= t('statement_imports.entry.subtitle') %></p>
+              <span class="launch-pill"><%= t('statement_imports.free_during_launch') %></span>
+            </div>
+            <label class="action-sheet__item">
+              <%= render Ui::IconComponent.new(:photo, stroke_width: 1.6) %>
+              <span class="action-sheet__label"><%= t('statement_imports.entry.gallery') %></span>
+              <span class="action-sheet__meta"><%= t('statement_imports.entry.max', count: StatementImport::MAX_CAPTURES) %></span>
+              <input type="file" name="captures[]" accept="image/*" multiple hidden data-origin="gallery" data-action="change->statement-entry#submit">
+            </label>
+            <label class="action-sheet__item">
+              <%= render Ui::IconComponent.new(:camera, stroke_width: 1.6) %>
+              <span class="action-sheet__label"><%= t('statement_imports.entry.camera') %></span>
+              <input type="file" name="captures[]" accept="image/*" capture="environment" hidden data-origin="camera" data-action="change->statement-entry#submit">
+            </label>
+            <label class="action-sheet__item">
+              <%= render Ui::IconComponent.new(:document, stroke_width: 1.6) %>
+              <span class="action-sheet__label"><%= t('statement_imports.entry.pdf') %></span>
+              <input type="file" name="captures[]" accept="application/pdf" multiple hidden data-origin="pdf" data-action="change->statement-entry#submit">
+              <input type="hidden" name="origin" data-statement-entry-target="origin">
+            </label>
+            <p class="action-sheet__status" data-statement-entry-target="status" hidden aria-live="polite"><%= t('statement_imports.entry.sending') %></p>
+          </div>
+          <button type="button" class="action-sheet__cancel" data-action="statement-entry#close"><%= t('statement_imports.entry.cancel') %></button>
+        <% end %>
+      </dialog>
+    </div>
+    <% end %>
     <%# Only shown where the browser exposes the phone's speech recognition. The Android
         app's WebView declares the API but can't run it: no button there until a native
         bridge exists. %>
@@ -33,6 +78,6 @@
     </button>
     <% end %>
   </div>
-  <p class="phrase-band__help" data-phrase-fill-target="help"<%= " hidden" if @text.present? %>><%= t('transactions.new.phrase_help') %></p>
+  <p class="phrase-band__help" data-phrase-fill-target="help"<%= " hidden" if @text.present? %>><%= statement_import? ? t('transactions.new.phrase_help_with_import_html', count: StatementImport::MAX_CAPTURES) : t('transactions.new.phrase_help') %></p>
   <p class="phrase-band__status" data-phrase-fill-target="status" hidden aria-live="polite"></p>
 </div>

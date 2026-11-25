@@ -1,0 +1,103 @@
+<%# Every line counts unless the user takes it out (swipe or "Ignorer").
+    A likely duplicate or an amount in another currency waits for a decision, uncounted. %>
+<%
+  lines = import.lines.to_a
+  listed = lines.select(&:listed?)
+  to_review = listed.select { _1.review_reason || _1.awaiting_decision? }
+  rest = (listed - to_review).sort_by { [ _1.occurred_on || Date.new(1900), _1.position ] }.reverse
+  ignored = lines.reject(&:listed?).reject { _1.status == "not_transaction" && _1.amount.blank? && _1.label.blank? }
+  included = lines.select(&:included?)
+  totals = statement_import_totals(lines)
+  currency = import.space.currency
+  foreign = listed.any? && listed.all? { _1.flags.include?("foreign_currency") }
+  open_ignored = local_assigns[:open_ignored]
+%>
+<div id="statement_import_review" class="si-review">
+  <section class="si-summary" aria-live="polite">
+    <p class="si-summary__count">
+      <strong><%= t('statement_imports.review.transactions', count: included.size) %></strong>
+      <span><%= t('statement_imports.review.read_from', count: import.captures.size) %></span>
+    </p>
+    <dl class="si-summary__totals">
+      <div><dt><%= t('statement_imports.review.spent') %></dt><dd><%= money(totals[:spent], currency) %></dd></div>
+      <div><dt><%= t('statement_imports.review.received') %></dt><dd class="si-summary__in"><%= money(totals[:received], currency) %></dd></div>
+      <div><dt><%= t('statement_imports.review.transfers') %></dt><dd class="si-summary__transfer"><%= money(totals[:transfers], currency) %></dd></div>
+    </dl>
+    <div class="si-summary__pills">
+      <% if to_review.any? %><span class="si-pill si-pill--amber"><%= t('statement_imports.review.pill_review', count: to_review.size) %></span><% end %>
+      <% if ignored.any? %><span class="si-pill"><%= t('statement_imports.review.pill_ignored', count: ignored.size) %></span><% end %>
+    </div>
+  </section>
+
+  <% if foreign %>
+    <p class="si-notice si-notice--amber si-review__banner"><%= t('statement_imports.review.foreign_banner_html', currency: listed.first.currency, space_currency: get_currency_symbol(currency)) %></p>
+  <% end %>
+
+  <% unless current_user.statement_import_hint_dismissed_at %>
+    <div class="si-hint" data-controller="dismiss" data-dismiss-url-value="<%= dismiss_hint_statement_imports_path %>">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M19 12H5m0 0l6-6m-6 6l6 6"/></svg>
+      <p><%= t('statement_imports.review.hint_html') %></p>
+      <button type="button" class="si-hint__close" aria-label="<%= t('statement_imports.review.hint_close') %>" data-action="dismiss#close">
+        <%= render Ui::IconComponent.new(:close, stroke_width: 2) %>
+      </button>
+    </div>
+  <% end %>
+
+  <% if to_review.any? %>
+    <section class="si-group si-group--review">
+      <h2 class="si-group__title"><%= t('statement_imports.review.to_review') %> <span><%= to_review.size %></span></h2>
+      <ul class="si-lines si-lines--review">
+        <%= render partial: "statement_imports/line", collection: to_review, locals: { import: import } %>
+      </ul>
+    </section>
+  <% end %>
+
+  <% if rest.any? %>
+    <section class="si-group">
+      <h2 class="si-group__title"><%= t('statement_imports.review.rest') %> <span><%= rest.size %></span></h2>
+      <ul class="si-lines">
+        <%= render partial: "statement_imports/line", collection: rest, locals: { import: import } %>
+      </ul>
+    </section>
+  <% end %>
+
+  <p class="si-overlap-note">
+    <%= render Ui::IconComponent.new(:check, stroke_width: 2.2) %>
+    <span><%= t('statement_imports.review.overlap_note') %></span>
+  </p>
+
+  <% if ignored.any? %>
+    <details class="si-ignored"<%= " open" if open_ignored %>>
+      <summary class="si-ignored__head">
+        <span><%= t('statement_imports.review.ignored_title', count: ignored.size) %></span>
+        <span class="si-ignored__toggle" data-open="<%= t('statement_imports.review.collapse') %>" data-closed="<%= t('statement_imports.review.expand') %>"></span>
+      </summary>
+      <ul class="si-lines si-lines--ignored">
+        <% ignored.each do |line| %>
+          <li class="si-ignored-line">
+            <svg class="si-ignored-line__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88"/></svg>
+            <div class="si-ignored-line__body">
+              <span class="si-ignored-line__label"><%= line.label.presence || t('statement_imports.review.unlabelled') %></span>
+              <span class="si-ignored-line__meta">
+                <%= statement_line_date(line) %><% if line.amount %> · <%= money(line.amount, line.currency.presence || currency) %><% end %> · <strong><%= statement_ignored_reason(line) %></strong>
+              </span>
+            </div>
+            <% if line.addable? %>
+              <%= button_to t('statement_imports.review.add'), restore_statement_import_line_path(statement_import_id: import.id, id: line.id),
+                    class: "si-ignored-line__add", form_class: "si-ignored-line__add-form" %>
+            <% end %>
+          </li>
+        <% end %>
+      </ul>
+    </details>
+  <% end %>
+
+  <div class="si-footer">
+    <div>
+      <%= button_to save_statement_import_path(id: import.id), class: "btn btn-primary btn-lg btn-full-width", disabled: included.empty? do %>
+        <%= t('statement_imports.review.save', count: included.size) %>
+      <% end %>
+      <p class="si-footer__hint"><%= t('statement_imports.review.nothing_saved_yet') %></p>
+    </div>
+  </div>
+</div>
