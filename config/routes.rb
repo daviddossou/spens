@@ -68,6 +68,15 @@ Rails.application.routes.draw do
                          constraints: { fact: /category|account|date/ }
     end
 
+    # Statement import (tour 39)
+    resources :statement_imports, only: [ :create, :show, :destroy ] do
+      member do
+        get :progress
+        post :analyze
+      end
+      resources :captures, only: [ :create, :destroy ], module: :statement_imports
+    end
+
     # Goals
     resources :goals, only: [ :index, :show, :new, :create, :edit, :update, :destroy ]
 

@@ -23,6 +23,7 @@ fr:
       phrase_placeholder_person: "ex. elle m'a rendu 20k"
       phrase_placeholder_goal: "ex. 25k depuis MTN"
       phrase_help: "Écris-la en une phrase, les champs ci-dessous se remplissent. Ou ignore et remplis à la main."
+      phrase_help_with_import_html: "Écris-la en une phrase, dicte-la, ou importe jusqu'à <strong>%{count} captures de relevé</strong>. Ou ignore et remplis à la main."
       phrase_reading: "Lecture…"
       dictate: "Dicter la transaction"
       dictating: "Écoute en cours, touche pour arrêter"

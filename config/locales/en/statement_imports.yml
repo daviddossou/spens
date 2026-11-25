@@ -12,3 +12,60 @@ en:
               too_big: "Each capture must be under 10 MB."
             base:
               unavailable: "Statement import is not available right now."
+  statement_imports:
+    title: "Import a statement"
+    new_import: "New import"
+    free_during_launch: "Free during launch"
+    pro_banner_html: "Pro feature, <strong>free during launch</strong>. It will become paid later."
+    captures_count:
+      one: "%{count} capture"
+      other: "%{count} captures"
+    analyze:
+      one: "Read %{count} capture"
+      other: "Read %{count} captures"
+      zero: "Add a capture"
+    entry:
+      button: "Import statement screenshots, Pro feature"
+      subtitle: "Up to 5 captures. Each one can hold several transactions."
+      gallery: "Choose from the gallery"
+      camera: "Take a photo of a paper statement"
+      pdf: "Import a PDF statement"
+      max: "%{count} max"
+      sending: "Sending the captures…"
+      cancel: "Cancel"
+    captures:
+      title: "Captures"
+      alt: "Capture %{number}"
+      remove: "Remove capture %{number}"
+      add: "Add"
+      limit_tile: "Limit reached"
+      limit_html: "<strong>%{count} captures at most per import.</strong> For the rest, start a second import once this one is saved."
+      help: "A capture can hold several transactions, and a PDF statement takes one slot per page. If two captures overlap, the shared lines only count once."
+      pdf_pages:
+        one: "PDF · %{count} page"
+        other: "PDF · %{count} pages"
+    account:
+      label: "Which account?"
+      help: "Every line will go to this account. You can change them one by one."
+    analysis:
+      title_reading: "Reading the captures…"
+      text_reading: "We read every line, set aside declined ones and duplicates, then sort them."
+      title_ready: "Captures read"
+      text_ready: "The line-by-line review is coming here soon."
+      title_failed: "Could not read"
+      text_failed: "We could not read these captures. Try again with sharper ones."
+      capture: "Capture %{number}"
+      reading: "reading…"
+      unreadable: "unreadable"
+      lines_read:
+        one: "%{count} line read"
+        other: "%{count} lines read"
+        zero: "no lines"
+      cancel: "Cancel the import"
+    flash:
+      unreadable: "These files cannot be read. Pick images or PDF statements under 10 MB."
+      choose_account: "Choose the account of this statement."
+      pdf_too_long:
+        one: "This PDF has %{pages} pages and only %{count} slot is left in this import. Export a shorter period."
+        other: "This PDF has %{pages} pages and only %{count} slots are left in this import. Export a shorter period."
+        zero: "This PDF has %{pages} pages and this import is full. Start a second import."

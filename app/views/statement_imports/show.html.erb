@@ -1,0 +1,16 @@
+<% content_for :title, t('statement_imports.title') %>
+<% content_for :focused, "1" %>
+<% content_for :header do %>
+  <%= render Navigation::DetailHeaderComponent.new(
+        back_url: dashboard_path, align: :left,
+        title: safe_join([ t('statement_imports.title'), render(Ui::ProBadgeComponent.new) ], " "),
+        subtitle: @import.draft? ? t('statement_imports.new_import') : statement_import_subtitle(@import)) %>
+<% end %>
+
+<div class="page-container page-container--narrow statement-import">
+  <% if @import.draft? %>
+    <%= render "captures", import: @import, account_rows: @account_rows %>
+  <% else %>
+    <%= render "analysis", import: @import %>
+  <% end %>
+</div>

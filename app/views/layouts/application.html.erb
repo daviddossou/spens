@@ -62,7 +62,8 @@
            data-time-zone-url-value="<%= time_zone_path %>"></div>
 
       <%= render Pwa::InstallBannerComponent.new %>
-      <%= render Navigation::BottomNavComponent.new(current_path: request.path) %>
+      <%# A focused task (a statement import) keeps its own bottom bar instead of the tabs. %>
+      <%= render Navigation::BottomNavComponent.new(current_path: request.path) unless content_for?(:focused) %>
 
       <!-- Bottom Sheet Modal -->
       <%= render Ui::BottomSheetComponent.new() %>

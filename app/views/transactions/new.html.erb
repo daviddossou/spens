@@ -14,7 +14,8 @@
       <p class="transaction-form__subtitle" data-phrase-fill-target="subtitle"><%= heading[:subtitle] %></p>
     <% end %>
 
-    <%= render Transactions::PhraseInputComponent.new(text: @text, phrase_context_key: phrase_context_key) %>
+    <%= render Transactions::PhraseInputComponent.new(text: @text, phrase_context_key: phrase_context_key,
+                                                     statement_import: StatementImport.available_to?(current_user)) %>
 
     <%= turbo_frame_tag "transaction_form" do %>
       <div class="page-content">

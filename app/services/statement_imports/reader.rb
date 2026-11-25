@@ -11,8 +11,9 @@ module StatementImports
   class Reader
     API_URL = "https://api.anthropic.com/v1/messages"
     API_VERSION = "2023-06-01"
-    TIMEOUT = 90
-    MAX_TOKENS = 8000
+    TIMEOUT = 150
+    # A 5-page statement is ~70 lines, ~10k output tokens.
+    MAX_TOKENS = 16_000
     TOOL_NAME = "record_lines"
 
     class Error < StandardError; end

@@ -88,3 +88,5 @@ gem "money-rails", "~> 1.15"
 
 gem "annot8", "~> 1.0"
 gem "solid_errors", "~> 0.6"
+
+gem "pdf-reader", "~> 2.16"

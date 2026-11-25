@@ -49,4 +49,20 @@ RSpec.describe StatementImports::ReadJob do
 
     expect(import.reload).to have_attributes(status: "failed", error: "HTTP 529")
   end
+
+  it "stops quietly when the import is cancelled while reading" do
+    allow(reader).to receive(:read) do
+      StatementImport.where(id: import.id).delete_all
+      read_with([])
+    end
+
+    expect { described_class.perform_now(import.id) }.not_to raise_error
+  end
+
+  it "does nothing for a draft" do
+    import.update_columns(status: "draft") # rubocop:disable Rails/SkipsModelValidations
+    expect(reader).not_to receive(:read)
+
+    described_class.perform_now(import.id)
+  end
 end
