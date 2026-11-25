@@ -73,7 +73,7 @@ gem "sidekiq", "~> 7.0"
 gem "web-push", "~> 3.0"
 # QR code of the /download page, for desktop visitors
 gem "rqrcode", "~> 3.1"
-gem "redis", "~> 5.0"
+gem "redis", "~> 6.0"
 gem "view_component", "~> 3.0"
 gem "rspec-rails", "~> 8.0"
 gem "factory_bot_rails", "~> 6.5"
