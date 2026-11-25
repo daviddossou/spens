@@ -1,4 +1,4 @@
-/* Statement import (tour 39): the photo entry in the phrase band, its action sheet, and the
+/* Statement import: the photo entry in the phrase band, its action sheet, and the
    captures / analysis screens. */
 
 /* The PRO pill */
@@ -618,7 +618,7 @@
   cursor: pointer;
 }
 
-/* Review (39c) */
+/* Review */
 .statement-import--review {
   gap: 0;
   padding-top: 1rem;
@@ -759,7 +759,7 @@
   border-top: 0;
 }
 
-/* Tour 40: the "Ignorer" action revealed by a left swipe */
+/* The "Ignorer" action revealed by a left swipe */
 .si-line__swipe-form {
   position: absolute;
   inset: 0 0 0 auto;
@@ -1076,7 +1076,7 @@
   color: var(--color-amber-ink);
 }
 
-/* 39d: the toast after saving */
+/* The toast after saving */
 .import-toast {
   position: fixed;
   right: 0.75rem;
@@ -1142,7 +1142,7 @@
   word-break: break-word;
 }
 
-/* Tour 40: the one-time swipe tip */
+/* The swipe tip, shown until the user closes it */
 .si-hint {
   display: flex;
   align-items: flex-start;

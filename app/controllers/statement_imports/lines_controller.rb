@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 module StatementImports
-  # The review list (39c): tick or untick a line, set its category in one tap, bring back a line
-  # set aside, or edit it in the usual transaction form. Nothing here creates a transaction.
+  # The review list: set a line's category in one tap, ignore or keep it, bring back a line set
+  # aside, or edit it in the usual transaction form. Nothing here creates a transaction.
   class LinesController < ApplicationController
     before_action :authenticate_user!
     before_action -> { head :not_found unless StatementImport.available_to?(current_user) }

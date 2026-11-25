@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module StatementImports
-  # "Annuler" on the toast (39d): the whole import goes, every transaction it created reversed
+  # "Annuler" on the toast: the whole import goes, every transaction it created reversed
   # through the usual service so balances and debts come back.
   class Undo
     WINDOW = 15.minutes

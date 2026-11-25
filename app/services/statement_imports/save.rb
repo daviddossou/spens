@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module StatementImports
-  # "Enregistrer N transactions" (39c): every ticked line becomes a transaction through the same
+  # "Enregistrer N transactions": every counted line becomes a transaction through the same
   # TransactionForm as a manual entry, so balances, budgets and debts move as usual. All or
   # nothing. Each expense/income line is also logged as a QuickEntryAttempt, so the user's
   # corrections teach the same learners as quick add.

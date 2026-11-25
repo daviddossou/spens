@@ -1,4 +1,4 @@
-<%# 39b Analyse: each capture is read in the background; the cards refresh until it is done. %>
+<%# Each capture is read in the background; the cards refresh until it is done. %>
 <div class="si-analysis">
   <div class="si-analysis__icon"><%= render Ui::IconComponent.new(:sparkles, stroke_width: 1.6) %></div>
   <h2 class="si-analysis__title"><%= t("statement_imports.analysis.title_#{import.status}", default: t('statement_imports.analysis.title_reading')) %></h2>

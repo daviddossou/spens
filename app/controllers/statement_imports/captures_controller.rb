@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module StatementImports
-  # Adds or removes captures on a draft import (39b): never more than 5 slots.
+  # Adds or removes captures on a draft import, within its 5 slots.
   class CapturesController < ApplicationController
     before_action :authenticate_user!
     before_action -> { head :not_found unless StatementImport.available_to?(current_user) }

@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 // Connects to data-controller="swipe"
-// Swipe a review line left to reveal its "Ignorer" action (tour 40), the shortcut iOS and
+// Swipe a review line left to reveal its "Ignorer" action, the shortcut iOS and
 // Android lists use. Only a clearly horizontal drag counts, so scrolling the list never
 // triggers it; the tap that ends a drag never opens the line.
 export default class extends Controller {

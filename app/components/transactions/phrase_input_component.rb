@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class Transactions::PhraseInputComponent < ViewComponent::Base
-  # statement_import: show the photo entry of tour 39 (the caller checks access).
+  # statement_import: show the photo button of the statement import (the caller checks access).
   def initialize(text:, phrase_context_key:, statement_import: false)
     @text = text
     @phrase_context_key = phrase_context_key

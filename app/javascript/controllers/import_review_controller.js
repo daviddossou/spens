@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 // Connects to data-controller="import-review"
-// The review list of a statement import (tour 39c). A category chip opens the shared category
+// The review list of a statement import. A category chip opens the shared category
 // picker of its side in one tap; the choice is saved on the line and the list re-renders.
 export default class extends Controller {
   static targets = ["picker"]

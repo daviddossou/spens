@@ -70,8 +70,8 @@ namespace :quick_entry do
     puts "system aliases: #{created} created, #{updated} updated, #{skipped} skipped (owned by learned rows)"
   end
 
-  # One-off (tour 39): statement labels say "aide familiale". Creates these system rows only if
-  # missing, so an admin edit or deletion elsewhere in the dictionary is never touched.
+  # One-off for the statement import: bank labels say "aide familiale". Creates these system
+  # rows only if missing, so an admin edit or deletion elsewhere in the dictionary is untouched.
   #   bin/rails quick_entry:add_family_aid_aliases
   desc "Add the family-aid phrases seen on statements to the system aliases"
   task add_family_aid_aliases: :environment do

@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-# Tour 39: import up to 5 statement captures. The import is a draft while the captures and the
-# account are chosen (39b), read in the background while the analysis screen polls, reviewed
-# (39c), then saved with a toast that can undo it (39d). Every step is tracked (Tracking).
+# Import up to 5 statement captures. The import is a draft while the captures and the account
+# are chosen, read in the background while the analysis screen polls, reviewed, then saved with
+# a toast that can undo it. Every step is tracked (StatementImports::Tracking).
 class StatementImportsController < ApplicationController
   before_action :authenticate_user!
   before_action :require_access

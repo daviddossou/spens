@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# The one field of the captures screen (39b): which account every line goes to.
+# The one field of the captures screen: which account every line goes to.
 class StatementImportAccountForm
   include ActiveModel::Model
   include ActiveModel::Attributes

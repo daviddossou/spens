@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# The PRO pill (tour 39): shown wherever a Pro feature appears, from the first day, so the day it
+# The PRO pill: shown wherever a Pro feature appears, from the first day, so the day it
 # turns paid nobody is surprised. `floating` pins it to the corner of an icon button.
 class Ui::ProBadgeComponent < ViewComponent::Base
   def initialize(floating: false)

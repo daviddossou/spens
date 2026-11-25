@@ -43,7 +43,7 @@ module StatementImportsHelper
     t("statement_imports.review.ignored.#{line.ignored_reason}", default: t("statement_imports.review.ignored.duplicate"))
   end
 
-  # Totals of the counted lines (tour 40): money out, money in, and transfers on their own.
+  # Totals of the counted lines: money out, money in, and transfers on their own.
   def statement_import_totals(lines)
     included = lines.select(&:included?)
     transfers, flows = included.partition(&:transfer?)

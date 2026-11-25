@@ -1,6 +1,6 @@
 <%# Shared form for create and edit. Locals form_url / form_method default to
     the create endpoint; edit passes the transaction path + :patch. A statement import line
-    (tour 39c) also passes cta_label and kind_switch_url, a lambda(kind) for the kind tabs. %>
+    also passes cta_label and kind_switch_url, a lambda(kind) for the kind tabs. %>
 <%
   filled = Array(@filled_fields)
   heading = transaction_form_heading(@form, person_locked: @person_locked, relation: @relation)

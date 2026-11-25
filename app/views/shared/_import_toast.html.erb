@@ -1,4 +1,4 @@
-<%# 39d: after saving an import, the count, the account, and a few seconds to undo it all. %>
+<%# After saving an import: the count, the account, and a few seconds to undo it all. %>
 <% toast = flash[:import_toast] %>
 <div class="import-toast" role="status" data-controller="toast">
   <%= render Ui::IconComponent.new(:check, classes: "import-toast__check", stroke_width: 2.4) %>

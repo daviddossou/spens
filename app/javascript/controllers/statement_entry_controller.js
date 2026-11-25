@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 // Connects to data-controller="statement-entry"
-// The photo button of the phrase band (tour 39a): opens the import action sheet, and sends the
+// The photo button of the phrase band: opens the import action sheet, and sends the
 // chosen captures as soon as the picker closes. Only the input that was used is posted.
 export default class extends Controller {
   static targets = ["button", "dialog", "form", "status", "origin"]
