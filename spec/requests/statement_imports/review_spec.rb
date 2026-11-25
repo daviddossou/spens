@@ -25,8 +25,6 @@ RSpec.describe "Statement import review", type: :request do
 
   describe "the review screen" do
     it "puts what needs a look first, keeps the rest by date, and sets aside the rest with a reason" do
-      line(label: "Picard", existing_transaction: create(:transaction, space: space, account: bank, amount: 2000), decision: "skipped",
-           flags: [ "already_in_spens" ])
       line(label: "Uber Eats", transaction_type_name: nil, category_source: nil)
       line(label: "Carrefour Market")
       line(label: "Amazon", status: "card_check", amount: 0)
@@ -35,28 +33,67 @@ RSpec.describe "Statement import review", type: :request do
       get statement_import_path(id: import.id)
 
       body = response.body
-      expect(body).to include("To check", "Already in your movements", "Choose a category", "The rest · by date")
-      expect(body).to include("card check", "declined", "Save 2 transactions")
-      expect(body.index("Picard")).to be < body.index("The rest · by date")
+      expect(body).to include("To check", "Choose a category", "The rest · by date", "Transfers")
+      expect(body).to include("card check", "declined", "Save 2 transactions", "Swipe a line left")
+      expect(body).not_to include("type=\"checkbox\"", "capture 1")
     end
 
-    it "leaves an amount in another currency unticked, with the reason" do
+    it "leaves out a likely duplicate until the user keeps it" do
+      existing = create(:transaction, space: space, account: bank, amount: 2000, transaction_date: Date.new(2026, 11, 2))
+      l = line(label: "Picard", existing_transaction: existing, decision: "skipped", flags: [ "already_in_spens" ])
+      line(label: "Carrefour")
+
+      get statement_import_path(id: import.id)
+      expect(response.body).to include("Already entered on", "on Bank", "Keep it anyway", "Save 1 transaction")
+
+      post keep_statement_import_line_path(statement_import_id: import.id, id: l.id), as: :turbo_stream
+
+      expect(l.reload).to be_included
+      expect(response.body).to include("Save 2 transactions")
+      expect(response.body).not_to include("Keep it anyway")
+    end
+
+    it "leaves out an amount in another currency until it is entered" do
       line(label: "NETFLIX.COM", currency: "USD", amount: -9.99, flags: [ "foreign_currency" ], decision: "skipped")
 
       get statement_import_path(id: import.id)
 
-      expect(response.body).to include("Amount in USD: enter it in FCFA to add it", "Save 0 transactions").or include("Nothing to save")
+      expect(response.body).to include("Amount in USD. Not added until the amount in FCFA is entered.", "Enter the amount", "Nothing to save")
+    end
+
+    it "forgets the swipe tip once closed" do
+      post dismiss_hint_statement_imports_path
+      get statement_import_path(id: import.id)
+
+      expect(user.reload.statement_import_hint_dismissed_at).to be_present
+      expect(response.body).not_to include("Swipe a line left")
     end
   end
 
   describe "editing lines" do
-    it "ticks and unticks a line, and the totals follow" do
+    it "ignores a line by swipe, and brings it back with Add" do
       l = line
 
-      patch statement_import_line_path(statement_import_id: import.id, id: l.id), params: { line: { decision: "skipped" } }, as: :turbo_stream
+      post ignore_statement_import_line_path(statement_import_id: import.id, id: l.id), params: { via: "swipe" }, as: :turbo_stream
 
-      expect(l.reload.decision).to eq("skipped")
-      expect(response.body).to include("Nothing to save")
+      expect(l.reload).to have_attributes(decision: "skipped")
+      expect(response.body).to include("removed by you", "Nothing to save")
+
+      post restore_statement_import_line_path(statement_import_id: import.id, id: l.id), as: :turbo_stream
+
+      expect(l.reload).to be_included
+    end
+
+    it "ignores a line from the edit sheet too" do
+      l = line
+
+      get edit_statement_import_line_path(statement_import_id: import.id, id: l.id)
+      expect(response.body).to include("Ignore this line")
+
+      post ignore_statement_import_line_path(statement_import_id: import.id, id: l.id), params: { via: "form" }
+
+      expect(response).to redirect_to(statement_import_path(id: import.id))
+      expect(l.reload).to be_removed
     end
 
     it "sets the category in one tap, as the user's choice" do
@@ -83,21 +120,12 @@ RSpec.describe "Statement import review", type: :request do
       expect(l.flags).not_to include("foreign_currency")
     end
 
-    it "brings back a line set aside" do
+    it "brings back a line set aside by the reader" do
       l = line(label: "Picard", status: "declined", amount: -615, decision: "skipped")
 
       post restore_statement_import_line_path(statement_import_id: import.id, id: l.id), as: :turbo_stream
 
       expect(l.reload).to have_attributes(status: "ok", decision: "pending")
-    end
-
-    it "unticks everything at once" do
-      line
-      line(label: "Picard")
-
-      patch uncheck_all_statement_import_lines_path(statement_import_id: import.id)
-
-      expect(import.lines.pluck(:decision).uniq).to eq([ "skipped" ])
     end
   end
 
@@ -105,7 +133,7 @@ RSpec.describe "Statement import review", type: :request do
     it "creates every ticked line as a transaction, moves the balance, and shows a toast to undo" do
       line(amount: -2000)
       line(amount: -3000, label: "Picard", fee: 100)
-      line(label: "Skipped", decision: "skipped")
+      line(label: "Removed", decision: "skipped", flags: [ "removed" ])
 
       expect do
         post save_statement_import_path(id: import.id)

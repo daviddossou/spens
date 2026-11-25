@@ -35,6 +35,7 @@ module StatementImportsHelper
     existing = line.existing_transaction
     t("statement_imports.review.reasons.#{reason}",
       date: existing ? l(existing.transaction_date, format: :day_month_short) : "",
+      account: existing&.account ? account_display_name(existing.account) : "",
       currency: line.currency, space_currency: get_currency_symbol(space.currency))
   end
 
@@ -42,10 +43,11 @@ module StatementImportsHelper
     t("statement_imports.review.ignored.#{line.ignored_reason}", default: t("statement_imports.review.ignored.duplicate"))
   end
 
-  # Totals of the ticked lines, money out and money in (transfers move nothing).
+  # Totals of the counted lines (tour 40): money out, money in, and transfers on their own.
   def statement_import_totals(lines)
-    included = lines.select { _1.proposed? && _1.included? && !_1.kind.to_s.start_with?("transfer") }
-    out, into = included.partition(&:money_out?)
-    [ out.sum { _1.amount.abs }, into.sum { _1.amount.abs } ]
+    included = lines.select(&:included?)
+    transfers, flows = included.partition(&:transfer?)
+    out, into = flows.partition(&:money_out?)
+    { spent: out.sum { _1.amount.abs }, received: into.sum { _1.amount.abs }, transfers: transfers.sum { _1.amount.abs } }
   end
 end

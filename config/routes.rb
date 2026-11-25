@@ -76,10 +76,14 @@ Rails.application.routes.draw do
         post :save
         post :undo
       end
+      post :dismiss_hint, on: :collection
       resources :captures, only: [ :create, :destroy ], module: :statement_imports
       resources :lines, only: [ :edit, :update ], module: :statement_imports do
-        post :restore, on: :member
-        patch :uncheck_all, on: :collection
+        member do
+          post :restore
+          post :ignore
+          post :keep
+        end
       end
     end
 

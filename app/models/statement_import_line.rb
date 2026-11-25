@@ -80,55 +80,96 @@ class StatementImportLine < ApplicationRecord
   FORM_FIELDS = %w[kind account_name from_account_name to_account_name fee_amount transaction_date
                    transaction_type_name label contact_name direction].freeze
 
-  def proposed?
-    status == "ok" && duplicate_of_id.nil?
-  end
+def proposed?
+  status == "ok" && duplicate_of_id.nil?
+end
 
-  # Ticked in the review list: saved by "Enregistrer N transactions".
-  def included?
-    decision == "pending"
-  end
+# In the list (tour 40): proposed, and not taken out by the user.
+def listed?
+  proposed? && !removed?
+end
 
-  def category_kind?
-    CATEGORY_KINDS.include?(kind)
-  end
+# Taken out by the user (swipe, or "Ignorer"): shown under "Ignorées", "retirée par toi".
+def removed?
+  flags.include?("removed")
+end
 
-  # Filed under "Other" because nothing matched: still ticked, shown under "À vérifier".
-  def fallback_category?
-    category_source == "fallback"
-  end
+# Counted and saved by "Enregistrer N transactions".
+def included?
+  listed? && decision == "pending"
+end
 
-  def money_out?
-    amount.to_d.negative?
-  end
+# Left out until the user decides: a likely duplicate (until "Garder quand même") or an
+# amount in another currency (until the amount in the space currency is entered).
+def awaiting_decision?
+  listed? && !included? && (already_in_spens? || flags.include?("foreign_currency"))
+end
 
-  # The first reason this line needs a look, or nil when it can go as it is.
-  def review_reason
-    return nil unless proposed?
+def already_in_spens?
+  flags.include?("already_in_spens") && !flags.include?("kept")
+end
 
-    (REVIEW_FLAGS & flags).first ||
-      ("no_category" if category_kind? && transaction_type_name.blank?) ||
-      ("fallback_category" if category_kind? && fallback_category?) ||
-      ("uncertain_category" if category_kind? && category_source == "ai") ||
-      ("needs_review" if needs_review)
-  end
+def category_kind?
+  CATEGORY_KINDS.include?(kind)
+end
 
-  # Why a read line is set aside: its status, or how it duplicates another line.
-  def ignored_reason
-    return nil if proposed?
-    return status unless %w[ok duplicate].include?(status)
+# Filed under "Other" because nothing matched: still counted, shown under "À vérifier".
+def fallback_category?
+  category_source == "fallback"
+end
 
-    (%w[fee_row same_event overlap same_reference] & flags).first || "duplicate"
-  end
+def money_out?
+  amount.to_d.negative?
+end
 
-  # A set-aside line the user can bring back into the list.
-  def addable?
-    !proposed? && amount.present? && !amount.zero? && !flags.include?("fee_row")
-  end
+def transfer?
+  kind == "transfer"
+end
 
-  def restore!
-    update!(status: "ok", duplicate_of: nil, decision: "pending", flags: flags | [ "restored" ])
-  end
+# The first reason this line needs a look, or nil when it can go as it is.
+def review_reason
+  return nil unless listed?
+
+  (REVIEW_FLAGS & flags - (already_in_spens? ? [] : [ "already_in_spens" ])).first ||
+    ("no_category" if category_kind? && transaction_type_name.blank?) ||
+    ("fallback_category" if category_kind? && fallback_category?) ||
+    ("uncertain_category" if category_kind? && category_source == "ai") ||
+    ("needs_review" if needs_review)
+end
+
+# Why a line is under "Ignorées": taken out by the user, its status, or how it duplicates another.
+def ignored_reason
+  return "removed" if removed?
+  return nil if proposed?
+  return status unless %w[ok duplicate].include?(status)
+
+  (%w[fee_row same_event overlap same_reference] & flags).first || "duplicate"
+end
+
+# A set-aside line the user can bring back into the list.
+def addable?
+  return true if removed?
+
+  !proposed? && amount.present? && !amount.zero? && !flags.include?("fee_row")
+end
+
+# Back into the list. A line the user chose to add is kept even if it looks like a duplicate;
+# an amount in another currency still waits for the amount in the space currency.
+def restore!
+  foreign = flags.include?("foreign_currency")
+  update!(status: "ok", duplicate_of: nil, decision: foreign ? "skipped" : "pending",
+          flags: (flags - [ "removed" ]) | [ "restored", ("kept" if flags.include?("already_in_spens")) ].compact)
+end
+
+# Swiped away or "Ignorer": out of the list and the totals, recoverable with "Ajouter".
+def remove!
+  update!(decision: "skipped", flags: flags | [ "removed" ])
+end
+
+# "Garder quand même" on a likely duplicate.
+def keep!
+  update!(decision: "pending", flags: flags | [ "kept" ])
+end
 
   # What saving this line sends to TransactionForm: the user's own edit when there is one.
   def payload

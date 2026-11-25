@@ -3,12 +3,7 @@
 <% content_for :header do %>
   <% if @import.ready? %>
     <%= render Navigation::DetailHeaderComponent.new(back_url: dashboard_path, align: :left,
-          title: t('statement_imports.review.title'), subtitle: statement_import_subtitle(@import)) do |header| %>
-      <% header.with_action do %>
-        <%= button_to t('statement_imports.review.uncheck_all'), uncheck_all_statement_import_lines_path(statement_import_id: @import.id),
-              method: :patch, class: "si-header-action", form_class: "si-header-action-form" %>
-      <% end %>
-    <% end %>
+          title: t('statement_imports.review.title'), subtitle: statement_import_subtitle(@import)) %>
   <% else %>
     <%= render Navigation::DetailHeaderComponent.new(
           back_url: dashboard_path, align: :left,

@@ -7,7 +7,7 @@ module StatementImports
     before_action :authenticate_user!
     before_action -> { head :not_found unless StatementImport.available_to?(current_user) }
     before_action :set_import
-    before_action :set_line, except: :uncheck_all
+    before_action :set_line
     helper_method :carried_params
 
     # An amount in another currency is never carried into the form: the user types it in the
@@ -32,8 +32,6 @@ module StatementImports
         if line_params.key?(:transaction_type_name)
           @line.update!(category_source: "user", flags: @line.flags | [ "category_changed" ])
           Tracking.line_changed(@line, change: "category", from_source: from_source)
-        elsif line_params.key?(:decision)
-          Tracking.line_changed(@line, change: @line.included? ? "ticked" : "unticked")
         end
         render_review_streams
       end
@@ -48,10 +46,22 @@ module StatementImports
       render_review_streams(open_ignored: true)
     end
 
-    def uncheck_all
-      @import.lines.proposed.where(decision: "pending").update_all(decision: "skipped") # rubocop:disable Rails/SkipsModelValidations
-      Tracking.untick_all(@import)
-      redirect_to statement_import_path(id: @import.id), status: :see_other
+    # Swiped away, or "Ignorer" on a likely duplicate, an amount in another currency, or in the
+    # edit sheet: out of the list and the totals, back with "Ajouter".
+    def ignore
+      @line.remove!
+      Tracking.line_changed(@line, change: "ignored", from_source: params[:via].presence || "button")
+      respond_to do |format|
+        format.turbo_stream { render_review_streams }
+        format.html { redirect_to statement_import_path(id: @import.id), status: :see_other }
+      end
+    end
+
+    # "Garder quand même" on a likely duplicate.
+    def keep
+      @line.keep!
+      Tracking.line_changed(@line, change: "kept")
+      render_review_streams
     end
 
     private
@@ -65,9 +75,7 @@ module StatementImports
     end
 
     def line_params
-      params.require(:line).permit(:decision, :transaction_type_name).tap do |p|
-        p.delete(:decision) unless %w[pending skipped].include?(p[:decision])
-      end
+      params.require(:line).permit(:transaction_type_name)
     end
 
     def transaction_params

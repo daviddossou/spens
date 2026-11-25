@@ -1,39 +1,38 @@
+<%# Tour 40: the label first, in full (2 lines), then the category, the date and the amount.
+    Tap = edit in the usual form; swipe left = "Ignorer". %>
 <% reason = line.review_reason %>
-<% currency = import.space.currency %>
-<li class="si-line<%= ' si-line--off' unless line.included? %>" id="<%= dom_id(line) %>">
-  <%= form_with url: statement_import_line_path(statement_import_id: import.id, id: line.id), method: :patch,
-        class: "si-line__check", data: { controller: "auto-submit" } do %>
-    <input type="hidden" name="line[decision]" value="skipped">
-    <input type="checkbox" name="line[decision]" value="pending" <%= "checked" if line.included? %>
-           aria-label="<%= t('statement_imports.review.include', label: line.label) %>"
-           data-action="change->auto-submit#submit">
+<% path_args = { statement_import_id: import.id, id: line.id } %>
+<li class="si-line<%= ' si-line--waiting' if line.awaiting_decision? %>" id="<%= dom_id(line) %>"
+    data-controller="swipe" data-swipe-url-value="<%= ignore_statement_import_line_path(**path_args) %>">
+  <%= button_to ignore_statement_import_line_path(**path_args), params: { via: "swipe" },
+        class: "si-line__swipe-action", form_class: "si-line__swipe-form", tabindex: -1, aria: { hidden: true } do %>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88"/></svg>
+    <span><%= t('statement_imports.review.ignore') %></span>
   <% end %>
 
-  <div class="si-line__body">
-    <%= link_to edit_statement_import_line_path(statement_import_id: import.id, id: line.id),
-          class: "si-line__main", data: { turbo_frame: "modal" } do %>
-      <span class="si-line__label"><%= line.label.presence || t('statement_imports.review.unlabelled') %></span>
-      <span class="si-line__amount<%= ' si-line__amount--in' unless line.money_out? %>"><%= statement_line_amount(line, import.space) %></span>
-    <% end %>
+  <div class="si-line__content" data-swipe-target="content">
+    <%= link_to line.label.presence || t('statement_imports.review.unlabelled'), edit_statement_import_line_path(**path_args),
+          class: "si-line__label", data: { turbo_frame: "modal", action: "click->swipe#guard" } %>
 
     <div class="si-line__meta">
       <% if line.category_kind? %>
-        <% uncertain = %w[no_category uncertain_category].include?(reason) || line.fallback_category? %>
+        <% uncertain = %w[no_category uncertain_category fallback_category].include?(reason) %>
         <button type="button" class="si-chip<%= ' si-chip--uncertain' if uncertain %>"
                 data-action="import-review#pickCategory"
                 data-kind="<%= line.kind %>" data-value="<%= line.transaction_type_name %>"
-                data-url="<%= statement_import_line_path(statement_import_id: import.id, id: line.id) %>">
+                data-url="<%= statement_import_line_path(**path_args) %>">
           <%= line.transaction_type_name.presence || t('statement_imports.review.choose_category') %><%= " ?" if uncertain && line.transaction_type_name.present? %>
           <%= render Ui::IconComponent.new(:chevron_down, stroke_width: 2) %>
         </button>
-      <% elsif line.kind == "transfer" %>
-        <span class="si-chip si-chip--static">
-          ⇄ <%= line.counterpart_account ? t("statement_imports.review.transfer_#{line.money_out? ? 'to' : 'from'}", account: account_display_name(line.counterpart_account)) : t('statement_imports.review.transfer') %>
-        </span>
+      <% elsif line.transfer? %>
+        <span class="si-chip si-chip--transfer">⇄ <%= line.counterpart_account ? t("statement_imports.review.transfer_#{line.money_out? ? 'to' : 'from'}", account: account_display_name(line.counterpart_account)) : t('statement_imports.review.transfer') %></span>
       <% else %>
         <span class="si-chip si-chip--static"><%= t("statement_imports.review.kind_#{line.kind}", name: line.debt&.name) %></span>
       <% end %>
-      <span class="si-line__date"><%= statement_line_date(line) %><% if show_capture %> · <%= t('statement_imports.analysis.capture', number: line.capture_index + 1).downcase %><% end %></span>
+      <span class="si-line__date"><%= statement_line_date(line) %></span>
+      <span class="si-line__amount si-line__amount--<%= line.transfer? ? 'transfer' : (line.money_out? ? 'out' : 'in') %>">
+        <%= "⇄ " if line.transfer? %><%= line.transfer? ? money(line.amount.abs, line.currency.presence || import.space.currency) : statement_line_amount(line, import.space) %>
+      </span>
     </div>
 
     <% if (note = statement_line_note(line, import.space)) %>
@@ -41,6 +40,22 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/></svg>
         <span><%= note %></span>
       </p>
+    <% end %>
+
+    <% if line.awaiting_decision? %>
+      <div class="si-line__choices">
+        <% if line.flags.include?("foreign_currency") %>
+          <%= button_to t('statement_imports.review.ignore'), ignore_statement_import_line_path(**path_args),
+                class: "si-choice", form_class: "si-choice-form" %>
+          <%= link_to t('statement_imports.review.enter_amount'), edit_statement_import_line_path(**path_args),
+                class: "si-choice si-choice--primary", data: { turbo_frame: "modal" } %>
+        <% else %>
+          <%= button_to t('statement_imports.review.keep'), keep_statement_import_line_path(**path_args),
+                class: "si-choice", form_class: "si-choice-form" %>
+          <%= button_to t('statement_imports.review.ignore'), ignore_statement_import_line_path(**path_args),
+                class: "si-choice si-choice--primary", form_class: "si-choice-form" %>
+        <% end %>
+      </div>
     <% end %>
   </div>
 </li>

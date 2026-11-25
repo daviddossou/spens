@@ -28,10 +28,6 @@ module StatementImports
       track(import, "statement_import_read", status: import.status, seconds: seconds.round(1), **files(import), **reads(import), **lines(import))
     end
 
-    def untick_all(import)
-      track(import, "statement_import_line_changed", change: "untick_all")
-    end
-
     def line_changed(line, change:, from_source: nil)
       track(line.statement_import, "statement_import_line_changed",
             change: change, kind: line.kind, from_source: from_source, review_reason: line.review_reason)
@@ -44,7 +40,9 @@ module StatementImports
       track(import, "statement_import_saved",
             count: result.count, minutes_to_save: minutes, **files(import),
             proposed: lines.count(&:proposed?),
-            unticked: lines.count { _1.proposed? && _1.decision == "skipped" },
+            removed: lines.count(&:removed?),
+            left_awaiting: lines.count(&:awaiting_decision?),
+            kept_duplicates: kept.count { _1.flags.include?("kept") },
             edited: kept.count { _1.flags.include?("edited") },
             restored: kept.count { _1.flags.include?("restored") },
             category_changed: kept.count { _1.flags.include?("category_changed") },

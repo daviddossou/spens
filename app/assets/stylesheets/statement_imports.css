@@ -625,19 +625,6 @@
   padding-bottom: 8rem;
 }
 
-.si-header-action-form {
-  margin: 0;
-}
-
-.si-header-action {
-  padding: 0.5rem 0;
-  border: 0;
-  background: transparent;
-  color: var(--color-primary);
-  font-weight: var(--font-weight-semibold);
-  cursor: pointer;
-}
-
 .si-review {
   display: flex;
   flex-direction: column;
@@ -671,28 +658,37 @@
   white-space: nowrap;
 }
 
-.si-summary__count span,
-.si-summary__totals {
+.si-summary__count span {
   font-size: var(--font-size-body);
   color: var(--color-text-secondary);
 }
 
 .si-summary__totals {
-  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.5rem;
+  margin: 0.5rem 0 0;
 }
 
-.si-summary__totals strong {
-  color: var(--color-charcoal-black);
+.si-summary__totals dt {
+  font-size: var(--font-size-label);
+  color: var(--text-muted);
+}
+
+.si-summary__totals dd {
+  margin: 0.125rem 0 0;
+  font-weight: var(--font-weight-bold);
   font-variant-numeric: tabular-nums;
-}
-
-.si-summary__sep {
-  display: inline-block;
-  width: 0.75rem;
+  color: var(--color-charcoal-black);
+  white-space: nowrap;
 }
 
 .si-summary__totals .si-summary__in {
   color: var(--color-success-dark);
+}
+
+.si-summary__totals .si-summary__transfer {
+  color: var(--color-primary);
 }
 
 .si-summary__pills {
@@ -754,9 +750,8 @@
 }
 
 .si-line {
-  display: flex;
-  gap: 0.75rem;
-  padding: 0.875rem;
+  position: relative;
+  overflow: hidden;
   border-top: 1px solid var(--color-separator);
 }
 
@@ -764,64 +759,150 @@
   border-top: 0;
 }
 
-.si-line__check {
+/* Tour 40: the "Ignorer" action revealed by a left swipe */
+.si-line__swipe-form {
+  position: absolute;
+  inset: 0 0 0 auto;
+  width: 96px;
   margin: 0;
-  padding-top: 1px;
 }
 
-.si-line__check input {
-  width: 20px;
-  height: 20px;
-  margin: 0;
-  accent-color: var(--color-primary);
+.si-line__swipe-action {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: var(--color-danger-dark);
+  color: var(--color-white);
+  font-weight: var(--font-weight-semibold);
   cursor: pointer;
 }
 
-.si-line__body {
-  flex: 1;
-  min-width: 0;
+.si-line__swipe-action svg {
+  width: 22px;
+  height: 22px;
 }
 
-.si-line__main {
-  display: flex;
-  justify-content: space-between;
-  gap: 0.75rem;
-  color: var(--color-charcoal-black);
-  text-decoration: none;
+.si-line__content {
+  position: relative;
+  z-index: 1;
+  padding: 0.875rem 1rem;
+  background: var(--color-white);
+  touch-action: pan-y;
+  user-select: none;
+  -webkit-user-select: none;
+  transition: transform 200ms ease-out;
+}
+
+.si-lines--review .si-line__content {
+  background: var(--color-white);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .si-line__content { transition: none; }
 }
 
 .si-line__label {
+  display: -webkit-box;
   overflow: hidden;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  color: var(--color-charcoal-black);
   font-weight: var(--font-weight-semibold);
+  line-height: 1.35;
+  text-decoration: none;
+  word-break: break-word;
+}
+
+/* The whole line opens the edit sheet; the chip and the buttons stay above it */
+.si-line__label::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+
+.si-line__meta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.si-line__meta .si-chip {
+  position: relative;
+  z-index: 2;
+  flex: 0 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
   text-overflow: ellipsis;
+}
+
+.si-line__meta .si-chip svg {
+  flex-shrink: 0;
+}
+
+.si-line__date {
+  font-size: var(--font-size-label);
+  color: var(--text-muted);
   white-space: nowrap;
 }
 
 .si-line__amount {
-  flex-shrink: 0;
+  margin-left: auto;
   font-weight: var(--font-weight-bold);
   font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  color: var(--color-charcoal-black);
 }
 
 .si-line__amount--in {
   color: var(--color-success-dark);
 }
 
-.si-line--off .si-line__label,
-.si-line--off .si-line__amount {
+.si-line__amount--transfer {
+  color: var(--color-primary);
+}
+
+.si-line--waiting .si-line__amount {
   color: var(--text-muted);
 }
 
-.si-line--off .si-line__amount {
-  text-decoration: line-through;
+.si-line__choices {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
 }
 
-.si-line__meta {
+.si-choice-form {
+  margin: 0;
+}
+
+.si-choice {
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
-  gap: 0.5rem;
-  margin-top: 0.375rem;
+  justify-content: center;
+  width: 100%;
+  min-height: 2.75rem;
+  border: 0;
+  border-radius: var(--radius-md);
+  background: var(--color-surface-sunken-2);
+  color: var(--color-charcoal-black);
+  font-weight: var(--font-weight-semibold);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.si-choice--primary {
+  background: var(--color-primary);
+  color: var(--color-white);
 }
 
 .si-chip {
@@ -855,9 +936,10 @@
   cursor: default;
 }
 
-.si-line__date {
-  font-size: var(--font-size-label);
-  color: var(--text-muted);
+.si-chip--transfer {
+  background: var(--color-pro-wash);
+  color: var(--color-primary);
+  cursor: default;
 }
 
 .si-line__note {
@@ -1058,4 +1140,71 @@
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   word-break: break-word;
+}
+
+/* Tour 40: the one-time swipe tip */
+.si-hint {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.625rem;
+  padding: 0.75rem 0.875rem;
+  border: 1px solid var(--color-border-soft);
+  border-radius: var(--radius-lg);
+  background: var(--color-white);
+}
+
+.si-hint > svg {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  margin-top: 1px;
+  color: var(--color-primary);
+}
+
+.si-hint p {
+  flex: 1;
+  margin: 0;
+  font-size: var(--font-size-body);
+  color: var(--color-text-secondary);
+}
+
+.si-hint strong {
+  color: var(--color-charcoal-black);
+}
+
+.si-hint__close {
+  display: inline-flex;
+  padding: 0.25rem;
+  border: 0;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.si-hint__close svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* "Ignorer cette ligne" under the edit form */
+.si-ignore-line-form {
+  margin: 0.75rem 0 0;
+  text-align: center;
+}
+
+.si-ignore-line {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border: 0;
+  background: transparent;
+  color: var(--color-danger-dark);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+}
+
+.si-ignore-line svg {
+  width: 20px;
+  height: 20px;
 }

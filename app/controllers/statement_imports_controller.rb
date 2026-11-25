@@ -6,7 +6,7 @@
 class StatementImportsController < ApplicationController
   before_action :authenticate_user!
   before_action :require_access
-  before_action :set_import, except: :create
+  before_action :set_import, except: %i[create dismiss_hint]
 
   def create
     added = StatementImports::AddCaptures.call(params[:captures], room: StatementImport::MAX_CAPTURES)
@@ -66,6 +66,12 @@ class StatementImportsController < ApplicationController
                                "account" => @import.account && helpers.account_display_name(@import.account) }
       redirect_to(@import.account ? account_path(id: @import.account_id) : dashboard_path, status: :see_other)
     end
+  end
+
+  # The swipe hint of the review screen, closed for good.
+  def dismiss_hint
+    current_user.update!(statement_import_hint_dismissed_at: Time.current)
+    head :no_content
   end
 
   def undo
