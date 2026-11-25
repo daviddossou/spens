@@ -1,0 +1,46 @@
+<% reason = line.review_reason %>
+<% currency = import.space.currency %>
+<li class="si-line<%= ' si-line--off' unless line.included? %>" id="<%= dom_id(line) %>">
+  <%= form_with url: statement_import_line_path(statement_import_id: import.id, id: line.id), method: :patch,
+        class: "si-line__check", data: { controller: "auto-submit" } do %>
+    <input type="hidden" name="line[decision]" value="skipped">
+    <input type="checkbox" name="line[decision]" value="pending" <%= "checked" if line.included? %>
+           aria-label="<%= t('statement_imports.review.include', label: line.label) %>"
+           data-action="change->auto-submit#submit">
+  <% end %>
+
+  <div class="si-line__body">
+    <%= link_to edit_statement_import_line_path(statement_import_id: import.id, id: line.id),
+          class: "si-line__main", data: { turbo_frame: "modal" } do %>
+      <span class="si-line__label"><%= line.label.presence || t('statement_imports.review.unlabelled') %></span>
+      <span class="si-line__amount<%= ' si-line__amount--in' unless line.money_out? %>"><%= statement_line_amount(line, import.space) %></span>
+    <% end %>
+
+    <div class="si-line__meta">
+      <% if line.category_kind? %>
+        <% uncertain = %w[no_category uncertain_category].include?(reason) %>
+        <button type="button" class="si-chip<%= ' si-chip--uncertain' if uncertain %>"
+                data-action="import-review#pickCategory"
+                data-kind="<%= line.kind %>" data-value="<%= line.transaction_type_name %>"
+                data-url="<%= statement_import_line_path(statement_import_id: import.id, id: line.id) %>">
+          <%= line.transaction_type_name.presence || t('statement_imports.review.choose_category') %><%= " ?" if uncertain && line.transaction_type_name.present? %>
+          <%= render Ui::IconComponent.new(:chevron_down, stroke_width: 2) %>
+        </button>
+      <% elsif line.kind == "transfer" %>
+        <span class="si-chip si-chip--static">
+          ⇄ <%= line.counterpart_account ? t("statement_imports.review.transfer_#{line.money_out? ? 'to' : 'from'}", account: account_display_name(line.counterpart_account)) : t('statement_imports.review.transfer') %>
+        </span>
+      <% else %>
+        <span class="si-chip si-chip--static"><%= t("statement_imports.review.kind_#{line.kind}", name: line.debt&.name) %></span>
+      <% end %>
+      <span class="si-line__date"><%= statement_line_date(line) %><% if show_capture %> · <%= t('statement_imports.analysis.capture', number: line.capture_index + 1).downcase %><% end %></span>
+    </div>
+
+    <% if (note = statement_line_note(line, import.space)) %>
+      <p class="si-line__note">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/></svg>
+        <span><%= note %></span>
+      </p>
+    <% end %>
+  </div>
+</li>

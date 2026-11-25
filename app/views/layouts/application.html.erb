@@ -62,6 +62,7 @@
            data-time-zone-url-value="<%= time_zone_path %>"></div>
 
       <%= render Pwa::InstallBannerComponent.new %>
+      <%= render "shared/import_toast" if flash[:import_toast].is_a?(Hash) %>
       <%# A focused task (a statement import) keeps its own bottom bar instead of the tabs. %>
       <%= render Navigation::BottomNavComponent.new(current_path: request.path) unless content_for?(:focused) %>
 

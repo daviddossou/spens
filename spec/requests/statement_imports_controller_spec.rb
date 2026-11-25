@@ -6,7 +6,7 @@ RSpec.describe StatementImportsController, type: :request do
   include Devise::Test::IntegrationHelpers
   include ActiveJob::TestHelper
 
-  let(:user) { create(:user, :admin) }
+  let(:user) { create(:user) }
   let(:space) { user.spaces.first }
   let!(:bank) { create(:account, space: space, name: "Bank") }
 
@@ -20,7 +20,7 @@ RSpec.describe StatementImportsController, type: :request do
   end
 
   it "is not reachable by users without access" do
-    sign_in create(:user), scope: :user
+    allow_any_instance_of(User).to receive(:can_use_statement_import?).and_return(false)
 
     post statement_imports_path, params: { captures: [ image_upload ] }
 

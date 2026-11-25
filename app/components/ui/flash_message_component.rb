@@ -10,7 +10,8 @@ class Ui::FlashMessageComponent < ViewComponent::Base
   attr_reader :flash_hash
 
   def flash_messages
-    flash_hash.map do |type, message|
+    # Structured entries (the import toast) render elsewhere.
+    flash_hash.select { |_, message| message.is_a?(String) }.map do |type, message|
       {
         type: type.to_sym,
         message: message,

@@ -73,8 +73,14 @@ Rails.application.routes.draw do
       member do
         get :progress
         post :analyze
+        post :save
+        post :undo
       end
       resources :captures, only: [ :create, :destroy ], module: :statement_imports
+      resources :lines, only: [ :edit, :update ], module: :statement_imports do
+        post :restore, on: :member
+        patch :uncheck_all, on: :collection
+      end
     end
 
     # Goals

@@ -85,6 +85,7 @@
   --color-pro-line: #e1e4f5;
   --color-add-line: #b9bfe0; /* dashed "add" tiles */
   --color-add-wash: #f7f8fe;
+  --color-toast-action: #a9b4f5; /* action text on the dark toast */
   --color-neutral-pill: #e4e6ee; /* inactive icon pill / segment */
   --color-primary-tint: #eef0f8; /* softest indigo wash for info encarts */
   --color-primary-ink: #3d4a8f; /* readable indigo text on the tint */

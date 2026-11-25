@@ -115,10 +115,10 @@ class User < ApplicationRecord
     acquisition["consent"] == true
   end
 
-  # Single gate for the first Pro feature. Admins only while the screens are being built; then
-  # free for everyone at launch.
+  # Single gate for the first Pro feature; free for everyone at launch. The day it turns paid,
+  # only this changes.
   def can_use_statement_import?
-    admin?
+    true
   end
 
   private

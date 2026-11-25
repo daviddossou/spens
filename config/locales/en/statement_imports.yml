@@ -13,6 +13,7 @@ en:
             base:
               unavailable: "Statement import is not available right now."
   statement_imports:
+    received_word: "received"
     title: "Import a statement"
     new_import: "New import"
     free_during_launch: "Free during launch"
@@ -50,8 +51,6 @@ en:
     analysis:
       title_reading: "Reading the captures…"
       text_reading: "We read every line, set aside declined ones and duplicates, then sort them."
-      title_ready: "Captures read"
-      text_ready: "The line-by-line review is coming here soon."
       title_failed: "Could not read"
       text_failed: "We could not read these captures. Try again with sharper ones."
       capture: "Capture %{number}"
@@ -65,7 +64,93 @@ en:
     flash:
       unreadable: "These files cannot be read. Pick images or PDF statements under 10 MB."
       choose_account: "Choose the account of this statement."
+      lines_incomplete:
+        one: "%{count} ticked line is incomplete (category or account). Complete it or untick it."
+        other: "%{count} ticked lines are incomplete (category or account). Complete them or untick them."
+      undone: "Import undone: its transactions were removed."
+      undo_too_late: "This import can no longer be undone at once. Delete the transactions one by one."
       pdf_too_long:
         one: "This PDF has %{pages} pages and only %{count} slot is left in this import. Export a shorter period."
         other: "This PDF has %{pages} pages and only %{count} slots are left in this import. Export a shorter period."
         zero: "This PDF has %{pages} pages and this import is full. Start a second import."
+    review:
+      title: "Check the import"
+      uncheck_all: "Untick all"
+      transactions:
+        one: "%{count} transaction"
+        other: "%{count} transactions"
+        zero: "No transactions"
+      read_from:
+        one: "read from %{count} capture"
+        other: "read from %{count} captures"
+      spent: "Spent"
+      received: "Received"
+      pill_review:
+        one: "%{count} to check"
+        other: "%{count} to check"
+      pill_existing:
+        one: "%{count} already entered"
+        other: "%{count} already entered"
+      pill_ignored:
+        one: "%{count} set aside"
+        other: "%{count} set aside"
+      to_review: "To check"
+      rest: "The rest · by date"
+      overlap_note: "Lines shared by two captures only count once. Lines cut at the edge of a capture are read from the next one."
+      ignored_title:
+        one: "Set aside · %{count}"
+        other: "Set aside · %{count}"
+      collapse: "Collapse"
+      expand: "Expand"
+      add: "Add"
+      include: "Include %{label} in the import"
+      unlabelled: "No label"
+      no_date: "no date"
+      choose_category: "Choose"
+      transfer: "Transfer"
+      transfer_to: "to %{account}"
+      transfer_from: "from %{account}"
+      kind_debt_in: "Debt · received from %{name}"
+      kind_debt_out: "Debt · paid to %{name}"
+      kind_label:
+        expense: "Expense"
+        income: "Income"
+        transfer: "Transfer"
+        debt_in: "Debt"
+        debt_out: "Debt"
+      save:
+        one: "Save %{count} transaction"
+        other: "Save %{count} transactions"
+        zero: "Nothing to save"
+      nothing_saved_yet: "Nothing is saved before this button."
+      validate: "Done"
+      foreign_amount: "Amount read: %{amount}. Enter it in your space currency."
+      foreign_banner_html: "<strong>This statement is in %{currency}, your space is in %{space_currency}.</strong> Amounts are not converted: enter them one by one, or import this statement into a %{currency} space."
+      reasons:
+        already_in_spens: "Already in your movements on %{date}: unticked"
+        foreign_currency: "Amount in %{currency}: enter it in %{space_currency} to add it"
+        own_name: "In your own name: a transfer from one of your accounts? Tap to pick it"
+        unbacked_transfer: "Saved as an expense: tap if it is a transfer between your accounts"
+        unbacked_debt: "A loan or a repayment? Tap to say which"
+        debt_hint: "Mentions a debt: tap if it is a repayment"
+        unpaired_duplicate: "Maybe a duplicate of another line"
+        no_category: "Choose a category"
+        uncertain_category: "Unsure category: tap to choose"
+        needs_review: "Line to check"
+      ignored:
+        declined: "declined"
+        card_check: "card check"
+        pending: "pending"
+        not_transaction: "not a transaction"
+        cut_off: "cut off, read from another capture"
+        fee_row: "fee added to its operation"
+        same_event: "same operation in another currency"
+        overlap: "already on another capture"
+        same_reference: "already on another capture"
+        duplicate: "duplicate"
+    toast:
+      added:
+        one: "%{count} transaction added"
+        other: "%{count} transactions added"
+      on_account: "on the %{account} account"
+      undo: "Undo"

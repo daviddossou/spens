@@ -41,6 +41,7 @@ module StatementImports
         import.update!(status: "failed", error: import.reads.filter_map { _1["error"] }.uniq.join("; "))
       else
         Proposer.call(import)
+        Categorizer.call(import)
         import.update!(status: "ready")
       end
     end

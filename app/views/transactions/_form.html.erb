@@ -1,5 +1,6 @@
 <%# Shared form for create and edit. Locals form_url / form_method default to
-    the create endpoint; edit passes the transaction path + :patch. %>
+    the create endpoint; edit passes the transaction path + :patch. A statement import line
+    (tour 39c) also passes cta_label and kind_switch_url, a lambda(kind) for the kind tabs. %>
 <%
   filled = Array(@filled_fields)
   heading = transaction_form_heading(@form, person_locked: @person_locked, relation: @relation)
@@ -29,8 +30,8 @@
         transaction_form_date_today_value: t('transactions.form.date_hint_today'),
         transaction_form_date_yesterday_value: t('transactions.form.date_hint_yesterday'),
         transaction_form_balances_value: current_space.accounts.map { |a| [ a.name, a.balance ] }.to_h.to_json,
-        transaction_form_cta_template_value: t('transactions.form.cta_save_amount', amount: '%{amount}'),
-        transaction_form_cta_empty_value: (@form.editing? ? t('transactions.edit.update_transaction') : t('transactions.form.cta_need_amount')),
+        transaction_form_cta_template_value: local_assigns[:cta_label] || t('transactions.form.cta_save_amount', amount: '%{amount}'),
+        transaction_form_cta_empty_value: local_assigns[:cta_label] || (@form.editing? ? t('transactions.edit.update_transaction') : t('transactions.form.cta_need_amount')),
         transaction_form_cta_need_account_value: (t('transactions.form.cta_need_account') if @form.account_required),
         debt_fields_debts_by_name_value: @form.debts_by_name.to_json,
         debt_fields_balances_value: @form.debt_balances_by_name.to_json,
@@ -59,7 +60,7 @@
 
     <div class="transaction-form__kind">
       <%= render Transactions::KindSelectorComponent.new(label: t('transactions.form.kind_label', default: 'Type'),
-  options: transaction_top_level_options(@form).map { |opt| opt.merge(url: transaction_kind_switch_path(@form, opt[:kind]), filled: opt[:selected] && filled.include?('kind')) },
+  options: transaction_top_level_options(@form).map { |opt| opt.merge(url: local_assigns[:kind_switch_url]&.call(opt[:kind]) || transaction_kind_switch_path(@form, opt[:kind]), filled: opt[:selected] && filled.include?('kind')) },
   data: { turbo_frame: "transaction_form", action: "kind-switch#switch" }) %>
     </div>
 
@@ -265,7 +266,7 @@
     <!-- Submit: carries the amount, and names what's missing when empty -->
     <div class="transaction-form__actions">
       <%= render Ui::ButtonComponent.new(
-        text: @form.editing? ? t('transactions.edit.update_transaction') : t('transactions.form.cta_need_amount'),
+        text: local_assigns[:cta_label] || (@form.editing? ? t('transactions.edit.update_transaction') : t('transactions.form.cta_need_amount')),
         type: :submit,
         variant: :primary,
         size: :lg,

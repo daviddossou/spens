@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_24_230304) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_25_103809) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -339,6 +339,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_24_230304) do
     t.jsonb "final"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "transaction_type_name"
+    t.string "category_source"
+    t.jsonb "categorization"
     t.index ["account_id"], name: "index_statement_import_lines_on_account_id"
     t.index ["counterpart_account_id"], name: "index_statement_import_lines_on_counterpart_account_id"
     t.index ["created_transaction_id"], name: "index_statement_import_lines_on_created_transaction_id"

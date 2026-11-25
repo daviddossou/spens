@@ -1,0 +1,11 @@
+<%# 39d: after saving an import, the count, the account, and a few seconds to undo it all. %>
+<% toast = flash[:import_toast] %>
+<div class="import-toast" role="status" data-controller="toast">
+  <%= render Ui::IconComponent.new(:check, classes: "import-toast__check", stroke_width: 2.4) %>
+  <div class="import-toast__text">
+    <strong><%= t('statement_imports.toast.added', count: toast["count"]) %></strong>
+    <% if toast["account"].present? %><span><%= t('statement_imports.toast.on_account', account: toast["account"]) %></span><% end %>
+  </div>
+  <%= button_to t('statement_imports.toast.undo'), undo_statement_import_path(id: toast["id"]),
+        class: "import-toast__undo", form_class: "import-toast__undo-form" %>
+</div>

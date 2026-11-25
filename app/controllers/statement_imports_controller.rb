@@ -18,9 +18,34 @@ def create
   end
 end
 
-  def show
-    @account_rows = helpers.picker_account_rows(account_suggestions, current_space.currency)
+def show
+  @account_rows = helpers.picker_account_rows(account_suggestions, current_space.currency) if @import.draft?
+  @category_rows = %w[expense income].index_with { |kind| helpers.picker_category_rows(TransactionTypeSuggestionsService.new(current_space, kind).options) } if @import.ready?
+end
+
+# "Enregistrer N transactions": back to the account, with a toast that can undo the whole import.
+def save
+  return redirect_to(statement_import_path(id: @import.id), status: :see_other) unless @import.ready?
+
+  result = StatementImports::Save.call(@import)
+  if result.invalid_lines.any?
+    redirect_to statement_import_path(id: @import.id), status: :see_other,
+                alert: t("statement_imports.flash.lines_incomplete", count: result.invalid_lines.size)
+  else
+    Analytics.track(current_user, "statement_import_saved", count: result.count, captures: @import.captures.size)
+    flash[:import_toast] = { "id" => @import.id, "count" => result.count, "account" => @import.account && helpers.account_display_name(@import.account) }
+    redirect_to(@import.account ? account_path(id: @import.account_id) : dashboard_path, status: :see_other)
   end
+end
+
+def undo
+  if StatementImports::Undo.call(@import)
+    Analytics.track(current_user, "statement_import_undone")
+    redirect_to dashboard_path, status: :see_other, notice: t("statement_imports.flash.undone")
+  else
+    redirect_to dashboard_path, status: :see_other, alert: t("statement_imports.flash.undo_too_late")
+  end
+end
 
   # Polled by the analysis screen; also tells it where to go once everything is read.
   def progress

@@ -13,6 +13,7 @@ fr:
             base:
               unavailable: "L'import de relevés n'est pas disponible pour le moment."
   statement_imports:
+    received_word: "reçu"
     title: "Importer un relevé"
     new_import: "Nouvel import"
     free_during_launch: "Gratuit pendant le lancement"
@@ -50,8 +51,6 @@ fr:
     analysis:
       title_reading: "Lecture des captures…"
       text_reading: "On lit chaque ligne, on écarte les refus et les doublons, puis on classe."
-      title_ready: "Captures lues"
-      text_ready: "La vérification ligne par ligne arrive bientôt ici."
       title_failed: "Lecture impossible"
       text_failed: "On n'a pas réussi à lire ces captures. Réessaie avec des captures plus nettes."
       capture: "Capture %{number}"
@@ -65,7 +64,93 @@ fr:
     flash:
       unreadable: "Ces fichiers ne peuvent pas être lus. Choisis des images ou des relevés PDF de moins de 10 Mo."
       choose_account: "Choisis le compte de ce relevé."
+      lines_incomplete:
+        one: "%{count} ligne cochée est incomplète (catégorie ou compte). Complète-la ou décoche-la."
+        other: "%{count} lignes cochées sont incomplètes (catégorie ou compte). Complète-les ou décoche-les."
+      undone: "Import annulé : ses transactions ont été retirées."
+      undo_too_late: "Cet import ne peut plus être annulé d'un coup. Supprime les transactions une par une."
       pdf_too_long:
         one: "Ce PDF fait %{pages} pages et il ne reste qu'%{count} place dans cet import. Exporte une période plus courte."
         other: "Ce PDF fait %{pages} pages et il ne reste que %{count} places dans cet import. Exporte une période plus courte."
         zero: "Ce PDF fait %{pages} pages et cet import est plein. Lance un second import."
+    review:
+      title: "Vérifie l'import"
+      uncheck_all: "Tout décocher"
+      transactions:
+        one: "%{count} transaction"
+        other: "%{count} transactions"
+        zero: "Aucune transaction"
+      read_from:
+        one: "lue sur %{count} capture"
+        other: "lues sur %{count} captures"
+      spent: "Dépenses"
+      received: "Revenus"
+      pill_review:
+        one: "%{count} à vérifier"
+        other: "%{count} à vérifier"
+      pill_existing:
+        one: "%{count} déjà saisie"
+        other: "%{count} déjà saisies"
+      pill_ignored:
+        one: "%{count} ignorée"
+        other: "%{count} ignorées"
+      to_review: "À vérifier"
+      rest: "Le reste · par date"
+      overlap_note: "Les lignes communes à deux captures ne comptent qu'une fois. Les lignes coupées au bord d'une capture sont lues sur la capture voisine."
+      ignored_title:
+        one: "Ignorée · %{count}"
+        other: "Ignorées · %{count}"
+      collapse: "Replier"
+      expand: "Déplier"
+      add: "Ajouter"
+      include: "Ajouter %{label} à l'import"
+      unlabelled: "Sans libellé"
+      no_date: "sans date"
+      choose_category: "Choisir"
+      transfer: "Virement"
+      transfer_to: "vers %{account}"
+      transfer_from: "depuis %{account}"
+      kind_debt_in: "Dette · reçu de %{name}"
+      kind_debt_out: "Dette · versé à %{name}"
+      kind_label:
+        expense: "Dépense"
+        income: "Revenu"
+        transfer: "Transfert"
+        debt_in: "Dette"
+        debt_out: "Dette"
+      save:
+        one: "Enregistrer %{count} transaction"
+        other: "Enregistrer %{count} transactions"
+        zero: "Rien à enregistrer"
+      nothing_saved_yet: "Rien n'est enregistré avant ce bouton."
+      validate: "Valider"
+      foreign_amount: "Montant lu : %{amount}. Indique-le dans la devise de ton espace."
+      foreign_banner_html: "<strong>Ce relevé est en %{currency}, ton espace est en %{space_currency}.</strong> Les montants ne sont pas convertis : indique-les un par un, ou importe ce relevé dans un espace en %{currency}."
+      reasons:
+        already_in_spens: "Déjà dans tes mouvements le %{date} : décoché"
+        foreign_currency: "Montant en %{currency} : indique le montant en %{space_currency} pour l'ajouter"
+        own_name: "À ton nom : un virement depuis un de tes comptes ? Touche pour le choisir"
+        unbacked_transfer: "Classé en dépense : touche si c'est un virement entre tes comptes"
+        unbacked_debt: "Prêt ou remboursement ? Touche pour le préciser"
+        debt_hint: "Parle d'une dette : touche si c'est un remboursement"
+        unpaired_duplicate: "Peut-être un doublon d'une autre ligne"
+        no_category: "Catégorie à choisir"
+        uncertain_category: "Catégorie incertaine : touche pour choisir"
+        needs_review: "Ligne à vérifier"
+      ignored:
+        declined: "refusée"
+        card_check: "vérification de carte"
+        pending: "en attente"
+        not_transaction: "pas une transaction"
+        cut_off: "coupée, lue sur une autre capture"
+        fee_row: "frais ajoutés à leur opération"
+        same_event: "même opération dans une autre devise"
+        overlap: "déjà sur une autre capture"
+        same_reference: "déjà sur une autre capture"
+        duplicate: "doublon"
+    toast:
+      added:
+        one: "%{count} transaction ajoutée"
+        other: "%{count} transactions ajoutées"
+      on_account: "sur le compte %{account}"
+      undo: "Annuler"

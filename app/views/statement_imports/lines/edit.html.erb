@@ -1,0 +1,24 @@
+<%# 39c Modifier une ligne: the usual transaction form, without the phrase band. "Valider" only
+    updates the draft line. %>
+<%= turbo_frame_tag "modal" do %>
+  <div class="page-container page-container--narrow">
+    <%= render Ui::PageHeaderComponent.new(classes: "transaction-form__header") do %>
+      <h2 class="transaction-form__title si-edit-title"><%= @line.label.presence || t('statement_imports.review.unlabelled') %></h2>
+      <p class="transaction-form__subtitle">
+        <%= t("statement_imports.review.kind_label.#{@form.kind}", default: @form.kind.to_s.humanize) %> · <%= l(@form.transaction_date, format: :day_month) %>
+      </p>
+      <% if @line.flags.include?("foreign_currency") %>
+        <p class="si-form-note"><%= t('statement_imports.review.foreign_amount', amount: money(@line.amount.abs, @line.currency)) %></p>
+      <% end %>
+    <% end %>
+
+    <%= turbo_frame_tag "transaction_form" do %>
+      <div class="page-content">
+        <%= render "transactions/form",
+              form_url: statement_import_line_path(statement_import_id: @import.id, id: @line.id), form_method: :patch,
+              cta_label: t('statement_imports.review.validate'),
+              kind_switch_url: ->(kind) { edit_statement_import_line_path(statement_import_id: @import.id, id: @line.id, **@form.kind_params(kind)) } %>
+      </div>
+    <% end %>
+  </div>
+<% end %>

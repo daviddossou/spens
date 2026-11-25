@@ -1,15 +1,40 @@
 <% content_for :title, t('statement_imports.title') %>
 <% content_for :focused, "1" %>
 <% content_for :header do %>
-  <%= render Navigation::DetailHeaderComponent.new(
-        back_url: dashboard_path, align: :left,
-        title: safe_join([ t('statement_imports.title'), render(Ui::ProBadgeComponent.new) ], " "),
-        subtitle: @import.draft? ? t('statement_imports.new_import') : statement_import_subtitle(@import)) %>
+  <% if @import.ready? %>
+    <%= render Navigation::DetailHeaderComponent.new(back_url: dashboard_path, align: :left,
+          title: t('statement_imports.review.title'), subtitle: statement_import_subtitle(@import)) do |header| %>
+      <% header.with_action do %>
+        <%= button_to t('statement_imports.review.uncheck_all'), uncheck_all_statement_import_lines_path(statement_import_id: @import.id),
+              method: :patch, class: "si-header-action", form_class: "si-header-action-form" %>
+      <% end %>
+    <% end %>
+  <% else %>
+    <%= render Navigation::DetailHeaderComponent.new(
+          back_url: dashboard_path, align: :left,
+          title: safe_join([ t('statement_imports.title'), render(Ui::ProBadgeComponent.new) ], " "),
+          subtitle: @import.draft? ? t('statement_imports.new_import') : statement_import_subtitle(@import)) %>
+  <% end %>
 <% end %>
 
-<div class="page-container page-container--narrow statement-import">
+<div class="page-container page-container--narrow statement-import<%= ' statement-import--review' if @import.ready? %>">
   <% if @import.draft? %>
     <%= render "captures", import: @import, account_rows: @account_rows %>
+  <% elsif @import.ready? %>
+    <div data-controller="import-review">
+      <%= render "review", import: @import %>
+      <%# One category picker per side, shared by every chip of the list. %>
+      <% @category_rows.each do |kind, rows| %>
+        <div hidden data-import-review-target="picker" data-kind="<%= kind %>"
+             data-controller="picker" data-picker-title-value="<%= t('picker.category') %>"
+             data-picker-rows-value="<%= rows.to_json %>" data-picker-allow-create-value="true"
+             data-picker-grouped-value="true" data-picker-placeholder-value="<%= t('transactions.form.transaction_type_placeholder') %>"
+             data-picker-change-label-value="<%= t('picker.change') %>">
+          <input type="hidden" data-picker-target="input" data-action="change->import-review#picked">
+          <span data-picker-target="label"></span>
+        </div>
+      <% end %>
+    </div>
   <% else %>
     <%= render "analysis", import: @import %>
   <% end %>

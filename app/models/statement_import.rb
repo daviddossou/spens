@@ -10,7 +10,7 @@
 #  reads      :jsonb            not null
 #  saved_at   :datetime
 #  source     :string
-#  status     :string           default("reading"), not null, indexed
+#  status     :string           default("draft"), not null, indexed
 #  undone_at  :datetime
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
