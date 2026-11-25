@@ -57,6 +57,7 @@ module StatementImports
         source = "ai" if fits?(parse.draft, line)
       end
       name = parse.draft.transaction_type_name if source
+      name = subcategory_name(parse) || name if source == "ai"
       if name.nil? && FALLBACK_TO_OTHER
         name = TransactionTaxonomy.name(FALLBACK_KEYS.fetch(line.kind), @locale)
         source = "fallback"
@@ -85,6 +86,13 @@ module StatementImports
       @kind_words ||= %w[fr en].flat_map do |lang|
         QuickEntry::Keywords.kind(lang).values_at("transfer", "debt_lent", "debt_borrowed", "debt_repaid").flatten.compact
       end.uniq.sort_by { -_1.length }
+    end
+
+    # Claude stayed on a parent ("Salaire & Emploi"): a bank line is better filed under the
+    # child it named ("Salaire"), still shown as uncertain.
+    def subcategory_name(parse)
+      key = parse.ai_draft&.dig("subcategory_key") or return nil
+      TransactionTaxonomy.name(key, @locale)
     end
 
     # The category must belong to the line's side: an income category never lands on an expense.

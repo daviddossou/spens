@@ -37,6 +37,21 @@ RSpec.describe StatementImports::Categorizer do
     expect(l.review_reason).to eq("uncertain_category")
   end
 
+  it "files a bank line under the subcategory Claude named when it only chose the parent" do
+    allow(QuickEntry::Coordinator).to receive(:ai_enabled?).and_return(true)
+    allow(QuickEntry::Coordinator).to receive(:call).and_call_original
+    parent = QuickEntry::Coordinator::Result.new(
+      draft: QuickEntry::Draft.new(kind: "income", amount: 3_243_340, transaction_type_name: TransactionTaxonomy.name("salary_employment", :en)),
+      ai_draft: { "category_key" => "salary_employment", "subcategory_key" => "salary" }
+    )
+    allow(QuickEntry::Coordinator).to receive(:call).with(anything, hash_including(ai: true)).and_return(parent)
+    l = line("VIREMENT SICA D/O ANKA POUR SAL DAVID NOV 2024", kind: "income", amount: 3_243_340)
+
+    described_class.call(import)
+
+    expect(l.reload).to have_attributes(transaction_type_name: TransactionTaxonomy.name("salary", :en), category_source: "ai")
+  end
+
   it "never gives an expense category to money in" do
     allow(QuickEntry::Coordinator).to receive(:ai_enabled?).and_return(false)
     expense = QuickEntry::Coordinator::Result.new(draft: QuickEntry::Draft.new(kind: "expense", amount: 2000, transaction_type_name: "🛒 Groceries"), ai_draft: nil)

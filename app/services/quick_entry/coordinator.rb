@@ -260,8 +260,9 @@ module QuickEntry
         "kind" => ai.kind, "amount" => ai.amount,
         "category_key" => ai.category_key, "category_name" => ai.category_name, "phrase" => ai.phrase,
         "from_account" => ai.from_account, "to_account" => ai.to_account,
-        "person" => ai.person, "direction" => ai.direction
-      }
+        "person" => ai.person, "direction" => ai.direction,
+        "subcategory_key" => (ai.subcategory_key if ai.respond_to?(:subcategory_key))
+      }.compact
     end
   end
 end

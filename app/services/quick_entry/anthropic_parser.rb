@@ -24,9 +24,10 @@ module QuickEntry
                    "borrowed" => "borrowed", "borrow" => "borrowed" }.freeze
 
     Result = Data.define(:kind, :amount, :category_key, :category_name, :phrase, :label,
-                         :from_account, :to_account, :person, :direction) do
+                         :from_account, :to_account, :person, :direction, :subcategory_key) do
       def initialize(kind:, amount: nil, category_key: nil, category_name: nil, phrase: nil,
-                     label: nil, from_account: nil, to_account: nil, person: nil, direction: nil)
+                     label: nil, from_account: nil, to_account: nil, person: nil, direction: nil,
+                     subcategory_key: nil)
         super
       end
     end
@@ -72,8 +73,19 @@ module QuickEntry
         from_account: data["from_account"].presence,
         to_account: data["to_account"].presence,
         person: data["person"].presence,
-        direction: DIRECTIONS[data["direction"].to_s.downcase]
+        direction: DIRECTIONS[data["direction"].to_s.downcase],
+        subcategory_key: subcategory_key(key, data["subcategory"])
       )
+    end
+
+    # The most likely subcategory when the model stayed on a parent: only one of that parent's
+    # own children counts. Quick add ignores it; a statement import uses it (a parent is too
+    # vague for a bank line, and the line is shown as uncertain anyway).
+    def subcategory_key(parent, name)
+      return nil if parent.blank? || name.blank?
+
+      key = CategoryAliasMatcher.match(name.to_s) || TransactionTaxonomy.key_for_name(name.to_s)
+      key if key && TransactionTaxonomy.parent_key(key) == parent
     end
 
     def positive_amount(value)
@@ -138,6 +150,7 @@ module QuickEntry
             kind: { type: "string", enum: %w[expense income transfer debt], description: "the transaction family" },
             amount: { type: %w[number null], description: "the amount stated, or null" },
             category: { type: %w[string null], description: "closest category from the list — a specific subcategory is better than its parent (expense/income only)" },
+            subcategory: { type: %w[string null], description: "when category is a parent, its most likely subcategory from the examples in parentheses, or null" },
             phrase: { type: %w[string null], description: "the salient word(s) the entry is about — the human note (e.g. 'coca')" },
             label: { type: %w[string null], description: "a short Title-Case label for the list row, WITHOUT the amount (e.g. 'Coca', 'Déjeuner chez Fatou', 'Crédit téléphone'); expense/income only" },
             from_account: { type: %w[string null], description: "source account, transfer only, only if it appears in the message" },
