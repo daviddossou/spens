@@ -69,6 +69,12 @@ RSpec.describe StatementImportsController, type: :request do
   describe "the captures screen" do
     let(:import) { create(:statement_import, user: user, space: space, status: "draft", captures: Array.new(5) { image_upload }) }
 
+    it "offers the usual account templates, not only existing accounts" do
+      get statement_import_path(id: import.id)
+
+      expect(response.body).to include("MTN Mobile Money")
+    end
+
     it "shows the limit once five slots are used" do
       get statement_import_path(id: import.id)
 
@@ -87,6 +93,12 @@ RSpec.describe StatementImportsController, type: :request do
 
   describe "POST analyze" do
     let(:import) { create(:statement_import, user: user, space: space, status: "draft") }
+
+    it "creates a template account picked on the way" do
+      post analyze_statement_import_path(id: import.id), params: { statement_import: { account_name: "💛 MTN Mobile Money" } }
+
+      expect(import.reload.account.name).to eq("💛 MTN Mobile Money")
+    end
 
     it "starts the reading on the chosen account" do
       momo = create(:account, space: space, name: "MoMo")

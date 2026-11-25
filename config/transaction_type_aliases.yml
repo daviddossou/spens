@@ -163,7 +163,7 @@ aliases:
   gifts: ["cadeau", "gift", "présent", "carte cadeau", "present"]
   ceremonies: ["mariage", "funérailles", "baptême", "cérémonie", "dot", "deuil", "fiançailles",
     "enterrement", "wedding", "funeral", "baptism", "ceremony"]
-  family_support: ["soutien familial", "aide à la famille", "envoi famille", "soutien famille",
+  family_support: ["soutien familial", "aide à la famille", "aide familiale", "aide famille", "envoi famille", "soutien famille",
     "argent parents", "black tax", "family support", "family help"]
   donations: ["don", "donation", "quête", "dîme", "offrande", "zakat", "sadaqa", "aumône",
     "charité", "contribution religieuse", "collecte", "quete", "dime", "aumone", "offering",
@@ -233,7 +233,7 @@ aliases:
   commission_income: ["commission", "commissions", "courtage", "commission vente"]
   remittance: ["transfert reçu", "remittance", "western union", "moneygram", "ria", "envoi reçu",
     "argent de l'étranger", "money from abroad", "diaspora transfer"]
-  family_support_received: ["soutien familial reçu", "aide reçue", "soutien reçu", "argent des parents",
+  family_support_received: ["soutien familial reçu", "aide familiale reçue", "aide reçue", "soutien reçu", "argent des parents",
     "family support received", "money from family"]
   social_support: ["soutien social", "social support", "allocation sociale", "aide sociale",
     "aide de l'état", "government assistance", "welfare"]

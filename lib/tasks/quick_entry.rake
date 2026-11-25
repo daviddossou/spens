@@ -70,6 +70,20 @@ namespace :quick_entry do
     puts "system aliases: #{created} created, #{updated} updated, #{skipped} skipped (owned by learned rows)"
   end
 
+  # One-off (tour 39): statement labels say "aide familiale". Creates these system rows only if
+  # missing, so an admin edit or deletion elsewhere in the dictionary is never touched.
+  #   bin/rails quick_entry:add_family_aid_aliases
+  desc "Add the family-aid phrases seen on statements to the system aliases"
+  task add_family_aid_aliases: :environment do
+    { "aide familiale" => "family_support", "aide famille" => "family_support",
+      "aide familiale reçue" => "family_support_received" }.each do |phrase, key|
+      LearnedAlias.find_or_create_by!(phrase: CategoryText.normalize(phrase), space_id: nil) do |row|
+        row.assign_attributes(taxonomy_key: key, source: "system", state: "active", display_phrase: phrase, confirmations: 1)
+      end
+    end
+    CategoryAliasMatcher.reload!
+  end
+
   desc "Challenge QuickEntry with West-African francophone phrases (read-only diagnostic)"
   task :challenge, [ :space_id ] => :environment do |_t, args|
     QuickEntryChallenge.run(args[:space_id].presence)

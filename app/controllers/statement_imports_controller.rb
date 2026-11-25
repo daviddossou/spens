@@ -98,10 +98,14 @@ class StatementImportsController < ApplicationController
     return nil if name.blank?
 
     current_space.accounts.active.find_by("LOWER(name) = ?", name.strip.downcase) ||
-      current_space.accounts.create(name: name.strip, user: current_user).then { _1 if _1.persisted? }
+      FindOrCreateAccountService.new(current_space, name).call
+  rescue ActiveRecord::RecordInvalid
+    nil
   end
 
+  # The same list as the transaction form: the space accounts, then the usual templates
+  # ("MTN Mobile Money", "Banque"…), created on the fly when picked.
   def account_suggestions
-    current_space.accounts.active.map { |a| { name: a.name, balance: a.balance } }
+    AccountSuggestionsService.new(current_space).all_with_balances
   end
 end

@@ -196,6 +196,8 @@
 
 /* The import screens */
 .statement-import {
+  /* Nothing may push the screen sideways (long labels, chips) */
+  overflow-x: clip;
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
@@ -619,7 +621,7 @@
 /* Review (39c) */
 .statement-import--review {
   gap: 0;
-  padding-top: 0;
+  padding-top: 1rem;
   padding-bottom: 8rem;
 }
 
@@ -643,10 +645,10 @@
 }
 
 .si-summary {
-  margin: 0 -1.25rem;
-  padding: 1rem 1.25rem;
+  padding: 1rem;
+  border: 1px solid var(--color-border-soft);
+  border-radius: var(--radius-lg);
   background: var(--color-white);
-  border-bottom: 1px solid var(--color-separator);
 }
 
 .si-summary__count {

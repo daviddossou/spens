@@ -60,6 +60,15 @@ RSpec.describe StatementImports::Categorizer do
     expect(l.categorization["proposed"]).to be_nil
   end
 
+  it "drops the words that would make the parser read another kind: the kind is already decided" do
+    l = line("TRANSFER INTERNATIONAL 22652842498 THUNES UEMOA - aide familiale@Myriam @Burkina Faso@BF", amount: -5000)
+
+    described_class.call(import)
+
+    expect(l.reload).to have_attributes(transaction_type_name: TransactionTaxonomy.name("family_support", :en), category_source: "rules")
+    expect(l.categorization["text"]).to eq("5000 INTERNATIONAL THUNES UEMOA - aide familiale Myriam Burkina Faso BF")
+  end
+
   it "leaves transfers alone" do
     l = line("RETRAIT GAB", kind: "transfer")
 

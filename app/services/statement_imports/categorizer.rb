@@ -68,13 +68,23 @@ module StatementImports
       [ nil, nil, nil ]
     end
 
-    # Read like a quick-add phrase: the amount, then the label without operation numbers, so the
-    # parser has one clean amount and the words that carry the category. Money in is said as
-    # received, as a user would type it, so the parser looks on the income side.
+    # Read like a quick-add phrase: the amount, then the words of the label that can carry a category.
+    # Operation numbers go, and so do the words that would make the parser read another kind
+    # ("TRANSFER INTERNATIONAL … aide familiale" is an expense here: our rules already decided the
+    # kind, the parser is only asked for the category). Money in is said as received, as a user
+    # would type it, so the parser looks on the income side.
     def phrase(line)
-      label = line.label.to_s.gsub(/\d{4,}|\*+/, " ").squish
+      label = line.label.to_s.gsub(/\d{4,}|[*@]+/, " ")
+      label = kind_words.reduce(label) { |text, word| text.gsub(/(?<![[:alnum:]])#{Regexp.escape(word)}(?![[:alnum:]])/i, " ") }.squish
       received = I18n.t("statement_imports.received_word", locale: @locale) if line.kind == "income"
       [ received, line.amount.abs.to_i, label ].compact.join(" ")
+    end
+
+    # Kind keywords of both languages: statements mix French and English ("TRANSFER", "RETRAIT").
+    def kind_words
+      @kind_words ||= %w[fr en].flat_map do |lang|
+        QuickEntry::Keywords.kind(lang).values_at("transfer", "debt_lent", "debt_borrowed", "debt_repaid").flatten.compact
+      end.uniq.sort_by { -_1.length }
     end
 
     # The category must belong to the line's side: an income category never lands on an expense.

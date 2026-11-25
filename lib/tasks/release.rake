@@ -5,5 +5,7 @@ namespace :release do
   # tasks (e.g. data backfills) here, then remove them once they've shipped.
   desc "Run post-deploy tasks"
   task run_after: :environment do
+    # Statement import (tour 39): "aide familiale" and co. One-off, remove once shipped.
+    Rake::Task["quick_entry:add_family_aid_aliases"].invoke
   end
 end
