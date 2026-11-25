@@ -44,17 +44,18 @@
               <%= render Ui::IconComponent.new(:photo, stroke_width: 1.6) %>
               <span class="action-sheet__label"><%= t('statement_imports.entry.gallery') %></span>
               <span class="action-sheet__meta"><%= t('statement_imports.entry.max', count: StatementImport::MAX_CAPTURES) %></span>
-              <input type="file" name="captures[]" accept="image/*" multiple hidden data-action="change->statement-entry#submit">
+              <input type="file" name="captures[]" accept="image/*" multiple hidden data-origin="gallery" data-action="change->statement-entry#submit">
             </label>
             <label class="action-sheet__item">
               <%= render Ui::IconComponent.new(:camera, stroke_width: 1.6) %>
               <span class="action-sheet__label"><%= t('statement_imports.entry.camera') %></span>
-              <input type="file" name="captures[]" accept="image/*" capture="environment" hidden data-action="change->statement-entry#submit">
+              <input type="file" name="captures[]" accept="image/*" capture="environment" hidden data-origin="camera" data-action="change->statement-entry#submit">
             </label>
             <label class="action-sheet__item">
               <%= render Ui::IconComponent.new(:document, stroke_width: 1.6) %>
               <span class="action-sheet__label"><%= t('statement_imports.entry.pdf') %></span>
-              <input type="file" name="captures[]" accept="application/pdf" multiple hidden data-action="change->statement-entry#submit">
+              <input type="file" name="captures[]" accept="application/pdf" multiple hidden data-origin="pdf" data-action="change->statement-entry#submit">
+              <input type="hidden" name="origin" data-statement-entry-target="origin">
             </label>
             <p class="action-sheet__status" data-statement-entry-target="status" hidden aria-live="polite"><%= t('statement_imports.entry.sending') %></p>
           </div>

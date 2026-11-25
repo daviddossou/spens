@@ -49,14 +49,14 @@ RSpec.describe StatementImports::Categorizer do
     expect(QuickEntry::Coordinator).to have_received(:call).with(start_with("received 2000"), anything)
   end
 
-  it "files a line nothing matched under Other, outside the lines to check" do
+  it "files a line nothing matched under Other, still ticked but among the lines to check" do
     allow(QuickEntry::Coordinator).to receive(:ai_enabled?).and_return(false)
     l = line("ZZQX 4471")
 
     described_class.call(import)
 
     expect(l.reload).to have_attributes(transaction_type_name: TransactionTaxonomy.name("other_expense", :en), category_source: "fallback")
-    expect(l.review_reason).to be_nil
+    expect(l.review_reason).to eq("fallback_category")
     expect(l.categorization["proposed"]).to be_nil
   end
 

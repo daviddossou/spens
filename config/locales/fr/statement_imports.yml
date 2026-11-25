@@ -135,6 +135,7 @@ fr:
         debt_hint: "Parle d'une dette : touche si c'est un remboursement"
         unpaired_duplicate: "Peut-être un doublon d'une autre ligne"
         no_category: "Catégorie à choisir"
+        fallback_category: "Rangée dans « Autre » : touche pour choisir la catégorie"
         uncertain_category: "Catégorie incertaine : touche pour choisir"
         needs_review: "Ligne à vérifier"
       ignored:

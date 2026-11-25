@@ -93,7 +93,7 @@ class StatementImportLine < ApplicationRecord
     CATEGORY_KINDS.include?(kind)
   end
 
-  # Filed under "Other" because nothing matched: shown, but not pushed into "À vérifier".
+  # Filed under "Other" because nothing matched: still ticked, shown under "À vérifier".
   def fallback_category?
     category_source == "fallback"
   end
@@ -108,6 +108,7 @@ class StatementImportLine < ApplicationRecord
 
     (REVIEW_FLAGS & flags).first ||
       ("no_category" if category_kind? && transaction_type_name.blank?) ||
+      ("fallback_category" if category_kind? && fallback_category?) ||
       ("uncertain_category" if category_kind? && category_source == "ai") ||
       ("needs_review" if needs_review)
   end
@@ -126,7 +127,7 @@ class StatementImportLine < ApplicationRecord
   end
 
   def restore!
-    update!(status: "ok", duplicate_of: nil, decision: "pending")
+    update!(status: "ok", duplicate_of: nil, decision: "pending", flags: flags | [ "restored" ])
   end
 
   # What saving this line sends to TransactionForm: the user's own edit when there is one.
@@ -149,7 +150,7 @@ class StatementImportLine < ApplicationRecord
     self.transaction_type_name = form.transaction_type_name
     self.category_source = "user"
     self.currency = statement_import.space.currency
-    self.flags = flags - %w[foreign_currency]
+    self.flags = (flags - %w[foreign_currency]) | [ "edited" ]
     self.needs_review = false
     self.decision = "pending"
     save!

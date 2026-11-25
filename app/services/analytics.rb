@@ -66,6 +66,7 @@ module Analytics
     Context.set(space_id: attempt.space_id, locale: Context.locale || attempt.locale) do
       track(attempt.user, "quick_entry_resolved",
             outcome: attempt.outcome, source: attempt.source, ai_used: attempt.ai_used?,
+            kind: attempt.rules_draft["kind"], category_found: attempt.rules_draft["transaction_type_name"].present?,
             corrected_fields: attempt.corrections&.keys || [])
     end
   end

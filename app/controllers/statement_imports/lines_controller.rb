@@ -24,21 +24,33 @@ module StatementImports
         return render(:edit, status: :unprocessable_entity) unless @form.valid?
 
         @line.apply_form!(@form)
+        Tracking.line_changed(@line, change: "edited")
         redirect_to statement_import_path(id: @import.id), status: :see_other
       else
+        from_source = @line.category_source
         @line.update!(line_params)
-        @line.update!(category_source: "user") if line_params.key?(:transaction_type_name)
+        if line_params.key?(:transaction_type_name)
+          @line.update!(category_source: "user", flags: @line.flags | [ "category_changed" ])
+          Tracking.line_changed(@line, change: "category", from_source: from_source)
+        elsif line_params.key?(:decision)
+          Tracking.line_changed(@line, change: @line.included? ? "ticked" : "unticked")
+        end
         render_review_streams
       end
     end
 
     def restore
-      @line.restore! if @line.addable?
+      if @line.addable?
+        reason = @line.ignored_reason
+        @line.restore!
+        Tracking.line_changed(@line, change: "restored", from_source: reason)
+      end
       render_review_streams(open_ignored: true)
     end
 
     def uncheck_all
       @import.lines.proposed.where(decision: "pending").update_all(decision: "skipped") # rubocop:disable Rails/SkipsModelValidations
+      Tracking.untick_all(@import)
       redirect_to statement_import_path(id: @import.id), status: :see_other
     end
 

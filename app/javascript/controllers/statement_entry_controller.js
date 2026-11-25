@@ -4,7 +4,7 @@ import { Controller } from "@hotwired/stimulus"
 // The photo button of the phrase band (tour 39a): opens the import action sheet, and sends the
 // chosen captures as soon as the picker closes. Only the input that was used is posted.
 export default class extends Controller {
-  static targets = ["button", "dialog", "form", "status"]
+  static targets = ["button", "dialog", "form", "status", "origin"]
 
   open() {
     this.dialogTarget.showModal()
@@ -30,6 +30,7 @@ export default class extends Controller {
     this.formTarget.querySelectorAll("input[type=file]").forEach((input) => {
       if (input !== event.target) input.disabled = true
     })
+    this.originTarget.value = event.target.dataset.origin || ""
     this.dialogTarget.classList.add("is-sending")
     this.statusTarget.hidden = false
     this.formTarget.requestSubmit()

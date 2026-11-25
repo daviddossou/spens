@@ -135,6 +135,7 @@ en:
         debt_hint: "Mentions a debt: tap if it is a repayment"
         unpaired_duplicate: "Maybe a duplicate of another line"
         no_category: "Choose a category"
+        fallback_category: "Filed under Other: tap to choose the category"
         uncertain_category: "Unsure category: tap to choose"
         needs_review: "Line to check"
       ignored:

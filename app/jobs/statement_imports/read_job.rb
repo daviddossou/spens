@@ -12,6 +12,7 @@ module StatementImports
       import = StatementImport.find_by(id: import_id) or return
       return unless import.reading?
 
+      started = Process.clock_gettime(Process::CLOCK_MONOTONIC)
       reader = Reader.new(space: import.space, user: import.user, account: import.account)
       # Blobs are loaded up front: the threads only download and call the API.
       blobs = import.captures.includes(:blob).map(&:blob)
@@ -27,10 +28,14 @@ module StatementImports
       threads.each(&:join)
 
       finish(import)
+      Tracking.read(import, seconds: Process.clock_gettime(Process::CLOCK_MONOTONIC) - started)
     rescue ActiveRecord::RecordNotFound, ActiveRecord::StaleObjectError
       nil
     rescue StandardError => e
-      import.update_columns(status: "failed", error: e.message.truncate(500)) if import && StatementImport.exists?(import.id) # rubocop:disable Rails/SkipsModelValidations
+      if import && StatementImport.exists?(import.id)
+        import.update_columns(status: "failed", error: e.message.truncate(500)) # rubocop:disable Rails/SkipsModelValidations
+        Tracking.read(import, seconds: 0)
+      end
       raise
     end
 
