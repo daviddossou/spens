@@ -129,6 +129,17 @@ RSpec.describe "Statement import review", type: :request do
       expect(attempt.rules_draft["transaction_type_name"]).to eq("Groceries")
     end
 
+    it "reports how saved lines got their category, so we can see whether Other gets fixed" do
+      line(category_source: "rules")
+      line(category_source: "fallback", transaction_type_name: "Groceries", categorization: { "proposed" => nil, "draft" => {} })
+      line(category_source: "user", categorization: { "proposed" => nil, "draft" => {} })
+
+      result = StatementImports::Save.call(import)
+
+      expect(result.categories).to include("category_rules" => 1, "category_fallback" => 1, "category_user" => 1,
+                                           "category_user_from_fallback" => 1)
+    end
+
     it "saves nothing while a ticked line is incomplete" do
       line
       line(transaction_type_name: nil, category_source: nil)

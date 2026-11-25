@@ -6,7 +6,11 @@ module StatementImports
   # nothing. Each expense/income line is also logged as a QuickEntryAttempt, so the user's
   # corrections teach the same learners as quick add.
   class Save
-    Result = Data.define(:count, :invalid_lines)
+    Result = Data.define(:count, :invalid_lines, :categories) do
+      def initialize(count:, invalid_lines:, categories: {})
+        super
+      end
+    end
 
     def self.call(import)
       new(import).call
@@ -42,13 +46,22 @@ module StatementImports
       end
       return Result.new(count: 0, invalid_lines: invalid) if invalid.any?
 
+
       learning.each do |transaction_id, attempt|
         QuickEntry::LearnTransactionJob.perform_later(transaction_id, ai_assist: attempt&.ai_used? || false, correction: attempt.present?)
       end
-      Result.new(count: lines.size, invalid_lines: [])
+      Result.new(count: lines.size, invalid_lines: [], categories: category_stats(lines))
     end
 
     private
+
+    # How saved lines got their category: tells whether people fix the "Other" fallback at all.
+    # user_from_fallback = the user replaced "Other" by a real category.
+    def category_stats(lines)
+      categorised = lines.select(&:category_kind?)
+      stats = categorised.map(&:category_source).tally.transform_keys { "category_#{_1 || "none"}" }
+      stats.merge("category_user_from_fallback" => categorised.count { _1.category_source == "user" && _1.categorization && _1.categorization["proposed"].nil? })
+    end
 
     # Every row the save created (transfer legs, fees) carries the import, so "Annuler" finds them.
     def tag(transaction)
@@ -60,7 +73,7 @@ module StatementImports
 
     def log_attempt(line, transaction)
       trace = line.categorization or return nil
-      return nil unless line.category_kind?
+      return nil unless line.category_kind? && trace["text"].present?
 
       # The proposal, not the final choice: the difference is what CorrectionLearner learns from.
       draft = trace["draft"].to_h.merge("kind" => line.kind, "amount" => line.amount.abs.to_s,

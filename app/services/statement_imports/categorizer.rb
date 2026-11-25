@@ -7,6 +7,10 @@ module StatementImports
   # one only the AI found is shown as uncertain, to review.
   class Categorizer
     CATEGORY_KINDS = %w[expense income].freeze
+    # Nothing found: file the line under "Other" rather than ask the user to fill it in. Set to
+    # false to require a category again (the review then blocks the save).
+    FALLBACK_TO_OTHER = true
+    FALLBACK_KEYS = { "expense" => "other_expense", "income" => "other_income" }.freeze
     THREADS = 4
 
     def self.call(import)
@@ -53,7 +57,11 @@ module StatementImports
         source = "ai" if fits?(parse.draft, line)
       end
       name = parse.draft.transaction_type_name if source
-      [ name, source, { "text" => text, "locale" => @locale.to_s, "proposed" => name,
+      if name.nil? && FALLBACK_TO_OTHER
+        name = TransactionTaxonomy.name(FALLBACK_KEYS.fetch(line.kind), @locale)
+        source = "fallback"
+      end
+      [ name, source, { "text" => text, "locale" => @locale.to_s, "proposed" => (name unless source == "fallback"),
                     "draft" => parse.draft.to_form_payload.as_json, "ai_draft" => parse.ai_draft } ]
     rescue StandardError => e
       Rails.logger.warn("StatementImports::Categorizer line #{line.id}: #{e.message}")

@@ -32,7 +32,7 @@ def save
     redirect_to statement_import_path(id: @import.id), status: :see_other,
                 alert: t("statement_imports.flash.lines_incomplete", count: result.invalid_lines.size)
   else
-    Analytics.track(current_user, "statement_import_saved", count: result.count, captures: @import.captures.size)
+    Analytics.track(current_user, "statement_import_saved", count: result.count, captures: @import.captures.size, **result.categories.symbolize_keys)
     flash[:import_toast] = { "id" => @import.id, "count" => result.count, "account" => @import.account && helpers.account_display_name(@import.account) }
     redirect_to(@import.account ? account_path(id: @import.account_id) : dashboard_path, status: :see_other)
   end

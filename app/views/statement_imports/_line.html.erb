@@ -18,7 +18,7 @@
 
     <div class="si-line__meta">
       <% if line.category_kind? %>
-        <% uncertain = %w[no_category uncertain_category].include?(reason) %>
+        <% uncertain = %w[no_category uncertain_category].include?(reason) || line.fallback_category? %>
         <button type="button" class="si-chip<%= ' si-chip--uncertain' if uncertain %>"
                 data-action="import-review#pickCategory"
                 data-kind="<%= line.kind %>" data-value="<%= line.transaction_type_name %>"

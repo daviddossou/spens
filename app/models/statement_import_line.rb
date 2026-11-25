@@ -93,6 +93,11 @@ class StatementImportLine < ApplicationRecord
     CATEGORY_KINDS.include?(kind)
   end
 
+  # Filed under "Other" because nothing matched: shown, but not pushed into "À vérifier".
+  def fallback_category?
+    category_source == "fallback"
+  end
+
   def money_out?
     amount.to_d.negative?
   end
@@ -103,7 +108,7 @@ class StatementImportLine < ApplicationRecord
 
     (REVIEW_FLAGS & flags).first ||
       ("no_category" if category_kind? && transaction_type_name.blank?) ||
-      ("uncertain_category" if category_kind? && !%w[rules user].include?(category_source)) ||
+      ("uncertain_category" if category_kind? && category_source == "ai") ||
       ("needs_review" if needs_review)
   end
 
