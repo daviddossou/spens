@@ -45,7 +45,7 @@ RSpec.describe QuickEntry::Coordinator do
   end
 
   context "with the LLM enabled" do
-    before { allow(QuickEntry::LlmParser).to receive(:enabled?).and_return(true) }
+    before { allow(QuickEntry::AnthropicParser).to receive(:enabled?).and_return(true) }
 
     it "lets the AI settle an ambiguous amount when it picks one of the candidates" do
       stub_llm(kind: "expense", amount: 10, category_key: "groceries", category_name: TransactionTaxonomy.name("groceries", :en))
@@ -92,18 +92,18 @@ RSpec.describe QuickEntry::Coordinator do
     end
 
     def stub_llm(**attrs)
-      llm = instance_double(QuickEntry::LlmParser, parse: QuickEntry::LlmParser::Result.new(**attrs))
-      allow(QuickEntry::LlmParser).to receive(:new).and_return(llm)
+      llm = instance_double(QuickEntry::AnthropicParser, parse: QuickEntry::AnthropicParser::Result.new(**attrs))
+      allow(QuickEntry::AnthropicParser).to receive(:new).and_return(llm)
     end
 
     it "does not consult the LLM when the rules are already confident" do
-      expect(QuickEntry::LlmParser).not_to receive(:new)
+      expect(QuickEntry::AnthropicParser).not_to receive(:new)
       draft_for("2000 zem")
     end
 
     it "auto-creates a known-person debt only when the direction is clear, without the LLM" do
       create(:debt, user: user, name: "Julius", direction: "lent")
-      expect(QuickEntry::LlmParser).not_to receive(:new)
+      expect(QuickEntry::AnthropicParser).not_to receive(:new)
 
       draft = draft_for("received 2000 from Julius")
       expect(draft.kind).to eq("debt_in")
@@ -112,7 +112,7 @@ RSpec.describe QuickEntry::Coordinator do
 
     it "opens the debt form (no LLM) for a bare person mention with no direction" do
       create(:debt, user: user, name: "Julius", direction: "lent")
-      expect(QuickEntry::LlmParser).not_to receive(:new)
+      expect(QuickEntry::AnthropicParser).not_to receive(:new)
 
       draft = draft_for("2000 Julius")
       expect(draft.contact_name).to eq("Julius")

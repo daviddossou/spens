@@ -17,7 +17,7 @@ module QuickEntry
     end
 
     def self.ai_enabled?
-      AnthropicParser.enabled? || LlmParser.enabled?
+      AnthropicParser.enabled?
     end
 
     def initialize(text, space:, locale: I18n.locale, context: {}, ai: true)
@@ -42,13 +42,9 @@ module QuickEntry
 
     private
 
-    # Claude Haiku is the primary decomposer; the OpenAI-compatible path (Ollama) stays as a
-    # fallback if only it is configured. nil when neither is enabled → rules-only.
+    # nil when no API key is configured → rules-only.
     def ai_parser
-      return AnthropicParser if AnthropicParser.enabled?
-      return LlmParser if LlmParser.enabled?
-
-      nil
+      AnthropicParser if AnthropicParser.enabled?
     end
 
     # The rules already detected a structural kind and resolved what they could — the rest is a
