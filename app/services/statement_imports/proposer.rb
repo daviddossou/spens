@@ -39,6 +39,7 @@ module StatementImports
       fold_fee_rows(drafts)
       pair_duplicates(drafts)
       dedupe(drafts)
+      dedupe_same_day(drafts)
       Classifier.new(@import).classify(drafts.select(&:proposed?))
       flag_existing(drafts.select(&:proposed?))
       persist(drafts)
@@ -188,6 +189,27 @@ module StatementImports
       end
     end
 
+    # Apps that show only the date (no time) repeat the lines where two captures overlap. Same day,
+    # amount and label: the line counts as many times as it shows on ONE capture, so two real
+    # identical purchases visible together stay two, while the copy on the next capture goes.
+    # Same day and amount under another label, on another capture, is only flagged.
+    def dedupe_same_day(drafts)
+      dated = drafts.select { _1.proposed? && _1.occurred_on && _1.occurred_at.nil? }
+      dated.group_by { [ _1.occurred_on, _1.amount.abs, CategoryText.normalize(_1.label) ] }.each_value do |same|
+        per_capture = same.group_by(&:capture_index)
+        next if per_capture.size < 2
+
+        keep = per_capture.values.max_by(&:size)
+        (same - keep).each_with_index { |d, i| mark_duplicate(d, keep[i % keep.size], "overlap") }
+      end
+      dated = dated.select(&:proposed?)
+      dated.group_by { [ _1.occurred_on, _1.amount.abs ] }.each_value do |same|
+        next if same.map(&:capture_index).uniq.size < 2 || same.map { CategoryText.normalize(_1.label) }.uniq.size < 2
+
+        same.each { _1.flag("maybe_overlap") }
+      end
+    end
+
     def same_reference?(a, b)
       ref = ->(d) { d.reference.to_s.gsub(/[^[:alnum:]]/, "").downcase }
       ref[a].length >= 6 && ref[a] == ref[b] && a.amount.abs == b.amount.abs
@@ -214,7 +236,8 @@ module StatementImports
       draft.flag(reason)
     end
 
-    # Already typed by hand (same account, same day, same amount): shown, but not saved twice.
+    # Already typed by hand (same day, same amount, on this account or on none: debts and loans are
+    # often entered without one): shown, but not saved twice.
     def flag_existing(drafts)
       return unless @import.account_id
 
@@ -222,7 +245,7 @@ module StatementImports
       drafts.each do |d|
         next unless d.occurred_on
 
-        existing = @space.transactions.where(account_id: @import.account_id, transaction_date: d.occurred_on)
+        existing = @space.transactions.where(account_id: [ @import.account_id, nil ], transaction_date: d.occurred_on)
                          .where("ROUND(ABS(transactions.amount)::numeric, 2) = ?", d.amount.abs.round(2))
                          .where.not(id: taken).pick(:id)
         next unless existing

@@ -129,6 +129,7 @@ en:
         zero: "Nothing to save"
       nothing_saved_yet: "Nothing is saved before this button."
       validate: "Done"
+      edit_title: "Edit the transaction"
       foreign_amount: "Amount read: %{amount}. Enter it in your space currency."
       foreign_banner_html: "<strong>This statement is in %{currency}, your space is in %{space_currency}.</strong> Amounts are not converted: enter them one by one, or import this statement into a %{currency} space."
       reasons:
@@ -138,6 +139,8 @@ en:
         unbacked_transfer: "Saved as an expense: tap if it is a transfer between your accounts"
         unbacked_debt: "A loan or a repayment? Tap to say which"
         debt_hint: "Mentions a debt: tap if it is a repayment"
+        maybe_overlap: "Same day and amount as a line on another capture: maybe the same operation."
+        refund: "Money in from a merchant you spend at: filed as a refund."
         unpaired_duplicate: "Maybe a duplicate of another line"
         no_category: "Choose a category"
         fallback_category: "Filed under Other: tap the chip to choose."
@@ -146,6 +149,7 @@ en:
       ignored:
         removed: "removed by you"
         declined: "declined"
+        cancelled: "cancelled"
         card_check: "card check"
         pending: "pending"
         not_transaction: "not a transaction"

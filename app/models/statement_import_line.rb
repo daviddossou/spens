@@ -58,7 +58,7 @@
 # One line read from a capture: the model's raw read (`extracted`), our proposal on the other
 # columns, and what the user finally saved (`final`).
 class StatementImportLine < ApplicationRecord
-  STATUSES = %w[ok declined pending card_check not_transaction cut_off duplicate].freeze
+  STATUSES = %w[ok declined cancelled pending card_check not_transaction cut_off duplicate].freeze
   DECISIONS = %w[pending accepted skipped].freeze
 
   belongs_to :statement_import, inverse_of: :lines
@@ -78,9 +78,9 @@ class StatementImportLine < ApplicationRecord
   OUT_KINDS = %w[expense debt_out].freeze
   # Why a line is shown under "À vérifier", most important first.
   REVIEW_FLAGS = %w[already_in_spens foreign_currency own_name unbacked_transfer unbacked_debt debt_hint
-                    unpaired_duplicate].freeze
+                    unpaired_duplicate maybe_overlap refund].freeze
   FORM_FIELDS = %w[kind account_name from_account_name to_account_name fee_amount transaction_date
-                   transaction_type_name label contact_name direction].freeze
+                   transaction_type_name label note contact_name direction].freeze
 
   def proposed?
     status == "ok" && duplicate_of_id.nil?
@@ -173,7 +173,9 @@ class StatementImportLine < ApplicationRecord
     update!(decision: "pending", flags: flags | [ "kept" ])
   end
 
-  # What saving this line sends to TransactionForm: the user's own edit when there is one.
+  # What saving this line sends to TransactionForm: the user's own edit when there is one. The
+  # text read on the statement is the note, so the user rewords it there and the list titles the
+  # row with it.
   def payload
     base = final.presence || generated_payload
     base.merge("transaction_type_name" => transaction_type_name.presence || base["transaction_type_name"]).compact_blank
@@ -189,7 +191,7 @@ class StatementImportLine < ApplicationRecord
     self.amount = out ? -form.amount : form.amount
     self.fee = form.fee_amount
     self.occurred_on = form.transaction_date
-    self.label = form.label.presence || label
+    self.label = form.note.presence || label
     self.transaction_type_name = form.transaction_type_name
     self.category_source = "user"
     self.currency = statement_import.space.currency
@@ -203,7 +205,7 @@ class StatementImportLine < ApplicationRecord
 
   def generated_payload
     base = { "kind" => kind, "amount" => amount.abs.to_s, "fee_amount" => fee&.to_s,
-             "transaction_date" => (occurred_on || Date.current).iso8601, "label" => label,
+             "transaction_date" => (occurred_on || Date.current).iso8601, "note" => label,
              "account_name" => account&.name, "debt_id" => debt_id }
     return base unless kind == "transfer"
 

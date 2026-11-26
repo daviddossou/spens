@@ -117,4 +117,39 @@ RSpec.describe StatementImports::Proposer do
 
     expect(import.reload.account).to eq(nsia)
   end
+
+  it "keeps one copy of a date-only line shown on two overlapping captures" do
+    lines = propose(
+      [ line(label: "Picard", amount: -9.98, currency: "EUR", date: "2026-10-18"), line(label: "Naturitas", amount: -43.36, currency: "EUR", date: "2026-10-09") ],
+      [ line(label: "Picard", amount: -9.98, currency: "EUR", date: "2026-10-18"), line(label: "Uber Eats", amount: -18.62, currency: "EUR", date: "2026-10-16") ]
+    )
+
+    picards = lines.select { _1.label == "Picard" }
+    expect(picards.map(&:status)).to contain_exactly("ok", "duplicate")
+  end
+
+  it "keeps two real identical purchases shown together on one capture" do
+    lines = propose(
+      [ line(label: "Picard", amount: -9.98, date: "2026-10-18"), line(label: "Picard", amount: -9.98, date: "2026-10-18") ],
+      [ line(label: "Picard", amount: -9.98, date: "2026-10-18") ]
+    )
+
+    expect(lines.map(&:status).tally).to eq("ok" => 2, "duplicate" => 1)
+  end
+
+  it "flags, without dropping, the same day and amount under another label on another capture" do
+    lines = propose([ line(label: "Joybuy", amount: -19.98, date: "2026-10-11") ], [ line(label: "JOYBUY.COM", amount: -19.98, date: "2026-10-11") ])
+
+    expect(lines.map(&:status)).to eq(%w[ok ok])
+    expect(lines.map(&:review_reason)).to all(eq("maybe_overlap"))
+  end
+
+  it "finds a debt entered without an account as already in Spens" do
+    debt_type = create(:transaction_type, space: space, kind: :debt_out, name: "Prêté")
+    existing = create(:transaction, space: space, account: nil, transaction_type: debt_type, amount: 5000, transaction_date: Date.new(2026, 11, 2))
+
+    lines = propose([ line(label: "Hakim", amount: -5000, date: "2026-11-02") ])
+
+    expect(lines.first.existing_transaction).to eq(existing)
+  end
 end

@@ -129,6 +129,7 @@ fr:
         zero: "Rien à enregistrer"
       nothing_saved_yet: "Rien n'est enregistré avant ce bouton."
       validate: "Valider"
+      edit_title: "Modifier la transaction"
       foreign_amount: "Montant lu : %{amount}. Indique-le dans la devise de ton espace."
       foreign_banner_html: "<strong>Ce relevé est en %{currency}, ton espace est en %{space_currency}.</strong> Les montants ne sont pas convertis : indique-les un par un, ou importe ce relevé dans un espace en %{currency}."
       reasons:
@@ -138,6 +139,8 @@ fr:
         unbacked_transfer: "Classé en dépense : touche si c'est un virement entre tes comptes"
         unbacked_debt: "Prêt ou remboursement ? Touche pour le préciser"
         debt_hint: "Parle d'une dette : touche si c'est un remboursement"
+        maybe_overlap: "Même jour, même montant qu'une ligne d'une autre capture : peut-être la même opération."
+        refund: "Montant reçu d'un marchand où tu dépenses : classé en remboursement."
         unpaired_duplicate: "Peut-être un doublon d'une autre ligne"
         no_category: "Catégorie à choisir"
         fallback_category: "Rangée dans « Autre » : touche la puce pour choisir."
@@ -146,6 +149,7 @@ fr:
       ignored:
         removed: "retirée par toi"
         declined: "refusée"
+        cancelled: "annulée"
         card_check: "vérification de carte"
         pending: "en attente"
         not_transaction: "pas une transaction"

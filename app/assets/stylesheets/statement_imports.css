@@ -1133,14 +1133,6 @@
   cursor: pointer;
 }
 
-/* A label read from a statement can be very long: two lines in the edit sheet */
-.si-edit-title {
-  display: -webkit-box;
-  overflow: hidden;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  word-break: break-word;
-}
 
 /* The swipe tip, shown until the user closes it */
 .si-hint {

@@ -86,12 +86,15 @@ module StatementImports
           XOF, XAF and GNF have no decimals: "100.005 F" is 100005.
         - fee: only when the source states it separately. If the shown amount already includes the fee, set fee_included.
         - status:
-          ok = money actually moved; declined = failed/rejected/"a echoue"; pending = not yet received/validated;
+          ok = money actually moved; declined = failed/rejected/"a echoue"; cancelled = cancelled/annulé/reversed;
+          pending = not yet received/validated;
           card_check = 0.00 verification; not_transaction = OTP, promo, balance-only, info message, period total/closing balance;
           cut_off = line cut at the screen edge and not fully readable;
           duplicate = the same movement already listed in THIS capture (e.g. a USD card payment and its XOF debit).
           Only use duplicate when the other line is visible here.
         - For not_transaction lines, never copy codes, passwords or PINs: describe them in a few words.
+        - reference: also copy any type or status the app shows with the line ("Withdrawal", "Sent",
+          "Card payment", "Retrait"…): it tells a cash withdrawal or a direct debit from a purchase.
         - kind: your best guess: expense, income, transfer (between the user's own accounts), debt_in, debt_out.
           Money sent to another person is an expense unless the text says it is a loan or a repayment.
           transfer only when the text names one of the user's own accounts or the holder's own name/account number.

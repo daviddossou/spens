@@ -96,6 +96,14 @@ RSpec.describe "Statement import review", type: :request do
       expect(l.reload).to be_removed
     end
 
+    it "closes the edit sheet after Ignore, even when Turbo asks for a stream" do
+      l = line
+
+      post ignore_statement_import_line_path(statement_import_id: import.id, id: l.id), params: { via: "form" }, as: :turbo_stream
+
+      expect(response).to redirect_to(statement_import_path(id: import.id))
+    end
+
     it "sets the category in one tap, as the user's choice" do
       l = line(transaction_type_name: nil, category_source: nil)
 
@@ -108,15 +116,17 @@ RSpec.describe "Statement import review", type: :request do
       l = line(currency: "USD", amount: -9.99, flags: [ "foreign_currency" ], decision: "skipped")
 
       get edit_statement_import_line_path(statement_import_id: import.id, id: l.id)
-      expect(response.body).to include("transaction-form", "Done").and include("Amount read: 9.99")
+      expect(response.body).to include("transaction-form", "Done", "Edit the transaction").and include("Amount read: 9.99")
       expect(response.body).not_to include("phrase-band")
 
       expect do
         patch statement_import_line_path(statement_import_id: import.id, id: l.id),
-              params: { transaction: { kind: "expense", amount: "6000", transaction_type_name: "Groceries", account_name: "Bank", transaction_date: "2026-11-02" } }
+              params: { transaction: { kind: "expense", amount: "6000", transaction_type_name: "Groceries", account_name: "Bank",
+                                       transaction_date: "2026-11-02", note: "Abonnement famille", label: "Netflix" } }
       end.not_to change(Transaction, :count)
 
       expect(l.reload).to have_attributes(amount: -6000, currency: "XOF", decision: "pending", category_source: "user")
+      expect(l.payload).to include("note" => "Abonnement famille", "label" => "Netflix")
       expect(l.flags).not_to include("foreign_currency")
     end
 
@@ -145,6 +155,7 @@ RSpec.describe "Statement import review", type: :request do
       expect(response).to redirect_to(account_path(id: bank.id))
       follow_redirect!
       expect(response.body).to include("2 transactions added", "on the Bank account")
+      expect(import.transactions.where(fee_parent_id: nil).pluck(:note)).to contain_exactly("Carrefour", "Picard")
     end
 
     it "logs each categorised line for the quick-add learners" do

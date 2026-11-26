@@ -55,7 +55,8 @@ RSpec.describe StatementImports::Categorizer do
   it "never gives an expense category to money in" do
     allow(QuickEntry::Coordinator).to receive(:ai_enabled?).and_return(false)
     expense = QuickEntry::Coordinator::Result.new(draft: QuickEntry::Draft.new(kind: "expense", amount: 2000, transaction_type_name: "🛒 Groceries"), ai_draft: nil)
-    allow(QuickEntry::Coordinator).to receive(:call).and_return(expense)
+    nothing = QuickEntry::Coordinator::Result.new(draft: QuickEntry::Draft.new(kind: "expense", amount: 2000), ai_draft: nil)
+    allow(QuickEntry::Coordinator).to receive(:call) { |text, **| text.start_with?("received") ? expense : nothing }
     l = line("Carrefour Market", kind: "income", amount: 2000)
 
     described_class.call(import)
@@ -90,5 +91,26 @@ RSpec.describe StatementImports::Categorizer do
     described_class.call(import)
 
     expect(l.reload.transaction_type_name).to be_nil
+  end
+
+  it "gives every line of one merchant the same category" do
+    allow(QuickEntry::Coordinator).to receive(:ai_enabled?).and_return(false)
+    a = line("SC-YABEL EXOTIQ", amount: -18.10)
+    b = line("SC-YABEL EXOTIQ", amount: -13.59)
+
+    expect(QuickEntry::Coordinator).to receive(:call).once.and_call_original
+    described_class.call(import)
+
+    expect(a.reload.transaction_type_name).to eq(b.reload.transaction_type_name)
+  end
+
+  it "files money in from a merchant the user spends at as a refund" do
+    line("KoRo", amount: -89.23)
+    refund = line("KoRo", kind: "income", amount: 89.23)
+
+    described_class.call(import)
+
+    expect(refund.reload).to have_attributes(transaction_type_name: TransactionTaxonomy.name("refund", :en), category_source: "rules")
+    expect(refund.review_reason).to eq("refund")
   end
 end

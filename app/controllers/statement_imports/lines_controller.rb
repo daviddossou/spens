@@ -51,10 +51,9 @@ module StatementImports
     def ignore
       @line.remove!
       Tracking.line_changed(@line, change: "ignored", from_source: params[:via].presence || "button")
-      respond_to do |format|
-        format.turbo_stream { render_review_streams }
-        format.html { redirect_to statement_import_path(id: @import.id), status: :see_other }
-      end
+      return redirect_to(statement_import_path(id: @import.id), status: :see_other) if params[:via] == "form"
+
+      render_review_streams
     end
 
     # "Garder quand même" on a likely duplicate.
