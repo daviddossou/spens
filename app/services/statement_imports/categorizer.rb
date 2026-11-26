@@ -25,26 +25,37 @@ module StatementImports
 
     def call
       lines = @import.lines.proposed.where(kind: CATEGORY_KINDS).to_a
+      @spent_at = lines.select { _1.kind == "expense" }.map { merchant_key(_1) }.to_set
+      # One decision per merchant and side: the same shop gets the same category on every line.
+      groups = lines.group_by { [ _1.kind, merchant_key(_1) ] }.values
       queue = Queue.new
-      lines.each { queue << _1 }
+      groups.each { queue << _1 }
       results = Concurrent::Map.new
-      Array.new([ THREADS, lines.size ].min) do
+      Array.new([ THREADS, groups.size ].min) do
         Thread.new do
           Rails.application.executor.wrap do
-            while (line = (queue.pop(true) rescue nil))
-              results[line.id] = categorize(line)
+            while (group = (queue.pop(true) rescue nil))
+              results[group.first.id] = categorize(group.first)
             end
           end
         end
       end.each(&:join)
 
-      lines.each do |line|
-        name, source, categorization = results[line.id]
-        line.update!(transaction_type_name: name, category_source: source, categorization: categorization)
+      groups.each do |group|
+        name, source, trace, flag = results[group.first.id]
+        group.each do |line|
+          trace = trace&.merge("text" => phrase(line)) unless line == group.first
+          line.update!(transaction_type_name: name, category_source: source, categorization: trace,
+                       flags: flag ? line.flags | [ flag ] : line.flags)
+        end
       end
     end
 
     private
+
+    def merchant_key(line)
+      CategoryText.normalize(line.label.to_s.gsub(/\d+/, ""))
+    end
 
     # => [transaction_type_name, "rules" | "ai" | nil, what the pipeline saw]. The last part is what
     # quick add logs on a QuickEntryAttempt, so a saved line feeds the same learners.
@@ -58,15 +69,40 @@ module StatementImports
       end
       name = parse.draft.transaction_type_name if source
       name = subcategory_name(parse) || name if source == "ai"
+      return refund(text, parse) if line.kind == "income" && source != "rules" && spent_here?(line)
+      proposed = name
       if name.nil? && FALLBACK_TO_OTHER
         name = TransactionTaxonomy.name(FALLBACK_KEYS.fetch(line.kind), @locale)
         source = "fallback"
       end
-      [ name, source, { "text" => text, "locale" => @locale.to_s, "proposed" => (name unless source == "fallback"),
-                    "draft" => parse.draft.to_form_payload.as_json, "ai_draft" => parse.ai_draft } ]
+      [ name, source, trace(text, proposed, parse) ]
     rescue StandardError => e
       Rails.logger.warn("StatementImports::Categorizer line #{line.id}: #{e.message}")
       [ nil, nil, nil ]
+    end
+
+    # What quick add logs on a QuickEntryAttempt: the phrase, the proposal, the raw drafts.
+    def trace(text, proposed, parse)
+      { "text" => text, "locale" => @locale.to_s, "proposed" => proposed,
+        "draft" => parse.draft.to_form_payload.as_json, "ai_draft" => parse.ai_draft }
+    end
+
+    # Money in from a merchant the user spends at (an Uber Eats or KoRo refund): a refund, not an
+    # income category guessed by the AI.
+    def spent_here?(line)
+      return true if @spent_at.include?(merchant_key(line))
+
+      expense = QuickEntry::Coordinator.call(phrase(line).delete_prefix("#{received_word} "), space: @space, locale: @locale, ai: false).draft
+      expense.kind == "expense" && expense.transaction_type_name.present?
+    end
+
+    def refund(text, parse)
+      name = TransactionTaxonomy.name("refund", @locale)
+      [ name, "rules", trace(text, name, parse), "refund" ]
+    end
+
+    def received_word
+      I18n.t("statement_imports.received_word", locale: @locale)
     end
 
     # Read like a quick-add phrase: the amount, then the words of the label that can carry a category.
@@ -77,7 +113,7 @@ module StatementImports
     def phrase(line)
       label = line.label.to_s.gsub(/\d{4,}|[*@]+/, " ")
       label = kind_words.reduce(label) { |text, word| text.gsub(/(?<![[:alnum:]])#{Regexp.escape(word)}(?![[:alnum:]])/i, " ") }.squish
-      received = I18n.t("statement_imports.received_word", locale: @locale) if line.kind == "income"
+      received = received_word if line.kind == "income"
       [ received, line.amount.abs.to_i, label ].compact.join(" ")
     end
 

@@ -1,6 +1,6 @@
 <%# Shared form for create and edit. Locals form_url / form_method default to
     the create endpoint; edit passes the transaction path + :patch. A statement import line
-    also passes cta_label and kind_switch_url, a lambda(kind) for the kind tabs. %>
+    also passes cta_label, kind_switch_url (a lambda(kind) for the kind tabs) and note_first. %>
 <%
   filled = Array(@filled_fields)
   heading = transaction_form_heading(@form, person_locked: @person_locked, relation: @relation)
@@ -57,6 +57,17 @@
     <%= f.hidden_field :kind, data: { debt_fields_target: "kindInput" } %>
     <%= f.hidden_field :quick_entry_attempt_id %>
     <%= f.hidden_field :label %>
+    <% note_field = capture do %>
+      <div class="tx-detail transaction-form__note">
+        <%= render Forms::FieldHeadingComponent.new do |heading| %>
+<% heading.with_label do %><span class="form-label"><%= t('transactions.form.note_label') %></span><% end %>
+<% heading.with_hint do %><span class="tx-detail__hint"><%= t('transactions.form.optional_hint') %></span><% end %>
+<% end %>
+        <%= render Forms::InputFieldComponent.new(
+          form: f, field: :note, label: "",
+          placeholder: t('transactions.form.note_placeholder'), required: false) %>
+      </div>
+    <% end %>
 
     <div class="transaction-form__kind">
       <%= render Transactions::KindSelectorComponent.new(label: t('transactions.form.kind_label', default: 'Type'),
@@ -83,6 +94,9 @@
         </div>
       <% end %>
     <% end %>
+
+    <%# A statement import line opens on its text, ready to be reworded. %>
+    <%= note_field if local_assigns[:note_first] %>
 
     <!-- Transfer Mode: From and To Accounts -->
     <% if @form.kind == 'transfer' %>
@@ -225,15 +239,7 @@
          data-transaction-form-target="optionalFields"
          data-expanded="<%= @form.fee_amount.present? %>">
 
-      <div class="tx-detail transaction-form__note">
-        <%= render Forms::FieldHeadingComponent.new do |heading| %>
-<% heading.with_label do %><span class="form-label"><%= t('transactions.form.note_label') %></span><% end %>
-<% heading.with_hint do %><span class="tx-detail__hint"><%= t('transactions.form.optional_hint') %></span><% end %>
-<% end %>
-        <%= render Forms::InputFieldComponent.new(
-          form: f, field: :note, label: "",
-          placeholder: t('transactions.form.note_placeholder'), required: false) %>
-      </div>
+      <%= note_field unless local_assigns[:note_first] %>
 
       <div class="tx-detail transaction-form__date">
         <%= render Forms::FieldHeadingComponent.new do |heading| %>
