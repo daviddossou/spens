@@ -8,7 +8,7 @@ RSpec.describe QuickEntry::AnthropicParser do
 
   # Enable the parser and stub the HTTP call, so nothing hits the network.
   before do
-    allow(described_class).to receive(:config).and_return({ api_key: "test-key", model: "claude-haiku-4-5-20251001" })
+    allow(described_class).to receive(:config).and_return({ api_key: "test-key", model: "claude-haiku-5-5" })
   end
 
   def stub_tool_use(input)
@@ -25,6 +25,19 @@ RSpec.describe QuickEntry::AnthropicParser do
     it "is false without a key" do
       allow(described_class).to receive(:config).and_return({})
       expect(described_class.enabled?).to be(false)
+    end
+  end
+
+  describe "the request" do
+    it "turns thinking off and leaves temperature to the default on Haiku 5" do
+      body = parser.send(:request_body, "2000 zem")
+      expect(body).to include(model: "claude-haiku-5-5", thinking: { type: "disabled" })
+      expect(body).not_to have_key(:temperature)
+    end
+
+    it "keeps temperature 0 on older models" do
+      allow(described_class).to receive(:config).and_return({ api_key: "k", model: "claude-haiku-4-5-20251001" })
+      expect(parser.send(:request_body, "2000 zem")).to include(temperature: 0).and(satisfy { !_1.key?(:thinking) })
     end
   end
 

@@ -128,16 +128,23 @@ module QuickEntry
     end
 
     def request_body(text)
-      {
-        model: self.class.config[:model],
+      model = self.class.config[:model].to_s
+      body = {
+        model: model,
         max_tokens: MAX_TOKENS,
-        # Parsing, not writing: the same phrase must always read the same way.
-        temperature: 0,
         system: system_prompt,
         messages: [ { role: "user", content: text } ],
         tools: [ tool_schema ],
         tool_choice: { type: "tool", name: TOOL_NAME }
       }
+      # Haiku 5 refuses a non-default temperature and thinks by default, which a forced tool call
+      # does not allow. Older models read more steadily at temperature 0.
+      if model.match?(/haiku-5/)
+        body[:thinking] = { type: "disabled" }
+      else
+        body[:temperature] = 0
+      end
+      body
     end
 
     def tool_schema
